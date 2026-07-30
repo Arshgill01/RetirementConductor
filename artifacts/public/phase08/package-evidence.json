@@ -1,0 +1,97 @@
+{
+  "captured_at": "2026-07-30T17:56:33.208545Z",
+  "checksums": {
+    "digest": "sha256:ae0cb5139cd0a75e3530b463a56224930fa363eed478bc5f5163db2066c7c0aa",
+    "filename": "SHA256SUMS"
+  },
+  "command": "make package",
+  "evidence_mode": "analysis",
+  "limitations": [
+    "The release is checksum-bound but has no signing identity.",
+    "Reproducibility was observed on the recorded Linux build host."
+  ],
+  "package": {
+    "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
+    "sdist": "retirement_conductor-0.2.0.tar.gz",
+    "sdist_digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+    "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
+    "wheel_digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7"
+  },
+  "phase": "08",
+  "phase08_package_evidence_digest": "sha256:21cf052163901cb2def7f17dd56f32f0568ee6067b30b05db4a8f45424422be1",
+  "raw_receipt": {
+    "artifact_digest": "sha256:42755744033df01244e99cea0557f8bef0fa26f1564ea38339051c8ad5d7a646",
+    "file_digest": "sha256:79e126e19cafbcf9899dcdd1bfd0646350c400efb950455c732a2c4e612c4ddd"
+  },
+  "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+  "reproducible_build": {
+    "source_archive_byte_identical": true,
+    "source_archive_rebuilt_wheel_identical": true,
+    "wheel_byte_identical": true
+  },
+  "result": "PACKAGE_VERIFIED",
+  "runtime_lock": {
+    "digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
+    "filename": "runtime-requirements.txt",
+    "hash_bound": true
+  },
+  "sbom": {
+    "digest": "sha256:3796543b5333cae03ca48f8bb05ba2b593823c00c8aa2958063d3df5520a8f86",
+    "filename": "runtime-sbom.cdx.json",
+    "format": "CycloneDX 1.5"
+  },
+  "schema_version": "1.0.0",
+  "signing": {
+    "limitation": "No release signing identity or operational key model exists.",
+    "signed": false
+  },
+  "source_archive": {
+    "digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+    "filename": "retirement_conductor-0.2.0.tar.gz",
+    "member_count": 72,
+    "operational_state_excluded": true,
+    "required_members_present": [
+      ".env.example",
+      "CONTRIBUTING.md",
+      "LICENSE",
+      "README.md",
+      "SECURITY.md",
+      "docs/COMPATIBILITY.md",
+      "docs/EVALUATION.md",
+      "docs/MAINTENANCE.md",
+      "docs/runbooks/DEPLOYMENT.md",
+      "docs/runbooks/RECOVERY.md",
+      "docs/templates/OPERATOR_OBSERVATION.md",
+      "fixtures/repository/models/order_summary.sql",
+      "fixtures/scenarios/valid.json",
+      "fixtures/specs/valid.yaml",
+      "pyproject.toml",
+      "schemas/campaign-manifest-v1.schema.json",
+      "src/retirement_conductor/__init__.py"
+    ],
+    "single_root": true,
+    "size": 149834
+  },
+  "version": "0.2.0",
+  "wheel": {
+    "console_entry_point": "retirement-conductor",
+    "digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7",
+    "filename": "retirement_conductor-0.2.0-py3-none-any.whl",
+    "member_count": 63,
+    "required_members_present": [
+      "retirement_conductor/fixture_data/repository/models/order_summary.sql",
+      "retirement_conductor/fixture_data/scenarios/valid.json",
+      "retirement_conductor/migrations/001_initial.sql",
+      "retirement_conductor/migrations/002_initial.sql",
+      "retirement_conductor/migrations/003_initial.sql",
+      "retirement_conductor/reference_data/spec.yaml",
+      "retirement_conductor/schemas/campaign-manifest-v1.schema.json",
+      "retirement_conductor/schemas/retirement-spec-v1alpha1.schema.json"
+    ],
+    "runtime_dependencies": [
+      "jsonschema<5,>=4.23",
+      "pyyaml<7,>=6.0.2"
+    ],
+    "size": 169133
+  }
+}

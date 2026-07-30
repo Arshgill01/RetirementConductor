@@ -1,0 +1,113 @@
+{
+  "captured_at": "2026-07-30T17:56:18.216495Z",
+  "command": "make test-install",
+  "evidence_mode": "fixture",
+  "host": {
+    "libc": [
+      "glibc",
+      "2.43"
+    ],
+    "machine": "x86_64",
+    "system": "Linux"
+  },
+  "limitations": [
+    "Virtual environments isolate Python packages on one Linux host.",
+    "The clean-install test does not exercise external integrations."
+  ],
+  "package": {
+    "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
+    "sdist": "retirement_conductor-0.2.0.tar.gz",
+    "sdist_digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+    "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
+    "wheel_digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7"
+  },
+  "phase": "08",
+  "phase08_install_evidence_digest": "sha256:8202690ee9201c8550d2e0e0c801f4a277bc4b988a2a26671b085c1a7bb3b870",
+  "raw_receipt": {
+    "artifact_digest": "sha256:41be0767378cdeca9dd9ee680c76c0ba6548eebed4acddc714919150a775299e",
+    "file_digest": "sha256:c75f12e9cd3b58c36e1e709233ba5481cc7cc0f86ec36f8786667afb3b409431"
+  },
+  "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+  "result": "CLEAN_INSTALL_VERIFIED",
+  "runtimes": [
+    {
+      "configuration_refusal": "RUNTIME_CONFIGURATION_INCOMPLETE",
+      "import_isolated": true,
+      "missing_configuration_references": [
+        "DATAHUB_GMS_URL",
+        "DATAHUB_MCP_URL",
+        "GIT_DBT_DBT_EXECUTABLE",
+        "GIT_DBT_PRINCIPAL",
+        "GIT_DBT_REPOSITORY_ROOT"
+      ],
+      "package_version": "0.2.0",
+      "preflight_digest": "sha256:47ba91fec0f4cb5c8d4acdb0947516737649c232c88e77423cc262a1727af338",
+      "python_version": "3.11.15",
+      "reference_byte_reproduced": true,
+      "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
+      "reference_summary_digest": "sha256:84ddbfcf6078ece751c37cb19c99548182998a47ece0cac3129a4104d5f919e1"
+    },
+    {
+      "configuration_refusal": "RUNTIME_CONFIGURATION_INCOMPLETE",
+      "import_isolated": true,
+      "missing_configuration_references": [
+        "DATAHUB_GMS_URL",
+        "DATAHUB_MCP_URL",
+        "GIT_DBT_DBT_EXECUTABLE",
+        "GIT_DBT_PRINCIPAL",
+        "GIT_DBT_REPOSITORY_ROOT"
+      ],
+      "package_version": "0.2.0",
+      "preflight_digest": "sha256:6f8b2a477544e90d4d6281f7cfb7799d8d020a10f3f2cfeaa3e54c756269fb51",
+      "python_version": "3.12.13",
+      "reference_byte_reproduced": true,
+      "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
+      "reference_summary_digest": "sha256:84ddbfcf6078ece751c37cb19c99548182998a47ece0cac3129a4104d5f919e1"
+    },
+    {
+      "configuration_refusal": "RUNTIME_CONFIGURATION_INCOMPLETE",
+      "import_isolated": true,
+      "missing_configuration_references": [
+        "DATAHUB_GMS_URL",
+        "DATAHUB_MCP_URL",
+        "GIT_DBT_DBT_EXECUTABLE",
+        "GIT_DBT_PRINCIPAL",
+        "GIT_DBT_REPOSITORY_ROOT"
+      ],
+      "package_version": "0.2.0",
+      "preflight_digest": "sha256:4501873f05d87b31ff6b1bdd377148ee380a5e019da2689d1e5811aeda968e53",
+      "python_version": "3.13.14",
+      "reference_byte_reproduced": true,
+      "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
+      "reference_summary_digest": "sha256:84ddbfcf6078ece751c37cb19c99548182998a47ece0cac3129a4104d5f919e1"
+    },
+    {
+      "configuration_refusal": "RUNTIME_CONFIGURATION_INCOMPLETE",
+      "import_isolated": true,
+      "missing_configuration_references": [
+        "DATAHUB_GMS_URL",
+        "DATAHUB_MCP_URL",
+        "GIT_DBT_DBT_EXECUTABLE",
+        "GIT_DBT_PRINCIPAL",
+        "GIT_DBT_REPOSITORY_ROOT"
+      ],
+      "package_version": "0.2.0",
+      "preflight_digest": "sha256:16b1cd09fd22fb01107340bb333db666682c8d535a9fd5c350cefe359c360504",
+      "python_version": "3.14.4",
+      "reference_byte_reproduced": true,
+      "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
+      "reference_summary_digest": "sha256:84ddbfcf6078ece751c37cb19c99548182998a47ece0cac3129a4104d5f919e1"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "uninstall": {
+    "copied_state_refusal": "RUNTIME_WRITER_MISMATCH",
+    "copied_state_unchanged": true,
+    "package_removed": true,
+    "removal_plan_digest": "sha256:e0733689d31d70961f202f7ea1a120323454257f6f33e995b41cd6b53419c544",
+    "removal_receipt_digest": "sha256:6c5c5e2e1e9518668925fef9f43c91202d9a152454d6df7af9889b422b8f1552",
+    "retained_plan": true,
+    "state_removed": true,
+    "unconfirmed_refusal": "AUTH_APPROVAL_MISSING"
+  }
+}

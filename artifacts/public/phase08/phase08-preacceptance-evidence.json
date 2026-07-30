@@ -1,0 +1,149 @@
+{
+  "acceptance": {
+    "actionable_configuration_refusal": true,
+    "clean_install": true,
+    "confirmed_state_removal": true,
+    "copied_state_refusal": true,
+    "customer_value_observation": false,
+    "datahub_cloud_optional_and_not_claimed": true,
+    "deterministic_fixture_remains_blocked": true,
+    "independent_operator": false,
+    "installed_live_core_reference": true,
+    "local_metrics_opt_in_and_no_remote_export": true,
+    "package_uninstall": true,
+    "release_repository_documentation_agree": true,
+    "rollback_restores_prior_pair": true,
+    "single_writer_preflight": true,
+    "upgrade_preserves_campaign": true
+  },
+  "artifacts": {
+    "compatibility": {
+      "artifact_digest": "sha256:bd490e4bdb32bbf354d8b85f9e1511e9412cc2aef833a98bf7cda1dc76dbab7f",
+      "file": "artifacts/public/phase08/compatibility-evidence.json",
+      "file_digest": "sha256:73f07d75f1266ab12dfa0625018c494ab8b32063d5f32b2a2ba6fa5a29d54b88"
+    },
+    "install": {
+      "artifact_digest": "sha256:8202690ee9201c8550d2e0e0c801f4a277bc4b988a2a26671b085c1a7bb3b870",
+      "file": "artifacts/public/phase08/install-evidence.json",
+      "file_digest": "sha256:1f40994451784b34afed9ac9d6ee996efe082de9c75be7cd18bc46477dbbea6b"
+    },
+    "operator_boundary": {
+      "artifact_digest": "sha256:65ee4166e82ffb47f3e1fad690e8ce229255fe8cdd0e4ca66c954b0ae29a7318",
+      "file": "artifacts/public/phase08/operator-boundary.json",
+      "file_digest": "sha256:04510ead7fd610c0535371114d5c65af6ac41dcf15bda61ea7a2735c52d7a292"
+    },
+    "package": {
+      "artifact_digest": "sha256:21cf052163901cb2def7f17dd56f32f0568ee6067b30b05db4a8f45424422be1",
+      "file": "artifacts/public/phase08/package-evidence.json",
+      "file_digest": "sha256:31305500c1ab200f97672ec910a542397df586fe5e831e022bc3a34c5972a23f"
+    },
+    "reference": {
+      "artifact_digest": "sha256:219dc1599299d8c418fe3d12510690bf1aaf6f8a4a231297a2307aa6e6b47f61",
+      "file": "artifacts/public/phase08/reference-evidence.json",
+      "file_digest": "sha256:9d2a65c81f43aed055f509a55f351334092f8cfc21d5e4476f533bf4cb4ad441"
+    },
+    "upgrade": {
+      "artifact_digest": "sha256:94d0aa0a52777ef9e48426d31a274f4208bfe1a217b7c342915a5156f88eae4d",
+      "file": "artifacts/public/phase08/upgrade-evidence.json",
+      "file_digest": "sha256:853347b5fcd8ec7e1c6ba55f3158e4d2b7f6802a2fe4b57d9997df9b2be58dbf"
+    }
+  },
+  "captured_at": "2026-07-30T18:00:41.223212Z",
+  "commands": [
+    {
+      "command": "make check",
+      "exit_code": 0,
+      "output_digest": "sha256:d05e79fbaab6d6303b1b305f51ef320310669ba6a29e59f391895c370aef3f68",
+      "result": "PASSED"
+    },
+    {
+      "artifact": {
+        "artifact_digest": "sha256:21cf052163901cb2def7f17dd56f32f0568ee6067b30b05db4a8f45424422be1",
+        "file": "artifacts/public/phase08/package-evidence.json",
+        "file_digest": "sha256:31305500c1ab200f97672ec910a542397df586fe5e831e022bc3a34c5972a23f"
+      },
+      "command": "make package",
+      "result": "PASSED"
+    },
+    {
+      "artifact": {
+        "artifact_digest": "sha256:8202690ee9201c8550d2e0e0c801f4a277bc4b988a2a26671b085c1a7bb3b870",
+        "file": "artifacts/public/phase08/install-evidence.json",
+        "file_digest": "sha256:1f40994451784b34afed9ac9d6ee996efe082de9c75be7cd18bc46477dbbea6b"
+      },
+      "command": "make test-install",
+      "result": "PASSED"
+    },
+    {
+      "artifact": {
+        "artifact_digest": "sha256:94d0aa0a52777ef9e48426d31a274f4208bfe1a217b7c342915a5156f88eae4d",
+        "file": "artifacts/public/phase08/upgrade-evidence.json",
+        "file_digest": "sha256:853347b5fcd8ec7e1c6ba55f3158e4d2b7f6802a2fe4b57d9997df9b2be58dbf"
+      },
+      "command": "make test-upgrade",
+      "result": "PASSED"
+    },
+    {
+      "artifact": {
+        "artifact_digest": "sha256:219dc1599299d8c418fe3d12510690bf1aaf6f8a4a231297a2307aa6e6b47f61",
+        "file": "artifacts/public/phase08/reference-evidence.json",
+        "file_digest": "sha256:9d2a65c81f43aed055f509a55f351334092f8cfc21d5e4476f533bf4cb4ad441"
+      },
+      "command": "make test-reference-campaign",
+      "result": "PASSED"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "output_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": "PASSED"
+    }
+  ],
+  "evidence_mode": "mixed live, fixture, and analysis",
+  "limitations": [
+    "Credential-independent Phase 08 work cannot satisfy the independent operator acceptance row.",
+    "The live Core reference uses disposable loopback services.",
+    "Live Looker remains outside this evidence packet.",
+    "No release signing identity or automated publication exists."
+  ],
+  "package": {
+    "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
+    "sdist": "retirement_conductor-0.2.0.tar.gz",
+    "sdist_digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+    "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
+    "wheel_digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7"
+  },
+  "phase": "08",
+  "phase08_preacceptance_digest": "sha256:72e3a157b85246baaebde6b3b629648b13db6856762bb7649ab2377991bde249",
+  "phase_status": "access-dependent",
+  "remaining_boundaries": [
+    {
+      "boundary": "live disposable Looker saved-content workflow",
+      "evidence_packet": "EP-006",
+      "phase": "06",
+      "provisioning_allowed": false,
+      "status": "access-dependent"
+    },
+    {
+      "boundary": "live Looker-specific security and fault behavior",
+      "evidence_packet": "EP-007",
+      "phase": "07",
+      "provisioning_allowed": false,
+      "status": "access-dependent"
+    },
+    {
+      "boundary": "independent operator and real workflow value evidence",
+      "evidence_packet": "EP-008",
+      "phase": "08",
+      "secrets_required": false,
+      "status": "not-run"
+    }
+  ],
+  "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+  "requirements": {
+    "RC-017": "CREDENTIAL_INDEPENDENT_EVIDENCE_PRESENT",
+    "RC-018": "NOT_SATISFIED"
+  },
+  "result": "CREDENTIAL_INDEPENDENT_ACCEPTANCE_PASSED",
+  "schema_version": "1.0.0"
+}
