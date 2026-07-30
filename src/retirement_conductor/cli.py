@@ -30,6 +30,7 @@ from retirement_conductor.git_dbt import GitDbtAdapter
 from retirement_conductor.git_dbt_config import GitDbtSettings
 from retirement_conductor.git_dbt_workflow import GitDbtWorkflow
 from retirement_conductor.looker import LookerAdapter
+from retirement_conductor.looker_access import write_looker_access_packet
 from retirement_conductor.looker_config import LookerSettings
 from retirement_conductor.looker_workflow import LookerWorkflow
 from retirement_conductor.mcp_http import HttpMCPClient
@@ -194,6 +195,16 @@ def build_parser() -> argparse.ArgumentParser:
     looker_subparsers = looker.add_subparsers(
         dest="adapter_command",
         required=True,
+    )
+    looker_access = looker_subparsers.add_parser(
+        "access-packet",
+        help="write a no-secret packet for the unresolved live boundary",
+    )
+    looker_access.add_argument("--campaign", dest="campaign_id", required=True)
+    looker_access.add_argument(
+        "--output",
+        type=Path,
+        default=Path(".retirement-conductor/looker-access/access-request.md"),
     )
     for command in ("preflight", "plan", "apply", "compensate", "validate"):
         operation = looker_subparsers.add_parser(command)
@@ -596,6 +607,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             _render(result)
             return 0
         if args.command == "adapter" and args.adapter_name == "looker":
+            if args.adapter_command == "access-packet":
+                _render(
+                    write_looker_access_packet(
+                        args.output,
+                        campaign_id=args.campaign_id,
+                    )
+                )
+                return 0
             with CampaignStore(args.store, writer_id=args.writer_id) as store:
                 looker_workflow = _looker_workflow(args, store)
                 if args.adapter_command == "preflight":

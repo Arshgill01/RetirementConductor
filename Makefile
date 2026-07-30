@@ -1,7 +1,7 @@
 .PHONY: check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
-	phase04-evidence phase05-browser phase05-evidence \
+	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
 	test test-ui test-end-to-end
 
 check:
@@ -74,6 +74,11 @@ phase05-browser:
 
 phase05-evidence:
 	uv run python scripts/generate_phase05_evidence.py
+
+phase06-recipes:
+	uv run --python 3.11 \
+		--with 'acryl-datahub[looker,lookml,datahub-rest]==1.6.0' \
+		python scripts/validate_phase06_recipes.py
 
 test:
 	uv run pytest

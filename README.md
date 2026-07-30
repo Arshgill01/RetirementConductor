@@ -191,6 +191,9 @@ documented in
 Campaign inspection, exact plan confirmation, resume, local and public report
 generation, and operator acceptance checks are documented in
 [the operator runbook](docs/runbooks/OPERATOR.md).
+The credential-independent Looker recipes, no-secret access packet, and
+bounded live lifecycle are documented in
+[the Looker runbook](docs/runbooks/LOOKER.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.

@@ -37,6 +37,7 @@ def test_fixture_refusal_command(capsys: object, tmp_path: Path) -> None:
 def test_looker_cli_exposes_full_bounded_lifecycle() -> None:
     parser = build_parser()
     for operation in (
+        "access-packet",
         "preflight",
         "plan",
         "authorize",
