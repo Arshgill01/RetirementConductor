@@ -452,6 +452,14 @@ def run() -> int:
 
     browser = load_object(BROWSER_RAW)
     require(browser.get("result") == "PASSED", "browser evidence did not pass")
+    require(
+        len(browser.get("pages", [])) == 2,
+        "browser evidence must contain both required viewport checks",
+    )
+    require(
+        len(browser.get("axe", [])) == 2,
+        "browser evidence must contain both required axe audits",
+    )
     for report in browser.get("reports", {}).values():
         require(isinstance(report, dict), "browser report evidence is malformed")
         path = ROOT / str(report["file"])
