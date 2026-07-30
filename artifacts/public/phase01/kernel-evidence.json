@@ -1,0 +1,24 @@
+{
+  "database_migration": {
+    "digest": "sha256:752ea43795f3b6005a9b1136809beac445b47488b186aad39bdb8e444cf20bf1",
+    "path": "src/retirement_conductor/migrations/001_initial.sql"
+  },
+  "event_fixture": {
+    "event_count": 3,
+    "event_stream_digest": "sha256:275d6b9b4a5725de66a18a1a4b083d0f938584df68cdadf9d47bfa080bdbe26c",
+    "path": "fixtures/campaigns/blocked/events.json"
+  },
+  "manifest": {
+    "blocker_codes": [
+      "EVIDENCE_MODE_NOT_LIVE",
+      "IDENTITY_NOT_FOUND",
+      "RECONCILIATION_REQUIRED"
+    ],
+    "decision": "BLOCKED",
+    "digest": "sha256:5466473b6fe03d35c2a9d3b5f6e86301245ecb3dcdf8e804fa1f58d1fbaf70ce",
+    "path": "artifacts/public/phase01/blocked-manifest.json",
+    "replay_digest_parity": true
+  },
+  "mode": "fixture",
+  "schema_version": "1.0.0"
+}

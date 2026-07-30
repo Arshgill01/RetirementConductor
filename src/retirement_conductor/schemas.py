@@ -11,11 +11,14 @@ from retirement_conductor.errors import Refusal
 from retirement_conductor.vocabulary import RefusalCode
 
 SCHEMA_FILENAMES = {
+    "approval": "approval-v1.schema.json",
     "retirement-spec": "retirement-spec-v1alpha1.schema.json",
     "evidence-envelope": "evidence-envelope-v1.schema.json",
     "consumer-receipt": "consumer-receipt-v1.schema.json",
     "campaign-manifest": "campaign-manifest-v1.schema.json",
+    "campaign-event": "campaign-event-v1.schema.json",
     "fixture-scenario": "fixture-scenario-v1.schema.json",
+    "waiver": "waiver-v1.schema.json",
 }
 
 
@@ -48,7 +51,12 @@ def load_schema(name: str) -> dict[str, Any]:
     return value
 
 
-def validate_schema(name: str, value: Any) -> None:
+def validate_schema(
+    name: str,
+    value: Any,
+    *,
+    refusal_code: str = RefusalCode.SPEC_SCHEMA_INVALID,
+) -> None:
     """Validate a value and return a stable, bounded refusal."""
 
     validator = Draft202012Validator(load_schema(name))
@@ -59,7 +67,7 @@ def validate_schema(name: str, value: Any) -> None:
     instance_path = "/".join(str(part) for part in first.absolute_path) or "$"
     schema_path = "/".join(str(part) for part in first.absolute_schema_path)
     raise Refusal(
-        RefusalCode.SPEC_SCHEMA_INVALID,
+        refusal_code,
         "The input does not satisfy its versioned schema.",
         {
             "schema": name,

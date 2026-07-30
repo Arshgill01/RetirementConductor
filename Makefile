@@ -1,4 +1,4 @@
-.PHONY: check format phase00-evidence test
+.PHONY: check format phase00-evidence phase01-evidence test
 
 check:
 	uv run ruff check src tests scripts
@@ -17,6 +17,9 @@ format:
 
 phase00-evidence:
 	uv run python scripts/generate_phase00_evidence.py
+
+phase01-evidence:
+	uv run python scripts/generate_phase01_evidence.py
 
 test:
 	uv run pytest

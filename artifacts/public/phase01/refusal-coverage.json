@@ -1,0 +1,264 @@
+{
+  "codes": [
+    {
+      "code": "AUTH_APPROVAL_EXPIRED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_APPROVAL_MISSING",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_APPROVAL_WRONG_CAMPAIGN",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_APPROVAL_WRONG_PLAN",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_APPROVAL_WRONG_SCOPE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_APPROVAL_WRONG_SOURCE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_WAIVER_EXPIRED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "AUTH_WAIVER_INVALID",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "AUTH"
+    },
+    {
+      "code": "EVIDENCE_EMPTY_RESULT_UNPROVEN",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "EVIDENCE"
+    },
+    {
+      "code": "EVIDENCE_MODE_NOT_LIVE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "EVIDENCE"
+    },
+    {
+      "code": "EVIDENCE_RECEIPT_EXPIRED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "EVIDENCE"
+    },
+    {
+      "code": "EVIDENCE_RECEIPT_MODE_NOT_LIVE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "EVIDENCE"
+    },
+    {
+      "code": "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "EVIDENCE"
+    },
+    {
+      "code": "IDENTITY_AMBIGUOUS",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "IDENTITY"
+    },
+    {
+      "code": "IDENTITY_NOT_FOUND",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "IDENTITY"
+    },
+    {
+      "code": "INTEGRITY_DIGEST_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "INTEGRITY"
+    },
+    {
+      "code": "INTEGRITY_EVENT_CHAIN_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "INTEGRITY"
+    },
+    {
+      "code": "INTEGRITY_EVENT_SEQUENCE_INVALID",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "INTEGRITY"
+    },
+    {
+      "code": "INTEGRITY_IDEMPOTENCY_CONFLICT",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "INTEGRITY"
+    },
+    {
+      "code": "INTEGRITY_MATERIALIZED_STATE_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "INTEGRITY"
+    },
+    {
+      "code": "POLICY_EVENT_DECISION_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "POLICY"
+    },
+    {
+      "code": "POLICY_ILLEGAL_CAMPAIGN_TRANSITION",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "POLICY"
+    },
+    {
+      "code": "POLICY_ILLEGAL_CONSUMER_TRANSITION",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "POLICY"
+    },
+    {
+      "code": "POLICY_INPUT_DRIFT",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "POLICY"
+    },
+    {
+      "code": "POLICY_WAIVER_FORBIDDEN",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "POLICY"
+    },
+    {
+      "code": "RUNTIME_CAMPAIGN_EXISTS",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_CAMPAIGN_NOT_FOUND",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_CLOCK_FUTURE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_CLOCK_INVALID",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_CLOCK_ROLLBACK",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_CLOCK_SKEW",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_STORE_LOCKED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "RUNTIME_WRITER_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "RUNTIME"
+    },
+    {
+      "code": "SCOPE_PATH_OUTSIDE_ROOT",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SCOPE"
+    },
+    {
+      "code": "SCOPE_RECEIPT_TARGET_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SCOPE"
+    },
+    {
+      "code": "SCOPE_TARGET_NOT_ALLOWED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SCOPE"
+    },
+    {
+      "code": "SOURCE_CONSUMER_OVERLAP",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SOURCE"
+    },
+    {
+      "code": "SOURCE_FINGERPRINT_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SOURCE"
+    },
+    {
+      "code": "SOURCE_NOT_FOUND",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SOURCE"
+    },
+    {
+      "code": "SOURCE_RECEIPT_VERSION_MISMATCH",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SOURCE"
+    },
+    {
+      "code": "SPEC_IDENTICAL_FIELDS",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SPEC"
+    },
+    {
+      "code": "SPEC_PARSE_FAILED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SPEC"
+    },
+    {
+      "code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SPEC"
+    },
+    {
+      "code": "SPEC_SCHEMA_INVALID",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SPEC"
+    },
+    {
+      "code": "SPEC_UNSUPPORTED_REPLACEMENT",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "SPEC"
+    },
+    {
+      "code": "VALIDATION_RECEIPT_FAILED",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "VALIDATION"
+    },
+    {
+      "code": "VALIDATION_RECEIPT_INCONCLUSIVE",
+      "coverage": "direct refusal or deterministic policy-result assertion",
+      "family": "VALIDATION"
+    }
+  ],
+  "families": [
+    "AUTH",
+    "EVIDENCE",
+    "IDENTITY",
+    "INTEGRITY",
+    "POLICY",
+    "RUNTIME",
+    "SCOPE",
+    "SOURCE",
+    "SPEC",
+    "VALIDATION"
+  ],
+  "limitation": "This report maps registered phase 00/01 codes to the focused suite; later adapters add source-specific refusal codes and evidence.",
+  "registered_code_count": 47,
+  "schema_version": "1.0.0",
+  "test_sources": [
+    "tests/unit/test_clock.py",
+    "tests/unit/test_paths.py",
+    "tests/unit/test_policy.py",
+    "tests/unit/test_state.py",
+    "tests/contracts/test_records.py",
+    "tests/contracts/test_specification.py",
+    "tests/fixture/test_fixture_run.py",
+    "tests/integration/test_campaign_store.py"
+  ]
+}

@@ -56,6 +56,11 @@ def test_stale_fingerprint_refuses(tmp_path: Path) -> None:
         verify_source_fingerprint(source, f"sha256:{'0' * 64}")
 
 
+def test_missing_source_refuses(tmp_path: Path) -> None:
+    with pytest.raises(Refusal, match="SOURCE_NOT_FOUND"):
+        resolve_scoped_path("models/missing.sql", tmp_path)
+
+
 def test_target_outside_allowlist_refuses() -> None:
     with pytest.raises(Refusal, match="SCOPE_TARGET_NOT_ALLOWED"):
         require_allowed_target("seeds/private.csv", ["models/"])

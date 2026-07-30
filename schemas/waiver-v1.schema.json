@@ -1,0 +1,65 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/waiver-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "authorized_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "consumer_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "reason": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "residual_risk": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "scope": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "waiver_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "consumer_id",
+    "authority",
+    "scope",
+    "reason",
+    "residual_risk",
+    "authorized_at",
+    "expires_at",
+    "waiver_digest"
+  ],
+  "title": "Consumer waiver v1",
+  "type": "object"
+}

@@ -1,0 +1,91 @@
+{
+  "blockers": [
+    {
+      "code": "EVIDENCE_MODE_NOT_LIVE",
+      "message": "The policy requires live evidence."
+    },
+    {
+      "code": "IDENTITY_NOT_FOUND",
+      "message": "The consumer has no unique native identity."
+    },
+    {
+      "code": "RECONCILIATION_REQUIRED",
+      "message": "A fresh equivalent reconciliation has not completed."
+    }
+  ],
+  "campaign": {
+    "id": "ret-orders-legacy-status",
+    "name": "Replace legacy order status",
+    "state": "BLOCKED"
+  },
+  "consumers": [
+    {
+      "disposition": "UNRESOLVED",
+      "id": "consumer-unresolved",
+      "receipt_digest": null
+    }
+  ],
+  "decision": "BLOCKED",
+  "evidence_envelope": {
+    "captured_at": "2026-01-02T00:00:00Z",
+    "mode": "fixture",
+    "schema_version": "1.0.0",
+    "sources": [
+      {
+        "id": "datahub",
+        "required": true,
+        "source_version": "fixture-datahub/1.0",
+        "status": "COMPLETE"
+      }
+    ]
+  },
+  "generated_at": "2026-01-02T00:00:00Z",
+  "manifest_digest": "sha256:5466473b6fe03d35c2a9d3b5f6e86301245ecb3dcdf8e804fa1f58d1fbaf70ce",
+  "policy": {
+    "id": "default-column-retirement",
+    "requires_live_evidence": true,
+    "version": 1
+  },
+  "publication": null,
+  "receipt_digests": [],
+  "replacement": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "order_status",
+    "instance": "fixture",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders"
+  },
+  "schema_version": "1.0.0",
+  "snapshot_digests": [
+    "sha256:4bc0d92b1d9a920e5ea5dc12c9dab5e3683d1b2734c1ee2e9b3aa4dba65a3c58"
+  ],
+  "specification_digest": "sha256:9e5567a1efcee4c464b4231c288ecc5ae397a24a07b15322eb5dc58f6070a632",
+  "target": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "legacy_status",
+    "instance": "fixture",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders"
+  },
+  "transition_history": [
+    {
+      "event_digest": "sha256:5fc02c922798a6f34fa96c1aaefb0e1224dd727f5a48f2b3dccf5792126b986f",
+      "event_type": "CAMPAIGN_CREATED",
+      "sequence": 1
+    },
+    {
+      "event_digest": "sha256:d1c8011ad306f337458e82754c4101ffce619dc482e3d3b5d34a109115e3c50a",
+      "event_type": "INVENTORY_RECORDED",
+      "sequence": 2
+    },
+    {
+      "event_digest": "sha256:1c4b0b31b03d995cd5c7e0d52f057ac2f3f4ab41b103c4e34872c6ba59b39607",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 3
+    }
+  ]
+}

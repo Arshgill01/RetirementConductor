@@ -1,0 +1,73 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/campaign-event-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "event_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "event_type": {
+      "enum": [
+        "CAMPAIGN_CREATED",
+        "INVENTORY_RECORDED",
+        "APPROVAL_RECORDED",
+        "WAIVER_RECORDED",
+        "NATIVE_IDENTITY_CLAIMED",
+        "MIGRATION_STARTED",
+        "CONSUMER_DISPOSITION_CHANGED",
+        "RECEIPT_ACCEPTED",
+        "RECONCILIATION_RECORDED",
+        "POLICY_EVALUATED",
+        "CAMPAIGN_BLOCKED",
+        "CAMPAIGN_RESUMED",
+        "CAMPAIGN_RETIRED"
+      ]
+    },
+    "idempotency_key": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "payload_version": {
+      "const": "1.0.0"
+    },
+    "previous_event_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "sequence": {
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "payload_version",
+    "campaign_id",
+    "sequence",
+    "event_type",
+    "occurred_at",
+    "idempotency_key",
+    "previous_event_digest",
+    "payload",
+    "event_digest"
+  ],
+  "title": "Campaign event v1",
+  "type": "object"
+}

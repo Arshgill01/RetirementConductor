@@ -21,6 +21,8 @@ build/
 .retirement-conductor/
 *.sqlite
 *.sqlite3
+*.sqlite-*
+*.sqlite.lock
 artifacts/raw/
 artifacts/private/
 

@@ -1,0 +1,80 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/approval-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "approval_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "approval_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "authorization_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "authorized_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "principal": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "scope": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_version": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "targets": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "approval_id",
+    "campaign_id",
+    "plan_digest",
+    "source_version",
+    "targets",
+    "principal",
+    "scope",
+    "authorization_digest",
+    "authorized_at",
+    "expires_at",
+    "approval_digest"
+  ],
+  "title": "Apply approval v1",
+  "type": "object"
+}
