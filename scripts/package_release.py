@@ -34,6 +34,43 @@ REQUIRED_WHEEL_MEMBERS = {
     "retirement_conductor/schemas/campaign-manifest-v1.schema.json",
 }
 
+REQUIRED_SDIST_MEMBERS = {
+    ".env.example",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md",
+    "pyproject.toml",
+    "docs/COMPATIBILITY.md",
+    "docs/EVALUATION.md",
+    "docs/MAINTENANCE.md",
+    "docs/runbooks/DEPLOYMENT.md",
+    "docs/runbooks/RECOVERY.md",
+    "docs/templates/OPERATOR_OBSERVATION.md",
+    "fixtures/repository/models/order_summary.sql",
+    "fixtures/scenarios/valid.json",
+    "fixtures/specs/valid.yaml",
+    "schemas/campaign-manifest-v1.schema.json",
+    "src/retirement_conductor/__init__.py",
+}
+
+FORBIDDEN_SDIST_MEMBERS = {
+    "AGENTS.md",
+    "GOAL.md",
+    "PLAN.md",
+    "STATUS.md",
+    "docs/EVIDENCE_LEDGER.md",
+    "uv.lock",
+}
+
+FORBIDDEN_SDIST_PREFIXES = (
+    ".git/",
+    ".retirement-conductor/",
+    "artifacts/",
+    "scripts/",
+    "tests/",
+)
+
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -95,9 +132,13 @@ def inspect_sdist(path: Path) -> dict[str, Any]:
     with tarfile.open(path, "r:gz") as archive:
         members = archive.getmembers()
         roots = set()
+        relative_names = set()
         for member in members:
             safe_member(member.name)
-            roots.add(PurePosixPath(member.name).parts[0])
+            member_path = PurePosixPath(member.name)
+            roots.add(member_path.parts[0])
+            if len(member_path.parts) > 1:
+                relative_names.add(PurePosixPath(*member_path.parts[1:]).as_posix())
             require(
                 not (
                     member.issym()
@@ -108,13 +149,45 @@ def inspect_sdist(path: Path) -> dict[str, Any]:
                 "source archive contains an unsafe member type",
             )
     require(len(roots) == 1, "source archive has multiple roots")
+    require(
+        REQUIRED_SDIST_MEMBERS.issubset(relative_names),
+        "source archive is missing required build or operator content",
+    )
+    forbidden_members = sorted(FORBIDDEN_SDIST_MEMBERS & relative_names)
+    forbidden_prefix_members = sorted(
+        name for name in relative_names if name.startswith(FORBIDDEN_SDIST_PREFIXES)
+    )
+    require(
+        not forbidden_members and not forbidden_prefix_members,
+        "source archive contains operational state, evidence, or release tooling",
+    )
     return {
         "filename": path.name,
         "digest": digest_file(path),
         "size": path.stat().st_size,
         "member_count": len(members),
         "single_root": True,
+        "required_members_present": sorted(REQUIRED_SDIST_MEMBERS),
+        "operational_state_excluded": True,
     }
+
+
+def rebuild_wheel_from_sdist(source_archive: Path, destination: Path) -> Path:
+    source = destination / "source"
+    source.mkdir(parents=True)
+    with tarfile.open(source_archive, "r:gz") as archive:
+        archive.extractall(source, filter="data")
+    roots = [path for path in source.iterdir() if path.is_dir()]
+    require(len(roots) == 1, "extracted source archive has multiple roots")
+    output = destination / "dist"
+    checked(
+        ["uv", "build", "--wheel", "--out-dir", str(output)],
+        cwd=roots[0],
+        timeout=900,
+    )
+    wheels = list(output.glob("*.whl"))
+    require(len(wheels) == 1, "source archive did not build exactly one wheel")
+    return wheels[0]
 
 
 def export_runtime_lock() -> None:
@@ -195,6 +268,11 @@ def run() -> dict[str, Any]:
             digest_file(comparison_sdist) == sdist_evidence["digest"],
             "source archive did not reproduce byte-for-byte",
         )
+        sdist_wheel = rebuild_wheel_from_sdist(sdist, comparison / "sdist-build")
+        require(
+            digest_file(sdist_wheel) == wheel_evidence["digest"],
+            "source archive did not reproduce the release wheel",
+        )
 
     checksum_file = write_checksums([wheel, sdist, RUNTIME_REQUIREMENTS, sbom])
     evidence = with_digest(
@@ -222,6 +300,7 @@ def run() -> dict[str, Any]:
             "reproducible_build": {
                 "wheel_byte_identical": True,
                 "source_archive_byte_identical": True,
+                "source_archive_rebuilt_wheel_identical": True,
             },
             "signing": {
                 "signed": False,

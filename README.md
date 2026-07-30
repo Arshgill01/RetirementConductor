@@ -160,7 +160,11 @@ Deterministic policy decides.
 - [Evidence ledger](docs/EVIDENCE_LEDGER.md)
 - [Access requirements](docs/ACCESS.md)
 - [Security model](docs/SECURITY_MODEL.md)
+- [Deployment runbook](docs/runbooks/DEPLOYMENT.md)
 - [Recovery runbook](docs/runbooks/RECOVERY.md)
+- [Compatibility matrix](docs/COMPATIBILITY.md)
+- [Independent evaluation](docs/EVALUATION.md)
+- [Maintenance policy](docs/MAINTENANCE.md)
 - [Risk register](docs/RISKS.md)
 - [Decision log](docs/DECISIONS.md)
 - [Phase index](docs/phases/README.md)
@@ -214,6 +218,17 @@ Threat boundaries, least-privilege capabilities, retention, failure handling,
 verified backup and restore, diagnostics, and recovery drills are documented
 in the [security model](docs/SECURITY_MODEL.md), [security policy](SECURITY.md),
 and [recovery runbook](docs/runbooks/RECOVERY.md).
+
+The supported one-host, single-writer wheel installation, secret-reference
+configuration, preflights, local opt-in diagnostics, upgrade, rollback,
+confirmed state removal, and package uninstall are documented in
+[the deployment runbook](docs/runbooks/DEPLOYMENT.md). Executed and unverified
+platform boundaries are separated in
+[the compatibility matrix](docs/COMPATIBILITY.md). A real prospective
+operator must follow [the independent evaluation guide](docs/EVALUATION.md);
+the built-in fixture and author-run reference cannot substitute for that
+adoption evidence. Release compatibility and evidence maintenance follow
+[the maintenance policy](docs/MAINTENANCE.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.

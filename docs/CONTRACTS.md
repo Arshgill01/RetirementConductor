@@ -580,6 +580,13 @@ The built-in reference campaign is always fixture evidence and must remain
 `BLOCKED` with `EVIDENCE_MODE_NOT_LIVE`. It proves a clean installation can
 load packaged schemas and public data; it cannot satisfy a live policy.
 
+The source archive is an explicit build input, not a snapshot of the
+operational repository. It contains the runtime source, wheel-required fixture
+data, schemas, package metadata, and stable deployment documentation. It must
+exclude campaign state, raw or public acceptance evidence, status and goal
+files, tests, and release scripts. Building that archive must reproduce the
+release wheel byte-for-byte.
+
 Removal is a two-step destructive protocol. A local ignored plan freezes the
 exact store files and artifact-tree digests. Execution requires the operator
 to pass that plan's exact digest, rejects target or writer mismatch, refuses

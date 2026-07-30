@@ -522,3 +522,20 @@ Why: one immediate verification refused even though the unchanged read-back
 succeeded shortly afterward. Repeating the write could create or overwrite
 state without proving visibility; treating the successful write response as
 verification would manufacture publication evidence.
+
+## D-036 — keep release inputs separate from operational evidence
+
+Status: accepted for the Phase 08 package boundary.
+
+Build the source archive from an explicit allowlist of runtime source,
+wheel-required fixtures, schemas, package metadata, and stable operator
+documentation. Exclude campaign state, tracked acceptance artifacts, status
+and goal files, tests, and release scripts. Require the archive to rebuild the
+release wheel byte-for-byte.
+
+Why: an automatic repository-wide source archive included the status and
+evidence files that describe the release. Adding Phase 08 evidence would then
+change the package digest recursively, while unrelated operational updates
+would change a release without changing its runtime. The explicit archive
+boundary keeps the artifact reproducible, reviewable, and independent of its
+acceptance record.

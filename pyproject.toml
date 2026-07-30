@@ -36,6 +36,27 @@ packages = ["src/retirement_conductor"]
 "fixtures/specs/valid.yaml" = "retirement_conductor/reference_data/spec.yaml"
 "schemas" = "retirement_conductor/schemas"
 
+[tool.hatch.build.targets.sdist]
+include = [
+  "/.env.example",
+  "/CONTRIBUTING.md",
+  "/LICENSE",
+  "/README.md",
+  "/SECURITY.md",
+  "/pyproject.toml",
+  "/docs/COMPATIBILITY.md",
+  "/docs/EVALUATION.md",
+  "/docs/MAINTENANCE.md",
+  "/docs/runbooks/DEPLOYMENT.md",
+  "/docs/runbooks/RECOVERY.md",
+  "/docs/templates/OPERATOR_OBSERVATION.md",
+  "/fixtures/repository",
+  "/fixtures/scenarios",
+  "/fixtures/specs/valid.yaml",
+  "/schemas",
+  "/src/retirement_conductor",
+]
+
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
 testpaths = ["tests"]

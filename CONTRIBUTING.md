@@ -29,6 +29,11 @@ Read:
 7. Update `STATUS.md` only after inspecting the direct evidence.
 8. Run `make check` and the phase-specific commands.
 
+Release and compatibility changes must also follow the
+[maintenance policy](docs/MAINTENANCE.md), update the executed
+[compatibility matrix](docs/COMPATIBILITY.md), and rehearse the documented
+[deployment lifecycle](docs/runbooks/DEPLOYMENT.md).
+
 ## Contract changes
 
 A contract change must include:
@@ -76,4 +81,5 @@ An adapter contribution must:
 - [ ] No new dependency was added without a clear need and review.
 - [ ] No credentials, private paths, raw SQL, or sensitive data are present.
 - [ ] Documentation links and repository checks pass.
+- [ ] Package, schema, compatibility, migration, and rollback claims agree.
 - [ ] Risks and decisions match the observed result.
