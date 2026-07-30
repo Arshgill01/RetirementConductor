@@ -10,6 +10,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from retirement_conductor import __version__
 from retirement_conductor.canonical import digest_json, write_json
 from retirement_conductor.datahub import (
     DataHubBoundary,
@@ -18,6 +19,13 @@ from retirement_conductor.datahub import (
 )
 from retirement_conductor.datahub_config import DataHubSettings
 from retirement_conductor.datahub_http import DataHubGraphClient
+from retirement_conductor.deployment import (
+    DEPLOYMENT_PROFILES,
+    create_removal_plan,
+    deployment_preflight,
+    load_removal_plan,
+    remove_deployment_state,
+)
 from retirement_conductor.errors import Refusal
 from retirement_conductor.events import (
     event_stream_digest,
@@ -43,6 +51,7 @@ from retirement_conductor.operator import (
 )
 from retirement_conductor.publication import publication_source_manifest
 from retirement_conductor.reconciliation import ReconciliationWorkflow
+from retirement_conductor.reference import run_reference_fixture
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.vocabulary import CampaignState, Decision
@@ -50,7 +59,50 @@ from retirement_conductor.vocabulary import CampaignState, Decision
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="retirement-conductor")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    deployment = subparsers.add_parser(
+        "deployment",
+        help="preflight or explicitly remove one local deployment",
+    )
+    deployment_subparsers = deployment.add_subparsers(
+        dest="deployment_command",
+        required=True,
+    )
+    deployment_check = deployment_subparsers.add_parser("preflight")
+    deployment_check.add_argument(
+        "--profile",
+        choices=DEPLOYMENT_PROFILES,
+        default="local",
+    )
+    deployment_check.add_argument("--output", type=Path)
+    _add_runtime_arguments(deployment_check)
+
+    removal_plan = deployment_subparsers.add_parser("removal-plan")
+    removal_plan.add_argument("--output", type=Path, required=True)
+    removal_plan.add_argument("--generated-at", required=True)
+    _add_runtime_arguments(removal_plan)
+
+    remove_state = deployment_subparsers.add_parser("remove-state")
+    remove_state.add_argument("--plan", type=Path, required=True)
+    remove_state.add_argument("--confirm-plan-digest")
+    _add_runtime_arguments(remove_state)
+
+    reference = subparsers.add_parser(
+        "reference",
+        help="run the installed public-safe non-live reference campaign",
+    )
+    reference_subparsers = reference.add_subparsers(
+        dest="reference_command",
+        required=True,
+    )
+    reference_run = reference_subparsers.add_parser("run")
+    reference_run.add_argument("--output-dir", type=Path, required=True)
 
     validate = subparsers.add_parser(
         "validate-spec",
@@ -567,6 +619,56 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "deployment":
+            if args.deployment_command == "preflight":
+                result = deployment_preflight(
+                    profile=args.profile,
+                    store_path=args.store,
+                    writer_id=args.writer_id,
+                    artifact_directory=args.artifact_dir,
+                )
+                if args.output is not None:
+                    write_json(args.output, result)
+                _render(result)
+                return 0 if result["ready"] else 2
+            if args.deployment_command == "removal-plan":
+                if args.output.exists() or args.output.is_symlink():
+                    raise Refusal(
+                        "SCOPE_TARGET_NOT_ALLOWED",
+                        "The removal-plan destination already exists.",
+                    )
+                plan = create_removal_plan(
+                    store_path=args.store,
+                    writer_id=args.writer_id,
+                    artifact_directory=args.artifact_dir,
+                    generated_at=args.generated_at,
+                )
+                write_json(args.output, plan)
+                _render(
+                    {
+                        "result": "REMOVAL_PLANNED",
+                        "removal_plan_digest": plan["removal_plan_digest"],
+                        "state_snapshot_digest": plan["state_snapshot"][
+                            "state_snapshot_digest"
+                        ],
+                        "file_count": plan["state_snapshot"]["file_count"],
+                        "output": args.output.name,
+                    }
+                )
+                return 0
+            plan = load_removal_plan(args.plan)
+            result = remove_deployment_state(
+                plan,
+                confirmed_plan_digest=args.confirm_plan_digest,
+                store_path=args.store,
+                writer_id=args.writer_id,
+                artifact_directory=args.artifact_dir,
+            )
+            _render(result)
+            return 0
+        if args.command == "reference" and args.reference_command == "run":
+            _render(run_reference_fixture(args.output_dir))
+            return 0
         if args.command == "validate-spec":
             specification = load_specification(args.specification)
             _render({"result": "VALID", "specification": specification})

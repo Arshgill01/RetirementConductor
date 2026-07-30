@@ -544,6 +544,39 @@ safe labels while retaining the decision, manifest digest, counts, coverage
 state, and recovery shape. The original private manifest remains the
 authority; the public view cannot be used as apply or gate authorization.
 
+## Deployment lifecycle
+
+The supported deployment is one versioned Python package, one local writer,
+one path-bound SQLite store, and one product artifact directory. Deployment
+preflight is a secret-safe claim about local readiness, not a substitute for
+source preflight. It records only:
+
+- package and Python versions;
+- the selected `local`, `core-git-dbt`, `looker-plan`, or `looker-apply`
+  profile;
+- configuration reference names and presence, never their values;
+- required local tool names and availability;
+- digested store, artifact, and writer identities;
+- schema versions and single-writer state;
+- whether explicit local-only metrics are enabled;
+- missing references or capabilities and exact next commands.
+
+The built-in reference campaign is always fixture evidence and must remain
+`BLOCKED` with `EVIDENCE_MODE_NOT_LIVE`. It proves a clean installation can
+load packaged schemas and public data; it cannot satisfy a live policy.
+
+Removal is a two-step destructive protocol. A local ignored plan freezes the
+exact store files and artifact-tree digests. Execution requires the operator
+to pass that plan's exact digest, rejects target or writer mismatch, refuses
+state drift and a held writer lock, and deletes only the named product store,
+SQLite sidecars, lock, and artifact directory. Backups, configuration,
+secret-provider values, and the Python package remain outside that action.
+Package-manager removal is a separate explicit step.
+
+Local operational metrics have no background collector and no remote export.
+They run only when the operator invokes diagnostics; the environment opt-in
+records whether a deployment intends to collect them.
+
 ## Stable refusal families
 
 Initial refusal codes use these prefixes:

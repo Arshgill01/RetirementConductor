@@ -445,3 +445,43 @@ or change policy.
 Why: requiring a write-capable credential for planning would collapse
 least-privilege separation, while treating persuasive source text as
 authority would bypass the deterministic campaign contract.
+
+## D-032 — ship the CLI as a wheel before adding a product container
+
+Status: accepted for the Phase 08 deployment boundary.
+
+Version the installable Python package independently of campaign and evidence
+schema versions. Include the strict schemas, deterministic reference data, and
+database migrations in the wheel. Exercise the wheel from clean virtual
+environments and use the installed console entry point for the live Core
+reference campaign.
+
+Do not add a Retirement Conductor container yet. The supported validator
+already uses an explicit Linux isolation boundary, while Git worktrees,
+review branches, local SQLite ownership, DataHub Core, and the dbt executable
+all need named host-side paths and lifecycles. A wrapper image would add a
+second filesystem and credential boundary without observed operator benefit.
+
+Why: the wheel is the smallest artifact that reproduces the current
+single-process product. Containerization remains available when an adopter
+demonstrates a deployment requirement rather than as an untested packaging
+claim.
+
+## D-033 — state removal is separately planned and digest-confirmed
+
+Status: accepted from deterministic Phase 08 removal tests.
+
+Treat application-state removal as a destructive operation distinct from
+uninstalling the Python package. Generate a non-authoritative ignored plan
+that binds the writer, resolved store and artifact paths, and every current
+file digest. Require the exact plan digest at execution, hold the campaign
+lock, reread all files, and refuse any drift before deleting only those
+product-owned targets.
+
+Never include retained backups, configuration, secret-provider values, or the
+package itself in the state-removal target. Require the operator to stop all
+runners and retain a verified backup when recovery may be needed.
+
+Why: a broad recursive uninstall is unnecessarily destructive, while package
+removal alone can mislead an operator into believing sensitive campaign state
+was deleted.

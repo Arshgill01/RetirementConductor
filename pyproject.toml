@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "retirement-conductor"
-version = "0.1.0"
+version = "0.2.0"
 description = "Verified change operations for retiring legacy data fields"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -33,6 +33,7 @@ packages = ["src/retirement_conductor"]
 [tool.hatch.build.targets.wheel.force-include]
 "fixtures/repository" = "retirement_conductor/fixture_data/repository"
 "fixtures/scenarios" = "retirement_conductor/fixture_data/scenarios"
+"fixtures/specs/valid.yaml" = "retirement_conductor/reference_data/spec.yaml"
 "schemas" = "retirement_conductor/schemas"
 
 [tool.pytest.ini_options]
