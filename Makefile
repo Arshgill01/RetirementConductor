@@ -1,5 +1,6 @@
 .PHONY: check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
-	format phase00-evidence phase01-evidence phase02-evidence test
+	format git-dbt-tool git-dbt-workspace phase00-evidence phase01-evidence \
+	phase02-evidence test
 
 check:
 	uv run ruff check src tests scripts
@@ -35,6 +36,15 @@ datahub-seed:
 	DATAHUB_GMS_URL=http://127.0.0.1:18080 \
 	uv run --python 3.11 --with 'acryl-datahub==1.6.0' \
 		python scripts/datahub_seed.py
+
+git-dbt-tool:
+	uv venv --python 3.11 .retirement-conductor/tools/dbt-duckdb-1.10.1
+	uv pip install \
+		--python .retirement-conductor/tools/dbt-duckdb-1.10.1/bin/python \
+		'dbt-duckdb==1.10.1'
+
+git-dbt-workspace:
+	uv run python scripts/prepare_git_dbt_workspace.py
 
 phase00-evidence:
 	uv run python scripts/generate_phase00_evidence.py

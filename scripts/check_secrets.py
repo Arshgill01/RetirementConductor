@@ -12,6 +12,7 @@ EXCLUDED_PARTS = {
     ".git",
     ".mypy_cache",
     ".pytest_cache",
+    ".retirement-conductor",
     ".ruff_cache",
     ".venv",
     "__pycache__",

@@ -120,6 +120,15 @@ ALLOWED_PHASE_STATES = {
 
 LINK_PATTERN = re.compile(r"!?\[[^\]]*]\(([^)]+)\)")
 SCHEME_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")
+EXCLUDED_PARTS = {
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".retirement-conductor",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+}
 
 
 def relative(path: Path) -> str:
@@ -127,7 +136,11 @@ def relative(path: Path) -> str:
 
 
 def markdown_files() -> list[Path]:
-    return sorted(path for path in ROOT.rglob("*.md") if ".git" not in path.parts)
+    return sorted(
+        path
+        for path in ROOT.rglob("*.md")
+        if not any(part in EXCLUDED_PARTS for part in path.relative_to(ROOT).parts)
+    )
 
 
 def validate_required_files(errors: list[str]) -> None:

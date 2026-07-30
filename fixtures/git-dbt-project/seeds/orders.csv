@@ -1,0 +1,4 @@
+order_id,legacy_status,order_status,order_amount
+1,pending,pending,10.50
+2,shipped,shipped,24.00
+3,cancelled,cancelled,7.25
