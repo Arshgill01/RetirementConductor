@@ -639,6 +639,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f0e6">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
   <title>{_escape(campaign["name"])} · Retirement Conductor</title>
   <style>
@@ -658,9 +659,16 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
       font-family: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", sans-serif;
     }}
     * {{ box-sizing: border-box; }}
-    html {{ background: var(--paper); color: var(--ink); }}
+    html {{
+      -webkit-tap-highlight-color: rgb(107 62 31 / 18%);
+      background: var(--paper);
+      color: var(--ink);
+    }}
     body {{ margin: 0; font-size: 1rem; line-height: 1.55; }}
+    a, summary {{ touch-action: manipulation; }}
     a {{ color: inherit; text-underline-offset: .18em; }}
+    a:hover {{ text-decoration-thickness: .14em; }}
+    summary:hover {{ color: var(--focus); }}
     a:focus-visible, summary:focus-visible {{
       outline: 3px solid var(--focus);
       outline-offset: 3px;
@@ -690,6 +698,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
       padding-bottom: .75rem;
     }}
     h1, h2, h3, p {{ margin-top: 0; }}
+    h1, h2, h3 {{ text-wrap: balance; }}
     h1 {{ font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: -.04em; line-height: 1.02; max-width: 18ch; }}
     h2 {{ font-size: 1.35rem; letter-spacing: -.015em; margin-bottom: 1rem; }}
     h3 {{ font-size: 1rem; margin-bottom: .25rem; overflow-wrap: anywhere; }}
@@ -777,7 +786,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
   <header>
     <div class="campaign-line">
       <strong>Retirement Conductor</strong>
-      <span>Campaign {_escape(campaign["id"])}</span>
+      <span translate="no">Campaign {_escape(campaign["id"])}</span>
     </div>
     <h1>{_escape(campaign["name"])}</h1>
     <nav aria-label="Campaign report">
