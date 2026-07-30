@@ -2,8 +2,8 @@
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
-	phase06-evidence \
-	test test-ui test-end-to-end
+	phase06-evidence phase07-evidence scan \
+	test test-ui test-end-to-end test-faults test-recovery test-security
 
 check:
 	uv run ruff check src tests scripts
@@ -84,6 +84,12 @@ phase06-recipes:
 phase06-evidence:
 	uv run python -m scripts.generate_phase06_evidence
 
+phase07-evidence:
+	uv run python scripts/generate_phase07_evidence.py
+
+scan:
+	uv run python scripts/run_security_scan.py
+
 test:
 	uv run pytest
 
@@ -100,3 +106,31 @@ test-end-to-end:
 		tests/unit/test_policy.py \
 		tests/integration/test_gate.py \
 		tests/integration/test_campaign_store.py
+
+test-security:
+	uv run pytest -q \
+		tests/contracts/test_records.py \
+		tests/contracts/test_specification.py \
+		tests/security \
+		tests/unit/test_git_dbt.py \
+		tests/unit/test_looker.py \
+		tests/unit/test_operator.py \
+		tests/integration/test_gate.py
+
+test-faults:
+	uv run pytest -q \
+		tests/security/test_looker_transport.py \
+		tests/unit/test_datahub_http.py \
+		tests/unit/test_mcp_http.py \
+		tests/unit/test_git_dbt.py \
+		tests/integration/test_campaign_store.py \
+		tests/integration/test_gate.py \
+		tests/integration/test_looker_workflow.py
+
+test-recovery:
+	uv run pytest -q \
+		tests/reliability/test_store_operations.py \
+		tests/integration/test_campaign_store.py \
+		tests/integration/test_gate.py \
+		tests/integration/test_git_dbt_workflow.py \
+		tests/integration/test_looker_workflow.py
