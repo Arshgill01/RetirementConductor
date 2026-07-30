@@ -449,17 +449,30 @@ class CampaignStore:
         campaign_id: str,
         *,
         evidence_envelope: Mapping[str, Any],
-        consumer_ids: Sequence[str],
+        consumer_ids: Sequence[str] | None = None,
+        consumers: Sequence[Mapping[str, Any]] = (),
+        comparison: Mapping[str, Any] | None = None,
         snapshot_digest: str,
         occurred_at: str,
         idempotency_key: str = "reconciliation",
     ) -> dict[str, Any]:
+        normalized_consumers = [dict(consumer) for consumer in consumers]
+        current_ids = sorted(
+            str(item)
+            for item in (
+                consumer_ids
+                if consumer_ids is not None
+                else [consumer["id"] for consumer in normalized_consumers]
+            )
+        )
         return self.append_event(
             campaign_id,
             "RECONCILIATION_RECORDED",
             {
                 "evidence_envelope": dict(evidence_envelope),
-                "consumer_ids": sorted(consumer_ids),
+                "consumer_ids": current_ids,
+                "consumers": normalized_consumers,
+                "comparison": dict(comparison or {}),
                 "snapshot_digest": snapshot_digest,
             },
             occurred_at=occurred_at,

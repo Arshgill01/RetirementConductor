@@ -47,6 +47,7 @@ class CampaignProjection:
     receipt_digests: list[str] = field(default_factory=list)
     approvals: dict[str, dict[str, Any]] = field(default_factory=dict)
     waivers: dict[str, dict[str, Any]] = field(default_factory=dict)
+    reconciliations: list[dict[str, Any]] = field(default_factory=list)
     reconciled: bool = False
     publication: dict[str, Any] | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
@@ -301,11 +302,21 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
     elif event_type == "RECONCILIATION_RECORDED":
         require_campaign_transition(projection.state, CampaignState.RECONCILING)
         projection.state = CampaignState.RECONCILING
+        observed_consumers = payload.get("consumers") or []
+        for observed in observed_consumers:
+            consumer_id = str(observed["id"])
+            if consumer_id not in projection.consumers:
+                projection.consumers[consumer_id] = {
+                    "id": consumer_id,
+                    "disposition": ConsumerDisposition(str(observed["disposition"])),
+                    "receipt_digest": None,
+                }
         projection.current_consumer_ids = sorted(
             str(item) for item in payload["consumer_ids"]
         )
         projection.evidence_envelope = dict(payload["evidence_envelope"])
         projection.snapshot_digests.append(str(payload["snapshot_digest"]))
+        projection.reconciliations.append(dict(payload.get("comparison") or {}))
         projection.reconciled = True
     elif event_type == "PUBLICATION_RECORDED":
         publication = dict(payload["publication"])

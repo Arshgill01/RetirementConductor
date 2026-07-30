@@ -252,6 +252,94 @@ def test_complete_validated_flow_reaches_ready(tmp_path: Path) -> None:
         assert len(store.events(CAMPAIGN_ID)) == 10
 
 
+def test_reconciliation_adds_new_consumer_without_reopening_validated_receipt(
+    tmp_path: Path,
+) -> None:
+    new_consumer_id = "consumer-new-after-baseline"
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        propose_and_approve(store, CAMPAIGN_ID)
+        begin_and_apply(store, CAMPAIGN_ID)
+        store.accept_receipt(
+            CAMPAIGN_ID,
+            CONSUMER_ID,
+            receipt_for(),
+            trusted_now=TRUSTED_NOW,
+            occurred_at="2026-01-01T11:30:00Z",
+            idempotency_key="receipt",
+        )
+        store.record_reconciliation(
+            CAMPAIGN_ID,
+            evidence_envelope=live_envelope(),
+            consumers=[
+                {
+                    "id": CONSUMER_ID,
+                    "disposition": "OPAQUE",
+                    "receipt_digest": None,
+                },
+                {
+                    "id": new_consumer_id,
+                    "disposition": "OPAQUE",
+                    "receipt_digest": None,
+                },
+            ],
+            comparison={
+                "comparison_digest": f"sha256:{'3' * 64}",
+                "added": [new_consumer_id],
+            },
+            snapshot_digest=SNAPSHOT_TWO,
+            occurred_at="2026-01-01T11:40:00Z",
+        )
+        manifest = store.evaluate(
+            CAMPAIGN_ID,
+            occurred_at="2026-01-01T11:45:00Z",
+        )
+        projection = store.projection(CAMPAIGN_ID)
+
+        assert projection.consumers[CONSUMER_ID]["disposition"] == "VALIDATED"
+        assert projection.consumers[new_consumer_id]["disposition"] == "OPAQUE"
+        assert projection.reconciliations == [
+            {
+                "comparison_digest": f"sha256:{'3' * 64}",
+                "added": [new_consumer_id],
+            }
+        ]
+        assert manifest["decision"] == "UNSAFE"
+        assert any(
+            blocker["code"] == "RECONCILIATION_NEW_CONSUMER"
+            for blocker in manifest["blockers"]
+        )
+
+
+def test_disappeared_unclosed_consumer_remains_unsafe(tmp_path: Path) -> None:
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        store.record_reconciliation(
+            CAMPAIGN_ID,
+            evidence_envelope=live_envelope(),
+            consumers=[],
+            comparison={
+                "comparison_digest": f"sha256:{'3' * 64}",
+                "disappeared": [CONSUMER_ID],
+            },
+            snapshot_digest=SNAPSHOT_TWO,
+            occurred_at="2026-01-01T11:40:00Z",
+        )
+        manifest = store.evaluate(
+            CAMPAIGN_ID,
+            occurred_at="2026-01-01T11:45:00Z",
+        )
+
+        assert manifest["decision"] == "UNSAFE"
+        assert manifest["consumers"] == [
+            {
+                "id": CONSUMER_ID,
+                "disposition": "IDENTIFIED",
+                "receipt_digest": None,
+            }
+        ]
+
+
 def test_illegal_transition_and_malformed_receipt_do_not_promote(
     tmp_path: Path,
 ) -> None:

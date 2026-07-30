@@ -591,6 +591,135 @@ class GitDbtAdapter:
         write_versioned_artifact(artifact_root, "validation", validation)
         return validation
 
+    def reconcile_source(
+        self,
+        specification: Mapping[str, Any],
+        plan: Mapping[str, Any],
+        apply_record: Mapping[str, Any],
+        receipt: Mapping[str, Any],
+        *,
+        datahub_resolution: Mapping[str, Any],
+        artifact_root: Path,
+    ) -> dict[str, Any]:
+        """Reread the exact applied Git source and replacement schema."""
+
+        self._validate_plan(specification, plan)
+        verify_digest(dict(apply_record), "apply_digest")
+        verify_digest(dict(receipt), "receipt_digest")
+        root = self.settings.repository_root
+        target_path = checked_target_path(
+            root,
+            str(plan["target"]["path"]),
+            allowed_paths=list(specification["authorization"]["allowed_paths"]),
+        )
+        self._reject_external_filter(str(plan["target"]["path"]))
+        expected_commit = str(apply_record["native_change_ids"][0])
+        actual_commit = self.git("rev-parse", "HEAD")
+        actual_branch = self.git("branch", "--show-current")
+        status = self.git("status", "--porcelain=v1", "--untracked-files=all")
+        if (
+            actual_commit != expected_commit
+            or actual_branch != apply_record["target_branch"]
+            or status
+            or digest_file(target_path) != plan["target"]["after_fingerprint"]
+        ):
+            raise Refusal(
+                RefusalCode.SOURCE_GIT_FILE_CHANGED,
+                "The validated Git/dbt source changed before reconciliation.",
+                {
+                    "expected_branch": apply_record["target_branch"],
+                    "actual_branch": actual_branch,
+                    "expected_version": expected_commit,
+                    "actual_version": actual_commit,
+                },
+            )
+        actual_targets = sorted(
+            self.git(
+                "diff",
+                "--name-only",
+                f"{plan['repository']['source_version']}..{actual_commit}",
+            ).splitlines()
+        )
+        if actual_targets != list(receipt["apply"]["actual_targets"]):
+            raise Refusal(
+                RefusalCode.SCOPE_RECEIPT_TARGET_MISMATCH,
+                "The current Git diff no longer matches the accepted receipt.",
+            )
+        target_field = datahub_resolution["target_field"]
+        replacement_field = datahub_resolution["replacement_field"]
+        receipt_replacement = receipt["native_identity"]["replacement"]
+        expected_types = {
+            str(receipt_replacement["target"]["datahub_native_type"]).casefold(),
+            str(receipt_replacement["replacement"]["datahub_native_type"]).casefold(),
+        }
+        actual_types = {
+            str(target_field.get("nativeDataType", "")).casefold(),
+            str(replacement_field.get("nativeDataType", "")).casefold(),
+        }
+        if (
+            target_field.get("fieldPath") != receipt_replacement["target"]["field"]
+            or replacement_field.get("fieldPath")
+            != receipt_replacement["replacement"]["field"]
+            or len(actual_types) != 1
+            or "" in actual_types
+            or actual_types != expected_types
+        ):
+            raise Refusal(
+                RefusalCode.SPEC_REPLACEMENT_INCOMPATIBLE,
+                "Replacement identity or type drifted after native validation.",
+            )
+        observation = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "mode": "live",
+                "captured_at": utc_now(),
+                "repository": {
+                    "id": self.settings.repository_id,
+                    "required": True,
+                    "identity": plan["repository"]["identity"],
+                    "declared_branch": plan["repository"]["source_branch"],
+                    "observed_branch": actual_branch,
+                    "source_version": actual_commit,
+                    "source_committed_at": self.git(
+                        "show",
+                        "-s",
+                        "--format=%cI",
+                        actual_commit,
+                    ),
+                    "clean": True,
+                },
+                "principal": self.settings.principal,
+                "capabilities": {
+                    "read": True,
+                    "plan": True,
+                    "apply": self.settings.allow_apply,
+                    "validate": True,
+                    "compensate": self.settings.allow_apply,
+                },
+                "target": {
+                    "path": plan["target"]["path"],
+                    "fingerprint": digest_file(target_path),
+                    "actual_targets": actual_targets,
+                },
+                "replacement": {
+                    "target": dict(target_field),
+                    "replacement": dict(replacement_field),
+                    "compatible": True,
+                },
+                "plan_digest": plan["plan_digest"],
+                "apply_digest": apply_record["apply_digest"],
+                "receipt_digest": receipt["receipt_digest"],
+                "limitations": list(plan["limitations"]),
+            },
+            "reconciliation_digest",
+        )
+        write_versioned_artifact(
+            artifact_root,
+            "source-reconciliation",
+            observation,
+        )
+        return observation
+
     def emit_receipt(
         self,
         plan: Mapping[str, Any],
@@ -1081,6 +1210,68 @@ def merge_repository_evidence(
         {
             "schema_version": "1.0.0",
             "captured_at": preflight["captured_at"],
+            "mode": evidence_envelope["mode"],
+            "sources": sorted(sources, key=lambda source: str(source["id"])),
+        },
+        "envelope_digest",
+    )
+    validate_schema(
+        "evidence-envelope",
+        merged,
+        refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+    )
+    return merged
+
+
+def merge_repository_reconciliation_evidence(
+    evidence_envelope: Mapping[str, Any],
+    observation: Mapping[str, Any],
+    *,
+    baseline_source: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Join a verified applied Git source without changing declared scope."""
+
+    verify_digest(dict(evidence_envelope), "envelope_digest")
+    verify_digest(dict(observation), "reconciliation_digest")
+    source_id = f"git:{observation['repository']['id']}"
+    sources = [
+        dict(source)
+        for source in evidence_envelope["sources"]
+        if source["id"] != source_id
+    ]
+    capabilities = observation["capabilities"]
+    effective = [
+        capability
+        for capability in ("read", "plan", "apply", "validate", "compensate")
+        if capabilities[capability]
+    ]
+    sources.append(
+        {
+            "id": source_id,
+            "required": bool(baseline_source["required"]),
+            "status": "COMPLETE",
+            "source_version": observation["repository"]["source_version"],
+            "identity": observation["repository"]["identity"],
+            "scope": dict(baseline_source["scope"]),
+            "freshness": {
+                "observed_at": observation["captured_at"],
+                "source_updated_at": observation["repository"]["source_committed_at"],
+                "maximum_age_seconds": baseline_source["freshness"][
+                    "maximum_age_seconds"
+                ],
+            },
+            "permissions": {
+                "principal": observation["principal"],
+                "effective_scope": ",".join(effective),
+            },
+            "limitations": list(observation["limitations"]),
+            "artifact_ids": [observation["reconciliation_digest"]],
+        }
+    )
+    merged = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "captured_at": observation["captured_at"],
             "mode": evidence_envelope["mode"],
             "sources": sorted(sources, key=lambda source: str(source["id"])),
         },

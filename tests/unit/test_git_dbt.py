@@ -19,6 +19,7 @@ from retirement_conductor.git_dbt import (
     checked_target_path,
     discover_repository,
     merge_repository_evidence,
+    merge_repository_reconciliation_evidence,
     reject_unsafe_tree,
     replace_identifier_once,
     resolve_manifest_mapping,
@@ -375,6 +376,163 @@ def test_apply_is_exact_idempotent_and_skips_repository_hooks(
     assert first["actual_targets"] == ["models/orders.sql"]
     assert digest_file(model) == plan["target"]["after_fingerprint"]
     assert _git(adapter.settings.repository_root, "status", "--porcelain") == ""
+
+
+def test_reconciliation_rereads_exact_applied_source_and_replacement(
+    tmp_path: Path,
+) -> None:
+    adapter, specification, plan, model = _adapter_and_plan(tmp_path)
+    applied = adapter.apply(
+        specification,
+        plan,
+        artifact_root=tmp_path / "apply-artifacts",
+        occurred_at="2026-07-30T10:10:00Z",
+    )
+    receipt = with_digest(
+        {
+            "apply": {"actual_targets": ["models/orders.sql"]},
+            "native_identity": {
+                "replacement": {
+                    "target": {
+                        "field": "legacy_status",
+                        "datahub_native_type": "VARCHAR",
+                    },
+                    "replacement": {
+                        "field": "order_status",
+                        "datahub_native_type": "VARCHAR",
+                    },
+                }
+            },
+        },
+        "receipt_digest",
+    )
+    resolution = {
+        "target_field": {
+            "fieldPath": "legacy_status",
+            "nativeDataType": "VARCHAR",
+        },
+        "replacement_field": {
+            "fieldPath": "order_status",
+            "nativeDataType": "VARCHAR",
+        },
+    }
+
+    observation = adapter.reconcile_source(
+        specification,
+        plan,
+        applied,
+        receipt,
+        datahub_resolution=resolution,
+        artifact_root=tmp_path / "reconciliation-artifacts",
+    )
+
+    assert (
+        observation["repository"]["source_version"] == applied["native_change_ids"][0]
+    )
+    assert observation["target"]["fingerprint"] == plan["target"]["after_fingerprint"]
+    assert observation["receipt_digest"] == receipt["receipt_digest"]
+
+    incompatible = {
+        **resolution,
+        "replacement_field": {
+            "fieldPath": "order_status",
+            "nativeDataType": "INTEGER",
+        },
+    }
+    with pytest.raises(Refusal, match="SPEC_REPLACEMENT_INCOMPATIBLE"):
+        adapter.reconcile_source(
+            specification,
+            plan,
+            applied,
+            receipt,
+            datahub_resolution=incompatible,
+            artifact_root=tmp_path / "replacement-drift-artifacts",
+        )
+
+    model.write_text(
+        model.read_text(encoding="utf-8") + "-- source drift\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(Refusal, match="SOURCE_GIT_FILE_CHANGED"):
+        adapter.reconcile_source(
+            specification,
+            plan,
+            applied,
+            receipt,
+            datahub_resolution=resolution,
+            artifact_root=tmp_path / "source-drift-artifacts",
+        )
+
+
+def test_reconciliation_evidence_preserves_declared_baseline_scope() -> None:
+    baseline = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "captured_at": "2026-07-30T10:00:00Z",
+            "mode": "live",
+            "sources": [
+                {
+                    "id": "git:analytics",
+                    "required": True,
+                    "status": "COMPLETE",
+                    "source_version": "source-commit",
+                    "identity": "repository-one",
+                    "scope": {
+                        "direction": "downstream",
+                        "max_hops": 1,
+                        "filters": ["branch:main", "path:models/orders.sql"],
+                        "pages": 1,
+                        "reported_total": 1,
+                        "returned_total": 1,
+                    },
+                    "freshness": {
+                        "observed_at": "2026-07-30T10:00:00Z",
+                        "source_updated_at": "2026-07-30T09:59:00Z",
+                        "maximum_age_seconds": 900,
+                    },
+                    "permissions": {
+                        "principal": "test-operator",
+                        "effective_scope": "read,plan,apply,validate,compensate",
+                    },
+                    "limitations": [],
+                    "artifact_ids": [f"sha256:{'1' * 64}"],
+                }
+            ],
+        },
+        "envelope_digest",
+    )
+    observation = with_digest(
+        {
+            "captured_at": "2026-07-30T10:20:00Z",
+            "repository": {
+                "id": "analytics",
+                "identity": "repository-one",
+                "source_version": "applied-commit",
+                "source_committed_at": "2026-07-30T10:10:00Z",
+            },
+            "principal": "test-operator",
+            "capabilities": {
+                "read": True,
+                "plan": True,
+                "apply": True,
+                "validate": True,
+                "compensate": True,
+            },
+            "limitations": [],
+        },
+        "reconciliation_digest",
+    )
+
+    merged = merge_repository_reconciliation_evidence(
+        baseline,
+        observation,
+        baseline_source=baseline["sources"][0],
+    )
+
+    source = merged["sources"][0]
+    assert source["scope"] == baseline["sources"][0]["scope"]
+    assert source["identity"] == "repository-one"
+    assert source["source_version"] == "applied-commit"
 
 
 def test_compensation_refuses_and_preserves_an_intervening_edit(

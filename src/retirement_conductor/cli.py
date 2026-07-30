@@ -29,6 +29,7 @@ from retirement_conductor.git_dbt import GitDbtAdapter
 from retirement_conductor.git_dbt_config import GitDbtSettings
 from retirement_conductor.git_dbt_workflow import GitDbtWorkflow
 from retirement_conductor.mcp_http import HttpMCPClient
+from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.vocabulary import CampaignState
@@ -114,6 +115,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     inventory = campaign_subparsers.add_parser("inventory")
     _add_live_campaign_arguments(inventory)
+
+    reconcile = campaign_subparsers.add_parser("reconcile")
+    _add_live_campaign_arguments(reconcile)
+    reconcile.add_argument(
+        "--refresh-receipt",
+        type=Path,
+        default=Path(".retirement-conductor/datahub/seed-receipt.json"),
+    )
+    reconcile.add_argument(
+        "--indexing-timeout-seconds",
+        type=float,
+        default=30,
+    )
 
     publish = campaign_subparsers.add_parser("publish")
     _add_live_campaign_arguments(publish)
@@ -399,6 +413,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "manifest": manifest,
                     }
                 )
+                return 0
+            if args.campaign_command == "reconcile":
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    reconciliation_workflow = ReconciliationWorkflow(
+                        store=store,
+                        boundary=_datahub_boundary(),
+                        git_dbt=GitDbtAdapter(GitDbtSettings.from_environment()),
+                        artifact_directory=Path(args.artifact_dir),
+                        refresh_receipt=args.refresh_receipt,
+                        indexing_timeout_seconds=args.indexing_timeout_seconds,
+                    )
+                    result = reconciliation_workflow.reconcile(args.campaign_id)
+                _render(result)
                 return 0
             if args.campaign_command in {
                 "inventory",
