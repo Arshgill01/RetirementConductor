@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-01-01T00:00:00Z",
+  "envelope_digest": "sha256:d89b63e33db72ca837112e957c0725c46c1765f58f8735ca13fa2c2045db85f0",
+  "mode": "fixture",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "artifact_ids": [
+        "sha256:43ca20273152f8fb46c276086e9ddc5456c84f9f43c7925df785de238b60d769"
+      ],
+      "freshness": {
+        "maximum_age_seconds": 900,
+        "observed_at": "2026-01-01T00:00:00Z",
+        "source_updated_at": "2026-01-01T00:00:00Z"
+      },
+      "id": "datahub",
+      "identity": "public-fixture",
+      "limitations": [
+        "Controlled fixture evidence is not a live DataHub observation."
+      ],
+      "permissions": {
+        "effective_scope": "controlled public fixture only",
+        "principal": "fixture-principal"
+      },
+      "required": true,
+      "scope": {
+        "direction": "downstream",
+        "filters": [],
+        "max_hops": 5,
+        "pages": 1,
+        "reported_total": 1,
+        "returned_total": 1
+      },
+      "source_version": "fixture-datahub/1.0",
+      "status": "COMPLETE"
+    }
+  ]
+}

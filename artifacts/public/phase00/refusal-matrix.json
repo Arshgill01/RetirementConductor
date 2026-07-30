@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "expected_refusal_code": "SPEC_IDENTICAL_FIELDS",
+      "fixture": "specs/identical-fields.yaml",
+      "observed_refusal_code": "SPEC_IDENTICAL_FIELDS",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "SPEC_UNSUPPORTED_REPLACEMENT",
+      "fixture": "specs/invalid-replacement.yaml",
+      "observed_refusal_code": "SPEC_UNSUPPORTED_REPLACEMENT",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "SPEC_SCHEMA_INVALID",
+      "fixture": "specs/malformed.yaml",
+      "observed_refusal_code": "SPEC_SCHEMA_INVALID",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "IDENTITY_AMBIGUOUS",
+      "fixture": "scenarios/ambiguous-identity.json",
+      "observed_refusal_code": "IDENTITY_AMBIGUOUS",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+      "fixture": "scenarios/incompatible-replacement.json",
+      "observed_refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE",
+      "fixture": "scenarios/incomplete-evidence.json",
+      "observed_refusal_code": "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "fixture": "scenarios/stale-source.json",
+      "observed_refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    },
+    {
+      "expected_refusal_code": "SCOPE_PATH_OUTSIDE_ROOT",
+      "fixture": "scenarios/unauthorized-path.json",
+      "observed_refusal_code": "SCOPE_PATH_OUTSIDE_ROOT",
+      "result": "REFUSED_WITHOUT_MUTATION"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source_fingerprint": "sha256:615988f1f3e108d26c2aa92260cec9679436b8588c536979d55d3c9f609b75da",
+  "source_unchanged": true
+}

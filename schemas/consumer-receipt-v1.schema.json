@@ -1,0 +1,260 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/consumer-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adapter": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "live",
+            "fixture",
+            "replay"
+          ]
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "mode"
+      ],
+      "type": "object"
+    },
+    "apply": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_targets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "after_fingerprint": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "before_fingerprint": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "native_change_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "result": {
+          "enum": [
+            "APPLIED",
+            "SIMULATED",
+            "NOT_APPLIED",
+            "OUTCOME_UNKNOWN",
+            "PARTIAL"
+          ]
+        }
+      },
+      "required": [
+        "result",
+        "actual_targets",
+        "before_fingerprint",
+        "after_fingerprint",
+        "native_change_ids"
+      ],
+      "type": "object"
+    },
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "compensation": {
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "exercised": {
+          "type": "boolean"
+        },
+        "result": {
+          "enum": [
+            "NOT_NEEDED",
+            "RESTORED",
+            "FAILED",
+            "CONFLICT",
+            "UNAVAILABLE"
+          ]
+        }
+      },
+      "required": [
+        "available",
+        "exercised",
+        "result"
+      ],
+      "type": "object"
+    },
+    "consumer_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "datahub_urn": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "native_identity": {
+      "type": "object"
+    },
+    "plan": {
+      "additionalProperties": false,
+      "properties": {
+        "approved_targets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "proposed_targets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "digest",
+        "proposed_targets",
+        "approved_targets"
+      ],
+      "type": "object"
+    },
+    "receipt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "receipt_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_before": {
+      "additionalProperties": false,
+      "properties": {
+        "fingerprint": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "fingerprint"
+      ],
+      "type": "object"
+    },
+    "terminal_disposition": {
+      "enum": [
+        "VALIDATED",
+        "REMOVED",
+        "NOT_APPLICABLE",
+        "WAIVED",
+        "STALE",
+        "FAILED"
+      ]
+    },
+    "validation": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_ids": {
+          "items": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "result": {
+          "enum": [
+            "PASSED",
+            "FAILED",
+            "INCONCLUSIVE"
+          ]
+        },
+        "validator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "validator_version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "result",
+        "validator",
+        "validator_version",
+        "artifact_ids"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "campaign_id",
+    "consumer_id",
+    "datahub_urn",
+    "native_identity",
+    "adapter",
+    "source_before",
+    "plan",
+    "apply",
+    "validation",
+    "compensation",
+    "captured_at",
+    "expires_at",
+    "limitations",
+    "terminal_disposition",
+    "receipt_digest"
+  ],
+  "title": "Consumer receipt v1",
+  "type": "object"
+}

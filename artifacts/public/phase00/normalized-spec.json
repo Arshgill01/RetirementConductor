@@ -1,0 +1,67 @@
+{
+  "api_version": "retirement-conductor/v1alpha1",
+  "authorization": {
+    "allowed_native_objects": [],
+    "allowed_paths": [
+      "models/"
+    ],
+    "allowed_repositories": [
+      "analytics"
+    ],
+    "mode": "plan"
+  },
+  "campaign": {
+    "id": "ret-orders-legacy-status",
+    "name": "Replace legacy order status"
+  },
+  "evidence": {
+    "datahub": {
+      "direction": "downstream",
+      "max_hops": 5,
+      "maximum_age_seconds": 900,
+      "platform_filters": [],
+      "required": true
+    },
+    "query_history": {
+      "requested_window_days": 30,
+      "required": false
+    },
+    "repositories": [
+      {
+        "branch": "main",
+        "id": "analytics",
+        "path": "fixtures/repository",
+        "required": true
+      }
+    ]
+  },
+  "kind": "column_retirement",
+  "policy": {
+    "id": "default-column-retirement",
+    "version": 1
+  },
+  "replacement": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "order_status",
+    "instance": "fixture",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders"
+  },
+  "specification_digest": "sha256:9e5567a1efcee4c464b4231c288ecc5ae397a24a07b15322eb5dc58f6070a632",
+  "target": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "legacy_status",
+    "instance": "fixture",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders"
+  },
+  "validation": {
+    "required_receipt_types": [
+      "dbt"
+    ]
+  }
+}

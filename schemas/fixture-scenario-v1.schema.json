@@ -1,0 +1,81 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/fixture-scenario-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "consumer": {
+      "additionalProperties": false,
+      "properties": {
+        "datahub_urn": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "native_identity": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "datahub_urn",
+        "native_identity"
+      ],
+      "type": "object"
+    },
+    "evidence_status": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "UNKNOWN",
+        "UNAVAILABLE",
+        "STALE"
+      ]
+    },
+    "expected_source_fingerprint": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "identity_match_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "mode": {
+      "const": "fixture"
+    },
+    "replacement_compatible": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_version": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "mode",
+    "captured_at",
+    "source_path",
+    "expected_source_fingerprint",
+    "source_version",
+    "identity_match_count",
+    "evidence_status",
+    "replacement_compatible",
+    "consumer"
+  ],
+  "title": "Deterministic fixture scenario v1",
+  "type": "object"
+}

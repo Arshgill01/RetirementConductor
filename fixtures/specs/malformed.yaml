@@ -1,0 +1,5 @@
+api_version: retirement-conductor/v1alpha1
+kind: column_retirement
+campaign:
+  id: invalid
+  name: Missing all required campaign fields

@@ -1,0 +1,15 @@
+{
+  "artifacts": {
+    "events.json": "sha256:84856f4ec8b495c0f4d963a6c52ba1f3520bd1e2d17a76f5426fd7f6d09c1e78",
+    "evidence-envelope.json": "sha256:b61fb54890c9b047c865f4a90db531971d2191b0e36a2d8804f3af1b7ea3cfa1",
+    "manifest.json": "sha256:4b3ea788d3ec199e5431cb206d8097ec61b8aac8f8735c7434a9bf00f7962276",
+    "normalized-spec.json": "sha256:ede2fb318d83cf57248f1a68ba5d29e0c86756783d23eb672413c0671abe8da8",
+    "receipt.json": "sha256:a63826be91ab668f12fff5e616be8e393177bc399662b587e41a95a5a0150541"
+  },
+  "decision": "BLOCKED",
+  "event_log_digest": "sha256:0f198a0e5f4092089468c1b60eb123b918486b38c6e9f6100235c752cb1665ee",
+  "manifest_digest": "sha256:d59ee4d346eb7abc3aff365ba391a1d420207db241b5e26a742791f4f37c071c",
+  "mode": "fixture",
+  "refusal_code": "EVIDENCE_MODE_NOT_LIVE",
+  "result": "FIXTURE_COMPLETE"
+}

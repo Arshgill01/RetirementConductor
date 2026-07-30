@@ -1,0 +1,65 @@
+{
+  "event_log_digest": "sha256:0f198a0e5f4092089468c1b60eb123b918486b38c6e9f6100235c752cb1665ee",
+  "events": [
+    {
+      "campaign_id": "ret-orders-legacy-status",
+      "event_digest": "sha256:f71b20f8f10a283c8dacd38e8364527bb94e321b96b8d98cf643614742e388ad",
+      "event_type": "SPECIFICATION_VALIDATED",
+      "occurred_at": "2026-01-01T00:00:00Z",
+      "payload": {
+        "specification_digest": "sha256:9e5567a1efcee4c464b4231c288ecc5ae397a24a07b15322eb5dc58f6070a632"
+      },
+      "schema_version": "1.0.0",
+      "sequence": 1
+    },
+    {
+      "campaign_id": "ret-orders-legacy-status",
+      "event_digest": "sha256:8193e22c834bc0c6593e5fa50f3eed49d24e642e2f4d27aee056caf2aef53f74",
+      "event_type": "EVIDENCE_CAPTURED",
+      "occurred_at": "2026-01-01T00:00:00Z",
+      "payload": {
+        "envelope_digest": "sha256:d89b63e33db72ca837112e957c0725c46c1765f58f8735ca13fa2c2045db85f0",
+        "mode": "fixture"
+      },
+      "schema_version": "1.0.0",
+      "sequence": 2
+    },
+    {
+      "campaign_id": "ret-orders-legacy-status",
+      "event_digest": "sha256:b7e99b9c191885b5341701b8f50b95b3883c1de59125faa713410a74a800099e",
+      "event_type": "CONSUMER_IDENTIFIED",
+      "occurred_at": "2026-01-01T00:00:00Z",
+      "payload": {
+        "consumer_id": "consumer-dbt-order-summary",
+        "identity_match_count": 1
+      },
+      "schema_version": "1.0.0",
+      "sequence": 3
+    },
+    {
+      "campaign_id": "ret-orders-legacy-status",
+      "event_digest": "sha256:986cfcf6d411f35cb3476ba5a54849140c22c0c79c08f084880e8e94d436ac5c",
+      "event_type": "RECEIPT_RECORDED",
+      "occurred_at": "2026-01-01T00:00:00Z",
+      "payload": {
+        "receipt_digest": "sha256:3ca170208a98525b47ef6a91fd618319343fb879feadad64a33570d17f0be25d"
+      },
+      "schema_version": "1.0.0",
+      "sequence": 4
+    },
+    {
+      "campaign_id": "ret-orders-legacy-status",
+      "event_digest": "sha256:beef533c60955bfff63c86aaa59cea3a3b1e6f7cea662260a8a3873c6e07f946",
+      "event_type": "POLICY_EVALUATED",
+      "occurred_at": "2026-01-01T00:00:00Z",
+      "payload": {
+        "decision": "BLOCKED",
+        "refusal_code": "EVIDENCE_MODE_NOT_LIVE"
+      },
+      "schema_version": "1.0.0",
+      "sequence": 5
+    }
+  ],
+  "mode": "fixture",
+  "schema_version": "1.0.0"
+}

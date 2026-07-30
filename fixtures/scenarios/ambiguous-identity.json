@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-01-01T00:00:00Z",
+  "consumer": {
+    "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,fixture.order_summary,PROD)",
+    "id": "consumer-dbt-order-summary",
+    "native_identity": {
+      "commit": "fixture-commit-0001",
+      "path": "models/order_summary.sql",
+      "repository": "analytics"
+    }
+  },
+  "evidence_status": "COMPLETE",
+  "expected_source_fingerprint": "sha256:615988f1f3e108d26c2aa92260cec9679436b8588c536979d55d3c9f609b75da",
+  "identity_match_count": 2,
+  "mode": "fixture",
+  "replacement_compatible": true,
+  "schema_version": "1.0.0",
+  "source_path": "models/order_summary.sql",
+  "source_version": "fixture-commit-0001"
+}

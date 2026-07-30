@@ -1,0 +1,200 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/campaign-manifest-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blockers": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "campaign": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "PROPOSED",
+            "INVENTORIED",
+            "MIGRATING",
+            "RECONCILING",
+            "READY",
+            "RETIRED",
+            "BLOCKED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "state"
+      ],
+      "type": "object"
+    },
+    "consumers": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "disposition": {
+            "enum": [
+              "DISCOVERED",
+              "IDENTIFIED",
+              "CHANGE_PROPOSED",
+              "APPLIED",
+              "VALIDATED",
+              "REMOVED",
+              "NOT_APPLICABLE",
+              "WAIVED",
+              "OPAQUE",
+              "UNRESOLVED",
+              "STALE",
+              "FAILED"
+            ]
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "receipt_digest": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "disposition",
+          "receipt_digest"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "decision": {
+      "enum": [
+        "READY_TO_RETIRE",
+        "REVIEW_REQUIRED",
+        "BLOCKED",
+        "UNSAFE"
+      ]
+    },
+    "evidence_envelope": {
+      "type": "object"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "policy": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "requires_live_evidence": {
+          "type": "boolean"
+        },
+        "version": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "requires_live_evidence"
+      ],
+      "type": "object"
+    },
+    "publication": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "receipt_digests": {
+      "items": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "replacement": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "snapshot_digests": {
+      "items": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "specification_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "target": {
+      "type": "object"
+    },
+    "transition_history": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign",
+    "specification_digest",
+    "policy",
+    "target",
+    "replacement",
+    "evidence_envelope",
+    "snapshot_digests",
+    "consumers",
+    "receipt_digests",
+    "blockers",
+    "transition_history",
+    "publication",
+    "decision",
+    "generated_at",
+    "manifest_digest"
+  ],
+  "title": "Campaign manifest v1",
+  "type": "object"
+}

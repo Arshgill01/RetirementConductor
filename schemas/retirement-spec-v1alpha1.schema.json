@@ -1,0 +1,277 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/retirement-spec-v1alpha1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {
+      "const": "retirement-conductor/v1alpha1"
+    },
+    "authorization": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_native_objects": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "allowed_paths": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "allowed_repositories": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "mode": {
+          "enum": [
+            "plan",
+            "apply"
+          ]
+        }
+      },
+      "required": [
+        "mode",
+        "allowed_repositories",
+        "allowed_paths",
+        "allowed_native_objects"
+      ],
+      "type": "object"
+    },
+    "campaign": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{2,63}$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "datahub": {
+          "additionalProperties": false,
+          "properties": {
+            "direction": {
+              "enum": [
+                "downstream"
+              ]
+            },
+            "max_hops": {
+              "maximum": 20,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "maximum_age_seconds": {
+              "maximum": 86400,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "platform_filters": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "required": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "required",
+            "direction",
+            "max_hops",
+            "platform_filters",
+            "maximum_age_seconds"
+          ],
+          "type": "object"
+        },
+        "query_history": {
+          "additionalProperties": false,
+          "properties": {
+            "requested_window_days": {
+              "maximum": 365,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "required": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "required",
+            "requested_window_days"
+          ],
+          "type": "object"
+        },
+        "repositories": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "branch": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "id": {
+                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$",
+                "type": "string"
+              },
+              "path": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "path",
+              "branch",
+              "required"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "datahub",
+        "repositories",
+        "query_history"
+      ],
+      "type": "object"
+    },
+    "kind": {
+      "const": "column_retirement"
+    },
+    "policy": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "const": "default-column-retirement"
+        },
+        "version": {
+          "const": 1
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ],
+      "type": "object"
+    },
+    "replacement": {
+      "$ref": "#/$defs/fieldIdentity"
+    },
+    "target": {
+      "$ref": "#/$defs/fieldIdentity"
+    },
+    "validation": {
+      "additionalProperties": false,
+      "properties": {
+        "required_receipt_types": {
+          "items": {
+            "enum": [
+              "dbt",
+              "looker"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "required_receipt_types"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "api_version",
+    "kind",
+    "campaign",
+    "target",
+    "replacement",
+    "evidence",
+    "authorization",
+    "validation",
+    "policy"
+  ],
+  "title": "Retirement specification v1alpha1",
+  "type": "object",
+  "$defs": {
+    "fieldIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "database": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "datahub_urn": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "field": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "instance": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "platform": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "table": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "datahub_urn",
+        "platform",
+        "instance",
+        "database",
+        "schema",
+        "table",
+        "field"
+      ],
+      "type": "object"
+    }
+  }
+}

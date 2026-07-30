@@ -3,15 +3,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 from urllib.parse import unquote
-
 
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = {
+    ".env.example",
     ".editorconfig",
     ".gitignore",
     ".markdownlint-cli2.yaml",
@@ -24,6 +24,7 @@ REQUIRED_FILES = {
     "README.md",
     "SECURITY.md",
     "STATUS.md",
+    "docs/DEPENDENCIES.md",
     "docs/ACCESS.md",
     "docs/ARCHITECTURE.md",
     "docs/CONTRACTS.md",
@@ -50,6 +51,17 @@ REQUIRED_FILES = {
     "docs/research/PRODUCT_SUBSTANCE.md",
     "docs/research/SCOPE_PRESSURE.md",
     "docs/research/SOURCE_LEDGER.md",
+    "fixtures/repository/models/order_summary.sql",
+    "fixtures/scenarios/valid.json",
+    "fixtures/specs/valid.yaml",
+    "pyproject.toml",
+    "schemas/campaign-manifest-v1.schema.json",
+    "schemas/consumer-receipt-v1.schema.json",
+    "schemas/evidence-envelope-v1.schema.json",
+    "schemas/retirement-spec-v1alpha1.schema.json",
+    "src/retirement_conductor/cli.py",
+    "tests/contract/test_specification.py",
+    "tests/fixture/test_fixture_run.py",
 }
 
 GOAL_HEADINGS = {
@@ -81,12 +93,8 @@ PHASE_HEADINGS = {
     "## Risks changed",
 }
 
-REQUIRED_REQUIREMENT_IDS = {
-    f"RC-{number:03d}" for number in range(1, 19)
-}
-REQUIRED_EVIDENCE_IDS = {
-    f"EP-{number:03d}" for number in range(9)
-}
+REQUIRED_REQUIREMENT_IDS = {f"RC-{number:03d}" for number in range(1, 19)}
+REQUIRED_EVIDENCE_IDS = {f"EP-{number:03d}" for number in range(9)}
 ALLOWED_PHASE_STATES = {
     "queued",
     "active",
@@ -105,11 +113,7 @@ def relative(path: Path) -> str:
 
 
 def markdown_files() -> list[Path]:
-    return sorted(
-        path
-        for path in ROOT.rglob("*.md")
-        if ".git" not in path.parts
-    )
+    return sorted(path for path in ROOT.rglob("*.md") if ".git" not in path.parts)
 
 
 def validate_required_files(errors: list[str]) -> None:
@@ -125,13 +129,9 @@ def validate_markdown_shape(path: Path, errors: list[str]) -> None:
         errors.append(f"{name}: missing final newline")
     if not content.startswith("# "):
         errors.append(f"{name}: first line must be one level-one heading")
-    level_one = [
-        line for line in content.splitlines() if line.startswith("# ")
-    ]
+    level_one = [line for line in content.splitlines() if line.startswith("# ")]
     if len(level_one) != 1:
-        errors.append(
-            f"{name}: expected one level-one heading, found {len(level_one)}"
-        )
+        errors.append(f"{name}: expected one level-one heading, found {len(level_one)}")
 
 
 def clean_link_target(raw_target: str) -> str:
@@ -165,14 +165,10 @@ def validate_links(path: Path, errors: list[str]) -> int:
         try:
             resolved.relative_to(ROOT)
         except ValueError:
-            errors.append(
-                f"{relative(path)}: link escapes repository: {target}"
-            )
+            errors.append(f"{relative(path)}: link escapes repository: {target}")
             continue
         if not resolved.exists():
-            errors.append(
-                f"{relative(path)}: broken relative link: {target}"
-            )
+            errors.append(f"{relative(path)}: broken relative link: {target}")
     return checked
 
 
@@ -201,14 +197,10 @@ def validate_plan_phase_links(errors: list[str]) -> None:
 def validate_goal_contract(errors: list[str]) -> None:
     path = ROOT / "GOAL.md"
     content = path.read_text(encoding="utf-8")
-    headings = {
-        line for line in content.splitlines() if line.startswith("## ")
-    }
+    headings = {line for line in content.splitlines() if line.startswith("## ")}
     missing = sorted(GOAL_HEADINGS - headings)
     if missing:
-        errors.append(
-            f"GOAL.md: missing controlling headings: {', '.join(missing)}"
-        )
+        errors.append(f"GOAL.md: missing controlling headings: {', '.join(missing)}")
     for phase in range(9):
         token = f"docs/phases/{phase:02d}-"
         if token not in content:
@@ -232,17 +224,15 @@ def validate_status_phase_ledger(errors: list[str]) -> None:
     states = [state for _, state in matches]
     unknown = sorted(set(states) - ALLOWED_PHASE_STATES)
     if unknown:
-        errors.append(
-            f"STATUS.md: unknown phase states: {', '.join(unknown)}"
-        )
+        errors.append(f"STATUS.md: unknown phase states: {', '.join(unknown)}")
     if states.count("active") > 1:
         errors.append("STATUS.md: at most one phase may be active")
 
 
 def validate_traceability(errors: list[str]) -> None:
-    content = (
-        ROOT / "docs" / "REQUIREMENTS_TRACEABILITY.md"
-    ).read_text(encoding="utf-8")
+    content = (ROOT / "docs" / "REQUIREMENTS_TRACEABILITY.md").read_text(
+        encoding="utf-8"
+    )
     found = set(re.findall(r"\bRC-\d{3}\b", content))
     missing = sorted(REQUIRED_REQUIREMENT_IDS - found)
     if missing:
@@ -253,15 +243,12 @@ def validate_traceability(errors: list[str]) -> None:
 
 
 def validate_evidence_ledger(errors: list[str]) -> None:
-    content = (
-        ROOT / "docs" / "EVIDENCE_LEDGER.md"
-    ).read_text(encoding="utf-8")
+    content = (ROOT / "docs" / "EVIDENCE_LEDGER.md").read_text(encoding="utf-8")
     found = set(re.findall(r"\bEP-\d{3}\b", content))
     missing = sorted(REQUIRED_EVIDENCE_IDS - found)
     if missing:
         errors.append(
-            "docs/EVIDENCE_LEDGER.md: missing phase evidence IDs: "
-            f"{', '.join(missing)}"
+            f"docs/EVIDENCE_LEDGER.md: missing phase evidence IDs: {', '.join(missing)}"
         )
 
 
@@ -281,10 +268,7 @@ def validate_risk_coverage(errors: list[str]) -> None:
             f"{', '.join(missing)}"
         )
     if unknown:
-        errors.append(
-            "docs/phases: unknown risk references: "
-            f"{', '.join(unknown)}"
-        )
+        errors.append(f"docs/phases: unknown risk references: {', '.join(unknown)}")
 
 
 def run() -> int:

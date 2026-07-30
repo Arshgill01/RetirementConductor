@@ -1,0 +1,51 @@
+{
+  "limitations": [
+    "Build-backend metadata is reviewed in docs/DEPENDENCIES.md and uv.lock."
+  ],
+  "packages": [
+    {
+      "name": "PyYAML",
+      "observed_license": "MIT",
+      "review": "compatible with Apache-2.0",
+      "version": "6.0.3"
+    },
+    {
+      "name": "jsonschema",
+      "observed_license": "MIT",
+      "review": "compatible with Apache-2.0",
+      "version": "4.26.0"
+    },
+    {
+      "name": "mypy",
+      "observed_license": "MIT",
+      "review": "compatible with Apache-2.0",
+      "version": "1.20.2"
+    },
+    {
+      "name": "pytest",
+      "observed_license": "MIT",
+      "review": "compatible with Apache-2.0",
+      "version": "8.4.2"
+    },
+    {
+      "name": "ruff",
+      "observed_license": "MIT",
+      "review": "compatible with Apache-2.0",
+      "version": "0.16.0"
+    },
+    {
+      "name": "types-PyYAML",
+      "observed_license": "Apache-2.0",
+      "review": "compatible with Apache-2.0",
+      "version": "6.0.12.20260724"
+    },
+    {
+      "name": "types-jsonschema",
+      "observed_license": "Apache-2.0",
+      "review": "compatible with Apache-2.0",
+      "version": "4.26.0.20260518"
+    }
+  ],
+  "python_version": "3.13.14",
+  "schema_version": "1.0.0"
+}

@@ -1,0 +1,178 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/evidence-envelope-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "live",
+        "fixture",
+        "replay"
+      ]
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "sources": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_ids": {
+            "items": {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "freshness": {
+            "additionalProperties": false,
+            "properties": {
+              "maximum_age_seconds": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "observed_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "source_updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "observed_at",
+              "source_updated_at",
+              "maximum_age_seconds"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "identity": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "permissions": {
+            "additionalProperties": false,
+            "properties": {
+              "effective_scope": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "principal": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "principal",
+              "effective_scope"
+            ],
+            "type": "object"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "scope": {
+            "additionalProperties": false,
+            "properties": {
+              "direction": {
+                "enum": [
+                  "downstream"
+                ]
+              },
+              "filters": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "max_hops": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "pages": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "reported_total": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "returned_total": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "direction",
+              "max_hops",
+              "filters",
+              "pages",
+              "reported_total",
+              "returned_total"
+            ],
+            "type": "object"
+          },
+          "source_version": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNKNOWN",
+              "UNAVAILABLE",
+              "STALE"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "required",
+          "status",
+          "source_version",
+          "identity",
+          "scope",
+          "freshness",
+          "permissions",
+          "limitations",
+          "artifact_ids"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "captured_at",
+    "mode",
+    "sources",
+    "envelope_digest"
+  ],
+  "title": "Evidence envelope v1",
+  "type": "object"
+}

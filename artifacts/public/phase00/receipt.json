@@ -1,0 +1,57 @@
+{
+  "adapter": {
+    "mode": "fixture",
+    "name": "fixture-git-dbt",
+    "version": "0.1.0"
+  },
+  "apply": {
+    "actual_targets": [],
+    "after_fingerprint": "sha256:615988f1f3e108d26c2aa92260cec9679436b8588c536979d55d3c9f609b75da",
+    "before_fingerprint": "sha256:615988f1f3e108d26c2aa92260cec9679436b8588c536979d55d3c9f609b75da",
+    "native_change_ids": [],
+    "result": "SIMULATED"
+  },
+  "campaign_id": "ret-orders-legacy-status",
+  "captured_at": "2026-01-01T00:00:00Z",
+  "compensation": {
+    "available": true,
+    "exercised": false,
+    "result": "NOT_NEEDED"
+  },
+  "consumer_id": "consumer-dbt-order-summary",
+  "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,fixture.order_summary,PROD)",
+  "expires_at": null,
+  "limitations": [
+    "No native mutation or live validator ran in fixture mode."
+  ],
+  "native_identity": {
+    "commit": "fixture-commit-0001",
+    "path": "models/order_summary.sql",
+    "repository": "analytics"
+  },
+  "plan": {
+    "approved_targets": [
+      "models/order_summary.sql"
+    ],
+    "digest": "sha256:03492853fff5f570b3f603f6fdb17eb116f67b355db12aeb2b70079521707f4d",
+    "proposed_targets": [
+      "models/order_summary.sql"
+    ]
+  },
+  "receipt_digest": "sha256:3ca170208a98525b47ef6a91fd618319343fb879feadad64a33570d17f0be25d",
+  "receipt_id": "receipt-03492853fff5f570",
+  "schema_version": "1.0.0",
+  "source_before": {
+    "fingerprint": "sha256:615988f1f3e108d26c2aa92260cec9679436b8588c536979d55d3c9f609b75da",
+    "version": "fixture-commit-0001"
+  },
+  "terminal_disposition": "VALIDATED",
+  "validation": {
+    "artifact_ids": [
+      "sha256:a79b2cdf5ee02759ed8202e119f136627a13a4f8bfb0cb4a35bdbd5268d5ac14"
+    ],
+    "result": "PASSED",
+    "validator": "deterministic fixture validator",
+    "validator_version": "0.1.0"
+  }
+}
