@@ -44,7 +44,7 @@ the produced artifacts have been inspected.
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
 | EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
 | EP-007 | 07 | live and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | access-dependent | credential-independent fixture and analysis checks passed; live Looker-specific checks depend on EP-006 |
-| EP-008 | 08 | live and operator | `ded94f6` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | access-dependent | credential-independent checks passed; independent operator result remains `NOT_RUN` |
+| EP-008 | 08 | live and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | access-dependent | credential-independent checks passed; independent operator result remains `NOT_RUN` |
 
 ### Phase 06 pre-acceptance observations
 
@@ -68,6 +68,10 @@ Repository commits:
   connection mapping, official local ingestion, and direct entity reread;
 - `e128e206d079729abec2858ce28f4ec446992e7b` — deterministic phase 06
   lifecycle, recovery, refusal, reconciliation, and claim-boundary artifacts.
+- `813bf209cb5760b9963e195f57189152ad46cc41` — campaign-safe no-secret
+  handoff whose resume command does not assume unavailable campaign state;
+- `eb7206708c145e4d8a50200fb6105a60207cb515` — regenerated handoff evidence
+  binding deployment preflight and the exact campaign-bootstrap prerequisite.
 
 Captured through: `2026-07-30T15:22:08Z`
 
@@ -118,15 +122,20 @@ recreated identity, intervening edit, dropped response, hard interruption,
 table-only lineage, persisting legacy edge, combined Git/dbt plus Looker
 reconciliation, and selective stale receipt handling. It reproduced
 byte-for-byte on a second run. Its rollup states
-`NOT_SATISFIED_LIVE_BOUNDARY` and keeps `EP-006` `not-run`.
+`NOT_SATISFIED_LIVE_BOUNDARY`, has canonical digest
+`sha256:e1a9e9e3cf035dbd541fb71ed4e16940fff352093a0c3b0577aec8c42bafaed7`,
+and keeps `EP-006` `not-run`.
 
 The no-secret access packet reported every unresolved variable by name, kept
 apply disabled, listed adapter and ingestion permissions as unverified,
-contained no supplied value, and had digest
-`sha256:eef4d9e9196107505138f70dd147fd7b828506b3d1989ccc1f6589a6f464af51`.
-The latest `make check` passed 188 tests, Ruff, formatting, strict mypy,
-131-file repository validation, secret and 41-file public-artifact scans,
-source and wheel builds, and `git diff --check`.
+contained no supplied value, and had deterministic fixture digest
+`sha256:80b67e096a1f4d5bf01b6ce62c83bc5309f9e622676151c97ec4617408f84a74`.
+Its exact resume command is secret-safe `looker-plan` deployment preflight,
+and it states that adapter preflight requires an exact campaign created only
+after live ingestion resolves the native target, DataHub URN, and graph
+digest. The latest `make check` passed 228 tests, Ruff, formatting, strict
+mypy, 164-file repository validation, a 294-file secret scan, a 53-file
+public-artifact review, source and wheel builds, and `git diff --check`.
 
 The dedicated read-only pretrial script observed zero Looker instances,
 unallocated trial and paid Looker quota, BigQuery daily query quota zero, and
@@ -159,7 +168,7 @@ Their file SHA-256 digests are
 `83e9c04287463f35ff32d2031c8f4bac83b34a3e5d1a6313b4181ad443ee8d94`,
 `01ace2fb4ec80495aa97766a1a4b806ef93f970041e9bdbad95ca4e7f8010aec`,
 and
-`1036c8043b1ada9fa1f4d3c0da225dd8e2e7019d176f1ba8566736d12d0988e7`,
+`f2a3166cc4398154d33375ec4b3812fda98970290194a0e65e3f21db59d4556b`,
 respectively.
 
 Reviewer inspection: inspected the local ingestion report and stored schema
@@ -168,6 +177,7 @@ snapshots; actual target and changed-field assertions; intent state
 transitions and PATCH counts; compensation conflict; recreated identity
 digests; old-compensation rejection after replan; graph edge states; combined
 evidence-source set and selective invalidation; generated access packet;
+campaign-safe deployment preflight and campaign-bootstrap prerequisite;
 recipe model output; deterministic artifact twins; full test output; secret
 and public scans; and zero-cost pretrial result.
 
@@ -321,12 +331,12 @@ Requirement IDs: RC-017; preparation and an explicit unsatisfied boundary for
 RC-018
 
 Repository behavior and tested commit:
-`ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9`
+`eb7206708c145e4d8a50200fb6105a60207cb515`
 
 Tracked evidence commit:
-`a880d2f`
+`4411e8b`
 
-Captured at: `2026-07-30T18:00:41.223212Z`
+Captured at: `2026-07-30T18:21:02.772304Z`
 
 Mode: live for the disposable loopback DataHub Core, MCP, Git, dbt, DuckDB,
 publication, and producer-sentinel path; fixture for built-in reference,
@@ -366,9 +376,9 @@ independent-operation claim is made without a real operator.
 
 Observed package and install result: the 0.2.0 wheel contained 63 members and
 had digest
-`sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7`.
+`sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b`.
 The 72-member source archive had digest
-`sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1`,
+`sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25`,
 excluded operational status, evidence, tests, scripts, and runtime state,
 reproduced byte-for-byte, and rebuilt the wheel byte-for-byte. Runtime
 requirements were hash-bound; a CycloneDX 1.5 SBOM and checksum manifest were
@@ -428,30 +438,30 @@ Tracked artifact paths:
 `artifacts/public/phase08/operator-boundary.json`, and
 `artifacts/public/phase08/phase08-preacceptance-evidence.json`. Their file
 SHA-256 digests are, respectively,
-`31305500c1ab200f97672ec910a542397df586fe5e831e022bc3a34c5972a23f`,
-`1f40994451784b34afed9ac9d6ee996efe082de9c75be7cd18bc46477dbbea6b`,
-`853347b5fcd8ec7e1c6ba55f3158e4d2b7f6802a2fe4b57d9997df9b2be58dbf`,
-`9d2a65c81f43aed055f509a55f351334092f8cfc21d5e4476f533bf4cb4ad441`,
-`73f07d75f1266ab12dfa0625018c494ab8b32063d5f32b2a2ba6fa5a29d54b88`,
-`04510ead7fd610c0535371114d5c65af6ac41dcf15bda61ea7a2735c52d7a292`,
+`7d3d8ef482f1b5a9fa5c35f0725f890875fadaa3814d052d59e42fe3222dedea`,
+`9463c5a4a3cf76a68a6b807045be71ec4c23692fe70e312cf1cef18f3c51cc02`,
+`ebe127be08d1d58a3f63f3aacbf4055e4334094039817c9e4edb4188e45bc0cd`,
+`8ddf5f10c11ea490d619e940013e545df1f84704bde528f6a55406d04f521866`,
+`92bef59564042612d3554f91bc2ab49b5a80a8f090400c6a5d12f525ccf7da09`,
+`de57f07d41cee6ed21fb7947a167ad4bb5f087e207675c3de2c5c7850224e878`,
 and
-`969a9e47d177c656b7e4d8edc8317226d9085777a0e927e89319e2c821e47c42`.
+`41e8f9a5051332618dcc2215b568a35d24ae0f1c4c73ce0ed1ec72d68d63dc0b`.
 The canonical phase pre-acceptance digest is
-`sha256:72e3a157b85246baaebde6b3b629648b13db6856762bb7649ab2377991bde249`.
+`sha256:15b3449da0397e7dc365c69487ac9a239b9e005398ab9c5b28f28716844fa7e0`.
 
 Private artifact digests: the ignored raw package, install, upgrade, and
 reference files had SHA-256 digests
-`79e126e19cafbcf9899dcdd1bfd0646350c400efb950455c732a2c4e612c4ddd`,
-`c75f12e9cd3b58c36e1e709233ba5481cc7cc0f86ec36f8786667afb3b409431`,
-`eb419c3384dae9f7abef2f4c2d323b66b867bad15cd27cb0a9388599337a73c8`,
+`4e80e40f19c59479e701f0b4db59512f9f9bc1cadde3c11237bde582b7520e3a`,
+`b700801c2aba10fe864906861f6d3f8413c6a2b788d7eb2e18135207a8d188dd`,
+`1517c80ce57e757221e2ed9e30e235890f4c954895439d6d06674801d6fad5a9`,
 and
-`e1ef50892e5811926ae23070b3efe9412e99a98d402a7041bf87922edaf908d4`.
+`4f941099340c1eab09427d048020dc822b9c66407ecef42fcfc671221dc7cc59`.
 Their canonical artifact digests were
-`sha256:42755744033df01244e99cea0557f8bef0fa26f1564ea38339051c8ad5d7a646`,
-`sha256:41be0767378cdeca9dd9ee680c76c0ba6548eebed4acddc714919150a775299e`,
-`sha256:22f163dcaab195425a6b2b9983e61baee68c0ea2088d334be6aa02daa3bf523f`,
+`sha256:7ae90d294996ca67b16ab84afc9e59b53cc15a0c2cbec40d3777cad587427624`,
+`sha256:e83d0203e3d945e7a1d2300f6196eaabeca97cb16e3e371e7749bc2e00e3f97a`,
+`sha256:1ae695d1bd32bf7d7451f5e6a48e0b8fba05428959cc9bb9ed02625b907463d0`,
 and
-`sha256:6cfa4a81e52acfc6c6ebb0d80ce6a9064ca0b54172dbef247b608718806baf44`.
+`sha256:7eae72bdd6dff2039fd4fe66c784b86fbcfa7d6e75b72043a3c0a5efc677a387`.
 Raw clean-environment directories, campaign databases, backups, native
 content, and command logs were removed or retained only under ignored local
 state.

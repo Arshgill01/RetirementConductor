@@ -554,3 +554,24 @@ acceptance record.
 The resulting source archive contained 72 reviewed members, excluded
 operational and acceptance state, reproduced byte-for-byte, and rebuilt the
 63-member release wheel byte-for-byte.
+
+## D-037 — external Looker resume precedes campaign bootstrap
+
+Status: accepted from Phase 06 handoff inspection.
+
+Resume an unconfigured Looker deployment at secret-safe deployment preflight,
+not adapter preflight. Create the durable campaign only after scoped live
+ingestion resolves the exact saved-content native identity, DataHub URN, and
+fresh graph snapshot digest. Then run adapter preflight and plan against that
+exact campaign. Do not create placeholder state or guess identities merely to
+make the next command executable.
+
+Why: adapter preflight correctly requires an existing campaign whose
+specification allowlists the target and requires a Looker receipt. The former
+handoff resumed at adapter preflight before the external evidence needed to
+construct that specification existed, so its advertised command could only
+fail on missing campaign state or encourage fabricated identity inputs.
+
+The regenerated no-secret packet now resumes at the `looker-plan` deployment
+profile, states the bootstrap prerequisite, contains no apply command, and
+keeps `EP-006` not-run until live evidence exists.
