@@ -293,7 +293,7 @@ class GitDbtAdapter:
                     "dbt seed",
                     "dbt build",
                     "dbt test",
-                    "orders_model_semantic_equivalence",
+                    "semantic_equivalence_singular_test",
                 ],
                 "limitations": list(preflight["limitations"]),
             },

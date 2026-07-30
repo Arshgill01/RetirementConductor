@@ -1,0 +1,39 @@
+version: 2
+
+seeds:
+  - name: orders_isolated
+    description: Public-safe stand-in for the isolated warehouse orders table.
+    columns:
+      - name: order_id
+        data_type: integer
+      - name: legacy_status
+        data_type: varchar
+        meta:
+          retirement_conductor_role: legacy
+      - name: order_status
+        data_type: varchar
+        meta:
+          retirement_conductor_role: replacement
+      - name: order_amount
+        data_type: double
+
+models:
+  - name: orders_isolated_model
+    description: The exact isolated consumer represented in the DataHub graph.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+      - name: normalized_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - pending
+                  - shipped
+                  - cancelled
+      - name: order_amount
+        data_tests:
+          - not_null

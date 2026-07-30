@@ -1,0 +1,33 @@
+name: retirement_conductor_isolated
+version: 1.0.0
+config-version: 2
+
+profile: retirement_conductor_isolated
+
+model-paths:
+  - models
+seed-paths:
+  - seeds
+test-paths:
+  - tests
+target-path: target
+clean-targets:
+  - target
+  - logs
+  - dbt_packages
+
+models:
+  retirement_conductor_isolated:
+    +materialized: table
+
+seeds:
+  retirement_conductor_isolated:
+    orders_isolated:
+      +column_types:
+        order_id: integer
+        legacy_status: varchar
+        order_status: varchar
+        order_amount: double
+
+flags:
+  send_anonymous_usage_stats: false
