@@ -1,7 +1,7 @@
 {
   "backup": {
-    "post_upgrade_database_digest": "sha256:cb855ff410cf7524328c154c0b1c7d3db1776681732e7b9bec89ced736a78501",
-    "post_upgrade_receipt_digest": "sha256:8a1fcf00c89b845a37e6f8bd40878a353a52df23ef625d3ba9007d36f33ab5e3",
+    "post_upgrade_database_digest": "sha256:38d968a02e4e8359dfda77af5ed37ff8445aeb53eb97d868cb09a6e5969903ff",
+    "post_upgrade_receipt_digest": "sha256:3a8758c467511b628a8c48936908d2ebe4337ddb6096563dcc08ab20ca4ca703",
     "pre_upgrade_database_digest": "sha256:e40274c09e392c7a2ac720104f9a04d80177090362c4ad1804f984e2311dd23b"
   },
   "campaign": {
@@ -11,15 +11,15 @@
     "preserved_on_upgrade": true,
     "restored_on_rollback": true
   },
-  "captured_at": "2026-07-30T17:56:24.484605Z",
+  "captured_at": "2026-07-30T18:16:51.554481Z",
   "command": "make test-upgrade",
   "current": {
     "package": {
       "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
       "sdist": "retirement_conductor-0.2.0.tar.gz",
-      "sdist_digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+      "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
       "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-      "wheel_digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7"
+      "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
     },
     "schema_versions": [
       1,
@@ -34,7 +34,7 @@
     "Downgrading a migrated database in place is unsupported."
   ],
   "phase": "08",
-  "phase08_upgrade_evidence_digest": "sha256:94d0aa0a52777ef9e48426d31a274f4208bfe1a217b7c342915a5156f88eae4d",
+  "phase08_upgrade_evidence_digest": "sha256:ea695fad5778aeb7990fe7d5937ca711f1984d6217e4e7c46c184fe8f0b8e610",
   "previous": {
     "commit": "30173f160c3c87a8daf0a3c1988c7ccde10662ec",
     "schema_versions": [
@@ -44,10 +44,10 @@
     "wheel_digest": "sha256:803c6a9f168ff02bf32f201f5bee318aa8d92cfc5aaf7af0c5bc078f002f5dc5"
   },
   "raw_receipt": {
-    "artifact_digest": "sha256:22f163dcaab195425a6b2b9983e61baee68c0ea2088d334be6aa02daa3bf523f",
-    "file_digest": "sha256:eb419c3384dae9f7abef2f4c2d323b66b867bad15cd27cb0a9388599337a73c8"
+    "artifact_digest": "sha256:1ae695d1bd32bf7d7451f5e6a48e0b8fba05428959cc9bb9ed02625b907463d0",
+    "file_digest": "sha256:1517c80ce57e757221e2ed9e30e235890f4c954895439d6d06674801d6fad5a9"
   },
-  "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
   "result": "UPGRADE_AND_ROLLBACK_VERIFIED",
   "schema_version": "1.0.0"
 }

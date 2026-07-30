@@ -18,76 +18,76 @@
   },
   "artifacts": {
     "compatibility": {
-      "artifact_digest": "sha256:bd490e4bdb32bbf354d8b85f9e1511e9412cc2aef833a98bf7cda1dc76dbab7f",
+      "artifact_digest": "sha256:2897d2e4bf44fde773e3dee5a22b7e33364773ca3bfbc770d484caee2ec0370a",
       "file": "artifacts/public/phase08/compatibility-evidence.json",
-      "file_digest": "sha256:73f07d75f1266ab12dfa0625018c494ab8b32063d5f32b2a2ba6fa5a29d54b88"
+      "file_digest": "sha256:92bef59564042612d3554f91bc2ab49b5a80a8f090400c6a5d12f525ccf7da09"
     },
     "install": {
-      "artifact_digest": "sha256:8202690ee9201c8550d2e0e0c801f4a277bc4b988a2a26671b085c1a7bb3b870",
+      "artifact_digest": "sha256:e0d6ba61d94185426b1c035fa25cb7a62a4af0bc1eda1ef97b9ed1013dd0c000",
       "file": "artifacts/public/phase08/install-evidence.json",
-      "file_digest": "sha256:1f40994451784b34afed9ac9d6ee996efe082de9c75be7cd18bc46477dbbea6b"
+      "file_digest": "sha256:9463c5a4a3cf76a68a6b807045be71ec4c23692fe70e312cf1cef18f3c51cc02"
     },
     "operator_boundary": {
-      "artifact_digest": "sha256:65ee4166e82ffb47f3e1fad690e8ce229255fe8cdd0e4ca66c954b0ae29a7318",
+      "artifact_digest": "sha256:4a041503d2f745b3a5a02c8c1f0b6991e34fe1789c53e6cf60b87125e34c25a5",
       "file": "artifacts/public/phase08/operator-boundary.json",
-      "file_digest": "sha256:04510ead7fd610c0535371114d5c65af6ac41dcf15bda61ea7a2735c52d7a292"
+      "file_digest": "sha256:de57f07d41cee6ed21fb7947a167ad4bb5f087e207675c3de2c5c7850224e878"
     },
     "package": {
-      "artifact_digest": "sha256:21cf052163901cb2def7f17dd56f32f0568ee6067b30b05db4a8f45424422be1",
+      "artifact_digest": "sha256:c292591bf67b9e5d363a0ebd53f5020771f4470d3c9be433dacd58b426abbc77",
       "file": "artifacts/public/phase08/package-evidence.json",
-      "file_digest": "sha256:31305500c1ab200f97672ec910a542397df586fe5e831e022bc3a34c5972a23f"
+      "file_digest": "sha256:7d3d8ef482f1b5a9fa5c35f0725f890875fadaa3814d052d59e42fe3222dedea"
     },
     "reference": {
-      "artifact_digest": "sha256:219dc1599299d8c418fe3d12510690bf1aaf6f8a4a231297a2307aa6e6b47f61",
+      "artifact_digest": "sha256:511cf9d61783aba343895983ab3dc06cc9e47e16ad63c46abd1f1bb95676f813",
       "file": "artifacts/public/phase08/reference-evidence.json",
-      "file_digest": "sha256:9d2a65c81f43aed055f509a55f351334092f8cfc21d5e4476f533bf4cb4ad441"
+      "file_digest": "sha256:8ddf5f10c11ea490d619e940013e545df1f84704bde528f6a55406d04f521866"
     },
     "upgrade": {
-      "artifact_digest": "sha256:94d0aa0a52777ef9e48426d31a274f4208bfe1a217b7c342915a5156f88eae4d",
+      "artifact_digest": "sha256:ea695fad5778aeb7990fe7d5937ca711f1984d6217e4e7c46c184fe8f0b8e610",
       "file": "artifacts/public/phase08/upgrade-evidence.json",
-      "file_digest": "sha256:853347b5fcd8ec7e1c6ba55f3158e4d2b7f6802a2fe4b57d9997df9b2be58dbf"
+      "file_digest": "sha256:ebe127be08d1d58a3f63f3aacbf4055e4334094039817c9e4edb4188e45bc0cd"
     }
   },
-  "captured_at": "2026-07-30T18:00:41.223212Z",
+  "captured_at": "2026-07-30T18:21:02.772304Z",
   "commands": [
     {
       "command": "make check",
       "exit_code": 0,
-      "output_digest": "sha256:d05e79fbaab6d6303b1b305f51ef320310669ba6a29e59f391895c370aef3f68",
+      "output_digest": "sha256:5fcbbd3a92f7af18ff9dcb39289fd48d56bd8ec9496e6a412d12b99b32a44611",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:21cf052163901cb2def7f17dd56f32f0568ee6067b30b05db4a8f45424422be1",
+        "artifact_digest": "sha256:c292591bf67b9e5d363a0ebd53f5020771f4470d3c9be433dacd58b426abbc77",
         "file": "artifacts/public/phase08/package-evidence.json",
-        "file_digest": "sha256:31305500c1ab200f97672ec910a542397df586fe5e831e022bc3a34c5972a23f"
+        "file_digest": "sha256:7d3d8ef482f1b5a9fa5c35f0725f890875fadaa3814d052d59e42fe3222dedea"
       },
       "command": "make package",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:8202690ee9201c8550d2e0e0c801f4a277bc4b988a2a26671b085c1a7bb3b870",
+        "artifact_digest": "sha256:e0d6ba61d94185426b1c035fa25cb7a62a4af0bc1eda1ef97b9ed1013dd0c000",
         "file": "artifacts/public/phase08/install-evidence.json",
-        "file_digest": "sha256:1f40994451784b34afed9ac9d6ee996efe082de9c75be7cd18bc46477dbbea6b"
+        "file_digest": "sha256:9463c5a4a3cf76a68a6b807045be71ec4c23692fe70e312cf1cef18f3c51cc02"
       },
       "command": "make test-install",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:94d0aa0a52777ef9e48426d31a274f4208bfe1a217b7c342915a5156f88eae4d",
+        "artifact_digest": "sha256:ea695fad5778aeb7990fe7d5937ca711f1984d6217e4e7c46c184fe8f0b8e610",
         "file": "artifacts/public/phase08/upgrade-evidence.json",
-        "file_digest": "sha256:853347b5fcd8ec7e1c6ba55f3158e4d2b7f6802a2fe4b57d9997df9b2be58dbf"
+        "file_digest": "sha256:ebe127be08d1d58a3f63f3aacbf4055e4334094039817c9e4edb4188e45bc0cd"
       },
       "command": "make test-upgrade",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:219dc1599299d8c418fe3d12510690bf1aaf6f8a4a231297a2307aa6e6b47f61",
+        "artifact_digest": "sha256:511cf9d61783aba343895983ab3dc06cc9e47e16ad63c46abd1f1bb95676f813",
         "file": "artifacts/public/phase08/reference-evidence.json",
-        "file_digest": "sha256:9d2a65c81f43aed055f509a55f351334092f8cfc21d5e4476f533bf4cb4ad441"
+        "file_digest": "sha256:8ddf5f10c11ea490d619e940013e545df1f84704bde528f6a55406d04f521866"
       },
       "command": "make test-reference-campaign",
       "result": "PASSED"
@@ -109,12 +109,12 @@
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7"
+    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
   },
   "phase": "08",
-  "phase08_preacceptance_digest": "sha256:72e3a157b85246baaebde6b3b629648b13db6856762bb7649ab2377991bde249",
+  "phase08_preacceptance_digest": "sha256:15b3449da0397e7dc365c69487ac9a239b9e005398ab9c5b28f28716844fa7e0",
   "phase_status": "access-dependent",
   "remaining_boundaries": [
     {
@@ -139,7 +139,7 @@
       "status": "not-run"
     }
   ],
-  "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
   "requirements": {
     "RC-017": "CREDENTIAL_INDEPENDENT_EVIDENCE_PRESENT",
     "RC-018": "NOT_SATISFIED"

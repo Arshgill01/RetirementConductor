@@ -1,8 +1,8 @@
 {
-  "captured_at": "2026-07-30T17:59:57.367210Z",
+  "captured_at": "2026-07-30T18:20:21.825243Z",
   "command": "make test-reference-campaign",
   "core_capability": {
-    "capability_digest": "sha256:ebcab97a8f76948bb308b098bfab2523b8b2f15c4dd7b4f9bf8029574e6f852e",
+    "capability_digest": "sha256:f4151365691c7d9a757d8c6a95ce94dec0e494f6d01132a810c41b43395bdf38",
     "edition": "core",
     "fallbacks": {
       "complete_lineage_pagination": "gms_graphql",
@@ -28,7 +28,7 @@
       "GIT_DBT_DBT_EXECUTABLE",
       "GIT_DBT_PRINCIPAL"
     ],
-    "preflight_digest": "sha256:0c01b2f59db35702cf2aa977191d8ffc92d3569df3b1f780ec1f029aff552765",
+    "preflight_digest": "sha256:d39d391a860b68fe25e925b3ba62293ad1f45b713aef44643bd70081ffc98c9a",
     "profile": "core-git-dbt",
     "ready": true,
     "single_writer": true,
@@ -59,8 +59,8 @@
     "apply_targets": [
       "models/orders_isolated_model.sql"
     ],
-    "command_output_digest": "sha256:af543c1bf98d6965f7d061b41db6a1d5317cf40ab7a913833a77fb394a6ce72f",
-    "evidence_digest": "sha256:9d7e5935baf22de7684eb7dece77ca5dfedc27c6ba9dcc72551f92032813d389",
+    "command_output_digest": "sha256:6b5adff76403d2bd797c385d4502cd23463ec4bce019ae6bdbc10c4bd0b4e88f",
+    "evidence_digest": "sha256:21e8bd520ca3da52683c5b51832fc390395ff266b80b84f3b4991529194c55bc",
     "evidence_mode": "live",
     "gate_attempt_status_counts": {
       "EXECUTED": 1,
@@ -72,16 +72,16 @@
     "late_decision": "UNSAFE",
     "late_publication_settle": {
       "attempts": 1,
-      "duration_ms": 2539
+      "duration_ms": 3537
     },
     "producer_sentinel_count": 1,
     "ready_decision": "READY_TO_RETIRE",
-    "ready_manifest_digest": "sha256:36e763b86341b9f1c2925eb017bae3949adfad7f17c9276301cfc15317af0abb",
+    "ready_manifest_digest": "sha256:5d2c9cbac9f0673467c0c217e4b1aa00cd9b4c0dddae35da88f13dcccaa200c1",
     "ready_publication_settle": {
       "attempts": 1,
-      "duration_ms": 1600
+      "duration_ms": 2298
     },
-    "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+    "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
     "rich_consumer_count": 31,
     "rich_decision": "UNSAFE",
     "rich_gate_refusal": "GATE_DECISION_NOT_READY",
@@ -93,17 +93,17 @@
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1",
+    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7"
+    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
   },
   "phase": "08",
-  "phase08_reference_evidence_digest": "sha256:219dc1599299d8c418fe3d12510690bf1aaf6f8a4a231297a2307aa6e6b47f61",
+  "phase08_reference_evidence_digest": "sha256:511cf9d61783aba343895983ab3dc06cc9e47e16ad63c46abd1f1bb95676f813",
   "raw_receipt": {
-    "artifact_digest": "sha256:6cfa4a81e52acfc6c6ebb0d80ce6a9064ca0b54172dbef247b608718806baf44",
-    "file_digest": "sha256:e1ef50892e5811926ae23070b3efe9412e99a98d402a7041bf87922edaf908d4"
+    "artifact_digest": "sha256:7eae72bdd6dff2039fd4fe66c784b86fbcfa7d6e75b72043a3c0a5efc677a387",
+    "file_digest": "sha256:4f941099340c1eab09427d048020dc822b9c66407ecef42fcfc671221dc7cc59"
   },
-  "repository_commit": "ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9",
+  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
   "result": "REFERENCE_CAMPAIGN_VERIFIED",
   "schema_version": "1.0.0",
   "services": {
