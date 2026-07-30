@@ -121,6 +121,7 @@ class FakeMCP:
 class FakeGraph:
     def __init__(self, *, mcp: FakeMCP | None = None) -> None:
         self.mcp = mcp
+        self.lineage_degree_queries: list[tuple[str, int]] = []
 
     def health(self) -> Any:
         return {"status": "ok"}
@@ -163,16 +164,20 @@ class FakeGraph:
         if "RetirementConductorLineage" in query:
             offset = variables["input"]["start"]
             count = variables["input"]["count"]
-            selected = CONSUMER_URNS[offset : offset + count]
+            degree_bucket = variables["input"]["orFilters"][0]["and"][0]["values"][0]
+            self.lineage_degree_queries.append((degree_bucket, offset))
+            degree = {"1": 1, "2": 2, "3+": 3}[degree_bucket]
+            candidates = [CONSUMER_URNS[degree - 1]]
+            selected = candidates[offset : offset + count]
             return {
                 "searchAcrossLineage": {
                     "start": offset,
                     "count": len(selected),
-                    "total": len(CONSUMER_URNS),
+                    "total": len(candidates),
                     "isPartial": False,
                     "searchResults": [
                         {
-                            "degree": 1 if offset == 0 else 2,
+                            "degree": degree,
                             "entity": {
                                 "urn": urn,
                                 "type": (
@@ -238,7 +243,8 @@ def test_preflight_records_versions_tools_and_fallbacks() -> None:
 def test_live_inventory_pages_to_total_and_keeps_weak_edges_qualified(
     tmp_path: Path,
 ) -> None:
-    boundary = DataHubBoundary(settings(), mcp=FakeMCP(), graph=FakeGraph())
+    graph = FakeGraph()
+    boundary = DataHubBoundary(settings(), mcp=FakeMCP(), graph=graph)
 
     snapshot = boundary.inventory(
         live_specification(),
@@ -250,9 +256,10 @@ def test_live_inventory_pages_to_total_and_keeps_weak_edges_qualified(
         "status": "COMPLETE",
         "reported_total": 3,
         "returned_total": 3,
-        "pages": 2,
+        "pages": 3,
         "errors": [],
     }
+    assert graph.lineage_degree_queries == [("1", 0), ("2", 0), ("3+", 0)]
     assert len(snapshot["consumers"]) == 3
     assert snapshot["query_history"]["total"] == 0
     assert snapshot["query_history"]["closure_authority"] is False

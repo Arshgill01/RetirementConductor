@@ -446,130 +446,155 @@ class DataHubBoundary:
     ) -> PageResult:
         """Page to the advertised total and retain every raw response."""
 
-        offset = 0
-        expected_total: int | None = None
         pages: list[dict[str, Any]] = []
         consumers: list[dict[str, Any]] = []
         limitations: list[str] = []
         errors: list[dict[str, Any]] = []
         status = EvidenceStatus.COMPLETE
         seen: set[str] = set()
-        while True:
-            try:
-                if (
-                    forced_failure_offset is not None
-                    and offset == forced_failure_offset
-                ):
-                    raise Refusal(
-                        RefusalCode.EVIDENCE_PAGINATION_FAILED,
-                        "A controlled pagination failure was injected.",
-                        {"offset": offset},
-                    )
-                data = self.graph.graphql(
-                    LINEAGE_QUERY,
-                    {
-                        "input": {
-                            "urn": urn,
-                            "direction": "DOWNSTREAM",
-                            "query": "*",
-                            "start": offset,
-                            "count": self.settings.page_size,
-                            "orFilters": [
-                                {
-                                    "and": [
-                                        {
-                                            "field": "degree",
-                                            "condition": "EQUAL",
-                                            "values": degree_values(max_hops),
-                                        }
-                                    ]
-                                }
-                            ],
-                            "searchFlags": {
-                                "skipHighlighting": True,
-                                "maxAggValues": 100,
-                            },
-                        }
-                    },
-                )
-                page = data.get("searchAcrossLineage")
-                if not isinstance(page, dict):
-                    raise Refusal(
-                        RefusalCode.EVIDENCE_PAGINATION_FAILED,
-                        "DataHub omitted a lineage page.",
-                        {"offset": offset},
-                    )
-                page_artifact = writer.write(f"lineage-page-{offset:05d}", page)
-                page_record = {
-                    "offset": offset,
-                    "artifact_id": page_artifact,
-                    **page,
-                }
-                pages.append(page_record)
-                total = _integer(page.get("total"), 0)
-                if expected_total is None:
-                    expected_total = total
-                elif total != expected_total:
-                    status = EvidenceStatus.PARTIAL
-                    limitations.append(
-                        "DataHub changed the advertised total while paging"
-                    )
-                if page.get("isPartial") is True:
-                    status = EvidenceStatus.PARTIAL
-                    limitations.append("DataHub marked a lineage page partial")
-                elif page.get("isPartial") is None:
-                    limitations.append("DataHub Core did not expose isPartial")
-                results = page.get("searchResults") or []
-                if not isinstance(results, list):
-                    raise Refusal(
-                        RefusalCode.EVIDENCE_PAGINATION_FAILED,
-                        "DataHub returned malformed lineage results.",
-                        {"offset": offset},
-                    )
-                for item in results:
-                    if not isinstance(item, dict):
-                        continue
-                    entity = item.get("entity")
-                    if not isinstance(entity, dict) or not isinstance(
-                        entity.get("urn"), str
+        reported_total = 0
+        global_offset = 0
+        for degree_bucket in degree_values(max_hops):
+            offset = 0
+            expected_bucket_total: int | None = None
+            while True:
+                try:
+                    if (
+                        forced_failure_offset is not None
+                        and global_offset == forced_failure_offset
                     ):
-                        continue
-                    consumer_urn = str(entity["urn"])
-                    if consumer_urn in seen:
-                        status = EvidenceStatus.PARTIAL
-                        limitations.append("DataHub repeated a consumer across pages")
-                        continue
-                    seen.add(consumer_urn)
-                    consumers.append(
+                        raise Refusal(
+                            RefusalCode.EVIDENCE_PAGINATION_FAILED,
+                            "A controlled pagination failure was injected.",
+                            {
+                                "degree_bucket": degree_bucket,
+                                "offset": offset,
+                            },
+                        )
+                    data = self.graph.graphql(
+                        LINEAGE_QUERY,
                         {
-                            "urn": consumer_urn,
-                            "entity_type": str(entity.get("type", "UNKNOWN")),
-                            "degree": item.get("degree"),
-                            "raw_artifact_id": page_artifact,
+                            "input": {
+                                "urn": urn,
+                                "direction": "DOWNSTREAM",
+                                "query": "*",
+                                "start": offset,
+                                "count": self.settings.page_size,
+                                "orFilters": [
+                                    {
+                                        "and": [
+                                            {
+                                                "field": "degree",
+                                                "condition": "EQUAL",
+                                                "values": [degree_bucket],
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "searchFlags": {
+                                    "skipHighlighting": True,
+                                    "maxAggValues": 100,
+                                },
+                            }
+                        },
+                    )
+                    page = data.get("searchAcrossLineage")
+                    if not isinstance(page, dict):
+                        raise Refusal(
+                            RefusalCode.EVIDENCE_PAGINATION_FAILED,
+                            "DataHub omitted a lineage page.",
+                            {
+                                "degree_bucket": degree_bucket,
+                                "offset": offset,
+                            },
+                        )
+                    page_artifact = writer.write(
+                        (
+                            "lineage-degree-"
+                            f"{degree_bucket.replace('+', '-plus')}"
+                            f"-page-{offset:05d}"
+                        ),
+                        page,
+                    )
+                    page_record = {
+                        "degree_bucket": degree_bucket,
+                        "offset": offset,
+                        "artifact_id": page_artifact,
+                        **page,
+                    }
+                    pages.append(page_record)
+                    total = _integer(page.get("total"), 0)
+                    if expected_bucket_total is None:
+                        expected_bucket_total = total
+                    elif total != expected_bucket_total:
+                        status = EvidenceStatus.PARTIAL
+                        limitations.append(
+                            "DataHub changed the advertised total while paging"
+                        )
+                    if page.get("isPartial") is True:
+                        status = EvidenceStatus.PARTIAL
+                        limitations.append("DataHub marked a lineage page partial")
+                    elif page.get("isPartial") is None:
+                        limitations.append("DataHub Core did not expose isPartial")
+                    results = page.get("searchResults") or []
+                    if not isinstance(results, list):
+                        raise Refusal(
+                            RefusalCode.EVIDENCE_PAGINATION_FAILED,
+                            "DataHub returned malformed lineage results.",
+                            {
+                                "degree_bucket": degree_bucket,
+                                "offset": offset,
+                            },
+                        )
+                    for item in results:
+                        if not isinstance(item, dict):
+                            continue
+                        entity = item.get("entity")
+                        if not isinstance(entity, dict) or not isinstance(
+                            entity.get("urn"), str
+                        ):
+                            continue
+                        consumer_urn = str(entity["urn"])
+                        if consumer_urn in seen:
+                            status = EvidenceStatus.PARTIAL
+                            limitations.append(
+                                "DataHub repeated a consumer across degree pages"
+                            )
+                            continue
+                        seen.add(consumer_urn)
+                        consumers.append(
+                            {
+                                "urn": consumer_urn,
+                                "entity_type": str(entity.get("type", "UNKNOWN")),
+                                "degree": item.get("degree"),
+                                "raw_artifact_id": page_artifact,
+                            }
+                        )
+                    returned = len(results)
+                    offset += returned
+                    global_offset += returned
+                    if offset >= (expected_bucket_total or 0):
+                        break
+                    if returned == 0:
+                        status = EvidenceStatus.PARTIAL
+                        limitations.append(
+                            "DataHub returned an empty page before its advertised total"
+                        )
+                        break
+                except Refusal as exc:
+                    status = EvidenceStatus.PARTIAL
+                    errors.append(
+                        {
+                            "degree_bucket": degree_bucket,
+                            "offset": offset,
+                            "refusal_code": str(exc.code),
+                            "message": exc.message,
                         }
                     )
-                returned = len(results)
-                offset += returned
-                if offset >= (expected_total or 0):
+                    limitations.append("A required lineage page failed")
                     break
-                if returned == 0:
-                    status = EvidenceStatus.PARTIAL
-                    limitations.append(
-                        "DataHub returned an empty page before its advertised total"
-                    )
-                    break
-            except Refusal as exc:
-                status = EvidenceStatus.PARTIAL
-                errors.append(
-                    {
-                        "offset": offset,
-                        "refusal_code": str(exc.code),
-                        "message": exc.message,
-                    }
-                )
-                limitations.append("A required lineage page failed")
-                break
-        if len(consumers) != (expected_total or 0):
+            reported_total += expected_bucket_total or 0
+        if len(consumers) != reported_total:
             status = EvidenceStatus.PARTIAL
             limitations.append(
                 "Returned consumers did not match DataHub's advertised total"
@@ -578,7 +603,7 @@ class DataHubBoundary:
             status=status,
             pages=pages,
             consumers=consumers,
-            reported_total=expected_total or 0,
+            reported_total=reported_total,
             returned_total=len(consumers),
             limitations=sorted(set(limitations)),
             errors=errors,
