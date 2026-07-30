@@ -1,0 +1,275 @@
+{
+  "applies": [
+    {
+      "actual_targets": [
+        "models/orders_model_00.sql"
+      ],
+      "apply_digest": "sha256:159fc8af18211a74b7b256f929a4e39484b14b7d34ba0eab42888f00542aa2fa",
+      "native_change_ids": [
+        "fb4ba869579b603817f46354aa1e66a0ca918631"
+      ],
+      "plan_digest": "sha256:b01d1afedc5032b8b5c712dbeba106e581f5f877a8ac7d604e5b61b202a3ed21"
+    },
+    {
+      "actual_targets": [
+        "models/orders_model_00.sql"
+      ],
+      "apply_digest": "sha256:557739197e41b3de7fd4de48343461ec1a2cd40150369166b9597bbfffe9a9f9",
+      "native_change_ids": [
+        "123e6908c229e0e207ee29968f31a5ee2e859736"
+      ],
+      "plan_digest": "sha256:71a562a448f1cc76084d1d91e57106e198f06e5db9a5ac68dcc95e9e6e04dc1e"
+    }
+  ],
+  "campaign": {
+    "blocker_codes": [
+      "POLICY_CONSUMER_OPAQUE",
+      "RECONCILIATION_REQUIRED"
+    ],
+    "consumer_count": 31,
+    "decision": "UNSAFE",
+    "event_count": 14,
+    "event_stream_digest": "sha256:df3ad815795d62da59b5f2babafc8f6c9b0c1002c7bee12a3a20e79c14562eea",
+    "opaque_consumer_count": 30,
+    "selected_consumer": {
+      "disposition": "VALIDATED",
+      "id": "dh-39b6c65bcbecb310e0cd",
+      "receipt_digest": "sha256:b89b6010882e93c0cffeb01e893598e2e71fe223c8379d0c2b11e65e04ac6bab"
+    },
+    "state": "BLOCKED"
+  },
+  "campaign_id": "ret-orders-git-dbt",
+  "captured_at": "2026-07-30T10:57:13.382937Z",
+  "compensation": {
+    "apply_commit": "fb4ba869579b603817f46354aa1e66a0ca918631",
+    "compensation_commit": "f7a2a0f3c9142282cea0d4cad630dea1e9e0e69f",
+    "compensation_digest": "sha256:23f6ee228141ff0feeb346546799bffbd2cd3f38a767e3b6092e3d4d568aefce",
+    "native_validation_result": "PASSED",
+    "restored_fingerprint": "sha256:3d28ecc6b98eb5ed2793f38294e73b16c5afd87bb2607293afd824897fe331ba"
+  },
+  "discovery": {
+    "layers": [
+      "bounded_text",
+      "dbt_manifest",
+      "dbt_compiled_sql"
+    ],
+    "limitations": [
+      "Only the declared source branch was searched",
+      "Text discovery is high-recall evidence, not completeness proof",
+      "External dbt packages are refused in the initial adapter"
+    ],
+    "mapping": {
+      "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_model_00,PROD)",
+      "mapping_basis": "exact_dbt_manifest_meta",
+      "original_file_path": "models/orders_model_00.sql",
+      "path": "models/orders_model_00.sql",
+      "unique_id": "model.retirement_conductor_consumer.orders_model_00"
+    }
+  },
+  "evidence_binding": {
+    "binding_digest": "sha256:8aa01e711b8ac43e996ce6f65454058158528507a8625b1014bfd39ac473f57c",
+    "campaign_id": "ret-orders-git-dbt",
+    "captured_at": "2026-07-30T10:46:03.479106Z",
+    "datahub_snapshot_digest": "sha256:a6e454ccfd284075bafa03717f8b76f049b465e34e4fe7037da1df7921e41425",
+    "evidence_envelope_digest": "sha256:37edc8a11b4df53388652482f40e911e1e24b35161ab856acbc43dfe684ade37",
+    "git_preflight_digest": "sha256:615dcaf807e55d8b01d6f5ecb8e4db0b4153591864a6f41e899ae1282c80a3e3",
+    "mode": "live",
+    "schema_version": "1.0.0",
+    "selected_consumer_id": "dh-39b6c65bcbecb310e0cd",
+    "selected_datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_model_00,PROD)"
+  },
+  "evidence_digest": "sha256:a7457dc96c6625b7c9f22cf8dd3474de99e4b4b6f227df9f8f5981117c112b6f",
+  "missing_approval": {
+    "raw_artifact_digest": "sha256:06cdeb5abf94163fbbd2403dd81cfbd24481af89f127e116dfd5a39a930f7b2b",
+    "refusal_code": "AUTH_APPROVAL_MISSING"
+  },
+  "mode": "live",
+  "plans": [
+    {
+      "after_fingerprint": "sha256:6a2fec61170c88ed28c135fea0f865d7b6593fa4db50eb226d911275dada3fcf",
+      "approved_target": "models/orders_model_00.sql",
+      "before_fingerprint": "sha256:3d28ecc6b98eb5ed2793f38294e73b16c5afd87bb2607293afd824897fe331ba",
+      "plan_digest": "sha256:71a562a448f1cc76084d1d91e57106e198f06e5db9a5ac68dcc95e9e6e04dc1e",
+      "source_version": "a827ddfe4543b4f767e3628f131ee739ef681605",
+      "target_branch": "codex/ret-orders-git-dbt-reapply-a827ddfe"
+    },
+    {
+      "after_fingerprint": "sha256:6a2fec61170c88ed28c135fea0f865d7b6593fa4db50eb226d911275dada3fcf",
+      "approved_target": "models/orders_model_00.sql",
+      "before_fingerprint": "sha256:3d28ecc6b98eb5ed2793f38294e73b16c5afd87bb2607293afd824897fe331ba",
+      "plan_digest": "sha256:b01d1afedc5032b8b5c712dbeba106e581f5f877a8ac7d604e5b61b202a3ed21",
+      "source_version": "a827ddfe4543b4f767e3628f131ee739ef681605",
+      "target_branch": "codex/ret-orders-git-dbt"
+    }
+  ],
+  "receipt": {
+    "adapter": {
+      "mode": "live",
+      "name": "git-dbt",
+      "version": "0.1.0"
+    },
+    "apply": {
+      "actual_targets": [
+        "models/orders_model_00.sql"
+      ],
+      "after_fingerprint": "sha256:6a2fec61170c88ed28c135fea0f865d7b6593fa4db50eb226d911275dada3fcf",
+      "before_fingerprint": "sha256:3d28ecc6b98eb5ed2793f38294e73b16c5afd87bb2607293afd824897fe331ba",
+      "native_change_ids": [
+        "123e6908c229e0e207ee29968f31a5ee2e859736"
+      ],
+      "result": "APPLIED"
+    },
+    "campaign_id": "ret-orders-git-dbt",
+    "captured_at": "2026-07-30T10:47:53.546953Z",
+    "compensation": {
+      "available": true,
+      "exercised": true,
+      "result": "RESTORED"
+    },
+    "consumer_id": "dh-39b6c65bcbecb310e0cd",
+    "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_model_00,PROD)",
+    "expires_at": null,
+    "limitations": [
+      "Only the declared source branch was searched",
+      "Text discovery is high-recall evidence, not completeness proof",
+      "External dbt packages are refused in the initial adapter"
+    ],
+    "native_identity": {
+      "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_model_00,PROD)",
+      "dbt_unique_id": "model.retirement_conductor_consumer.orders_model_00",
+      "path": "models/orders_model_00.sql",
+      "replacement": {
+        "compatible": true,
+        "evidence_digest": "sha256:5c4f89295ee9042f66aa4388976c051877d1addecbf0068fab20359af69c6a0e",
+        "replacement": {
+          "datahub_native_type": "VARCHAR",
+          "dbt_data_type": "varchar",
+          "field": "order_status"
+        },
+        "target": {
+          "datahub_native_type": "VARCHAR",
+          "dbt_data_type": "varchar",
+          "field": "legacy_status"
+        }
+      },
+      "repository_id": "analytics",
+      "repository_identity": "sha256:257d6aaa433e392baa99a4e47e4395ac2f735cc431bb623ad7e4bc2457c6e034",
+      "source_domain": "git-dbt"
+    },
+    "plan": {
+      "approved_targets": [
+        "models/orders_model_00.sql"
+      ],
+      "digest": "sha256:71a562a448f1cc76084d1d91e57106e198f06e5db9a5ac68dcc95e9e6e04dc1e",
+      "proposed_targets": [
+        "models/orders_model_00.sql"
+      ]
+    },
+    "receipt_digest": "sha256:b89b6010882e93c0cffeb01e893598e2e71fe223c8379d0c2b11e65e04ac6bab",
+    "receipt_id": "git-dbt-dh-39b6c65bcbecb310e0cd-123e6908c229",
+    "schema_version": "1.0.0",
+    "source_before": {
+      "fingerprint": "sha256:3d28ecc6b98eb5ed2793f38294e73b16c5afd87bb2607293afd824897fe331ba",
+      "version": "a827ddfe4543b4f767e3628f131ee739ef681605"
+    },
+    "terminal_disposition": "VALIDATED",
+    "validation": {
+      "artifact_ids": [
+        "sha256:32b20720ff7d31c02c5d3182064868d64a100da16264283a81674f5e00ed0b1b",
+        "sha256:36c3d71088aca51cb517eb70df17ba41e574ae33ea2cb943e79b6d64e73a1b77",
+        "sha256:4046157deaae5fc5079d9c9664f1c1c86fd164384e3615fb8b7cb3a00a05e5ca",
+        "sha256:5bf74d93da37301f2785cd863aeea0d92eaed1feac01e7641aca79cdf3cb9ebd",
+        "sha256:c8416db84e43bcba94e965a9ab0ef37ca2990b1ab62522646b34a11d7c5472f1",
+        "sha256:fba0e13664193632170827aa6c50d24334dc8017506e881c84c78ec7fe76b7f1"
+      ],
+      "result": "PASSED",
+      "validator": "dbt parse + seed + build + test on DuckDB",
+      "validator_version": "1.12.0"
+    }
+  },
+  "replacement": {
+    "basis": [
+      "live_datahub_schema",
+      "dbt_manifest_seed_columns",
+      "declared_same_dataset_replacement"
+    ],
+    "compatible": true,
+    "replacement": {
+      "datahub_native_type": "VARCHAR",
+      "dbt_data_type": "varchar",
+      "field": "order_status"
+    },
+    "target": {
+      "datahub_native_type": "VARCHAR",
+      "dbt_data_type": "varchar",
+      "field": "legacy_status"
+    }
+  },
+  "repository": {
+    "clean": true,
+    "current_head": "123e6908c229e0e207ee29968f31a5ee2e859736",
+    "current_review_branch": "codex/ret-orders-git-dbt-reapply-a827ddfe",
+    "default_branch": "main",
+    "non_default_branches_searched": false,
+    "safe_identity": "sha256:257d6aaa433e392baa99a4e47e4395ac2f735cc431bb623ad7e4bc2457c6e034",
+    "searched_branches": [
+      "main"
+    ],
+    "source_version": "a827ddfe4543b4f767e3628f131ee739ef681605"
+  },
+  "schema_version": "1.0.0",
+  "validation": {
+    "adapter_version": "1.10.1",
+    "commands": [
+      {
+        "arguments": [
+          "parse",
+          "--no-partial-parse"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "arguments": [
+          "seed",
+          "--full-refresh"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "arguments": [
+          "build"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "arguments": [
+          "test"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      }
+    ],
+    "result": "PASSED",
+    "sandbox": {
+      "engine": "bubblewrap",
+      "environment": "allowlisted",
+      "host_home_mounted": false,
+      "network": "unshared",
+      "resource_limits": {
+        "address_space_bytes": 3221225472,
+        "file_size_bytes": 536870912,
+        "open_files": 256,
+        "processes": 128,
+        "timeout_seconds": 180
+      },
+      "source_repository_mounted": false,
+      "workspace_copy_mounted": true
+    },
+    "validation_digest": "sha256:f0eac4ea3c19c2af6747005fae4dd0f15a0b7678ef62c98fa7b8422779d88f93",
+    "validator": "dbt parse + seed + build + test on DuckDB",
+    "validator_version": "1.12.0"
+  }
+}

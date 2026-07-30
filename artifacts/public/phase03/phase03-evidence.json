@@ -1,0 +1,28 @@
+{
+  "artifacts": {
+    "adversarial": "artifacts/public/phase03/adversarial-evidence.json",
+    "execution": "artifacts/public/phase03/execution-evidence.json"
+  },
+  "assertions": {
+    "adversarial_boundaries_refused_or_contained": true,
+    "approval_bound_before_mutation": true,
+    "campaign_not_ready_before_reconciliation": true,
+    "exact_datahub_consumer_mapped": true,
+    "live_receipt_accepted": true,
+    "native_dbt_validation_passed": true,
+    "one_file_diff_exact": true,
+    "reapply_verified": true,
+    "repeated_apply_idempotent": true,
+    "repository_evidence_joined": true,
+    "rollback_verified": true
+  },
+  "campaign_id": "ret-orders-git-dbt",
+  "evidence_digest": "sha256:8716e2e578cdf53c0157bd72afb084989e4f50825f17828e1e55ad1a7adc9032",
+  "mode": "live",
+  "schema_version": "1.0.0",
+  "test_sources": [
+    "tests/unit/test_git_dbt.py",
+    "tests/unit/test_git_dbt_config.py",
+    "tests/integration/test_git_dbt_workflow.py"
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "captured_at": "2026-07-30T10:57:13.449398Z",
+  "evidence_digest": "sha256:9d933ed93fd78a3e98d78a7197983b0b8b0abf5c33ae1f5aa180e548ea3f39c8",
+  "input": "public adversarial dbt fixtures in disposable repositories",
+  "limitations": [
+    "Probes used local disposable Git repositories and DuckDB",
+    "No production repository, warehouse, or credential was mounted",
+    "A failed escape attempt proves this boundary, not every host kernel"
+  ],
+  "mode": "live",
+  "private_probe_root_digest": "sha256:d34235f5262b10486e4b68cf5219c5a62f0ba0eb73ef091d764c4873b7e70ff8",
+  "probes": {
+    "branch_moved": {
+      "message": "The source branch or commit moved before apply.",
+      "moved_head_preserved": true,
+      "refusal_code": "SOURCE_GIT_BRANCH_MOVED",
+      "result": "REFUSED"
+    },
+    "compensation_conflict": {
+      "intervening_edit_preserved": true,
+      "message": "Compensation preconditions changed; the intervening edit was preserved.",
+      "refusal_code": "COMPENSATION_CONFLICT",
+      "result": "REFUSED"
+    },
+    "expanded_target": {
+      "actual_changed_paths": [
+        "README.md",
+        "models/orders_model_00.sql"
+      ],
+      "message": "A partial apply changed an unexpected target.",
+      "refusal_code": "SCOPE_TARGET_NOT_ALLOWED",
+      "result": "REFUSED"
+    },
+    "external_dependency": {
+      "message": "External dbt dependencies are unsupported in the initial adapter.",
+      "refusal_code": "VALIDATION_SCOPE_VIOLATION",
+      "result": "REFUSED"
+    },
+    "incompatible_replacement": {
+      "message": "Live DataHub and dbt metadata did not prove compatible field types.",
+      "refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+      "result": "REFUSED"
+    },
+    "malicious_hook": {
+      "apply_digest": "sha256:bc3f47613cb573143f859de576c5021932887c1518998405304e26b1be11c64e",
+      "idempotent": true,
+      "marker_created": false,
+      "replay_digest": "sha256:bc3f47613cb573143f859de576c5021932887c1518998405304e26b1be11c64e",
+      "result": "HOOK_SKIPPED"
+    },
+    "missing_replacement": {
+      "message": "dbt source metadata did not expose both field identities.",
+      "refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+      "result": "REFUSED"
+    },
+    "network_attempt": {
+      "failed_command": [
+        "build"
+      ],
+      "result": "FAILED",
+      "sandbox_network": "unshared"
+    },
+    "path_traversal": {
+      "message": "The repository target path is not a safe relative path.",
+      "refusal_code": "SCOPE_PATH_OUTSIDE_ROOT",
+      "result": "REFUSED"
+    },
+    "plan_only": {
+      "message": "Git/dbt apply is disabled by configuration.",
+      "refusal_code": "AUTH_APPLY_DISABLED",
+      "result": "REFUSED",
+      "unchanged": true
+    },
+    "secret_read": {
+      "failed_command": [
+        "parse",
+        "--no-partial-parse"
+      ],
+      "host_secret_observed": false,
+      "result": "FAILED"
+    },
+    "semantic_wrong": {
+      "failed_command": [
+        "build"
+      ],
+      "result": "FAILED",
+      "validation_digest": "sha256:81e2e9c1e5e493e83b8898ae24d29ff15c8e00c2bfed95f7a8d4dbd577f3d4be"
+    },
+    "stale_content": {
+      "intervening_edit_preserved": true,
+      "message": "Unexpected repository changes exist before apply.",
+      "refusal_code": "SOURCE_GIT_DIRTY",
+      "result": "REFUSED"
+    },
+    "subprocess_attempt": {
+      "failed_command": [
+        "build"
+      ],
+      "host_marker_created": false,
+      "result": "FAILED"
+    },
+    "symlink_escape": {
+      "message": "Repository symlinks are refused before validation.",
+      "refusal_code": "VALIDATION_SCOPE_VIOLATION",
+      "result": "REFUSED"
+    },
+    "unauthorized_target": {
+      "branch_unchanged": true,
+      "message": "The plan contains a path outside the authorization allowlist.",
+      "refusal_code": "SCOPE_TARGET_NOT_ALLOWED",
+      "result": "REFUSED"
+    }
+  },
+  "schema_version": "1.0.0",
+  "tool_versions": {
+    "adapter": "0.1.0",
+    "dbt_core": "1.12.0",
+    "dbt_duckdb": "1.10.1",
+    "duckdb": "1.5.5",
+    "git": "git version 2.53.0"
+  }
+}

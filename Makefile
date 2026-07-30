@@ -1,6 +1,6 @@
 .PHONY: check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
 	format git-dbt-tool git-dbt-workspace phase00-evidence phase01-evidence \
-	phase02-evidence test
+	phase02-evidence phase03-evidence test
 
 check:
 	uv run ruff check src tests scripts
@@ -54,6 +54,9 @@ phase01-evidence:
 
 phase02-evidence:
 	uv run python scripts/generate_phase02_evidence.py
+
+phase03-evidence:
+	uv run python scripts/generate_phase03_evidence.py
 
 test:
 	uv run pytest
