@@ -577,6 +577,8 @@ def run() -> dict[str, Any]:
                 "git-dbt",
                 "apply",
                 *common,
+                "--confirm-plan-digest",
+                str(planned["plan"]["plan_digest"]),
             ],
             expected_exit=2,
             expected_refusal="AUTH_APPROVAL_MISSING",
@@ -613,6 +615,8 @@ def run() -> dict[str, Any]:
                 "git-dbt",
                 "apply",
                 *common,
+                "--confirm-plan-digest",
+                str(planned["plan"]["plan_digest"]),
             ],
         )
         require(

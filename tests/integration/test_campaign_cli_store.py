@@ -39,7 +39,20 @@ def test_campaign_create_inspect_and_export_commands(
     created = read_output(capsys)
     assert created["result"] == "OK"
 
-    assert main(["campaign", "inspect", CAMPAIGN_ID, *common]) == 0
+    assert (
+        main(
+            [
+                "campaign",
+                "inspect",
+                "--campaign",
+                CAMPAIGN_ID,
+                *common,
+                "--format",
+                "json",
+            ]
+        )
+        == 0
+    )
     inspected = read_output(capsys)
     created_manifest = created["manifest"]
     inspected_manifest = inspected["manifest"]
@@ -99,6 +112,7 @@ def test_campaign_resume_command(tmp_path: Path, capsys: object) -> None:
         [
             "campaign",
             "resume",
+            "--campaign",
             CAMPAIGN_ID,
             "--state",
             "INVENTORIED",
@@ -110,6 +124,8 @@ def test_campaign_resume_command(tmp_path: Path, capsys: object) -> None:
             str(database),
             "--writer-id",
             "writer-one",
+            "--format",
+            "json",
         ]
     )
 

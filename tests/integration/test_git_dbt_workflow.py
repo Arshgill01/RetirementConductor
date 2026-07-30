@@ -227,8 +227,16 @@ def test_workflow_requires_approval_then_rolls_back_reapplies_and_receipts(
         )
 
         first_plan = workflow.plan(campaign_id)["plan"]
+        with pytest.raises(Refusal, match="AUTH_APPROVAL_WRONG_PLAN"):
+            workflow.apply(
+                campaign_id,
+                confirmed_plan_digest=f"sha256:{'0' * 64}",
+            )
         with pytest.raises(Refusal, match="AUTH_APPROVAL_MISSING"):
-            workflow.apply(campaign_id)
+            workflow.apply(
+                campaign_id,
+                confirmed_plan_digest=str(first_plan["plan_digest"]),
+            )
         assert _git(repository, "branch", "--show-current") == "main"
         assert (
             store.connection.execute(
@@ -244,9 +252,15 @@ def test_workflow_requires_approval_then_rolls_back_reapplies_and_receipts(
             authorized_at=authorized_at,
             expires_at=_rfc3339_after(authorized_at, hours=1),
         )
-        first_apply = workflow.apply(campaign_id)["apply"]
+        first_apply = workflow.apply(
+            campaign_id,
+            confirmed_plan_digest=str(first_plan["plan_digest"]),
+        )["apply"]
         event_count = len(store.events(campaign_id))
-        replay = workflow.apply(campaign_id)["apply"]
+        replay = workflow.apply(
+            campaign_id,
+            confirmed_plan_digest=str(first_plan["plan_digest"]),
+        )["apply"]
         assert replay["apply_digest"] == first_apply["apply_digest"]
         assert len(store.events(campaign_id)) == event_count
 
@@ -267,7 +281,10 @@ def test_workflow_requires_approval_then_rolls_back_reapplies_and_receipts(
             authorized_at=authorized_at,
             expires_at=_rfc3339_after(authorized_at, hours=1),
         )
-        workflow.apply(campaign_id)
+        workflow.apply(
+            campaign_id,
+            confirmed_plan_digest=str(second_plan["plan_digest"]),
+        )
         result = workflow.validate(campaign_id)
 
         assert result["receipt"]["consumer_id"] == consumer_id

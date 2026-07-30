@@ -6,7 +6,7 @@ import argparse
 import json
 import os
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +30,13 @@ from retirement_conductor.git_dbt import GitDbtAdapter
 from retirement_conductor.git_dbt_config import GitDbtSettings
 from retirement_conductor.git_dbt_workflow import GitDbtWorkflow
 from retirement_conductor.mcp_http import HttpMCPClient
+from retirement_conductor.operator import (
+    build_campaign_view,
+    render_campaign_explain,
+    render_campaign_inspect,
+    safe_report_filename,
+    write_campaign_report,
+)
 from retirement_conductor.publication import publication_source_manifest
 from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.specification import load_specification
@@ -74,7 +81,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     campaign = subparsers.add_parser(
         "campaign",
-        help="create, replay, inspect, evaluate, resume, or export a campaign",
+        help="create, replay, inspect, explain, evaluate, resume, or export a campaign",
     )
     campaign_subparsers = campaign.add_subparsers(
         dest="campaign_command", required=True
@@ -92,11 +99,17 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--occurred-at", required=True)
 
     inspect = campaign_subparsers.add_parser("inspect")
-    inspect.add_argument("campaign_id")
-    _add_store_arguments(inspect)
+    _add_campaign_selection(inspect)
+    _add_runtime_arguments(inspect)
+    _add_output_format(inspect, default="text")
+
+    explain = campaign_subparsers.add_parser("explain")
+    _add_campaign_selection(explain)
+    _add_runtime_arguments(explain)
+    _add_output_format(explain, default="text")
 
     resume = campaign_subparsers.add_parser("resume")
-    resume.add_argument("campaign_id")
+    _add_campaign_selection(resume)
     resume.add_argument(
         "--state",
         choices=[
@@ -108,7 +121,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     resume.add_argument("--occurred-at", required=True)
     resume.add_argument("--idempotency-key", required=True)
-    _add_store_arguments(resume)
+    _add_runtime_arguments(resume)
+    _add_output_format(resume, default="text")
 
     export = campaign_subparsers.add_parser("export")
     export.add_argument("campaign_id")
@@ -158,6 +172,8 @@ def build_parser() -> argparse.ArgumentParser:
         _add_live_campaign_arguments(operation)
         if command in {"apply", "compensate"}:
             operation.add_argument("--occurred-at")
+        if command == "apply":
+            operation.add_argument("--confirm-plan-digest")
         if command == "validate":
             operation.add_argument("--expires-at")
     authorize = git_dbt_subparsers.add_parser("authorize")
@@ -186,12 +202,47 @@ def build_parser() -> argparse.ArgumentParser:
     _add_live_campaign_arguments(gate)
     _add_producer_path_arguments(gate)
     gate.add_argument("--plan", type=Path)
+
+    report = subparsers.add_parser(
+        "report",
+        help="build a deterministic report from canonical campaign state",
+    )
+    report_subparsers = report.add_subparsers(
+        dest="report_command",
+        required=True,
+    )
+    report_build = report_subparsers.add_parser("build")
+    _add_live_campaign_arguments(report_build)
+    report_build.add_argument("--output", type=Path)
+    report_build.add_argument(
+        "--public",
+        action="store_true",
+        help="redact identities and sensitive source details for public export",
+    )
+    _add_output_format(report_build, default="text")
     return parser
 
 
 def _add_store_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--store", type=Path, required=True)
     parser.add_argument("--writer-id", required=True)
+
+
+def _add_campaign_selection(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("campaign_id", nargs="?")
+    parser.add_argument("--campaign", dest="selected_campaign_id")
+
+
+def _add_output_format(
+    parser: argparse.ArgumentParser,
+    *,
+    default: str,
+) -> None:
+    parser.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default=default,
+    )
 
 
 def _add_live_campaign_arguments(parser: argparse.ArgumentParser) -> None:
@@ -347,6 +398,23 @@ def _load_fixture_events(source: Path) -> list[dict[str, Any]]:
     return events
 
 
+def _selected_campaign_id(args: argparse.Namespace) -> str:
+    positional = getattr(args, "campaign_id", None)
+    selected = getattr(args, "selected_campaign_id", None)
+    if positional and selected and positional != selected:
+        raise Refusal(
+            "SPEC_SCHEMA_INVALID",
+            "The positional and --campaign identifiers do not match.",
+        )
+    campaign_id = selected or positional
+    if not isinstance(campaign_id, str) or not campaign_id.strip():
+        raise Refusal(
+            "SPEC_SCHEMA_INVALID",
+            "The command requires one campaign identifier.",
+        )
+    return campaign_id
+
+
 def _render(value: object) -> None:
     print(
         json.dumps(
@@ -355,6 +423,19 @@ def _render(value: object) -> None:
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
+        )
+    )
+
+
+def _render_report_result(value: Mapping[str, Any]) -> None:
+    print(
+        "\n".join(
+            [
+                f"Report built: {value['output']}",
+                f"Decision: {value['decision']}",
+                f"Export mode: {value['export_mode']}",
+                f"Manifest digest: {value['manifest_digest']}",
+            ]
         )
     )
 
@@ -402,8 +483,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                         expires_at=args.expires_at,
                     )
                 elif args.adapter_command == "apply":
+                    if not args.confirm_plan_digest:
+                        raise Refusal(
+                            "AUTH_APPROVAL_MISSING",
+                            "Apply requires explicit confirmation of the exact "
+                            "plan digest. Review the plan and pass "
+                            "--confirm-plan-digest.",
+                        )
                     result = workflow.apply(
                         args.campaign_id,
+                        confirmed_plan_digest=args.confirm_plan_digest,
                         occurred_at=args.occurred_at,
                     )
                 elif args.adapter_command == "compensate":
@@ -417,6 +506,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                         expires_at=args.expires_at,
                     )
             _render(result)
+            return 0
+        if args.command == "report" and args.report_command == "build":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                manifest = store.materialize(args.campaign_id)
+            report_filename = safe_report_filename(args.campaign_id)
+            report_directory = report_filename.removesuffix(".html")
+            output = args.output or (
+                Path(args.artifact_dir) / report_directory / "report" / report_filename
+            )
+            result = write_campaign_report(
+                manifest,
+                output,
+                public=args.public,
+            )
+            if args.format == "json":
+                _render(result)
+            else:
+                _render_report_result(result)
             return 0
         if args.command == "producer" and args.producer_command == "plan":
             with CampaignStore(args.store, writer_id=args.writer_id) as store:
@@ -684,12 +791,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                         occurred_at=args.occurred_at,
                     )
                 elif args.campaign_command == "resume":
+                    campaign_id = _selected_campaign_id(args)
                     manifest = store.resume(
-                        args.campaign_id,
+                        campaign_id,
                         CampaignState(args.state),
                         occurred_at=args.occurred_at,
                         idempotency_key=args.idempotency_key,
                     )
+                elif args.campaign_command in {"inspect", "explain"}:
+                    campaign_id = _selected_campaign_id(args)
+                    manifest = store.materialize(campaign_id)
                 else:
                     manifest = store.materialize(args.campaign_id)
                 if args.campaign_command == "export":
@@ -702,6 +813,20 @@ def main(argv: Sequence[str] | None = None) -> int:
                             "output": args.output.name,
                         }
                     )
+                elif args.campaign_command in {"inspect", "explain", "resume"}:
+                    view = build_campaign_view(manifest)
+                    if args.format == "json":
+                        _render(
+                            {
+                                "result": "OK",
+                                "view": view,
+                                "manifest": manifest,
+                            }
+                        )
+                    elif args.campaign_command == "explain":
+                        print(render_campaign_explain(view))
+                    else:
+                        print(render_campaign_inspect(view))
                 else:
                     _render({"result": "OK", "manifest": manifest})
                 return 0

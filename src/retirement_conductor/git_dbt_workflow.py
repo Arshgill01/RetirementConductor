@@ -178,6 +178,12 @@ class GitDbtWorkflow:
                 return {
                     "result": "PLANNED",
                     "plan": plan,
+                    "apply_confirmation": {
+                        "required": True,
+                        "argument": "--confirm-plan-digest",
+                        "plan_digest": plan["plan_digest"],
+                        "authorized_targets": [plan["target"]["path"]],
+                    },
                     "manifest": self.store.materialize(campaign_id),
                 }
             raise Refusal(
@@ -209,7 +215,17 @@ class GitDbtWorkflow:
             source_version=str(plan["repository"]["source_version"]),
             approved_targets=[str(plan["target"]["path"])],
         )
-        return {"result": "PLANNED", "plan": plan, "manifest": manifest}
+        return {
+            "result": "PLANNED",
+            "plan": plan,
+            "apply_confirmation": {
+                "required": True,
+                "argument": "--confirm-plan-digest",
+                "plan_digest": plan["plan_digest"],
+                "authorized_targets": [plan["target"]["path"]],
+            },
+            "manifest": manifest,
+        }
 
     def authorize(
         self,
@@ -262,11 +278,21 @@ class GitDbtWorkflow:
         self,
         campaign_id: str,
         *,
+        confirmed_plan_digest: str,
         occurred_at: str | None = None,
     ) -> dict[str, Any]:
         operation_time = occurred_at or utc_now()
         specification = self.store.specification(campaign_id)
         plan = self._plan(campaign_id)
+        if confirmed_plan_digest != plan["plan_digest"]:
+            raise Refusal(
+                RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+                "Apply confirmation does not match the exact current plan digest.",
+                {
+                    "confirmed_plan_digest": confirmed_plan_digest,
+                    "current_plan_digest": plan["plan_digest"],
+                },
+            )
         projection = self.store.projection(campaign_id)
         consumer = self._require_current_plan(projection.consumers, plan)
         disposition = ConsumerDisposition(str(consumer["disposition"]))
@@ -309,6 +335,8 @@ class GitDbtWorkflow:
         return {
             "result": "APPLIED",
             "apply": apply_record,
+            "confirmed_plan_digest": confirmed_plan_digest,
+            "authorized_targets": [plan["target"]["path"]],
             "manifest": manifest,
         }
 
