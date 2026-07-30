@@ -135,5 +135,13 @@ retirement-conductor validate-spec fixtures/specs/valid.yaml
 retirement-conductor fixture run fixtures/specs/valid.yaml
 ```
 
+The deterministic campaign kernel can replay and evaluate the tracked blocked
+fixture:
+
+```bash
+retirement-conductor campaign replay fixtures/campaigns/blocked
+retirement-conductor campaign evaluate fixtures/campaigns/blocked
+```
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.

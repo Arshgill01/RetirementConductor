@@ -181,3 +181,15 @@ Why: YAML and JSON Schema have mature edge-case behavior that should not be
 reimplemented in the safety boundary. Both runtime dependencies are small,
 permissively licensed, pinned in `uv.lock`, and isolated from campaign
 authority.
+
+## D-017 — event replay is authoritative over materialized state
+
+Status: accepted.
+
+Commit each validated event before updating the cached manifest. On restart,
+verify the event sequence, predecessor chain, and digests, then repair a cache
+only when it is an intact prefix of the authoritative replay. Refuse a cache
+whose own digest fails or whose history diverges.
+
+Why: a crash after event commit can legitimately leave a stale cache, while
+silently accepting arbitrary cache divergence could manufacture readiness.

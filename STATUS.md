@@ -7,21 +7,22 @@ contract; `PLAN.md` defines proof order.
 ## Current state
 
 - Execution state: active
-- Active phase: 01
+- Active phase: 02
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
 - Current external blocker: none
-- Next acceptance target: deterministic campaign state, SQLite replay, policy,
-  interruption recovery, and manifest digest parity
-- Last repository validation: phase 00 acceptance passed at
-  `6692a3ca20db61766bc109353fccfafb2db27b1f`
+- Next acceptance target: live disposable DataHub identity resolution,
+  fully-paged evidence envelopes, counterfactual context, and stable
+  write/read-back
+- Last repository validation: phase 01 acceptance passed at
+  `30173f160c3c87a8daf0a3c1988c7ccde10662ec`
 
 ## Phase ledger
 
 | Phase | State | Direct evidence | Remaining boundary |
 |---|---|---|---|
 | 00 | complete | `EP-000` at `6692a3c`; strict schemas, 24 tests, eight refusal fixtures, clean wheel smoke test | none |
-| 01 | active | phase 00 event and manifest contracts | implement and run phase acceptance |
-| 02 | queued | prior experiment baseline only | implement against disposable Core |
+| 01 | complete | `EP-001` at `30173f1`; 85 tests, SQLite replay parity, interruption and refusal matrix | none |
+| 02 | active | prior experiment baseline only | implement and run against disposable Core |
 | 03 | queued | prior experiment baseline only | implement product adapter and live disposable run |
 | 04 | queued | none | phases 02 and 03 |
 | 05 | queued | none | canonical phase 04 manifests |
