@@ -1,0 +1,223 @@
+{
+  "campaign_id": "ret-orders-live-status",
+  "captured_at": "2026-07-30T10:10:22.444623Z",
+  "claim_confidence_bases": [
+    "canonical_lineage_edge",
+    "column_lineage_edge"
+  ],
+  "consumer_count": 31,
+  "consumer_types": {
+    "CHART": 6,
+    "DASHBOARD": 4,
+    "DATASET": 21
+  },
+  "counterfactual": {
+    "authority": "scope comparison only; not native identity or closure",
+    "configured_repository_consumer_count": 1,
+    "datahub_materially_expands_inventory": true,
+    "datahub_observed_consumer_count": 31,
+    "identity_overlap": "unknown; minimum assumes every configured repository match overlaps one DataHub consumer",
+    "minimum_additional_consumer_count": 30,
+    "observations": [
+      {
+        "inspected_file_count": 1,
+        "limitations": [],
+        "matched_consumer_count": 1,
+        "matched_paths": [
+          "models/order_summary.sql"
+        ],
+        "repository_id": "analytics",
+        "required": true,
+        "root_identity": "sha256:7842d3edde35f67f26742f7a4dae927ca4b1a61639ff06cdc1b3fee6c13f404a"
+      }
+    ],
+    "status": "COMPLETE"
+  },
+  "evidence_digest": "sha256:070ad0cd8522f3228e636d0c1d5f9004ad155e0216cc981159a5c5bc7e1f37c5",
+  "evidence_envelope": {
+    "captured_at": "2026-07-30T10:10:22.444623Z",
+    "envelope_digest": "sha256:e0645a3147101600a37aa6cccebc95f714ad0b85140424fc7ce471ae8da507ad",
+    "mode": "live",
+    "schema_version": "1.0.0",
+    "sources": [
+      {
+        "artifact_ids": [
+          "sha256:26426380342f42e44ea8d9f181d1ef996e5e2534ddd0b81f03de7340f2007d74",
+          "sha256:4956f5fba8af7b95e3be050b3202db78761fb785c15e14af1620b52eddde14a9",
+          "sha256:52d9361228ebebf7aa3b0429b34fea6435e9cd52b8da4f718cec98cab40db1a1",
+          "sha256:59e960bc077356eedc220346695a61b1362ffd927fc42f09dbabf59166c5ecab",
+          "sha256:6290fef09189233eb59a9a70b99e28ef171235c35f418fa26e1277cda8a4e414",
+          "sha256:8e6d77953f56516d41db33c56443947ad235764ac89c1c67dd83e910df5d91da",
+          "sha256:a4cd7536be3b6cea5d2cfd09ccf16038c2ab946c5a27c88f821f95c763c61167",
+          "sha256:aab340e53e6be53ac6c6a817ed14067b54c8cf7f8b1fafc2d0e0427a05698199",
+          "sha256:adc40687a9cdfeaaa9b5c04ad2265e9af05c4007c6e9893f13e50bceb6bc1a32",
+          "sha256:b6ecac9b64b376c388e71869e2fab60f5057c207e618833d84e5ce02601ee51a",
+          "sha256:cd8e4b2edb3ae44922c963a90d85022fff905240ce05ac36c6760d348128d033",
+          "sha256:dc877301c593f2facd86655b655139a935e80127aa8c8fbd0edef7af06ec2741",
+          "sha256:de98533bfb05ca84357e7fde6dfac4fe4446390d8638338d6eb0921bccf52492",
+          "sha256:e61424aa15067e2da0b1c2ec01d29cd8f2c1139d640d010061743a247823fd7b"
+        ],
+        "freshness": {
+          "maximum_age_seconds": 900,
+          "observed_at": "2026-07-30T10:10:22.444623Z",
+          "source_updated_at": "2026-07-30T10:03:14.597917Z"
+        },
+        "id": "datahub",
+        "identity": "http://127.0.0.1:18080",
+        "limitations": [
+          "DataHub Core did not expose isPartial",
+          "Ownership is routing context only",
+          "Query-history absence is not closure evidence",
+          "Table-only lineage cannot authorize field mutation or closure"
+        ],
+        "permissions": {
+          "effective_scope": "disposable Core metadata read and campaign document write",
+          "principal": "anonymous-disposable-core"
+        },
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "filters": [],
+          "max_hops": 3,
+          "pages": 7,
+          "reported_total": 31,
+          "returned_total": 31
+        },
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "status": "COMPLETE"
+      }
+    ]
+  },
+  "hop_depths": {
+    "1": 3,
+    "2": 18,
+    "3": 10
+  },
+  "mode": "live",
+  "ownership": {
+    "observations": [
+      {
+        "authority": "routing_only",
+        "provenance": "datahub_ownership",
+        "urn": "urn:li:corpGroup:retirement-conductor-data"
+      }
+    ],
+    "routing_only": true
+  },
+  "pagination": {
+    "errors": [],
+    "pages": 7,
+    "reported_total": 31,
+    "returned_total": 31,
+    "status": "COMPLETE"
+  },
+  "query_history": {
+    "closure_authority": false,
+    "retention_window": null,
+    "returned": 0,
+    "total": 0
+  },
+  "raw_artifacts": [
+    {
+      "digest": "sha256:26426380342f42e44ea8d9f181d1ef996e5e2534ddd0b81f03de7340f2007d74",
+      "runtime_name": "lineage-page-00000-cc30216ac54ce3d2.json"
+    },
+    {
+      "digest": "sha256:4956f5fba8af7b95e3be050b3202db78761fb785c15e14af1620b52eddde14a9",
+      "runtime_name": "lineage-page-00020-94f6a151da8b9e74.json"
+    },
+    {
+      "digest": "sha256:52d9361228ebebf7aa3b0429b34fea6435e9cd52b8da4f718cec98cab40db1a1",
+      "runtime_name": "target-search-00000-9dac91c59310abe8.json"
+    },
+    {
+      "digest": "sha256:59e960bc077356eedc220346695a61b1362ffd927fc42f09dbabf59166c5ecab",
+      "runtime_name": "lineage-page-00010-6961a9446005baa3.json"
+    },
+    {
+      "digest": "sha256:6290fef09189233eb59a9a70b99e28ef171235c35f418fa26e1277cda8a4e414",
+      "runtime_name": "query-history-redacted-e88577ac69e6a7b6.json"
+    },
+    {
+      "digest": "sha256:8e6d77953f56516d41db33c56443947ad235764ac89c1c67dd83e910df5d91da",
+      "runtime_name": "lineage-page-00025-5b20817ed771dd09.json"
+    },
+    {
+      "digest": "sha256:a4cd7536be3b6cea5d2cfd09ccf16038c2ab946c5a27c88f821f95c763c61167",
+      "runtime_name": "field-lineage-a10086377cac7dc9.json"
+    },
+    {
+      "digest": "sha256:aab340e53e6be53ac6c6a817ed14067b54c8cf7f8b1fafc2d0e0427a05698199",
+      "runtime_name": "target-entity-cb23f3a85802f72e.json"
+    },
+    {
+      "digest": "sha256:adc40687a9cdfeaaa9b5c04ad2265e9af05c4007c6e9893f13e50bceb6bc1a32",
+      "runtime_name": "lineage-page-00030-0fbf8c51aa06d937.json"
+    },
+    {
+      "digest": "sha256:b6ecac9b64b376c388e71869e2fab60f5057c207e618833d84e5ce02601ee51a",
+      "runtime_name": "lineage-page-00005-c52d955424c7bd25.json"
+    },
+    {
+      "digest": "sha256:cd8e4b2edb3ae44922c963a90d85022fff905240ce05ac36c6760d348128d033",
+      "runtime_name": "lineage-page-00015-9b439c9930abf784.json"
+    },
+    {
+      "digest": "sha256:dc877301c593f2facd86655b655139a935e80127aa8c8fbd0edef7af06ec2741",
+      "runtime_name": "schema-fields-00000-76a33d3f708c4182.json"
+    },
+    {
+      "digest": "sha256:de98533bfb05ca84357e7fde6dfac4fe4446390d8638338d6eb0921bccf52492",
+      "runtime_name": "selected-lineage-path-33feab3fbceec169.json"
+    },
+    {
+      "digest": "sha256:e61424aa15067e2da0b1c2ec01d29cd8f2c1139d640d010061743a247823fd7b",
+      "runtime_name": "target-lifecycle-before-55fe2a34f16452e0.json"
+    },
+    {
+      "digest": "sha256:ebae61ffacd4ca38b4f5ce33fb06fa8b3739544e38e5a0047b2cde4d5b6f0b67",
+      "runtime_name": "repository-counterfactual-7981ee0853cfe808.json"
+    }
+  ],
+  "resolution": {
+    "dataset": {
+      "database": "analytics",
+      "environment": "PROD",
+      "instance": "retirement_conductor",
+      "platform": "snowflake",
+      "schema": "commerce",
+      "table": "orders",
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+    },
+    "raw_artifact_ids": [
+      "sha256:52d9361228ebebf7aa3b0429b34fea6435e9cd52b8da4f718cec98cab40db1a1",
+      "sha256:dc877301c593f2facd86655b655139a935e80127aa8c8fbd0edef7af06ec2741"
+    ],
+    "replacement_field": {
+      "description": "Public-safe synthetic field order_status.",
+      "fieldPath": "order_status",
+      "nativeDataType": "VARCHAR",
+      "nullable": false
+    },
+    "target_field": {
+      "description": "Public-safe synthetic field legacy_status.",
+      "fieldPath": "legacy_status",
+      "nativeDataType": "VARCHAR",
+      "nullable": false
+    }
+  },
+  "schema_version": "1.0.0",
+  "seed": {
+    "chart_count": 6,
+    "dashboard_count": 4,
+    "dataset_count": 22,
+    "entity_urn_digest": "sha256:1e5994f179935503ab6084ed34119066253bbd6afa43f772f2c5c26fa57c236d",
+    "gms_url": "http://127.0.0.1:18080",
+    "ingestion_run_id": "phase02-datahub-core-v1",
+    "mode": "live",
+    "schema_version": "1.0.0",
+    "source_updated_at": "2026-07-30T10:03:14.597917Z",
+    "target_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+  },
+  "snapshot_digest": "sha256:b1bebace52ff9935711100a90520cb223e911aa36db9f522af2d1774f8f766e5"
+}

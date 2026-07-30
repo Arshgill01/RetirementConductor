@@ -65,6 +65,16 @@ saved-content mutation, rollback, validation, and failure handling. Its live
 boundary remains unverified until a disposable instance and scoped credentials
 are available. See [Evidence baseline](docs/EVIDENCE_BASELINE.md).
 
+This repository has now independently exercised its phase 02 product path
+against a fresh disposable DataHub Core v1.6.0 instance. It resolved the exact
+field pair, retrieved all 31 advertised graph consumers over seven pages, and
+found at least 30 more consumers than the one configured repository reference.
+It updated one stable campaign document four times, read the exact content
+back, and verified that the target lifecycle remained unchanged. The result
+was deliberately `UNSAFE`: all graph consumers remain opaque until their
+native systems close them. See
+[EP-002](docs/EVIDENCE_LEDGER.md#ep-002--phase-02-datahub-evidence-boundary).
+
 ## Complete supported path
 
 The first production-shaped vertical is:
@@ -142,6 +152,9 @@ fixture:
 retirement-conductor campaign replay fixtures/campaigns/blocked
 retirement-conductor campaign evaluate fixtures/campaigns/blocked
 ```
+
+The disposable live DataHub workflow and its no-secret configuration are
+documented in [the DataHub Core runbook](docs/runbooks/DATAHUB_CORE.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.

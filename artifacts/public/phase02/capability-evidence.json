@@ -1,0 +1,62 @@
+{
+  "captured_at": "2026-07-30T10:03:23.666018Z",
+  "edition": "core",
+  "evidence_digest": "sha256:0368145e8229376ba801e5290f4e9dbe8a79c5d9093bf595b5baa79df84b8cd9",
+  "fallbacks": {
+    "complete_lineage_pagination": "gms_graphql",
+    "document_writeback": "mcp_save_document"
+  },
+  "lifecycle_mutation_invoked": false,
+  "lifecycle_mutation_visible": true,
+  "mcp_tool_names": [
+    "add_owners",
+    "add_structured_properties",
+    "add_tags",
+    "add_terms",
+    "get_dataset_queries",
+    "get_entities",
+    "get_lineage",
+    "get_lineage_paths_between",
+    "grep_documents",
+    "list_schema_fields",
+    "remove_domains",
+    "remove_owners",
+    "remove_structured_properties",
+    "remove_tags",
+    "remove_terms",
+    "save_document",
+    "search",
+    "search_documents",
+    "set_domains",
+    "update_description"
+  ],
+  "mode": "live",
+  "query_surfaces": {
+    "complete_lineage_pagination": "searchAcrossLineage",
+    "document_identity_search": "searchDocuments",
+    "document_readback": "document"
+  },
+  "schema_version": "1.0.0",
+  "server_versions": {
+    "managedIngestion.defaultCliVersion": "1.6.0",
+    "versions.acryldata/datahub.version": "v1.6.0"
+  },
+  "source_capability_digest": "sha256:38618c3adb547dbf074983d47ed1f83aaf13ba0d527a7e24b88315db26f36540",
+  "versions": {
+    "datahub_cli": "1.6.0",
+    "datahub_core": {
+      "gms_image": "acryldata/datahub-gms:v1.6.0",
+      "source_commit": "b5c566f3e215c3074dbd1443101a916714dd88b3",
+      "upgrade_image": "acryldata/datahub-upgrade:v1.6.0"
+    },
+    "datahub_sdk": "acryl-datahub==1.6.0",
+    "mcp_server": {
+      "package_version": "0.6.0",
+      "source_commit": "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9"
+    },
+    "seed_connector": {
+      "component": "retirement-conductor-seed/1.0",
+      "mode": "direct SDK emitter"
+    }
+  }
+}

@@ -193,3 +193,40 @@ whose own digest fails or whose history diverges.
 
 Why: a crash after event commit can legitimately leave a stale cache, while
 silently accepting arbitrary cache divergence could manufacture readiness.
+
+## D-018 — select DataHub surfaces from live capabilities
+
+Status: accepted from DataHub Core v1.6.0 evidence.
+
+Use the self-hosted MCP server for catalog search, schema, lineage context,
+ownership, permitted query context, exact paths, and stable document writes.
+Use supported GMS GraphQL for fully counted lineage pagination, exact document
+read-back and identity search, and lifecycle observation when the live MCP
+surface is incomplete or conditional. Record the selected surfaces and the
+available mutation names in a capability fingerprint, but never infer
+permission from schema visibility.
+
+The initial adapter does not invoke `updateDeprecation` or any equivalent
+lifecycle mutation. Core's missing `isPartial` signal remains a limitation
+even when returned and advertised counts match.
+
+Why: on the observed Core/MCP versions, MCP document read tools were
+conditional and generic entity read-back returned only the document URN,
+while GraphQL exposed the exact supported document and pagination fields.
+Binding the adapter to observed capabilities preserves complete evidence
+without pretending that Core and Cloud expose the same tool union.
+
+## D-019 — cross-source scope expansion uses a conservative minimum
+
+Status: accepted from phase 02 evidence.
+
+Until native identity binding proves overlap between repository and catalog
+consumers, report catalog expansion as a lower bound. Subtract every
+configured repository match from the graph count as if it overlaps a distinct
+graph consumer. Keep the overlap unknown and label the observation as scope
+comparison only; it cannot authorize mutation or closure.
+
+Why: calling every graph entity “additional” would silently assume that no
+repository consumer represents the same object. The conservative minimum
+still proved material expansion in the representative graph without
+manufacturing cross-source identity.

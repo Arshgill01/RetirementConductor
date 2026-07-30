@@ -390,6 +390,11 @@ PROPOSED
 return to `INVENTORIED`, `MIGRATING`, or `RECONCILING` after new evidence. A
 retired campaign is immutable; corrections create a linked follow-up record.
 
+Before migration begins, a newly captured baseline may append another
+`INVENTORY_RECORDED` event while remaining `INVENTORIED`. It replaces the
+current consumer baseline and resets reconciliation, but preserves every
+earlier snapshot digest and event. It cannot import a closure disposition.
+
 Consumer dispositions:
 
 - `DISCOVERED`

@@ -1,0 +1,97 @@
+{
+  "blocker_codes": [
+    "POLICY_CONSUMER_OPAQUE",
+    "RECONCILIATION_REQUIRED"
+  ],
+  "campaign_id": "ret-orders-live-status",
+  "decision": "UNSAFE",
+  "event_count": 12,
+  "event_receipts": [
+    {
+      "event_digest": "sha256:34260c32291caae5fce7de53d2be339f561c753ffd74abf1c9e73cfb847c3f7b",
+      "event_type": "PUBLICATION_RECORDED",
+      "occurred_at": "2026-07-30T09:48:56.212750Z",
+      "sequence": 3
+    },
+    {
+      "event_digest": "sha256:2940343dac53dfe81f2e23d87530338a1c2a66996c73abaf8484979dbad4b453",
+      "event_type": "PUBLICATION_VERIFIED",
+      "occurred_at": "2026-07-30T09:52:07.907731Z",
+      "sequence": 4
+    },
+    {
+      "event_digest": "sha256:0f97ff10408330cd7a0b835c11c43b57d333d3227a03b0135ac4c7c453de69ac",
+      "event_type": "PUBLICATION_RECORDED",
+      "occurred_at": "2026-07-30T09:52:24.939977Z",
+      "sequence": 5
+    },
+    {
+      "event_digest": "sha256:2691aa6c1cf1256dfb0980031838d02843626c4058a1fe689074bd2d53d2d9f4",
+      "event_type": "PUBLICATION_VERIFIED",
+      "occurred_at": "2026-07-30T09:52:27.526695Z",
+      "sequence": 6
+    },
+    {
+      "event_digest": "sha256:141d24fe01bd279ae62a1519afc038eb17d5efae62407b09f30b11b9a340b092",
+      "event_type": "PUBLICATION_RECORDED",
+      "occurred_at": "2026-07-30T10:04:59.480315Z",
+      "sequence": 8
+    },
+    {
+      "event_digest": "sha256:3695c90ad78f7fe27d11edc33ef294ebd4690e01c1ab4e9d474e981785c34dde",
+      "event_type": "PUBLICATION_VERIFIED",
+      "occurred_at": "2026-07-30T10:05:01.511717Z",
+      "sequence": 9
+    },
+    {
+      "event_digest": "sha256:ccc9deee79d8f6b3d352569d0100caaf168b991c11645303c06ff1f5b2a7ad41",
+      "event_type": "PUBLICATION_RECORDED",
+      "occurred_at": "2026-07-30T10:10:28.397367Z",
+      "sequence": 11
+    },
+    {
+      "event_digest": "sha256:8d608fb8c12456cca9b4ca326065522651e0e5eae5f53f4592baf4d2789b3870",
+      "event_type": "PUBLICATION_VERIFIED",
+      "occurred_at": "2026-07-30T10:10:31.399437Z",
+      "sequence": 12
+    }
+  ],
+  "event_stream_digest": "sha256:3027f164b8e8889d3af659b0500e7604098ae5665001ac81a323e5cc303a6d63",
+  "evidence_digest": "sha256:009ab9a6fc505c27d3193f4c8c9156ea1114828b5099c56b17a849eba3c07e73",
+  "evidence_envelope_digest": "sha256:e0645a3147101600a37aa6cccebc95f714ad0b85140424fc7ce471ae8da507ad",
+  "lifecycle": {
+    "after": {
+      "deprecation": null,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+    },
+    "before": {
+      "deprecation": null,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+    },
+    "mutation_invoked": false,
+    "unchanged": true
+  },
+  "logical_document": {
+    "content_exactly_matched": true,
+    "exact_search_matches": 1,
+    "publish_count": 4,
+    "stable_urn_count": 1,
+    "title": "Retirement Conductor — ret-orders-live-status",
+    "urn": "urn:li:document:shared-59d71d66-eada-430f-978d-019d4bfed5d8",
+    "verification_count": 4
+  },
+  "mode": "live",
+  "publication": {
+    "content_digest": "sha256:6f951608149718fb70c1071d976485e71a56eb6d27675aeee7b0a251362a9c78",
+    "lifecycle_digest_after": "sha256:55fe2a34f16452e099fb2698de63d8b45418deea23dec8e98ccc38778f2593f3",
+    "lifecycle_digest_before": "sha256:55fe2a34f16452e099fb2698de63d8b45418deea23dec8e98ccc38778f2593f3",
+    "logical_key": "campaign/ret-orders-live-status",
+    "published_manifest_digest": "sha256:3e94d4cf96a7c727d2d87ffb891009ab182163871196aee0ec7d4528d4153b0d",
+    "readback_artifact_id": "sha256:02e9026a20750a6264ccf638ea970b60a5c62214df839b8435618e93320e1497",
+    "readback_verified": true,
+    "urn": "urn:li:document:shared-59d71d66-eada-430f-978d-019d4bfed5d8",
+    "verified_at": "2026-07-30T10:10:31.399437Z"
+  },
+  "published_manifest_digest": "sha256:3e94d4cf96a7c727d2d87ffb891009ab182163871196aee0ec7d4528d4153b0d",
+  "schema_version": "1.0.0"
+}

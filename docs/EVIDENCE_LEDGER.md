@@ -38,7 +38,7 @@ the produced artifacts have been inspected.
 |---|---:|---|---|---|---|---|
 | EP-000 | 00 | fixture | `6692a3c` | `artifacts/public/phase00/`; executable contracts, fixtures, package, and repository checks | passed | fixture evidence cannot satisfy a live policy |
 | EP-001 | 01 | fixture | `30173f1` | `artifacts/public/phase01/`; state, replay, interruption, policy, and integrity evidence | passed | no external or native integration exercised |
-| EP-002 | 02 | live | not-run | DataHub identity, pagination, envelope, and write/read-back | not-run | none recorded |
+| EP-002 | 02 | live | `19bebb9` | `artifacts/public/phase02/`; DataHub identity, pagination, envelope, scope comparison, and stable write/read-back | passed | synthetic disposable Core graph; no authenticated or Cloud boundary |
 | EP-003 | 03 | live | not-run | Git/dbt plan, apply, validation, rollback, and receipt | not-run | none recorded |
 | EP-004 | 04 | live and fixture | not-run | reconciliation, late-consumer refusal, publication, and gate | not-run | none recorded |
 | EP-005 | 05 | live and fixture | not-run | canonical CLI/report parity, accessibility, and redaction | not-run | none recorded |
@@ -229,3 +229,121 @@ Reviewer inspection: inspected the SQL migration, all three raw events and
 their predecessor digests, replayed state and blocker codes, canonical
 manifest parity, refusal registry report, interruption assertions, corrupted
 database cases, and packaged migration/schema contents.
+
+## EP-002 — phase 02 DataHub evidence boundary
+
+Evidence ID: EP-002
+
+Requirement IDs: RC-004, RC-005, RC-006, RC-007
+
+Repository commit: `19bebb9d54f22dcbb7f6e3fc922f8213eb719d53`
+
+Captured at: `2026-07-30T10:10:31Z`
+
+Mode: live
+
+Source and tool versions: DataHub Core GMS and upgrade images v1.6.0;
+DataHub CLI and SDK 1.6.0; DataHub Core source
+`b5c566f3e215c3074dbd1443101a916714dd88b3`; self-hosted DataHub MCP
+server 0.6.0 at
+`9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9`; Python 3.11.15; uv 0.11.28;
+Retirement Conductor 0.1.0. The exact component matrix is retained in
+`artifacts/public/phase02/capability-evidence.json`.
+
+Command or operator action:
+
+```text
+make datahub-core-up
+make datahub-seed
+retirement-conductor datahub preflight
+retirement-conductor campaign inventory --campaign ret-orders-live-status
+retirement-conductor campaign publish --campaign ret-orders-live-status
+retirement-conductor campaign verify-publication --campaign ret-orders-live-status
+make phase02-evidence
+make check
+git diff --check
+```
+
+The publish and verification commands were repeated after fresh inventory to
+exercise stable updates rather than only document creation.
+
+Expected result: exact live target and replacement resolution; complete
+bounded pagination; visible freshness, permissions, versions, limitations,
+and raw artifact links; a material graph-scope expansion; one stable summary
+that reads back exactly; and no target lifecycle mutation. Partial, stale,
+permission-denied, missing, ambiguous, or mismatched evidence must refuse or
+remain non-ready.
+
+Observed result: the live Core graph resolved the Snowflake `orders` dataset
+and the exact `legacy_status` and `order_status` fields. Seven GraphQL pages
+returned all 31 advertised downstream consumers with no page error. A bounded
+read-only scan found one configured repository field-reference consumer; even
+assuming that consumer overlaps one graph entity, DataHub contributed at
+least 30 additional consumers and added 31 visible
+`POLICY_CONSUMER_OPAQUE` blockers. The campaign remained `UNSAFE`.
+
+The MCP `save_document` surface was exercised four times against the same
+logical key and returned one stable document URN. GraphQL `document` read-back
+matched the exact published content, `searchDocuments` returned one exact
+title/URN match, and the target deprecation value remained null before and
+after every write. SQLite remained authoritative for the 12-event campaign
+stream.
+
+Refusal cases: controlled pagination failure produced a `PARTIAL` required
+source; stale source time produced `STALE`; zero-match, quoted/case,
+platform-instance, duplicate-display, missing-field, and duplicate-field
+cases could not authorize a guessed identity; a simulated HTTP 403 produced
+`SOURCE_DATAHUB_PERMISSION_DENIED`; mismatched document content, changed
+document identity, or changed lifecycle produced
+`EVIDENCE_PUBLICATION_MISMATCH`. Query-history absence remained zero
+observations with no closure authority, ownership remained routing-only, and
+table-only lineage left consumers opaque. These adverse cases are controlled
+tests over the same adapter code; the positive inventory and write/read-back
+are live.
+
+Tracked artifact paths:
+`artifacts/public/phase02/capability-evidence.json`,
+`artifacts/public/phase02/inventory-evidence.json`,
+`artifacts/public/phase02/publication-evidence.json`, and
+`artifacts/public/phase02/phase02-evidence.json`.
+
+Private artifact digests: the ignored live capability fingerprint is
+`sha256:38618c3adb547dbf074983d47ed1f83aaf13ba0d527a7e24b88315db26f36540`;
+the normalized snapshot is
+`sha256:b1bebace52ff9935711100a90520cb223e911aa36db9f522af2d1774f8f766e5`;
+the evidence envelope is
+`sha256:e0645a3147101600a37aa6cccebc95f714ad0b85140424fc7ce471ae8da507ad`;
+the latest exact read-back artifact is
+`sha256:02e9026a20750a6264ccf638ea970b60a5c62214df839b8435618e93320e1497`;
+and both lifecycle observations digest to
+`sha256:55fe2a34f16452e099fb2698de63d8b45418deea23dec8e98ccc38778f2593f3`.
+The 15 redacted raw observation digests and safe runtime names are indexed in
+the tracked inventory evidence.
+
+The tracked artifact file SHA-256 digests are, respectively,
+`1bea1d2e5269f9840f2814da82008c6021ad284d01bf82863b66c9598cb733c3`,
+`8162c91a111760f84a85a98dcd0d542bdb08f16dc24423377c9bbc0cc10ef835`,
+`98bf8a83ac2593cae3397a9dabaecdaed3e939be96cab7bfd0cbd621ee117f54`,
+and
+`5058bb9b0e36c6c81e4d6f4823a0e58c516df3e6a5cddc811a482774709cc7f5`.
+
+What this proves: the product, rather than the preceding experiment, can
+resolve one exact field pair from a running DataHub Core instance, capture a
+fully paged evidence-bounded inventory, conservatively demonstrate
+consequential catalog scope, preserve evidence granularity, retain campaign
+authority locally, and update and independently verify one durable DataHub
+summary without touching lifecycle state.
+
+What this does not prove: production or authenticated DataHub permissions,
+DataHub Cloud parity, a real ingestion connector's retention behavior,
+repository-native identity, dbt mutation or validation, reconciliation,
+readiness, producer-gate enforcement, or universal consumer completeness.
+Core v1.6.0 did not expose `isPartial`; that absence remains an explicit
+limitation. Query history exposed no retention window and cannot close a
+consumer.
+
+Reviewer inspection: inspected the capability fingerprint, all seven raw
+lineage page digests, exact schema resolution, normalized claims, field- versus
+table-level limitations, source update time, one-versus-31 scope comparison,
+envelope and snapshot digests, publication event receipts, exact document
+content, unique document search result, and null lifecycle before and after.

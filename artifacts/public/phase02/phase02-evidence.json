@@ -1,0 +1,32 @@
+{
+  "artifacts": {
+    "capability": "artifacts/public/phase02/capability-evidence.json",
+    "inventory": "artifacts/public/phase02/inventory-evidence.json",
+    "publication": "artifacts/public/phase02/publication-evidence.json"
+  },
+  "assertions": {
+    "canonical_target_and_fields_resolved": true,
+    "complete_pagination": true,
+    "datahub_added_consequential_inventory": true,
+    "evidence_envelope_is_bounded": true,
+    "stable_summary_updated_in_place": true,
+    "summary_read_back_exactly": true,
+    "target_lifecycle_unchanged": true
+  },
+  "campaign_id": "ret-orders-live-status",
+  "evidence_digest": "sha256:9008b64fbb49aba6deaadeb3cf5796101a43dfb93962e97d623687baff58fccb",
+  "limitations": [
+    "DataHub Core did not expose isPartial",
+    "Ownership is routing context only",
+    "Query-history absence is not closure evidence",
+    "Table-only lineage cannot authorize field mutation or closure"
+  ],
+  "mode": "live",
+  "schema_version": "1.0.0",
+  "test_sources": [
+    "tests/unit/test_datahub.py",
+    "tests/unit/test_datahub_config.py",
+    "tests/unit/test_datahub_http.py",
+    "tests/unit/test_mcp_http.py"
+  ]
+}
