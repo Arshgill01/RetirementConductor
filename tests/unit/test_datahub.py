@@ -261,7 +261,10 @@ def test_live_inventory_pages_to_total_and_keeps_weak_edges_qualified(
         claim["confidence_basis"] == "canonical_lineage_edge" and claim["limitations"]
         for claim in snapshot["claims"]
     )
-    assert snapshot["counterfactual"]["datahub_additional_consumer_count"] == 3
+    assert snapshot["counterfactual"]["status"] == "COMPLETE"
+    assert snapshot["counterfactual"]["configured_repository_consumer_count"] == 1
+    assert snapshot["counterfactual"]["minimum_additional_consumer_count"] == 2
+    assert snapshot["counterfactual"]["datahub_materially_expands_inventory"] is True
 
 
 def test_forced_page_failure_and_stale_source_fail_closed(tmp_path: Path) -> None:

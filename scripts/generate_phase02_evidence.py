@@ -215,7 +215,10 @@ def run() -> int:
     source = snapshot["evidence_envelope"]["sources"][0]
     if snapshot["pagination"]["status"] != "COMPLETE" or source["status"] != "COMPLETE":
         raise RuntimeError("live DataHub inventory was not complete")
-    if snapshot["counterfactual"]["datahub_additional_consumer_count"] <= 0:
+    if (
+        snapshot["counterfactual"]["status"] != "COMPLETE"
+        or snapshot["counterfactual"]["minimum_additional_consumer_count"] <= 0
+    ):
         raise RuntimeError("DataHub did not add consequential inventory")
 
     public_capability = with_digest(

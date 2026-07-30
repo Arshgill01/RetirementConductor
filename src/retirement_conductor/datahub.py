@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -715,6 +716,13 @@ class DataHubBoundary:
             artifact_ids=raw_artifact_ids,
         )
         ownership = extract_ownership(entity_details)
+        counterfactual = repository_counterfactual(
+            specification,
+            datahub_consumer_count=len(consumers),
+            writer=writer,
+        )
+        counterfactual_artifact = counterfactual.pop("raw_artifact_id")
+        raw_artifact_ids.append(str(counterfactual_artifact))
         snapshot = with_digest(
             {
                 "schema_version": "1.0.0",
@@ -736,10 +744,7 @@ class DataHubBoundary:
                     "pages": len(paged.pages),
                     "errors": paged.errors,
                 },
-                "counterfactual": {
-                    "datahub_additional_consumer_count": len(consumers),
-                    "without_datahub_actionable_consumer_count": 0,
-                },
+                "counterfactual": counterfactual,
                 "evidence_envelope": envelope,
                 "raw_artifact_ids": sorted(set(raw_artifact_ids)),
             },
@@ -1105,6 +1110,121 @@ def redact_observation(value: Any, *, key: str = "") -> Any:
             return "[redacted]"
         return EMAIL_PATTERN.sub("[redacted-email]", value)
     return value
+
+
+def repository_counterfactual(
+    specification: Mapping[str, Any],
+    *,
+    datahub_consumer_count: int,
+    writer: ArtifactWriter,
+) -> dict[str, Any]:
+    """Observe configured repository references without claiming native identity."""
+
+    field = str(specification["target"]["field"])
+    token = re.compile(rf"(?<![A-Za-z0-9_]){re.escape(field)}(?![A-Za-z0-9_])")
+    observations: list[dict[str, Any]] = []
+    total_matches = 0
+    complete = True
+    for repository in specification["evidence"]["repositories"]:
+        repository_id = str(repository["id"])
+        root = Path(str(repository["path"])).resolve()
+        matched_paths: list[str] = []
+        inspected_files = 0
+        limitations: list[str] = []
+        if not root.is_dir():
+            complete = False
+            limitations.append("Configured repository path was unavailable")
+        else:
+            for current, directory_names, file_names in os.walk(
+                root,
+                followlinks=False,
+            ):
+                current_path = Path(current)
+                retained_directories: list[str] = []
+                for directory_name in sorted(directory_names):
+                    candidate = current_path / directory_name
+                    if directory_name in {
+                        ".git",
+                        ".venv",
+                        "dbt_packages",
+                        "logs",
+                        "target",
+                    }:
+                        continue
+                    if candidate.is_symlink():
+                        complete = False
+                        limitations.append("Repository symlink was not traversed")
+                        continue
+                    retained_directories.append(directory_name)
+                directory_names[:] = retained_directories
+                for file_name in sorted(file_names):
+                    path = current_path / file_name
+                    if path.suffix.lower() not in {
+                        ".py",
+                        ".sql",
+                        ".yaml",
+                        ".yml",
+                    }:
+                        continue
+                    if path.is_symlink():
+                        complete = False
+                        limitations.append("Repository symlink was not read")
+                        continue
+                    inspected_files += 1
+                    if inspected_files > 10_000:
+                        complete = False
+                        limitations.append(
+                            "Repository scan exceeded the 10,000-file bound"
+                        )
+                        break
+                    try:
+                        if path.stat().st_size > 10 * 1024 * 1024:
+                            complete = False
+                            limitations.append(
+                                "Repository file exceeded the 10 MiB bound"
+                            )
+                            continue
+                        content = path.read_text(encoding="utf-8")
+                    except (OSError, UnicodeError):
+                        complete = False
+                        limitations.append("Repository file could not be read as UTF-8")
+                        continue
+                    if token.search(content):
+                        matched_paths.append(path.relative_to(root).as_posix())
+                if inspected_files > 10_000:
+                    break
+        total_matches += len(matched_paths)
+        observations.append(
+            {
+                "repository_id": repository_id,
+                "required": bool(repository["required"]),
+                "root_identity": digest_json(str(root)),
+                "inspected_file_count": inspected_files,
+                "matched_consumer_count": len(matched_paths),
+                "matched_paths": matched_paths,
+                "limitations": sorted(set(limitations)),
+            }
+        )
+    minimum_additional = (
+        max(0, datahub_consumer_count - total_matches) if complete else None
+    )
+    raw_artifact_id = writer.write("repository-counterfactual", observations)
+    return {
+        "status": (EvidenceStatus.COMPLETE if complete else EvidenceStatus.PARTIAL),
+        "datahub_observed_consumer_count": datahub_consumer_count,
+        "configured_repository_consumer_count": total_matches,
+        "minimum_additional_consumer_count": minimum_additional,
+        "datahub_materially_expands_inventory": (
+            minimum_additional is not None and minimum_additional > 0
+        ),
+        "identity_overlap": (
+            "unknown; minimum assumes every configured repository match "
+            "overlaps one DataHub consumer"
+        ),
+        "authority": "scope comparison only; not native identity or closure",
+        "observations": observations,
+        "raw_artifact_id": raw_artifact_id,
+    }
 
 
 def extract_versions(value: Any) -> dict[str, str]:
