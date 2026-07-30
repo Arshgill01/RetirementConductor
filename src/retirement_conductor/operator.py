@@ -601,7 +601,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
     history = [_mapping(item) for item in _sequence(view["history"])]
     publication = _mapping(view["publication"])
 
-    source_html = "".join(_render_source(source) for source in sources)
+    source_html = "".join(_render_source(source) for source in sources).lstrip()
     if not source_html:
         source_html = (
             '<p class="empty-state">No evidence sources are recorded. '

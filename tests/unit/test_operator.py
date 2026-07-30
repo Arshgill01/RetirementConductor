@@ -91,6 +91,7 @@ def test_terminal_and_html_share_canonical_ready_decision_and_digest() -> None:
     assert manifest["manifest_digest"] in report
     assert 'data-export="local"' in report
     assert "This report never claims visibility beyond" in report
+    assert all(line == line.rstrip() for line in report.splitlines())
 
 
 def test_live_refusal_explains_each_blocker_and_recovery() -> None:
