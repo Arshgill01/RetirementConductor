@@ -378,6 +378,25 @@ def test_apply_is_exact_idempotent_and_skips_repository_hooks(
     assert _git(adapter.settings.repository_root, "status", "--porcelain") == ""
 
 
+def test_plan_only_specification_cannot_change_the_repository(tmp_path: Path) -> None:
+    adapter, specification, plan, model = _adapter_and_plan(tmp_path)
+    specification["authorization"]["mode"] = "plan"
+    before = digest_file(model)
+    branch = _git(adapter.settings.repository_root, "branch", "--show-current")
+
+    with pytest.raises(Refusal, match="AUTH_APPLY_DISABLED"):
+        adapter.apply(
+            specification,
+            plan,
+            artifact_root=tmp_path / "artifacts",
+            occurred_at="2026-07-30T10:10:00Z",
+        )
+
+    assert digest_file(model) == before
+    assert _git(adapter.settings.repository_root, "branch", "--show-current") == branch
+    assert not (tmp_path / "artifacts").exists()
+
+
 def test_reconciliation_rereads_exact_applied_source_and_replacement(
     tmp_path: Path,
 ) -> None:

@@ -30,6 +30,7 @@ from retirement_conductor.vocabulary import (
 
 ADAPTER_VERSION = "0.1.0"
 LOOKER_API_VERSION = "4.0.26.12"
+RETRYABLE_READ_STATUSES = {408, 425, 429, 500, 502, 503, 504}
 
 # These permissions cover the exact reads and the one-property saved-Look update.
 # DataHub ingestion has its own documented, separately checked recipe boundary.
@@ -191,13 +192,12 @@ class LookerApiClient:
                     payload = response.read()
                     return json.loads(payload) if payload else None
             except HTTPError as exc:
-                if not mutation and exc.code == 429 and attempt + 1 < attempts:
-                    retry_after = exc.headers.get("Retry-After", "0")
-                    try:
-                        delay = min(max(float(retry_after), 0.0), 2.0)
-                    except ValueError:
-                        delay = 0.0
-                    self._sleep(delay)
+                if (
+                    not mutation
+                    and exc.code in RETRYABLE_READ_STATUSES
+                    and attempt + 1 < attempts
+                ):
+                    self._sleep(_read_retry_delay(exc, attempt))
                     continue
                 raise _http_refusal(
                     exc.code,
@@ -216,8 +216,12 @@ class LookerApiClient:
                             "method": method,
                             "path": path,
                             "error_type": type(exc).__name__,
+                            "retry_count": attempt,
                         },
                     ) from exc
+                if attempt + 1 < attempts:
+                    self._sleep(_read_retry_delay(None, attempt))
+                    continue
                 raise Refusal(
                     RefusalCode.SOURCE_LOOKER_UNAVAILABLE,
                     "The Looker API read failed.",
@@ -225,6 +229,7 @@ class LookerApiClient:
                         "method": method,
                         "path": path,
                         "error_type": type(exc).__name__,
+                        "retry_count": attempt,
                     },
                 ) from exc
         raise AssertionError("bounded Looker request loop exhausted")
@@ -1993,6 +1998,21 @@ def _query_items(value: Any) -> list[Any]:
     return list(value) if isinstance(value, (list, tuple)) else [value]
 
 
+def _read_retry_delay(error: HTTPError | None, attempt: int) -> float:
+    """Return a bounded deterministic delay without exposing response content."""
+
+    if error is not None and error.code == 429:
+        retry_after = str(error.headers.get("Retry-After", "")) if error.headers else ""
+        try:
+            return min(max(float(retry_after), 0.0), 2.0)
+        except ValueError:
+            pass
+    delay = 0.25
+    for _ in range(attempt):
+        delay *= 2.0
+    return min(delay, 2.0)
+
+
 def _http_refusal(
     status: int,
     *,
@@ -2023,6 +2043,13 @@ def _http_refusal(
         return Refusal(
             RefusalCode.IDENTITY_NOT_FOUND,
             "The exact Looker native object was not found.",
+            details,
+        )
+    if status == 409:
+        return Refusal(
+            RefusalCode.SOURCE_FINGERPRINT_MISMATCH,
+            "Looker reported a native state conflict; reread and re-plan the "
+            "exact target.",
             details,
         )
     if status == 422:
