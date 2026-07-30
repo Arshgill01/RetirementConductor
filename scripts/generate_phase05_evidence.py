@@ -351,7 +351,7 @@ def focused_test_evidence(output: str) -> dict[str, Any]:
 
 
 def check_allowed_dirty_state() -> None:
-    lines = git("status", "--porcelain").splitlines()
+    lines = git("status", "--porcelain", "--untracked-files=all").splitlines()
     disallowed: list[str] = []
     for line in lines:
         path = line[3:]
