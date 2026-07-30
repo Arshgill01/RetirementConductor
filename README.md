@@ -115,15 +115,24 @@ Deterministic policy decides.
 
 ## Working in this repository
 
-This repository currently contains the controlling product and engineering
-foundation. It is ready for one continuous implementation run governed by
-[GOAL.md](GOAL.md). The active phase and honest external boundaries live in
-[STATUS.md](STATUS.md).
+This repository contains the controlling product contracts and an executable
+Python foundation with strict specifications, versioned schemas, deterministic
+fixtures, and stable refusal behavior. The continuous implementation run is
+governed by [GOAL.md](GOAL.md); its active phase and honest external boundaries
+live in [STATUS.md](STATUS.md).
 
-Run the repository checks with:
+Create the pinned development environment and run the repository checks with:
 
 ```bash
+uv sync --all-groups
 make check
+```
+
+The phase 00 commands are:
+
+```bash
+retirement-conductor validate-spec fixtures/specs/valid.yaml
+retirement-conductor fixture run fixtures/specs/valid.yaml
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or

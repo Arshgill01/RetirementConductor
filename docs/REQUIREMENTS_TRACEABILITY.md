@@ -8,7 +8,7 @@ Passing a later phase does not silently waive an earlier requirement.
 
 | ID | Required behavior | Authority | Phase | Direct acceptance evidence |
 |---|---|---|---:|---|
-| RC-001 | Accept one exact legacy field, one compatible replacement, declared evidence scope, validation, and authorization | `docs/CONTRACTS.md` | 00 | strict schemas and valid plus refusal fixtures |
+| RC-001 | Accept one exact legacy field, one compatible replacement, declared evidence scope, validation, and authorization | `docs/CONTRACTS.md` | 00 | [EP-000](EVIDENCE_LEDGER.md#ep-000--phase-00-foundation): strict schemas and valid plus refusal fixtures |
 | RC-002 | Persist campaign events, replay state deterministically, and resume safely after interruption | `docs/ARCHITECTURE.md` | 01 | event replay, fault injection, manifest digest parity |
 | RC-003 | Produce only the four deterministic final decisions from versioned policy and evidence | `docs/CONTRACTS.md` | 01 | complete transition and refusal-code coverage |
 | RC-004 | Resolve target, replacement, and consumers from live DataHub without predicted identity | `docs/PRODUCT.md` | 02 | live search, schema, identity, and ambiguity evidence |

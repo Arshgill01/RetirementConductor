@@ -167,3 +167,17 @@ only positive path.
 
 Why: a gate proven green only by a fixture would leave the central live
 completion claim untested.
+
+## D-016 — use standard YAML and JSON Schema implementations
+
+Status: accepted.
+
+Use PyYAML only through `safe_load` for the operator specification and use
+jsonschema Draft 2020-12 validation for the versioned executable contracts.
+Keep canonicalization, digests, semantic cross-field rules, path scope, and
+policy in product code.
+
+Why: YAML and JSON Schema have mature edge-case behavior that should not be
+reimplemented in the safety boundary. Both runtime dependencies are small,
+permissively licensed, pinned in `uv.lock`, and isolated from campaign
+authority.
