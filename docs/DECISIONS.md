@@ -328,3 +328,66 @@ The private manifest remains the integrity authority.
 Why: duplicated policy or post-hoc string scrubbing could make the interface
 disagree with the gate or leak an unanticipated field. Preserving historical
 digests also matters more than normalizing an optional empty array.
+
+## D-026 — Looker mutation changes one saved Look by immutable query identity
+
+Status: accepted for the deterministic adapter contract; live evidence
+pending.
+
+Treat the supported Look identity as the numeric content ID together with its
+`content_metadata_id` and `created_at`, bound to platform instance, project,
+model, Explore, folder, and exact DataHub URN. Create or reuse the immutable
+replacement query through `POST /queries`, then change only the saved Look's
+`query_id` through the documented PATCH surface.
+
+Write a durable intent before mutation. Never retry a mutating request
+automatically. A missing response remains outcome unknown until the exact
+native identity and before/after fingerprints are reread. Compensation also
+rereads and refuses rather than overwriting any intervening edit.
+
+Why: a numeric ID or title can be reused after deletion, and a successful or
+failed HTTP response alone cannot prove the native state. Query immutability
+keeps the approved content change inspectable while the one-property PATCH
+keeps target scope narrow.
+
+## D-027 — cross-source inventory extension preserves closure conservatively
+
+Status: accepted from deterministic campaign integration; live Looker evidence
+pending.
+
+When a second native adapter joins an existing campaign, union its fresh
+consumer membership through `INVENTORY_EXTENDED` without erasing earlier
+plans or accepted receipts. Any prior evidence source not reread during that
+extension becomes `STALE`. Final reconciliation rereads both native sources
+under their original identity, permission, and traversal scopes.
+
+If one native reread fails, invalidate and stale only that consumer's receipt;
+retain the unrelated validated receipt and mark the failed source stale in the
+combined envelope.
+
+Why: replacing the entire inventory would lose durable work, while carrying
+unobserved sources forward as fresh would manufacture equivalent coverage.
+Selective invalidation lets one campaign remain honest across heterogeneous
+systems.
+
+## D-028 — Looker ingestion uses separate API and LookML recipes
+
+Status: accepted for DataHub 1.6.0 configuration; live ingestion pending.
+
+Use the official DataHub `looker` source for one anchored saved Look and the
+official `lookml` source for its local project and column lineage. The API
+recipe excludes dashboards, personal folders, usage history, and embed URLs,
+uses one worker, and keeps stateful ingestion enabled for the disposable
+delete/recreate probe. The LookML recipe uses an explicit local project and
+connection-to-platform map with partial lineage disabled; it does not request
+an admin API credential for view lineage.
+
+During reconciliation, query the legacy and replacement fields separately.
+Recognize a field edge only when the exact consumer URN has a matching
+column-lineage claim object. Preserve table-only lineage as an explicit
+connector limitation and never infer closure from disappearance.
+
+Why: API content metadata and parsed LookML supply different parts of the
+identity and lineage chain. Combining them through explicit recipes preserves
+their provenance without turning either weaker table visibility or System
+Activity usage queries into field-level proof.

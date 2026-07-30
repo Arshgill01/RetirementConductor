@@ -46,6 +46,83 @@ the produced artifacts have been inspected.
 | EP-007 | 07 | live and fixture | not-run | threat, fault, recovery, concurrency, and scan evidence | not-run | none recorded |
 | EP-008 | 08 | live and operator | not-run | clean install, upgrade, reference run, and independent operation | not-run | independent operator required |
 
+### Phase 06 pre-acceptance observations
+
+These observations record credential-independent progress and one read-only
+external boundary check. They do not replace `EP-006`, whose required mode
+remains live and whose row remains `not-run`.
+
+Repository commits:
+
+- `00db298a77f0c0926a5bd4e6fb0a6dd77076ac41` — bounded API 4.0 adapter,
+  immutable identity, plan/apply/validate/compensate, and refusal contracts;
+- `34351775974995266de4bcf8e727b8f5e9963f06` — durable campaign lifecycle,
+  intent recovery, inventory extension, and receipt handling;
+- `5454594fb1e35f08ff3c008e337968d2e832a4ae` — scoped DataHub recipes,
+  official configuration validation, LookML fixture, and no-secret packet;
+- `a57b06e70fba52d7644883f0278201c2bf4e1b69` — fresh native plus
+  legacy/replacement graph reconciliation and selective receipt invalidation.
+
+Captured through: `2026-07-30T15:07:50Z`
+
+Modes:
+
+- fixture for native API and campaign behavior;
+- analysis for the public LookML parsing project and access contract;
+- live read-only GCP control-plane observation for zero-cost pretrial state,
+  explicitly not live Looker adapter evidence.
+
+Commands or operator actions:
+
+```text
+make phase06-recipes
+retirement-conductor adapter looker access-packet --campaign ret-orders-looker-live
+make check
+CLOUDSDK_CONFIG=<dedicated-looker-config> \
+  .retirement-conductor/looker-access/verify_zero_cost.sh
+```
+
+Observed result: the pinned official DataHub 1.6.0 configuration models
+accepted both recipes with synthetic values. The access packet reported every
+unresolved variable by name, kept apply disabled, listed adapter and ingestion
+permissions as unverified, contained no supplied value, and had digest
+`sha256:27361a7cc132aee763adce1d9862f0bef04f99ba7b2bb4378760c96c357f2dac`.
+
+The latest `make check` passed 187 tests, Ruff, formatting, strict mypy,
+repository validation, secret and public-artifact scans, source and wheel
+builds, and `git diff --check`. Deterministic cases cover exact one-Look
+planning, schedules and expanded scope, invalid replacement, native Content
+Validation and bounded query comparison, compensation and reapply, fixture
+receipt rejection, missing permissions, recreated identity, intervening edit,
+dropped response, hard interruption, table-only lineage, persisting legacy
+edge, combined Git/dbt plus Looker reconciliation, and selective stale
+receipt handling.
+
+The dedicated read-only pretrial script observed zero Looker instances,
+unallocated trial and paid Looker quota, BigQuery daily query quota zero, and
+stored bytes zero, with `PROVISIONING_ALLOWED=false`. No instance, IAM role,
+table, query, quota, or paid resource was created or changed.
+
+What this proves: all currently exercised deterministic boundaries fail
+closed; the second adapter participates in the same campaign, receipt, and
+reconciliation semantics; recipe structure matches official DataHub 1.6.0
+models; and the missing live boundary can be requested without disclosing a
+secret.
+
+What this does not prove: Looker authentication or effective permissions; a
+live DataHub-to-Looker identity; a live saved-Look mutation, Content
+Validation run, query execution, compensation, delete/recreate, lost response,
+connector ingestion, graph refresh, accepted live receipt, combined live
+campaign, or `EP-006` acceptance. The zero-cost GCP observation is not a
+substitute for any of those.
+
+Reviewer inspection: inspected the plan and receipt schemas; redacted
+snapshots; actual target and changed-field assertions; intent state
+transitions and PATCH counts; compensation conflict; recreated identity
+digests; graph edge states; combined evidence-source set; generated access
+packet; recipe model output; full test output; secret scan; and zero-cost
+pretrial result.
+
 ## Entry completion checklist
 
 For each completed row, add a short section below the table with:

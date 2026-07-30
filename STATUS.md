@@ -10,16 +10,16 @@ contract; `PLAN.md` defines proof order.
 - Active phase: 06
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
 - Current external blocker: none
-- Next acceptance target: verify the dedicated zero-cost Looker pre-trial
-  boundary, then complete every credential-independent adapter contract,
-  preflight, fixture, test, DataHub recipe, and refusal path without
-  provisioning
-- Last repository validation: phase 05 implementation at `ae62486` passed
-  canonical CLI/report promotion, real-browser keyboard and responsive flows,
-  two axe-core audits, UI tests, and public/secret scans; inspected artifacts
-  were committed at `c213f33`; the closure worktree passed all 151
-  `make check` tests plus Ruff, formatting, mypy, 112-file repository,
-  secret, public-artifact, source/wheel build, and diff checks
+- Next acceptance target: build and inspect the deterministic phase 06
+  acceptance bundle, including full lifecycle, combined-campaign,
+  recreated-identity, outcome-unknown, compensation-conflict, table-only,
+  and live-evidence refusal artifacts; then exhaust any remaining safe
+  credential-independent work
+- Last repository validation: Looker reconciliation at `a57b06e` passed all
+  187 tests, including combined Git/dbt plus Looker reconciliation and
+  selective receipt invalidation, plus Ruff, formatting, mypy, 123-file
+  repository validation, secret and public-artifact scans, source/wheel
+  builds, and `git diff --check`
 
 ## Phase ledger
 
@@ -31,7 +31,7 @@ contract; `PLAN.md` defines proof order.
 | 03 | complete | `EP-003` at `3ca39a1`; exact live DataHub-to-dbt mapping, two one-file applies, native validation receipt, verified rollback, idempotent retry, and contained adversarial probes | none |
 | 04 | complete | `EP-004` at `25466a9`; equivalent live reconciliation, verified stable publication, one issued-plan sentinel, live late-consumer reopening, rich-graph refusal, and adversarial gate matrix | no production warehouse deletion was attempted |
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
-| 06 | active | deterministic predecessor plus the phase 04 canonical campaign outputs | zero-cost boundary handoff must be verified; live Looker instance/API evidence remains unavailable and provisioning is forbidden |
+| 06 | active | `00db298`, `3435177`, `5454594`, and `a57b06e`; deterministic API 4.0 lifecycle, durable intent recovery, campaign binding, official DataHub 1.6.0 recipe validation, no-secret access packet, and legacy/replacement reconciliation; 187 tests pass | live Looker instance/API, ingestion, native query, compensation, delete/recreate, and lost-response evidence remain unavailable; fixture results do not satisfy `EP-006` |
 | 07 | queued | none | harden available paths, then close live Looker cases |
 | 08 | queued | none | clean operation plus independent operator evidence |
 
@@ -45,7 +45,7 @@ to `active` if later evidence invalidates its acceptance result.
 |---|---|---|---|
 | DataHub Core | no | agent may start a disposable local instance | `docs/ACCESS.md` |
 | Git/dbt target | no | agent may create disposable local resources | `docs/ACCESS.md` |
-| Looker | preflight only; not yet live proof | dedicated zero-cost handoff queued for verification; `PROVISIONING_ALLOWED=false`, so no instance, IAM elevation, query, quota change, or paid resource may be created | `docs/ACCESS.md` |
+| Looker | no; safe independent phase work remains | dedicated pretrial check verified zero instances, unallocated trial/paid quota, zero BigQuery query quota, and zero stored bytes; this is read-only GCP state, not Looker acceptance; `PROVISIONING_ALLOWED=false` forbids instance creation, IAM elevation, queries, quota changes, and paid resources | `docs/ACCESS.md` |
 | Independent operator | not until phase 08 proof | real human observation required | `docs/ACCESS.md` |
 
 Do not turn a future access need into a current blocker. Complete every safe
