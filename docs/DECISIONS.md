@@ -263,3 +263,34 @@ isolation mechanism refuses native validation.
 Why: dbt models, macros, dependencies, Git configuration, and hooks are
 repository-controlled code. Running them in the agent's ordinary environment
 would expose credentials and files that the campaign never authorized.
+
+## D-022 — issue and consume one producer plan per canonical manifest
+
+Status: accepted from phase 04 evidence.
+
+The campaign writer durably issues one exact, short-lived producer plan for
+one canonical manifest. Gate execution accepts only byte-equivalent issued
+content, records intent before action, and consumes both the plan and
+campaign/manifest binding. A refusal that performs no action remains
+retryable; an executed or outcome-unknown action cannot be replayed. A newly
+computed plan for the same manifest is not an authorization.
+
+Why: a ready manifest is evidence, not a bearer token. Durable issuance closes
+the gap between planning and execution, while intent-before-action and
+one-time consumption prevent duplicate producer changes after retries or lost
+responses.
+
+## D-023 — page sparse DataHub lineage by individual degree
+
+Status: accepted from DataHub Core v1.6.0 phase 04 evidence.
+
+Query downstream lineage separately for degree `1`, `2`, and `3+`, page each
+bucket to its advertised total, then union and de-duplicate the results.
+Treat duplicate entities, changing totals, failed pages, or count mismatch as
+partial evidence.
+
+Why: the live Core boundary returned only degree-one results when multiple
+degree values were supplied together for a sparse graph, even though the
+degree-two late consumer existed. Independent buckets exposed that consumer
+and allowed it to reopen readiness without assuming a complete multi-value
+filter.

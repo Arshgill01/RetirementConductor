@@ -84,6 +84,15 @@ inside the disposable validator boundary. The campaign still ended `UNSAFE`
 because 30 consumers remain opaque and reconciliation has not run. See
 [EP-003](docs/EVIDENCE_LEDGER.md#ep-003--phase-03-git-and-dbt-execution).
 
+Phase 04 completed that first vertical in two live disposable campaigns. An
+isolated one-consumer campaign reconciled equivalent fresh scope, published
+and verified its final DataHub summary, and executed one short-lived
+manifest-bound producer sentinel. Replay, drift, tampering, unavailable state,
+and untrusted provenance all refused. Adding a second consumer reopened the
+same campaign to `UNSAFE`, while the representative 31-consumer graph also
+refused the producer action. See
+[EP-004](docs/EVIDENCE_LEDGER.md#ep-004--phase-04-reconciliation-and-producer-gate).
+
 ## Complete supported path
 
 The first production-shaped vertical is:
@@ -166,6 +175,9 @@ The disposable live DataHub workflow and its no-secret configuration are
 documented in [the DataHub Core runbook](docs/runbooks/DATAHUB_CORE.md).
 The bounded repository mutation and native validation sequence is documented
 in [the Git/dbt runbook](docs/runbooks/GIT_DBT.md).
+Fresh reconciliation, stable publication, and the one-time producer gate are
+documented in
+[the reconciliation and gate runbook](docs/runbooks/RECONCILIATION_GATE.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.

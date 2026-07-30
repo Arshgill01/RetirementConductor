@@ -40,7 +40,7 @@ the produced artifacts have been inspected.
 | EP-001 | 01 | fixture | `30173f1` | `artifacts/public/phase01/`; state, replay, interruption, policy, and integrity evidence | passed | no external or native integration exercised |
 | EP-002 | 02 | live | `19bebb9` | `artifacts/public/phase02/`; DataHub identity, pagination, envelope, scope comparison, and stable write/read-back | passed | synthetic disposable Core graph; no authenticated or Cloud boundary |
 | EP-003 | 03 | live | `3ca39a1` | `artifacts/public/phase03/`; Git/dbt identity, exact apply, rollback/reapply, native receipt, and adversarial containment | passed | local disposable Git repository and DuckDB; no production source |
-| EP-004 | 04 | live and fixture | not-run | reconciliation, late-consumer refusal, publication, and gate | not-run | none recorded |
+| EP-004 | 04 | live and fixture | `25466a9` | `artifacts/public/phase04/`; equivalent reconciliation, late reopening, verified publication, one-time gate, and refusal matrix | passed | disposable Core, Git, DuckDB, and harmless sentinel; no warehouse deletion |
 | EP-005 | 05 | live and fixture | not-run | canonical CLI/report parity, accessibility, and redaction | not-run | none recorded |
 | EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
 | EP-007 | 07 | live and fixture | not-run | threat, fault, recovery, concurrency, and scan evidence | not-run | none recorded |
@@ -481,3 +481,149 @@ sandbox mounts and limits, exact receipt consumer/URN and compatibility
 evidence, campaign event digest, remaining blockers, every adverse refusal,
 failed semantic build, and absence of secret, hook, subprocess, and network
 escape markers.
+
+## EP-004 — phase 04 reconciliation and producer gate
+
+Evidence ID: EP-004
+
+Requirement IDs: RC-007, RC-011, RC-012, RC-013
+
+Repository commit: `25466a9085d4e3beea194616a76b40e0a9a14f5c`
+
+Captured at: `2026-07-30T12:45:46Z`
+
+Mode: live positive and refusal paths against disposable sources, supplemented
+by fixture contract tests.
+
+Source and tool versions: DataHub Core v1.6.0; self-hosted DataHub MCP server
+0.6.0; Git 2.53.0; dbt-core 1.12.0; dbt-duckdb 1.10.1; DuckDB 1.5.5; SQLite
+3.53.1 in the uv runtime; Python 3.11.15; uv 0.11.28; Retirement Conductor
+0.1.0.
+
+Command or operator action:
+
+```text
+make test-end-to-end
+retirement-conductor campaign reconcile --campaign <isolated-live-id> ...
+retirement-conductor campaign publish --campaign <isolated-live-id> ...
+retirement-conductor campaign verify-publication --campaign <isolated-live-id> ...
+retirement-conductor producer plan --campaign <isolated-live-id> ...
+retirement-conductor gate --campaign <isolated-live-id> ...
+retirement-conductor gate --campaign ret-orders-git-dbt ...
+make phase04-evidence
+make check
+git diff --check
+```
+
+The end-to-end runner supplied a unique ignored store, repository, campaign,
+writer, trusted run, and sentinel root. It invoked each listed CLI command
+directly, captured exact JSON and exit status, restored the DataHub baseline,
+and then ran the focused policy, gate, and store tests. The evidence exporter
+reverified every retained digest and ran 61 focused DataHub, Git/dbt, policy,
+gate, and store tests. The final `make check` passed all 138 tests, repository
+validation, secret and public-artifact scans, source and wheel builds, and
+the diff check.
+
+Expected result: equivalent live before/after scope; bounded observable
+refresh; one all-closed isolated campaign reaching `READY_TO_RETIRE`; exact
+stable DataHub publication and read-back; one short-lived issued producer plan
+executing one harmless sentinel; a new consumer reopening the campaign; a
+31-consumer rich graph remaining `UNSAFE`; and every missing, drifted,
+tampered, stale, untrusted, delayed, alternate, or replayed authorization
+failing closed.
+
+Observed result: the isolated campaign recorded one baseline consumer and one
+validated Git/dbt receipt. Ready reconciliation used equal scope digest
+`sha256:df758c990c8940c414bd002dba3493f96e425dc47d9a4907bda524821ff36be2`,
+observed refresh on its first bounded attempt, and produced comparison
+`sha256:e6a86d0de5d2c55b5004e641a9994dc3b7a1b2ecb77995a684a7b6e7700b0f53`.
+DataHub published that reconciled manifest and exact read-back produced
+canonical ready manifest
+`sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2`.
+
+Producer plan
+`sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee`
+was durably issued for that manifest. The gate recorded intent, reread the
+bound sources and publication, wrote one sentinel, and recorded receipt
+`sha256:dd7a87f4031f735358d017050aca7e394178be69b97ee134618f9ae5f27070ed`.
+The inspected ledger contained schema migrations 1 through 3, 13 attempts,
+exactly one `EXECUTED`, 12 recorded `REFUSED`, and no second action.
+
+A live degree-two consumer then increased current membership from one to two
+under the same scope. Comparison
+`sha256:69269f775693bbb5810e262228bdb2c176a8bc1bbf30c2fc73e552b487afe54e`
+listed exactly one added identity. After updating the same DataHub document
+and verifying read-back, canonical manifest
+`sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece`
+was `UNSAFE` with `RECONCILIATION_NEW_CONSUMER` and
+`POLICY_CONSUMER_OPAQUE`; its gate refused and sentinel count remained one.
+The separate rich campaign returned 31 consumers, stayed `UNSAFE`, and also
+refused. The deterministic matrix produced exactly `BLOCKED`, `UNSAFE`,
+`REVIEW_REQUIRED`, and `READY_TO_RETIRE`.
+
+Refusal cases: missing approval (`AUTH_APPROVAL_MISSING`); untrusted or wrong
+run (`GATE_PROVENANCE_UNTRUSTED`); wrong writer
+(`RUNTIME_WRITER_MISMATCH`); missing campaign state
+(`RUNTIME_CAMPAIGN_NOT_FOUND`); unavailable DataHub
+(`SOURCE_DATAHUB_UNAVAILABLE`); configuration, validator, or authorization
+drift (`GATE_STATE_DRIFT`); changed consumer file
+(`SOURCE_GIT_FILE_CHANGED`); changed producer source (`GATE_SOURCE_DRIFT`);
+tampered validation (`INTEGRITY_DIGEST_MISMATCH`); changed replacement schema
+(`SPEC_REPLACEMENT_INCOMPATIBLE`); replay (`GATE_PLAN_REPLAYED`); and late or
+rich non-ready state (`GATE_DECISION_NOT_READY`). Focused tests additionally
+covered stale and partial evidence, disappeared unclosed consumers, unissued
+and expired plans, missing verified publication, and outcome-unknown action.
+
+Tracked artifact paths:
+`artifacts/public/phase04/ready-manifest.json`,
+`artifacts/public/phase04/late-manifest.json`,
+`artifacts/public/phase04/reconciliation-evidence.json`,
+`artifacts/public/phase04/gate-evidence.json`,
+`artifacts/public/phase04/refusal-evidence.json`, and
+`artifacts/public/phase04/phase04-evidence.json`.
+
+Private artifact digests: complete ignored run summary
+`sha256:8d06d08d84e6067b6ac34df1731b52f999c7bf5449247dca931a5d3b9a5fb5fe`;
+ready and late reconciliation comparisons
+`sha256:e6a86d0de5d2c55b5004e641a9994dc3b7a1b2ecb77995a684a7b6e7700b0f53`
+and
+`sha256:69269f775693bbb5810e262228bdb2c176a8bc1bbf30c2fc73e552b487afe54e`;
+producer plan
+`sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee`;
+gate receipt
+`sha256:dd7a87f4031f735358d017050aca7e394178be69b97ee134618f9ae5f27070ed`;
+sentinel
+`sha256:122df7f835c626d0d0e584fbbd8a0036eb8399057ac44e93ce18bf08240b77ae`;
+and rich snapshot
+`sha256:192cbbac0ba7368c66129f9db7bf84fdcfb6ebffdba0d7ad811662c91d743498`.
+Individual command-output digests are retained in the tracked refusal
+evidence.
+
+The tracked artifact file SHA-256 digests are, respectively,
+`e260444a1afe49604eaa42c06f28463e7b62e400617dfc1dd8685d2640e18012`,
+`a5725f919f918754198f1f77abbf17aed46b4ef4141479d9ae37f74f05b7570a`,
+`2245cc32225a7829bf6fe1ecb55a6761eb200082397dc5b846a9e75b3f51fd30`,
+`5890a08d7a0d4b4068a039f4f36ab0de91ee51979e761d34175fdc19d1443312`,
+`3dee6fb10174f850d56f2cf16e82506e082377464f39f7cf60157b5f10a89c1c`,
+and
+`86907b965314fd0b31140ba191a661f0a56028b5e0570f7d7c9d2cd5ebc6d2f1`.
+
+What this proves: the first supported product vertical runs end to end through
+live catalog discovery, authorized source mutation, native validation, fresh
+equivalent reconciliation, stable DataHub write/read-back, deterministic
+policy, and an enforceable one-time producer action. A later graph consumer
+and the consequential rich graph both reverse or prevent that action.
+
+What this does not prove: production or authenticated DataHub behavior,
+universal catalog completeness, a real ingestion connector's ordering, a
+warehouse deletion, production CI identity, Looker execution, or safety
+outside the recorded evidence envelope. The producer action is deliberately a
+local sentinel and DataHub Core did not expose `isPartial`.
+
+Reviewer inspection: inspected baseline/current scope and counts, bounded
+refresh receipts, ready and late membership diffs, all manifest and
+publication digest links, stable document identity, DataHub lifecycle
+non-mutation, producer source and trusted-run bindings, issued-plan and attempt
+ledger, exact sentinel count and digest, every live refusal payload, rich
+inventory result, four-way decision matrix, 61-test focused result, public
+artifact scan, and secret scan.

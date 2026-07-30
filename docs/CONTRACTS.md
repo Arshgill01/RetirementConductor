@@ -451,8 +451,13 @@ Immediately before that result, the gate must also verify:
 - the stable DataHub publication still reads back the expected digests.
 
 An unavailable check refuses. The producer workflow consumes the result in
-the same trusted invocation and records that attempt. A prior zero exit,
-report, manifest, or publication is never a reusable authorization token.
+the same trusted invocation and records that attempt. The campaign writer
+durably issues at most one exact producer plan for a canonical manifest.
+Execution requires byte-equivalent issued content, records intent before the
+producer action, and consumes both the plan digest and campaign/manifest
+binding even when the action outcome becomes unknown. Ordinary refusals do not
+consume a plan. A prior zero exit, report, manifest, publication, or
+independently recomputed plan is never a reusable authorization token.
 
 ## Campaign manifest
 

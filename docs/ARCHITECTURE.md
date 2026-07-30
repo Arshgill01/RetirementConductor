@@ -213,8 +213,14 @@ The producer-side gate:
 - reloads current campaign state;
 - requires a fresh reconciliation within policy;
 - verifies manifest and receipt digests;
+- rereads DataHub, Git/dbt, producer source, validator, authorization, and
+  publication bindings immediately before action;
+- requires a short-lived producer plan that this campaign writer durably
+  issued for the exact canonical manifest;
+- records durable intent before the producer action and records its outcome;
 - exits zero only for `READY_TO_RETIRE`;
-- records the exact policy decision;
+- consumes the manifest and plan binding so a prior green result cannot be
+  replayed or recomputed into another authorization;
 - does not itself hold general mutation credentials.
 
 ## Consistency and concurrency
