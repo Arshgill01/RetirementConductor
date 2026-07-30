@@ -327,6 +327,13 @@ def browser_paths() -> tuple[str, str]:
     chrome_match = re.search(r'CHROME_TEST_PATH="([^"]+)"', output)
     driver_match = re.search(r'CHROMEDRIVER_TEST_PATH="([^"]+)"', output)
     if not chrome_match or not driver_match:
+        output = run_command(
+            ["npx", "--yes", "browser-driver-manager", "which"],
+            timeout=60,
+        )
+        chrome_match = re.search(r'CHROME_TEST_PATH="([^"]+)"', output)
+        driver_match = re.search(r'CHROMEDRIVER_TEST_PATH="([^"]+)"', output)
+    if not chrome_match or not driver_match:
         raise RuntimeError("browser-driver-manager did not report synchronized paths")
     return chrome_match.group(1), driver_match.group(1)
 
@@ -344,7 +351,7 @@ def axe_flow(urls: list[str]) -> list[dict[str, Any]]:
             "wcag2a,wcag2aa,wcag21a,wcag21aa,wcag22aa,best-practice",
             "--exit",
             "--save",
-            str(raw_output),
+            raw_output.relative_to(ROOT).as_posix(),
             "--no-reporter",
             "--chrome-path",
             chrome,
@@ -386,6 +393,7 @@ def axe_flow(urls: list[str]) -> list[dict[str, Any]]:
 
 def run() -> int:
     prepare_reports()
+    print("Phase 05 reports generated deterministically.", flush=True)
     reports = {
         "live-refusal": REPORT_ROOT / "live-refusal-report.html",
         "all-closed-fixture": REPORT_ROOT / "all-closed-fixture-report.html",
@@ -405,6 +413,9 @@ def run() -> int:
     port = server.server_address[1]
     sessions = ("phase05-desktop", "phase05-mobile")
     try:
+        for session in sessions:
+            with suppress(RuntimeError, subprocess.SubprocessError):
+                playwright(prefix, session, ["close"])
         live_url = f"http://127.0.0.1:{port}/{reports['live-refusal'].name}"
         fixture_url = f"http://127.0.0.1:{port}/{reports['all-closed-fixture'].name}"
         pages = [
@@ -416,6 +427,9 @@ def run() -> int:
                 screenshot_name="live-refusal-desktop.png",
                 mobile=False,
             ),
+        ]
+        print("Desktop report browser flow passed.", flush=True)
+        pages.append(
             page_flow(
                 prefix,
                 session=sessions[1],
@@ -423,9 +437,11 @@ def run() -> int:
                 label="all-closed-fixture-mobile",
                 screenshot_name="all-closed-mobile.png",
                 mobile=True,
-            ),
-        ]
+            )
+        )
+        print("Mobile report browser flow passed.", flush=True)
         axe = axe_flow([live_url, fixture_url])
+        print("axe-core report audit passed.", flush=True)
     finally:
         for session in sessions:
             with suppress(RuntimeError, subprocess.SubprocessError):
