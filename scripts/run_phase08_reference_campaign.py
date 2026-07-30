@@ -316,11 +316,20 @@ def run() -> dict[str, Any]:
                 "isolated_consumer_count": live["isolated"]["baseline_consumer_count"],
                 "apply_targets": live["isolated"]["apply_targets"],
                 "validation_result": live["isolated"]["validation_result"],
+                "validator": live["isolated"]["validator"],
+                "validator_version": live["isolated"]["validator_version"],
                 "ready_decision": live["isolated"]["ready_decision"],
                 "ready_manifest_digest": live["isolated"]["ready_manifest_digest"],
+                "ready_publication_settle": live["isolated"][
+                    "ready_publication_settle"
+                ],
                 "producer_sentinel_count": live["isolated"]["sentinel_count"],
                 "late_consumer_count": live["isolated"]["late_consumer_count"],
                 "late_decision": live["isolated"]["late_decision"],
+                "late_publication_settle": live["isolated"]["late_publication_settle"],
+                "gate_attempt_status_counts": live["isolated"][
+                    "gate_attempt_status_counts"
+                ],
                 "rich_consumer_count": live["rich_graph"]["consumer_count"],
                 "rich_decision": live["rich_graph"]["decision"],
                 "rich_gate_refusal": live["rich_graph"]["gate_refusal"],

@@ -242,6 +242,7 @@ def write_checksums(paths: list[Path]) -> Path:
 
 
 def run() -> dict[str, Any]:
+    repository_commit = checked(["git", "rev-parse", "HEAD"]).stdout.strip()
     checked(["uv", "lock", "--check"])
     RELEASE_DIST.mkdir(parents=True, exist_ok=True)
     build(RELEASE_DIST)
@@ -280,6 +281,7 @@ def run() -> dict[str, Any]:
             "schema_version": "1.0.0",
             "captured_at": utc_now(),
             "result": "PACKAGE_VERIFIED",
+            "repository_commit": repository_commit,
             "version": __version__,
             "wheel": wheel_evidence,
             "source_archive": sdist_evidence,
