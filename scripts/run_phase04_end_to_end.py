@@ -850,9 +850,12 @@ def run() -> dict[str, Any]:
             expected_exit=2,
             expected_refusal="GATE_STATE_DRIFT",
         )
-        alternate_dbt = run_root / "alternate-dbt"
+        alternate_bin = run_root / "alternate-tool" / "bin"
+        alternate_bin.mkdir(parents=True)
+        alternate_dbt = alternate_bin / "dbt"
         shutil.copy2(DBT_EXECUTABLE, alternate_dbt)
         alternate_dbt.chmod(0o700)
+        (alternate_bin / "python").symlink_to(DBT_EXECUTABLE.parent / "python")
         validator_drift = {
             **environment,
             "GIT_DBT_DBT_EXECUTABLE": str(alternate_dbt),
