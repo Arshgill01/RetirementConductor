@@ -351,6 +351,16 @@ def test_workflow_compensation_requires_replanning_before_reapply(
             confirmed_plan_digest=str(second_plan["plan_digest"]),
             occurred_at=second_authorized_at,
         )
+        with pytest.raises(Refusal) as non_live:
+            workflow.validate(CAMPAIGN_ID)
+        receipt = json.loads(
+            (
+                tmp_path / "artifacts" / CAMPAIGN_ID / "looker" / "receipt.json"
+            ).read_text(encoding="utf-8")
+        )
 
         assert reapplied["apply"]["actual_targets"] == ["look:41"]
+        assert non_live.value.code == "EVIDENCE_RECEIPT_MODE_NOT_LIVE"
+        assert receipt["plan"]["digest"] == second_plan["plan_digest"]
+        assert receipt["compensation"]["exercised"] is False
         assert fake.query_id == "q-after"

@@ -557,6 +557,11 @@ class LookerWorkflow:
             root / "compensation.json",
             "compensation_digest",
         )
+        if (
+            compensation is not None
+            and compensation.get("plan_digest") != plan["plan_digest"]
+        ):
+            compensation = None
         receipt = self.adapter.emit_receipt(
             plan,
             apply_record,

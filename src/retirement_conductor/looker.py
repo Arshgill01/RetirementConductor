@@ -1044,6 +1044,16 @@ class LookerAdapter:
         if compensation is not None:
             compensation_record = dict(compensation)
             verify_digest(compensation_record, "compensation_digest")
+            if (
+                compensation_record.get("plan_digest") != plan["plan_digest"]
+                or compensation_record.get("apply_digest")
+                != apply_value["apply_digest"]
+            ):
+                raise Refusal(
+                    RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+                    "The Looker compensation record belongs to another plan or "
+                    "apply operation.",
+                )
             compensation_value["result"] = (
                 "RESTORED" if compensation_record["result"] == "RESTORED" else "FAILED"
             )
