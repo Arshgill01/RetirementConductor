@@ -103,6 +103,11 @@ retirement-conductor adapter looker plan \
   --campaign <campaign-id>
 ```
 
+With `LOOKER_ALLOW_APPLY=false`, preflight requires only the model-scoped read
+permissions in [ACCESS.md](../ACCESS.md); `save_content` is neither required
+nor treated as authority. Enabling apply requires both effective
+`save_content` and the independent campaign controls below.
+
 Inspect the permission, native baseline, inventory binding, and plan artifacts
 under the ignored campaign artifact directory. The plan must target exactly
 one `look:<numeric-id>` and change only the saved Look's `query_id`.
@@ -128,6 +133,9 @@ retirement-conductor adapter looker apply \
 The workflow writes a durable intent before mutation. A timeout, cancellation,
 or lost response remains `APPLY_OUTCOME_UNKNOWN` until a native reread proves
 whether the exact planned state exists. Never blindly retry the mutation.
+Read retries and status-specific refusal behavior are defined in the
+[security model](../SECURITY_MODEL.md), and partial-state recovery is in the
+[campaign recovery runbook](RECOVERY.md).
 
 Compensation is separately approval-bound and refuses if any post-apply edit
 changed the saved object:

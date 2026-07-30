@@ -2,7 +2,9 @@
 
 Retirement Conductor is designed to inspect and eventually change downstream
 consumer systems. Until a deployment has passed the security and reliability
-phase, use only disposable environments and data.
+phase, use only disposable environments and data. The detailed assets,
+actors, trust boundaries, abuse cases, and capability matrix are in the
+[security model](docs/SECURITY_MODEL.md).
 
 ## Supported development boundary
 
@@ -26,6 +28,46 @@ Never commit or include in public artifacts:
 
 Use ignored environment files or a deployment secret provider. Logs and
 reports must record safe identifiers and redacted summaries.
+
+## Artifact classification and retention
+
+Retention is bounded by both minimization and the need to explain a producer
+decision. An operator may shorten a maximum below, but may not delete the only
+evidence supporting an active campaign or completed producer action.
+
+| Material | Retention rule |
+|---|---|
+| Credentials, tokens, cookies, private keys | process memory only; never write to artifacts, logs, reports, or backups |
+| Unrestricted SQL, query rows, private content, raw API bodies | do not retain; reduce to approved redacted claims, counts, fingerprints, and bounded diagnostics |
+| Ignored redacted raw evidence | delete after promotion to normalized claims and acceptance inspection; 30 days is the maximum without an incident hold |
+| Active campaign SQLite store | retain while any campaign can resume or any gate outcome is unresolved |
+| Terminal campaign store and accepted receipts | retain for 90 days after the producer action by default, or the longer period required by the deployment's audit policy |
+| Verified store backups | keep the newest verified generation and one prior generation while active; delete superseded generations within 7 days; after closure follow the store's 90-day rule |
+| Safe operational logs | 14 days maximum unless an incident hold applies |
+| Structurally redacted public artifacts | may remain in repository history after secret and public-artifact review |
+
+Retention enforcement is currently an operator runbook responsibility, not an
+automated product claim. A deployment must record any different legal or audit
+period before live use.
+
+Before deletion, stop the writer and resolve the exact ignored artifact,
+database, WAL, shared-memory, lock, and backup paths. Do not use a broad
+recursive target. Ordinary file deletion does not guarantee physical erasure
+from SSDs, filesystem snapshots, remote copies, or copy-on-write storage.
+Deploy on encrypted storage and use approved key destruction when erasure
+assurance is required.
+
+## Local state and backup protection
+
+- The active campaign database and local lock are forced to mode `0600`.
+- One writer identity and one resolved local path are bound into the store.
+- A copied store at another path and known shared filesystems refuse.
+- A backup never overwrites an existing destination, is written atomically at
+  mode `0600`, and must reproduce the live logical campaign state.
+- Backups contain confidential audit evidence but are not encrypted by the
+  application. Protect them with deployment encryption and access controls.
+- Restore, migration, partial-state, and deletion procedures are in the
+  [recovery runbook](docs/runbooks/RECOVERY.md).
 
 ## Reporting a vulnerability
 

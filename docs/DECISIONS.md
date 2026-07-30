@@ -410,3 +410,38 @@ entity and three field-lineage edges while also setting its no-event flag,
 logging a no-metadata message, and reporting zero sink records. Accepting
 either the success exit or the contradictory counter alone would violate the
 empty-result and inspected-evidence rules.
+
+## D-030 — recovery preserves the original store authority
+
+Status: accepted from deterministic phase 07 recovery drills.
+
+Bind the SQLite store to both one writer identity and the digest of its
+resolved deployment path. Check an existing binding read-only before changing
+its SQLite journal mode, refuse known shared filesystem types, and allow
+restore only to the original bound path.
+
+Create backups through SQLite's online backup API under the campaign write
+lock. Publish a non-overwriting mode-`0600` backup only after database
+integrity, foreign-key, event replay, manifest, gate-ledger, and logical
+snapshot verification.
+
+Why: copying a valid database must not create a second authoritative campaign
+writer, while a recovery copy at the original declared location must preserve
+the exact canonical decisions and evidence references.
+
+## D-031 — plan authority does not imply native mutation capability
+
+Status: accepted from deterministic phase 07 capability tests.
+
+Require only model-scoped read permissions for Looker preflight, planning,
+snapshot, and validation. Require `save_content` only when apply is explicitly
+enabled. Git/dbt planning similarly remains usable while specification or
+adapter apply capability is disabled.
+
+Source-provided titles, filters, comments, prompts, or error text remain
+untrusted data. They cannot set capability, expand scope, satisfy an approval,
+or change policy.
+
+Why: requiring a write-capable credential for planning would collapse
+least-privilege separation, while treating persuasive source text as
+authority would bypass the deterministic campaign contract.

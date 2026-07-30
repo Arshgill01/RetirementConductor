@@ -20,6 +20,26 @@ The implementation must create `.env.example` and preflight diagnostics when
 the corresponding integration is built. It must not create a real secret file
 on the user's behalf.
 
+## Capability separation
+
+Use separate principals where the source supports them:
+
+| Principal | Minimum capability | Must not have |
+|---|---|---|
+| DataHub inventory | exact search, schema, ownership, lineage, paths, and permitted query reads | target lifecycle mutation |
+| DataHub publisher | update and reread one stable campaign summary | campaign transaction authority or target deprecation |
+| Git/dbt planner | read one declared repository | branch or file write |
+| Git/dbt applier | create one review branch and change approved paths | default-branch rewrite, hooks, unrelated repository paths, production warehouse access |
+| dbt validator | copied project and disposable local target | network, host home, source checkout, deployment secrets |
+| Looker planner | model-scoped reads listed below | `save_content` |
+| Looker applier | planner reads plus `save_content` for one folder and Look | administrator or wildcard content edit |
+| Looker ingestion | official connector reads listed below | adapter apply and producer authority |
+| Producer gate | exact short-lived producer invocation | reusable campaign-wide producer access |
+
+Configuration opt-in and campaign authorization remain required even when a
+credential has native write permission. The complete control mapping is in
+the [security model](SECURITY_MODEL.md).
+
 ## Access available without user action
 
 ### Repository
@@ -191,18 +211,23 @@ expectation.
 
 ### Looker permissions
 
-Start with a custom role scoped to the disposable model and folder. The
-bounded adapter requires:
+Start with a custom role scoped to the disposable model and folder. Planning,
+snapshot, and validation require:
 
 ```text
 access_data
 explore
-save_content
 see_lookml
 see_looks
 see_queries
 see_schedules
 see_users
+```
+
+Only an apply-enabled principal additionally requires:
+
+```text
+save_content
 ```
 
 The official DataHub Looker ingestion recipe separately requires:
@@ -224,12 +249,13 @@ see_user_dashboards
 see_users
 ```
 
-These sets may belong to separate least-privileged principals. The adapter
-principal also needs model access and edit access only to the named disposable
-folder and saved Look. Do not request an administrator role or instance-wide
-edit permission. Live preflight records the actual effective permissions and
-refuses when a required adapter permission is absent; it records missing
-ingestion permissions separately.
+These sets should belong to separate least-privileged principals. The
+apply-enabled adapter principal also needs model access and edit access only
+to the named disposable folder and saved Look. A plan-only principal does not
+need edit access. Do not request an administrator role or instance-wide edit
+permission. Live preflight records the actual effective permissions, requires
+`save_content` only when apply is enabled, and records missing ingestion
+permissions separately.
 
 ### Apply authorization
 

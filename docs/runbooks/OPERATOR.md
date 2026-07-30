@@ -134,6 +134,9 @@ retirement-conductor campaign resume \
 Use only the legal state that matches the observed recovery point:
 `INVENTORIED`, `MIGRATING`, or `RECONCILING`. A timed-out apply is
 `OUTCOME_UNKNOWN`; reread the native object before resuming or retrying.
+Before risky recovery or application upgrade, create and verify a campaign
+store backup. Follow the [recovery runbook](RECOVERY.md) for exact backup,
+restore, schema roll-forward, diagnostics, and partial-state procedures.
 
 ## Build a local or public-safe report
 

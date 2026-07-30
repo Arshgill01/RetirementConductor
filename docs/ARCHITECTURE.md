@@ -77,7 +77,10 @@ a demonstrated multi-user or scale requirement.
 The supported deployment is explicitly single-writer. One deployment identity
 owns the SQLite state directory and local campaign lock. A copied database,
 second runner, or network-shared filesystem is not treated as coordinated
-state; preflight and the gate must refuse unsupported multi-writer operation.
+state. The store binds both writer identity and resolved path, checks an
+existing binding read-only before changing SQLite journal state, and refuses
+known shared filesystem types. This is local authority, not distributed
+consensus.
 
 ## Components
 
@@ -126,6 +129,14 @@ SQLite stores append-oriented campaign events and materialized current state:
 
 Raw artifacts remain on disk and are addressed by digest. The database stores
 references and safe summaries, not credentials or unrestricted query text.
+
+The store supports non-overwriting online backups under its write lock. A
+backup is published only after SQLite integrity and foreign-key checks,
+canonical event replay, manifest and gate-ledger validation, and exact logical
+snapshot comparison. Restore is supported only to the original bound path.
+Operational diagnostics validate the same logical state before emitting
+aggregate counts, digested campaign identities, stuck or stale campaigns,
+repeated refusals, and unresolved gate activity.
 
 The first implementation does not introduce a generic storage abstraction.
 Extract one only when a second store is genuinely required.

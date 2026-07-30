@@ -147,6 +147,8 @@ Deterministic policy decides.
 - [Requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md)
 - [Evidence ledger](docs/EVIDENCE_LEDGER.md)
 - [Access requirements](docs/ACCESS.md)
+- [Security model](docs/SECURITY_MODEL.md)
+- [Recovery runbook](docs/runbooks/RECOVERY.md)
 - [Risk register](docs/RISKS.md)
 - [Decision log](docs/DECISIONS.md)
 - [Phase index](docs/phases/README.md)
@@ -196,6 +198,10 @@ generation, and operator acceptance checks are documented in
 The credential-independent Looker recipes, no-secret access packet, and
 bounded live lifecycle are documented in
 [the Looker runbook](docs/runbooks/LOOKER.md).
+Threat boundaries, least-privilege capabilities, retention, failure handling,
+verified backup and restore, diagnostics, and recovery drills are documented
+in the [security model](docs/SECURITY_MODEL.md), [security policy](SECURITY.md),
+and [recovery runbook](docs/runbooks/RECOVERY.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.
