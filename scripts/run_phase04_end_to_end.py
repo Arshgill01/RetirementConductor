@@ -850,11 +850,18 @@ def run() -> dict[str, Any]:
             expected_exit=2,
             expected_refusal="GATE_STATE_DRIFT",
         )
-        alternate_bin = run_root / "alternate-tool" / "bin"
+        alternate_tool = run_root / "alternate-tool"
+        alternate_bin = alternate_tool / "bin"
         alternate_bin.mkdir(parents=True)
         alternate_dbt = alternate_bin / "dbt"
         shutil.copy2(DBT_EXECUTABLE, alternate_dbt)
         alternate_dbt.chmod(0o700)
+        original_tool = DBT_EXECUTABLE.parents[1]
+        shutil.copy2(original_tool / "pyvenv.cfg", alternate_tool / "pyvenv.cfg")
+        (alternate_tool / "lib").symlink_to(
+            original_tool / "lib",
+            target_is_directory=True,
+        )
         (alternate_bin / "python").symlink_to(DBT_EXECUTABLE.parent / "python")
         validator_drift = {
             **environment,
