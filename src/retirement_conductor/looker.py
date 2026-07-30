@@ -32,18 +32,19 @@ ADAPTER_VERSION = "0.1.0"
 LOOKER_API_VERSION = "4.0.26.12"
 RETRYABLE_READ_STATUSES = {408, 425, 429, 500, 502, 503, 504}
 
-# These permissions cover the exact reads and the one-property saved-Look update.
-# DataHub ingestion has its own documented, separately checked recipe boundary.
-REQUIRED_PERMISSIONS = {
+# Planning and native validation use only read capabilities. Saved-content
+# mutation is separately required only when apply is explicitly enabled.
+PLAN_PERMISSIONS = {
     "access_data",
     "explore",
-    "save_content",
     "see_lookml",
     "see_looks",
     "see_queries",
     "see_schedules",
     "see_users",
 }
+APPLY_PERMISSIONS = {"save_content"}
+REQUIRED_PERMISSIONS = PLAN_PERMISSIONS | APPLY_PERMISSIONS
 DATAHUB_INGESTION_PERMISSIONS = {
     "access_data",
     "explore",
@@ -287,7 +288,10 @@ class LookerAdapter:
                 for model in _nested_sequence(role_value, "model_set", "models")
             }
         )
-        missing = sorted(REQUIRED_PERMISSIONS - set(permissions))
+        required_permissions = PLAN_PERMISSIONS | (
+            APPLY_PERMISSIONS if self.settings.allow_apply else set()
+        )
+        missing = sorted(required_permissions - set(permissions))
         if missing:
             raise Refusal(
                 RefusalCode.SOURCE_LOOKER_PERMISSION_DENIED,
@@ -318,7 +322,7 @@ class LookerAdapter:
                 "effective_permissions": permissions,
                 "effective_models_digest": digest_json(models),
                 "required_model": self.settings.model_id,
-                "required_permissions": sorted(REQUIRED_PERMISSIONS),
+                "required_permissions": sorted(required_permissions),
                 "datahub_ingestion_permission_check": {
                     "required": sorted(DATAHUB_INGESTION_PERMISSIONS),
                     "missing": sorted(DATAHUB_INGESTION_PERMISSIONS - set(permissions)),
