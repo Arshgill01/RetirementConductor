@@ -1,0 +1,71 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/git-dbt-plan-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "consumer_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "datahub_urn": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "discovery": {
+      "type": "object"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "native_identity": {
+      "type": "object"
+    },
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "replacement": {
+      "type": "object"
+    },
+    "repository": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "target": {
+      "type": "object"
+    },
+    "validators": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "consumer_id",
+    "datahub_urn",
+    "repository",
+    "native_identity",
+    "target",
+    "replacement",
+    "discovery",
+    "validators",
+    "limitations",
+    "plan_digest"
+  ],
+  "title": "Git/dbt migration plan v1",
+  "type": "object"
+}
