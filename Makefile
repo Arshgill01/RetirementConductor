@@ -85,7 +85,7 @@ phase06-evidence:
 	uv run python -m scripts.generate_phase06_evidence
 
 phase07-evidence:
-	uv run python scripts/generate_phase07_evidence.py
+	uv run python -m scripts.generate_phase07_evidence
 
 scan:
 	uv run python scripts/run_security_scan.py
