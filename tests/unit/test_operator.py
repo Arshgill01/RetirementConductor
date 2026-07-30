@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from retirement_conductor.canonical import with_digest
+from retirement_conductor.events import CampaignProjection, manifest_from_projection
 from retirement_conductor.operator import (
     build_campaign_view,
     render_campaign_explain,
@@ -14,6 +15,8 @@ from retirement_conductor.operator import (
     safe_report_filename,
     write_campaign_report,
 )
+from retirement_conductor.policy import default_policy
+from retirement_conductor.vocabulary import CampaignState
 
 ROOT = Path(__file__).resolve().parents[2]
 READY = ROOT / "artifacts/public/phase04/ready-manifest.json"
@@ -30,6 +33,44 @@ def redigest(manifest: dict[str, Any]) -> dict[str, Any]:
     return with_digest(
         {key: value for key, value in manifest.items() if key != "manifest_digest"},
         "manifest_digest",
+    )
+
+
+def review_manifest() -> dict[str, Any]:
+    policy = default_policy()
+    policy["allow_waivers"] = True
+    return manifest_from_projection(
+        CampaignProjection(
+            campaign_id="review-campaign",
+            name="Review one bounded waiver",
+            state=CampaignState.RECONCILING,
+            specification_digest=f"sha256:{'1' * 64}",
+            target={"field": "legacy_status"},
+            replacement={"field": "order_status"},
+            policy=policy,
+            input_digests={},
+            evidence_envelope={
+                "mode": "live",
+                "sources": [
+                    {
+                        "id": "datahub",
+                        "required": True,
+                        "status": "COMPLETE",
+                    }
+                ],
+            },
+            inventory_consumer_ids=["consumer-one"],
+            current_consumer_ids=["consumer-one"],
+            consumers={
+                "consumer-one": {
+                    "id": "consumer-one",
+                    "disposition": "WAIVED",
+                    "receipt_digest": None,
+                }
+            },
+            reconciled=True,
+            generated_at="2026-01-01T00:00:00Z",
+        )
     )
 
 
@@ -63,6 +104,8 @@ def test_live_refusal_explains_each_blocker_and_recovery() -> None:
         "closed": 1,
         "open": 1,
         "blockers": 2,
+        "reviews": 0,
+        "conditions": 2,
         "receipts": 1,
     }
     assert "POLICY_CONSUMER_OPAQUE" in explain
@@ -70,6 +113,20 @@ def test_live_refusal_explains_each_blocker_and_recovery() -> None:
     assert "Evidence source:" in explain
     assert "Recovery:" in explain
     assert "Migrate or resolve every unsafe consumer" in explain
+
+
+def test_review_required_names_the_canonical_review_reason() -> None:
+    manifest = review_manifest()
+    view = build_campaign_view(manifest)
+    inspect = render_campaign_inspect(view)
+    explain = render_campaign_explain(view)
+    report = render_campaign_html(view)
+
+    assert "REVIEW_REQUIRED" in inspect
+    assert "0 blockers, 1 reviews" in inspect
+    assert "Review requirement · POLICY_WAIVER_REVIEW" in explain
+    assert "An allowed waiver remains visibly reviewable." in report
+    assert manifest["manifest_digest"] in report
 
 
 def test_unknown_coverage_never_looks_complete() -> None:

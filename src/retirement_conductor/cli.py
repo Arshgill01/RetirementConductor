@@ -101,11 +101,13 @@ def build_parser() -> argparse.ArgumentParser:
     inspect = campaign_subparsers.add_parser("inspect")
     _add_campaign_selection(inspect)
     _add_runtime_arguments(inspect)
+    inspect.add_argument("--manifest", type=Path)
     _add_output_format(inspect, default="text")
 
     explain = campaign_subparsers.add_parser("explain")
     _add_campaign_selection(explain)
     _add_runtime_arguments(explain)
+    explain.add_argument("--manifest", type=Path)
     _add_output_format(explain, default="text")
 
     resume = campaign_subparsers.add_parser("resume")
@@ -213,6 +215,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     report_build = report_subparsers.add_parser("build")
     _add_live_campaign_arguments(report_build)
+    report_build.add_argument("--manifest", type=Path)
     report_build.add_argument("--output", type=Path)
     report_build.add_argument(
         "--public",
@@ -415,6 +418,34 @@ def _selected_campaign_id(args: argparse.Namespace) -> str:
     return campaign_id
 
 
+def _load_manifest_artifact(path: Path, campaign_id: str) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise Refusal(
+            "INTEGRITY_DIGEST_MISMATCH",
+            "The canonical manifest artifact could not be read.",
+            {"error_type": type(exc).__name__},
+        ) from exc
+    if not isinstance(value, dict):
+        raise Refusal(
+            "INTEGRITY_DIGEST_MISMATCH",
+            "The canonical manifest artifact must be a JSON object.",
+        )
+    view = build_campaign_view(value)
+    manifest_campaign = str(_mapping(view["campaign"])["id"])
+    if manifest_campaign != campaign_id:
+        raise Refusal(
+            "INTEGRITY_DIGEST_MISMATCH",
+            "The canonical manifest belongs to another campaign.",
+        )
+    return value
+
+
+def _mapping(value: object) -> dict[str, Any]:
+    return dict(value) if isinstance(value, Mapping) else {}
+
+
 def _render(value: object) -> None:
     print(
         json.dumps(
@@ -438,6 +469,25 @@ def _render_report_result(value: Mapping[str, Any]) -> None:
             ]
         )
     )
+
+
+def _render_campaign_command(
+    args: argparse.Namespace,
+    manifest: Mapping[str, Any],
+) -> None:
+    view = build_campaign_view(manifest)
+    if args.format == "json":
+        _render(
+            {
+                "result": "OK",
+                "view": view,
+                "manifest": manifest,
+            }
+        )
+    elif args.campaign_command == "explain":
+        print(render_campaign_explain(view))
+    else:
+        print(render_campaign_inspect(view))
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -508,8 +558,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             _render(result)
             return 0
         if args.command == "report" and args.report_command == "build":
-            with CampaignStore(args.store, writer_id=args.writer_id) as store:
-                manifest = store.materialize(args.campaign_id)
+            if args.manifest:
+                manifest = _load_manifest_artifact(
+                    args.manifest,
+                    args.campaign_id,
+                )
+            else:
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    manifest = store.materialize(args.campaign_id)
             report_filename = safe_report_filename(args.campaign_id)
             report_directory = report_filename.removesuffix(".html")
             output = args.output or (
@@ -524,6 +580,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 _render(result)
             else:
                 _render_report_result(result)
+            return 0
+        if (
+            args.command == "campaign"
+            and args.campaign_command in {"inspect", "explain"}
+            and args.manifest
+        ):
+            campaign_id = _selected_campaign_id(args)
+            manifest = _load_manifest_artifact(args.manifest, campaign_id)
+            _render_campaign_command(args, manifest)
             return 0
         if args.command == "producer" and args.producer_command == "plan":
             with CampaignStore(args.store, writer_id=args.writer_id) as store:
@@ -814,19 +879,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         }
                     )
                 elif args.campaign_command in {"inspect", "explain", "resume"}:
-                    view = build_campaign_view(manifest)
-                    if args.format == "json":
-                        _render(
-                            {
-                                "result": "OK",
-                                "view": view,
-                                "manifest": manifest,
-                            }
-                        )
-                    elif args.campaign_command == "explain":
-                        print(render_campaign_explain(view))
-                    else:
-                        print(render_campaign_inspect(view))
+                    _render_campaign_command(args, manifest)
                 else:
                     _render({"result": "OK", "manifest": manifest})
                 return 0

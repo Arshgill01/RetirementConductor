@@ -344,8 +344,18 @@ def build_campaign_view(
         ),
     )
     blockers = [
-        _blocker_explanation(_mapping(blocker), public=public)
+        {
+            **_blocker_explanation(_mapping(blocker), public=public),
+            "condition_type": "Blocker",
+        }
         for blocker in _sequence(value["blockers"])
+    ]
+    review_requirements = [
+        {
+            **_blocker_explanation(_mapping(requirement), public=public),
+            "condition_type": "Review requirement",
+        }
+        for requirement in _sequence(value.get("review_requirements"))
     ]
     publication = _mapping(value.get("publication"))
     publication_verified = publication.get("readback_verified") is True
@@ -361,6 +371,8 @@ def build_campaign_view(
         "closed": sum(consumer["closed"] is True for consumer in consumers),
         "open": sum(consumer["closed"] is not True for consumer in consumers),
         "blockers": len(blockers),
+        "reviews": len(review_requirements),
+        "conditions": len(blockers) + len(review_requirements),
         "receipts": sum(
             consumer["receipt_digest"] is not None for consumer in consumers
         ),
@@ -393,6 +405,7 @@ def build_campaign_view(
             "sources": sources,
         },
         "blockers": blockers,
+        "review_requirements": review_requirements,
         "consumers": consumers,
         "publication": {
             "recorded": bool(publication),
@@ -430,7 +443,7 @@ def render_campaign_inspect(view: Mapping[str, Any]) -> str:
             f"{counts['consumers']} total, {counts['closed']} closed, "
             f"{counts['open']} open"
         ),
-        f"Blockers: {counts['blockers']}",
+        f"Open conditions: {counts['blockers']} blockers, {counts['reviews']} reviews",
         f"Evidence: {coverage['label']} (mode: {evidence['mode']})",
         f"Next action: {view['next_action']}",
         f"Manifest digest: {view['manifest_digest']}",
@@ -476,15 +489,20 @@ def render_campaign_explain(view: Mapping[str, Any]) -> str:
         if consumer["receipt_digest"]:
             lines.append(f"  Receipt: {consumer['receipt_digest']}")
 
-    lines.extend(["", "Blockers and recovery"])
+    lines.extend(["", "Blockers, review requirements, and recovery"])
     blockers = _sequence(view["blockers"])
-    if not blockers:
+    reviews = _sequence(view.get("review_requirements"))
+    conditions = blockers + reviews
+    if not conditions:
         lines.append("- None within the recorded evidence envelope.")
-    for blocker_value in blockers:
+    for blocker_value in conditions:
         blocker = _mapping(blocker_value)
         lines.extend(
             [
-                f"- {blocker['code']}: {blocker['message']}",
+                (
+                    f"- {blocker['condition_type']} · {blocker['code']}: "
+                    f"{blocker['message']}"
+                ),
                 f"  Evidence source: {blocker['evidence_source']}",
                 f"  Recovery: {blocker['recovery_action']}",
             ]
@@ -558,6 +576,7 @@ def _render_consumer(consumer: Mapping[str, Any]) -> str:
 def _render_blocker(blocker: Mapping[str, Any]) -> str:
     return f"""
         <li class="ledger-row blocker-row">
+          <p class="condition-type">{_escape(blocker["condition_type"])}</p>
           <h3><code>{_escape(blocker["code"])}</code></h3>
           <p>{_escape(blocker["message"])}</p>
           <dl class="detail-list">
@@ -575,6 +594,8 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
     evidence = _mapping(view["evidence"])
     coverage = _mapping(evidence["coverage"])
     blockers = [_mapping(item) for item in _sequence(view["blockers"])]
+    reviews = [_mapping(item) for item in _sequence(view.get("review_requirements"))]
+    conditions = blockers + reviews
     sources = [_mapping(item) for item in _sequence(evidence["sources"])]
     consumers = [_mapping(item) for item in _sequence(view["consumers"])]
     history = [_mapping(item) for item in _sequence(view["history"])]
@@ -586,10 +607,10 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
             '<p class="empty-state">No evidence sources are recorded. '
             "Coverage is unknown.</p>"
         )
-    blocker_html = "".join(_render_blocker(blocker) for blocker in blockers)
+    blocker_html = "".join(_render_blocker(blocker) for blocker in conditions)
     if not blocker_html:
         blocker_html = (
-            '<li class="empty-state">No blockers are recorded within this '
+            '<li class="empty-state">No open conditions are recorded within this '
             "evidence envelope.</li>"
         )
     consumer_html = "".join(_render_consumer(consumer) for consumer in consumers)
@@ -719,6 +740,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
     .status-complete, .status-validated, .status-ready-to-retire {{ color: var(--safe); }}
     .status-stale, .status-failed, .status-unsafe, .status-incomplete {{ color: var(--danger); }}
     .status-partial, .status-unknown, .status-blocked, .status-review-required {{ color: var(--warning); }}
+    .condition-type {{ color: var(--muted); font-weight: 700; margin-bottom: .25rem; }}
     .consumer-list, .blocker-list {{ list-style: none; margin: 0; padding: 0; }}
     .consumer-heading {{ align-items: baseline; display: flex; gap: 1rem; justify-content: space-between; }}
     .empty-state {{ border-top: 1px solid var(--line); color: var(--muted); padding-block: 1rem; }}
@@ -782,7 +804,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
         <div><dt>Consumers</dt><dd>{_escape(counts["consumers"])}</dd></div>
         <div><dt>Closed</dt><dd>{_escape(counts["closed"])}</dd></div>
         <div><dt>Open</dt><dd>{_escape(counts["open"])}</dd></div>
-        <div><dt>Blockers</dt><dd>{_escape(counts["blockers"])}</dd></div>
+        <div><dt>Open conditions</dt><dd>{_escape(counts["conditions"])}</dd></div>
       </dl>
     </section>
     <section id="evidence" aria-labelledby="evidence-heading">
@@ -798,7 +820,7 @@ def render_campaign_html(view: Mapping[str, Any]) -> str:
       <ol class="consumer-list">{consumer_html}</ol>
     </section>
     <section id="blockers" aria-labelledby="blockers-heading">
-      <h2 id="blockers-heading">Blockers and safe recovery</h2>
+      <h2 id="blockers-heading">Blockers, reviews, and safe recovery</h2>
       <ul class="blocker-list">{blocker_html}</ul>
     </section>
     <section id="history" aria-labelledby="history-heading">

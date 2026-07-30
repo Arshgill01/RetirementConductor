@@ -16,6 +16,7 @@ venv/
 dist/
 build/
 *.egg-info/
+output/playwright/
 
 # Runtime state and evidence that may contain sensitive material
 .retirement-conductor/

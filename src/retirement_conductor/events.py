@@ -454,6 +454,17 @@ def manifest_from_projection(projection: CampaignProjection) -> dict[str, Any]:
     """Build the single canonical manifest consumed by every surface."""
 
     result = _policy_result(projection)
+    review_requirements = [
+        {
+            key: requirement[key]
+            for key in ("code", "message", "consumer_id")
+            if key in requirement
+        }
+        for requirement in result.review_requirements
+    ]
+    review_fields = (
+        {"review_requirements": review_requirements} if review_requirements else {}
+    )
     manifest = with_digest(
         {
             "schema_version": "1.0.0",
@@ -487,6 +498,7 @@ def manifest_from_projection(projection: CampaignProjection) -> dict[str, Any]:
                 {"code": blocker["code"], "message": blocker["message"]}
                 for blocker in result.blockers
             ],
+            **review_fields,
             "transition_history": [
                 {
                     "sequence": event["sequence"],

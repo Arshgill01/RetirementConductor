@@ -9,6 +9,7 @@ from retirement_conductor.store import CampaignStore
 ROOT = Path(__file__).resolve().parents[2]
 SPECIFICATION = ROOT / "fixtures/specs/valid.yaml"
 CAMPAIGN_ID = "ret-orders-legacy-status"
+READY_MANIFEST = ROOT / "artifacts/public/phase04/ready-manifest.json"
 
 
 def create_campaign(database: Path, capsys: object) -> str:
@@ -163,3 +164,47 @@ def test_campaign_selector_refuses_conflicting_identifiers(
     assert exit_code == 2
     refusal = json.loads(capsys.readouterr().out)  # type: ignore[attr-defined]
     assert refusal["refusal_code"] == "SPEC_SCHEMA_INVALID"
+
+
+def test_exported_canonical_manifest_remains_inspectable_and_reportable(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    manifest = json.loads(READY_MANIFEST.read_text(encoding="utf-8"))
+    campaign_id = manifest["campaign"]["id"]
+
+    assert (
+        main(
+            [
+                "campaign",
+                "inspect",
+                "--campaign",
+                campaign_id,
+                "--manifest",
+                str(READY_MANIFEST),
+            ]
+        )
+        == 0
+    )
+    inspected = capsys.readouterr().out  # type: ignore[attr-defined]
+    assert "READY_TO_RETIRE" in inspected
+    assert manifest["manifest_digest"] in inspected
+
+    output = tmp_path / "portable.html"
+    assert (
+        main(
+            [
+                "report",
+                "build",
+                "--campaign",
+                campaign_id,
+                "--manifest",
+                str(READY_MANIFEST),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()  # type: ignore[attr-defined]
+    assert manifest["manifest_digest"] in output.read_text(encoding="utf-8")
