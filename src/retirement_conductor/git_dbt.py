@@ -299,7 +299,6 @@ class GitDbtAdapter:
             plan,
             refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
         )
-        write_versioned_artifact(artifact_root, "plan", plan)
         return plan
 
     def apply(
@@ -611,6 +610,14 @@ class GitDbtAdapter:
                 RefusalCode.VALIDATION_RECEIPT_FAILED,
                 "A failed dbt validation cannot emit a validated receipt.",
             )
+        limitations = list(plan["limitations"])
+        if compensation is not None:
+            verify_digest(dict(compensation), "compensation_digest")
+            if compensation.get("plan_digest") != plan["plan_digest"]:
+                limitations.append(
+                    "The exercised compensation belongs to the immediately "
+                    "preceding migration attempt for this same consumer."
+                )
         compensation_value = {
             "available": True,
             "exercised": compensation is not None,
@@ -664,7 +671,7 @@ class GitDbtAdapter:
                 "compensation": compensation_value,
                 "captured_at": captured_at,
                 "expires_at": expires_at,
-                "limitations": list(plan["limitations"]),
+                "limitations": limitations,
                 "terminal_disposition": "VALIDATED",
             },
             "receipt_digest",

@@ -25,6 +25,9 @@ from retirement_conductor.events import (
     project_events,
 )
 from retirement_conductor.fixtures import run_fixture
+from retirement_conductor.git_dbt import GitDbtAdapter
+from retirement_conductor.git_dbt_config import GitDbtSettings
+from retirement_conductor.git_dbt_workflow import GitDbtWorkflow
 from retirement_conductor.mcp_http import HttpMCPClient
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
@@ -76,7 +79,9 @@ def build_parser() -> argparse.ArgumentParser:
     replay = campaign_subparsers.add_parser("replay")
     replay.add_argument("source", type=Path)
     evaluate = campaign_subparsers.add_parser("evaluate")
-    evaluate.add_argument("source", type=Path)
+    evaluate.add_argument("source", type=Path, nargs="?")
+    evaluate.add_argument("--campaign", dest="campaign_id")
+    _add_runtime_arguments(evaluate)
 
     create = campaign_subparsers.add_parser("create")
     create.add_argument("specification", type=Path)
@@ -115,6 +120,35 @@ def build_parser() -> argparse.ArgumentParser:
 
     verify_publication = campaign_subparsers.add_parser("verify-publication")
     _add_live_campaign_arguments(verify_publication)
+
+    adapter = subparsers.add_parser(
+        "adapter",
+        help="operate a source-native consumer adapter",
+    )
+    adapter_subparsers = adapter.add_subparsers(
+        dest="adapter_name",
+        required=True,
+    )
+    git_dbt = adapter_subparsers.add_parser(
+        "git-dbt",
+        help="operate the bounded Git/dbt adapter",
+    )
+    git_dbt_subparsers = git_dbt.add_subparsers(
+        dest="adapter_command",
+        required=True,
+    )
+    for command in ("preflight", "plan", "apply", "compensate", "validate"):
+        operation = git_dbt_subparsers.add_parser(command)
+        _add_live_campaign_arguments(operation)
+        if command in {"apply", "compensate"}:
+            operation.add_argument("--occurred-at")
+        if command == "validate":
+            operation.add_argument("--expires-at")
+    authorize = git_dbt_subparsers.add_parser("authorize")
+    _add_live_campaign_arguments(authorize)
+    authorize.add_argument("--principal")
+    authorize.add_argument("--authorized-at", required=True)
+    authorize.add_argument("--expires-at", required=True)
     return parser
 
 
@@ -125,6 +159,10 @@ def _add_store_arguments(parser: argparse.ArgumentParser) -> None:
 
 def _add_live_campaign_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--campaign", dest="campaign_id", required=True)
+    _add_runtime_arguments(parser)
+
+
+def _add_runtime_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--store",
         type=Path,
@@ -169,6 +207,19 @@ def _datahub_boundary() -> DataHubBoundary:
 
 def _campaign_artifact_root(args: argparse.Namespace, operation: str) -> Path:
     return Path(args.artifact_dir) / str(args.campaign_id) / "datahub" / operation
+
+
+def _git_dbt_workflow(
+    args: argparse.Namespace,
+    store: CampaignStore,
+) -> GitDbtWorkflow:
+    settings = GitDbtSettings.from_environment()
+    return GitDbtWorkflow(
+        store=store,
+        adapter=GitDbtAdapter(settings),
+        artifact_directory=Path(args.artifact_dir),
+        boundary=(_datahub_boundary() if args.adapter_command == "preflight" else None),
+    )
 
 
 def _publication_source_manifest(
@@ -259,8 +310,41 @@ def main(argv: Sequence[str] | None = None) -> int:
                 }
             )
             return 0
+        if args.command == "adapter" and args.adapter_name == "git-dbt":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                workflow = _git_dbt_workflow(args, store)
+                if args.adapter_command == "preflight":
+                    result = workflow.preflight(args.campaign_id)
+                elif args.adapter_command == "plan":
+                    result = workflow.plan(args.campaign_id)
+                elif args.adapter_command == "authorize":
+                    result = workflow.authorize(
+                        args.campaign_id,
+                        principal=args.principal or workflow.adapter.settings.principal,
+                        authorized_at=args.authorized_at,
+                        expires_at=args.expires_at,
+                    )
+                elif args.adapter_command == "apply":
+                    result = workflow.apply(
+                        args.campaign_id,
+                        occurred_at=args.occurred_at,
+                    )
+                elif args.adapter_command == "compensate":
+                    result = workflow.compensate(
+                        args.campaign_id,
+                        occurred_at=args.occurred_at,
+                    )
+                else:
+                    result = workflow.validate(
+                        args.campaign_id,
+                        expires_at=args.expires_at,
+                    )
+            _render(result)
+            return 0
         if args.command == "campaign":
-            if args.campaign_command in {"replay", "evaluate"}:
+            if args.campaign_command == "replay" or (
+                args.campaign_command == "evaluate" and args.source is not None
+            ):
                 events = _load_fixture_events(args.source)
                 projection = project_events(events)
                 manifest = manifest_from_projection(projection)
@@ -282,6 +366,39 @@ def main(argv: Sequence[str] | None = None) -> int:
                             "manifest_digest": manifest["manifest_digest"],
                         }
                     )
+                return 0
+            if args.campaign_command == "evaluate":
+                if args.campaign_id is None:
+                    raise Refusal(
+                        "SPEC_SCHEMA_INVALID",
+                        "Campaign evaluation requires a fixture source or --campaign.",
+                    )
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    projection = store.projection(args.campaign_id)
+                    if (
+                        projection.state in {CampaignState.BLOCKED, CampaignState.READY}
+                        and projection.last_policy_result is not None
+                    ):
+                        manifest = store.materialize(args.campaign_id)
+                    else:
+                        before = store.materialize(args.campaign_id)
+                        manifest = store.evaluate(
+                            args.campaign_id,
+                            occurred_at=utc_now(),
+                            idempotency_key=(
+                                "policy-evaluation-"
+                                f"{str(before['manifest_digest'])[-16:]}"
+                            ),
+                        )
+                _render(
+                    {
+                        "result": "EVALUATED",
+                        "decision": manifest["decision"],
+                        "blockers": manifest["blockers"],
+                        "manifest_digest": manifest["manifest_digest"],
+                        "manifest": manifest,
+                    }
+                )
                 return 0
             if args.campaign_command in {
                 "inventory",
