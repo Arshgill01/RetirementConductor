@@ -287,16 +287,6 @@ def seed(
             ),
         )
         emit(emitter, urn, models.StatusClass(removed=False))
-    emit(
-        emitter,
-        ISOLATED_LATE_CONSUMER_URN,
-        models.UpstreamLineageClass(upstreams=[], fineGrainedLineages=[]),
-    )
-    emit(
-        emitter,
-        ISOLATED_LATE_CONSUMER_URN,
-        models.StatusClass(removed=True),
-    )
     late_count = 0
     if mode == "late":
         dataset_aspects(
@@ -309,6 +299,17 @@ def seed(
             upstream=ISOLATED_MODEL_URN,
         )
         late_count = 1
+    else:
+        emit(
+            emitter,
+            ISOLATED_LATE_CONSUMER_URN,
+            models.UpstreamLineageClass(upstreams=[], fineGrainedLineages=[]),
+        )
+        emit(
+            emitter,
+            ISOLATED_LATE_CONSUMER_URN,
+            models.StatusClass(removed=True),
+        )
     emitter.close()
     result = with_digest(
         {
