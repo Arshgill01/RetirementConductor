@@ -298,6 +298,44 @@ def test_gate_refusal_does_not_consume_plan_and_unknown_outcome_does(
             )
 
 
+def test_gate_ledger_status_tampering_refuses_replay(tmp_path: Path) -> None:
+    plan_digest = f"sha256:{'4' * 64}"
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        manifest = store.materialize(CAMPAIGN_ID)
+        store.claim_gate_plan(
+            CAMPAIGN_ID,
+            manifest_digest=manifest["manifest_digest"],
+            decision=manifest["decision"],
+            plan_digest=plan_digest,
+            trusted_run_id="trusted-run-one",
+            recorded_at="2026-01-01T11:00:00Z",
+        )
+        with store.connection:
+            store.connection.execute(
+                "UPDATE gate_attempts SET status = 'REFUSED' WHERE plan_digest = ?",
+                (plan_digest,),
+            )
+
+        with pytest.raises(
+            Refusal,
+            match="INTEGRITY_MATERIALIZED_STATE_MISMATCH",
+        ):
+            store.gate_attempts(CAMPAIGN_ID)
+        with pytest.raises(
+            Refusal,
+            match="INTEGRITY_MATERIALIZED_STATE_MISMATCH",
+        ):
+            store.claim_gate_plan(
+                CAMPAIGN_ID,
+                manifest_digest=manifest["manifest_digest"],
+                decision=manifest["decision"],
+                plan_digest=plan_digest,
+                trusted_run_id="trusted-run-two",
+                recorded_at="2026-01-01T11:00:01Z",
+            )
+
+
 def test_fresh_inventory_can_replace_pre_migration_baseline(
     tmp_path: Path,
 ) -> None:

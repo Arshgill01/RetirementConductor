@@ -123,11 +123,7 @@ class GitDbtAdapter:
         }
         manifest_artifact = writer.write("dbt-manifest-summary", manifest_summary)
         discovery_artifact = writer.write("repository-discovery", discovery)
-        tool_versions = {
-            **self.sandbox.tool_versions(),
-            "git": self.git("--version"),
-            "adapter": ADAPTER_VERSION,
-        }
+        tool_versions = self.tool_versions()
         preflight = with_digest(
             {
                 "schema_version": "1.0.0",
@@ -183,6 +179,15 @@ class GitDbtAdapter:
         )
         write_versioned_artifact(artifact_root, "preflight", preflight)
         return preflight
+
+    def tool_versions(self) -> dict[str, str]:
+        """Read the exact native tools whose validation evidence is accepted."""
+
+        return {
+            **self.sandbox.tool_versions(),
+            "git": self.git("--version"),
+            "adapter": ADAPTER_VERSION,
+        }
 
     def plan(
         self,

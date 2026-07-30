@@ -155,7 +155,7 @@ class CampaignStore:
 
         rows = self.connection.execute(
             """
-            SELECT status, attempt_json, outcome_json
+            SELECT *
             FROM gate_attempts
             WHERE campaign_id = ?
             ORDER BY recorded_at, attempt_id
@@ -164,19 +164,7 @@ class CampaignStore:
         ).fetchall()
         attempts: list[dict[str, Any]] = []
         for row in rows:
-            attempt = json.loads(str(row["attempt_json"]))
-            verify_digest(attempt, "attempt_digest")
-            entry = {
-                "status": str(row["status"]),
-                "attempt": attempt,
-                "outcome": None,
-            }
-            outcome_text = row["outcome_json"]
-            if outcome_text is not None:
-                outcome = json.loads(str(outcome_text))
-                verify_digest(outcome, "outcome_digest")
-                entry["outcome"] = outcome
-            attempts.append(entry)
+            attempts.append(self._validated_gate_attempt(row))
         return attempts
 
     def record_gate_refusal(
@@ -342,6 +330,23 @@ class CampaignStore:
     ) -> None:
         verify_digest(dict(attempt), "attempt_digest")
         with self._write_lock(), self.connection:
+            if not allow_existing and attempt.get("plan_digest") is not None:
+                consumed_rows = self.connection.execute(
+                    "SELECT * FROM gate_attempts WHERE plan_digest = ?",
+                    (attempt["plan_digest"],),
+                ).fetchall()
+                for row in consumed_rows:
+                    existing_entry = self._validated_gate_attempt(row)
+                    if existing_entry["attempt"]["status"] == "INTENT_RECORDED":
+                        raise Refusal(
+                            RefusalCode.GATE_PLAN_REPLAYED,
+                            "The exact producer plan was already consumed by "
+                            "a gate attempt.",
+                            {
+                                "status": existing_entry["status"],
+                                "attempt_id": existing_entry["attempt"]["attempt_id"],
+                            },
+                        )
             existing = self.connection.execute(
                 "SELECT attempt_json FROM gate_attempts WHERE attempt_id = ?",
                 (attempt["attempt_id"],),
@@ -391,6 +396,80 @@ class CampaignStore:
                     attempt["attempt_digest"],
                 ),
             )
+
+    @staticmethod
+    def _validated_gate_attempt(row: sqlite3.Row) -> dict[str, Any]:
+        attempt = json.loads(str(row["attempt_json"]))
+        verify_digest(attempt, "attempt_digest")
+        immutable_columns = {
+            "attempt_id",
+            "campaign_id",
+            "recorded_at",
+            "manifest_digest",
+            "decision",
+            "plan_digest",
+            "trusted_run_id",
+            "writer_id",
+            "refusal_code",
+            "attempt_digest",
+        }
+        if any(attempt.get(key) != row[key] for key in immutable_columns):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The producer gate ledger columns and attempt disagree.",
+            )
+        immutable_status = attempt.get("status")
+        current_status = str(row["status"])
+        if (immutable_status == "REFUSED" and current_status != "REFUSED") or (
+            immutable_status == "INTENT_RECORDED"
+            and current_status not in {"INTENT_RECORDED", "EXECUTED", "OUTCOME_UNKNOWN"}
+        ):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The producer gate ledger has an invalid status transition.",
+            )
+        entry: dict[str, Any] = {
+            "status": current_status,
+            "attempt": attempt,
+            "outcome": None,
+        }
+        outcome_text = row["outcome_json"]
+        if current_status == "INTENT_RECORDED":
+            if outcome_text is not None or row["outcome_digest"] is not None:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "An unfinished gate intent unexpectedly has an outcome.",
+                )
+            return entry
+        if current_status == "REFUSED":
+            if outcome_text is not None or row["outcome_digest"] is not None:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A non-consuming gate refusal unexpectedly has an outcome.",
+                )
+            return entry
+        if outcome_text is None:
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "A completed gate attempt has no outcome.",
+            )
+        outcome = json.loads(str(outcome_text))
+        verify_digest(outcome, "outcome_digest")
+        if (
+            outcome.get("attempt_id") != attempt["attempt_id"]
+            or outcome.get("outcome_digest") != row["outcome_digest"]
+            or (current_status == "EXECUTED" and outcome.get("result") != "EXECUTED")
+            or (
+                current_status == "OUTCOME_UNKNOWN"
+                and outcome.get("result") != "OUTCOME_UNKNOWN"
+            )
+        ):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The producer gate outcome does not match its ledger state.",
+            )
+        entry["outcome"] = outcome
+        return entry
 
     def _finish_gate_attempt(
         self,

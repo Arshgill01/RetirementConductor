@@ -25,14 +25,16 @@ from retirement_conductor.events import (
     project_events,
 )
 from retirement_conductor.fixtures import run_fixture
+from retirement_conductor.gate import ProducerGateWorkflow, TrustedProducerContext
 from retirement_conductor.git_dbt import GitDbtAdapter
 from retirement_conductor.git_dbt_config import GitDbtSettings
 from retirement_conductor.git_dbt_workflow import GitDbtWorkflow
 from retirement_conductor.mcp_http import HttpMCPClient
+from retirement_conductor.publication import publication_source_manifest
 from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
-from retirement_conductor.vocabulary import CampaignState
+from retirement_conductor.vocabulary import CampaignState, Decision
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -163,6 +165,27 @@ def build_parser() -> argparse.ArgumentParser:
     authorize.add_argument("--principal")
     authorize.add_argument("--authorized-at", required=True)
     authorize.add_argument("--expires-at", required=True)
+
+    producer = subparsers.add_parser(
+        "producer",
+        help="prepare an exact short-lived producer retirement plan",
+    )
+    producer_subparsers = producer.add_subparsers(
+        dest="producer_command",
+        required=True,
+    )
+    producer_plan = producer_subparsers.add_parser("plan")
+    _add_live_campaign_arguments(producer_plan)
+    _add_producer_path_arguments(producer_plan)
+    producer_plan.add_argument("--expires-at", required=True)
+
+    gate = subparsers.add_parser(
+        "gate",
+        help="verify and consume one exact producer retirement plan",
+    )
+    _add_live_campaign_arguments(gate)
+    _add_producer_path_arguments(gate)
+    gate.add_argument("--plan", type=Path)
     return parser
 
 
@@ -203,6 +226,34 @@ def _add_runtime_arguments(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_producer_path_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--producer-repository",
+        type=Path,
+        default=Path(os.environ.get("RETIREMENT_CONDUCTOR_PRODUCER_REPOSITORY", ".")),
+    )
+    parser.add_argument(
+        "--producer-source-marker",
+        type=Path,
+        default=Path(
+            os.environ.get(
+                "RETIREMENT_CONDUCTOR_PRODUCER_SOURCE_MARKER",
+                "fixtures/producer/retire-order-status.json",
+            )
+        ),
+    )
+    parser.add_argument(
+        "--sentinel-root",
+        type=Path,
+        default=Path(
+            os.environ.get(
+                "RETIREMENT_CONDUCTOR_SENTINEL_ROOT",
+                ".retirement-conductor/producer-sentinels",
+            )
+        ),
+    )
+
+
 def _datahub_boundary() -> DataHubBoundary:
     settings = DataHubSettings.from_environment()
     return DataHubBoundary(
@@ -236,29 +287,41 @@ def _git_dbt_workflow(
     )
 
 
-def _publication_source_manifest(
+def _git_dbt_adapter_for_campaign(
     store: CampaignStore,
     campaign_id: str,
-    content_digest: str,
-) -> dict[str, Any]:
-    events = store.events(campaign_id)
-    for index in range(len(events) - 1, 0, -1):
-        event = events[index]
-        if (
-            event["event_type"] == "PUBLICATION_RECORDED"
-            and event["payload"]["publication"]["content_digest"] == content_digest
-        ):
-            manifest = manifest_from_projection(project_events(events[:index]))
-            recorded = event["payload"]["publication"]["published_manifest_digest"]
-            if manifest["manifest_digest"] != recorded:
-                raise Refusal(
-                    "INTEGRITY_MATERIALIZED_STATE_MISMATCH",
-                    "The publication source manifest could not be reconstructed.",
-                )
-            return manifest
-    raise Refusal(
-        "EVIDENCE_PUBLICATION_MISMATCH",
-        "The publication write receipt was not found in campaign history.",
+) -> GitDbtAdapter:
+    environment = dict(os.environ)
+    if not environment.get("GIT_DBT_REPOSITORY_ROOT", "").strip():
+        repositories = store.specification(campaign_id)["evidence"]["repositories"]
+        if len(repositories) != 1:
+            raise Refusal(
+                "SOURCE_GIT_UNAVAILABLE",
+                "The gate requires one exact configured Git/dbt repository.",
+            )
+        environment["GIT_DBT_REPOSITORY_ROOT"] = str(repositories[0]["path"])
+    return GitDbtAdapter(GitDbtSettings.from_environment(environment))
+
+
+def _producer_gate_workflow(
+    args: argparse.Namespace,
+    store: CampaignStore,
+    *,
+    with_datahub: bool,
+    with_git_dbt: bool,
+) -> ProducerGateWorkflow:
+    return ProducerGateWorkflow(
+        store=store,
+        artifact_directory=Path(args.artifact_dir),
+        producer_repository_root=args.producer_repository,
+        producer_source_marker=args.producer_source_marker,
+        sentinel_root=args.sentinel_root,
+        boundary=(_datahub_boundary() if with_datahub else None),
+        git_dbt=(
+            _git_dbt_adapter_for_campaign(store, args.campaign_id)
+            if with_git_dbt
+            else None
+        ),
     )
 
 
@@ -353,6 +416,38 @@ def main(argv: Sequence[str] | None = None) -> int:
                         args.campaign_id,
                         expires_at=args.expires_at,
                     )
+            _render(result)
+            return 0
+        if args.command == "producer" and args.producer_command == "plan":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                producer_workflow = _producer_gate_workflow(
+                    args,
+                    store,
+                    with_datahub=False,
+                    with_git_dbt=True,
+                )
+                result = producer_workflow.prepare(
+                    args.campaign_id,
+                    context=TrustedProducerContext.from_environment(),
+                    expires_at=args.expires_at,
+                )
+            _render(result)
+            return 0
+        if args.command == "gate":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                manifest = store.materialize(args.campaign_id)
+                ready = manifest["decision"] == Decision.READY_TO_RETIRE
+                gate_workflow = _producer_gate_workflow(
+                    args,
+                    store,
+                    with_datahub=ready,
+                    with_git_dbt=ready,
+                )
+                result = gate_workflow.execute(
+                    args.campaign_id,
+                    context=TrustedProducerContext.from_environment(),
+                    plan_path=args.plan,
+                )
             _render(result)
             return 0
         if args.command == "campaign":
@@ -525,7 +620,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                             "EVIDENCE_PUBLICATION_MISMATCH",
                             "The campaign has no DataHub publication to verify.",
                         )
-                    source_manifest = _publication_source_manifest(
+                    source_manifest = publication_source_manifest(
                         store,
                         args.campaign_id,
                         str(publication_value["content_digest"]),

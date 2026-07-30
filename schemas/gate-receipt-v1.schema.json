@@ -1,0 +1,111 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/gate-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "decision": {
+      "const": "READY_TO_RETIRE"
+    },
+    "executed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "outcome_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "producer_plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "receipt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "result": {
+      "const": "EXECUTED"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "sentinel": {
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "relative_path": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "digest"
+      ],
+      "type": "object"
+    },
+    "trusted_run_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "verification": {
+      "additionalProperties": false,
+      "properties": {
+        "datahub_snapshot_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "publication_readback_artifact_id": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "source_reconciliation_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "datahub_snapshot_digest",
+        "source_reconciliation_digest",
+        "publication_readback_artifact_id"
+      ],
+      "type": "object"
+    },
+    "writer_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "result",
+    "campaign_id",
+    "manifest_digest",
+    "decision",
+    "producer_plan_digest",
+    "attempt_digest",
+    "outcome_digest",
+    "trusted_run_id",
+    "writer_id",
+    "verification",
+    "sentinel",
+    "executed_at",
+    "receipt_digest"
+  ],
+  "title": "Producer gate receipt v1",
+  "type": "object"
+}

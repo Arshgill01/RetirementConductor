@@ -118,3 +118,42 @@ def test_campaign_resume_command(tmp_path: Path, capsys: object) -> None:
     manifest = output["manifest"]
     assert isinstance(manifest, dict)
     assert manifest["campaign"]["state"] == "INVENTORIED"
+
+
+def test_gate_command_records_canonical_non_ready_refusal(
+    tmp_path: Path,
+    capsys: object,
+) -> None:
+    database = tmp_path / "campaign.sqlite"
+    with CampaignStore(database, writer_id="writer-one") as store:
+        store.create_campaign(
+            load_specification(SPECIFICATION),
+            occurred_at="2026-01-01T10:00:00Z",
+        )
+
+    exit_code = main(
+        [
+            "gate",
+            "--campaign",
+            CAMPAIGN_ID,
+            "--store",
+            str(database),
+            "--writer-id",
+            "writer-one",
+            "--artifact-dir",
+            str(tmp_path / "artifacts"),
+        ]
+    )
+
+    assert exit_code == 2
+    output = read_output(capsys)
+    assert output["refusal_code"] == "GATE_DECISION_NOT_READY"
+    with CampaignStore(database, writer_id="writer-one") as store:
+        attempts = store.gate_attempts(CAMPAIGN_ID)
+    assert attempts[0]["status"] == "REFUSED"
+    assert attempts[0]["attempt"]["manifest_digest"] == store_manifest_digest(database)
+
+
+def store_manifest_digest(database: Path) -> str:
+    with CampaignStore(database, writer_id="writer-one") as store:
+        return str(store.materialize(CAMPAIGN_ID)["manifest_digest"])

@@ -1,0 +1,8 @@
+{
+  "action": "retire_column",
+  "campaign_boundary": "retirement-conductor",
+  "execution_mode": "public_safe_sentinel_only",
+  "replacement_field": "order_status",
+  "schema_version": "1.0.0",
+  "target_field": "legacy_status"
+}
