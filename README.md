@@ -98,10 +98,15 @@ Deterministic policy decides.
 
 ## Repository map
 
+- [Autonomous implementation contract](GOAL.md)
+- [Current execution state](STATUS.md)
 - [Product definition](docs/PRODUCT.md)
 - [Build plan](PLAN.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Core contracts](docs/CONTRACTS.md)
+- [Requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md)
+- [Evidence ledger](docs/EVIDENCE_LEDGER.md)
+- [Access requirements](docs/ACCESS.md)
 - [Risk register](docs/RISKS.md)
 - [Decision log](docs/DECISIONS.md)
 - [Phase index](docs/phases/README.md)
@@ -111,8 +116,9 @@ Deterministic policy decides.
 ## Working in this repository
 
 This repository currently contains the controlling product and engineering
-foundation. Implementation begins with the campaign kernel only after its
-contracts and acceptance evidence are explicit.
+foundation. It is ready for one continuous implementation run governed by
+[GOAL.md](GOAL.md). The active phase and honest external boundaries live in
+[STATUS.md](STATUS.md).
 
 Run the repository checks with:
 

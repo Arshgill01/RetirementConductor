@@ -40,8 +40,11 @@ must come from executed behavior and inspected artifacts.
 - `queued`: dependencies are not yet satisfied;
 - `access-dependent`: independent work can complete, but live proof needs an
   external disposable boundary;
+- `blocked`: a required current boundary is unavailable after independent work
+  is exhausted;
 - `complete`: all acceptance evidence exists and was inspected;
 - `reframed`: the central hypothesis failed and the resulting boundary is
   recorded.
 
-The authoritative state table is in [PLAN.md](../../PLAN.md).
+The authoritative state table is in [STATUS.md](../../STATUS.md). The proof
+order remains in [PLAN.md](../../PLAN.md).

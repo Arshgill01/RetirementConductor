@@ -43,6 +43,8 @@ Excluded:
 - content and commit preconditions;
 - plan-only and apply capability separation;
 - validator runner with safe redaction;
+- isolated validator execution with bounded environment, filesystem, and
+  network behavior;
 - rollback verification;
 - live Git/dbt receipt;
 - fixture suite for aliases, macros, generated SQL, `SELECT *`, and scope
@@ -67,6 +69,12 @@ Excluded:
 14. Exercise Git rollback and verify original content and tests.
 15. Reapply once to prove idempotent behavior.
 16. Emit the live native receipt and attach it to the campaign.
+17. Exercise malicious macros, hooks, dependencies, paths, symlinks, and
+    subprocess attempts inside the disposable project.
+18. Record replacement schema and compatibility evidence needed for a later
+    gate-time reread.
+19. Change an applied file before compensation and prove rollback does not
+    overwrite the intervening edit.
 
 ## Acceptance evidence
 
@@ -87,6 +95,12 @@ Required behavior:
 - rollback restores content and passes verification;
 - repeated apply creates no duplicate change;
 - live receipt maps to exactly one campaign consumer.
+- path traversal, symlink escape, malicious hooks, and secret-reading fixtures
+  cannot escape the validation boundary;
+- replacement identity, type, and declared compatibility are captured in the
+  receipt.
+- compensation refuses on an unexpected post-apply fingerprint and preserves
+  the intervening source change.
 
 Required commands:
 
@@ -127,4 +141,6 @@ Inspect:
 - R-09 real execution;
 - R-18 idempotency;
 - R-24 indirect and generated references;
-- R-25 branch movement.
+- R-25 branch movement;
+- R-28 untrusted repository execution;
+- R-30 replacement drift groundwork.

@@ -20,6 +20,7 @@ In scope:
 - reproducible package and container;
 - local and CI installation;
 - configuration and secret references;
+- explicit single-writer deployment identity and state-directory ownership;
 - health and preflight diagnostics;
 - DataHub Core compatibility and optional Cloud integration;
 - upgrade and rollback path;
@@ -64,6 +65,8 @@ Excluded:
 10. Record rejection reasons and operational burden.
 11. Update product scope, risks, and competitive boundary from evidence.
 12. Publish only artifacts another team can reproduce safely.
+13. Prove a second runner or copied state receives an actionable unsupported
+    deployment refusal.
 
 ## Acceptance evidence
 
@@ -81,6 +84,8 @@ Required behavior:
 - observed workflow evidence addresses frequency, value, friction, and buyer;
 - the product is reframed if real use contradicts the current thesis;
 - release artifacts, repository state, and documentation agree.
+- single-writer requirements are explicit, diagnosed by preflight, and refuse
+  unsupported multi-writer operation.
 
 Required commands:
 
@@ -121,4 +126,5 @@ Inspect:
 - R-21 adoption frequency;
 - R-22 competitive convergence;
 - R-23 operational recovery;
-- R-26 long-running blocked campaigns.
+- R-26 long-running blocked campaigns;
+- R-36 divergent campaign writers.

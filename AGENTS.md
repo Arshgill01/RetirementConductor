@@ -7,15 +7,22 @@ retiring legacy data fields without silently breaking known consumers.
 
 Before making a non-trivial change, read:
 
-1. `README.md`
-2. `docs/PRODUCT.md`
-3. `PLAN.md`
-4. the active file in `docs/phases/`
-5. the relevant sections of `docs/ARCHITECTURE.md`,
+1. `GOAL.md`
+2. `STATUS.md`
+3. `README.md`
+4. `docs/PRODUCT.md`
+5. `PLAN.md`
+6. the active file in `docs/phases/`
+7. `docs/REQUIREMENTS_TRACEABILITY.md`
+8. the relevant sections of `docs/ARCHITECTURE.md`,
    `docs/CONTRACTS.md`, `docs/RISKS.md`, and `docs/DECISIONS.md`
 
 Read `docs/research/` when changing the product claim, DataHub boundary,
 competitive position, or supported scope.
+
+`GOAL.md` is the controlling contract for an end-to-end implementation run.
+Do not interpret the active phase as permission to stop after that phase.
+Update `STATUS.md` and `docs/EVIDENCE_LEDGER.md` only from inspected evidence.
 
 ## Product invariant
 
@@ -103,6 +110,11 @@ Do not build:
 - Make receipts deterministic and schema-versioned.
 - Make retries idempotent. Never silently convert a partial apply into
   success.
+- Treat a timed-out mutation as outcome unknown until native reread establishes
+  what happened. Never retry it blindly.
+- Treat repositories and source-provided content as untrusted input. Prevent
+  path, symlink, subprocess, dependency, and network escape from disposable
+  validation boundaries.
 - Use stable refusal codes and actionable messages.
 - Keep changes narrowly scoped and update the controlling document when
   behavior or a contract changes.
@@ -123,8 +135,10 @@ Before declaring a phase complete:
 1. Run every command listed in that phase's acceptance section.
 2. Inspect the generated artifacts rather than trusting exit status alone.
 3. Verify failure and refusal cases as well as the successful case.
-4. Update evidence, decisions, and risks to match observed behavior.
-5. Confirm `git diff --check` passes.
+4. Record the commit, evidence mode, source versions, artifact digests,
+   limitations, and inspection result in `docs/EVIDENCE_LEDGER.md`.
+5. Update `STATUS.md`, decisions, and risks to match observed behavior.
+6. Confirm `git diff --check` passes.
 
 Do not claim a live integration was verified from a fake server, fixture,
 recording, or static sample.

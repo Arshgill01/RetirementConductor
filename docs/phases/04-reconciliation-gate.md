@@ -61,10 +61,19 @@ Excluded:
 10. Evaluate policy and write the updated summary to DataHub.
 11. Read back and verify manifest, blockers, and evidence-envelope digests.
 12. Invoke the gate from a representative producer change.
-13. Exercise one all-closed fixture that yields readiness.
-14. Exercise live representative refusal where external consumers remain.
-15. Introduce a late consumer after apparent readiness and verify reopening.
-16. Change source after validation and verify gate refusal.
+13. Exercise a live isolated DataHub and Git/dbt campaign in which every
+    observed consumer closes and readiness permits one harmless producer
+    sentinel.
+14. Exercise a live rich-graph refusal where external consumers remain.
+15. Exercise all four decisions through deterministic fixtures.
+16. Introduce a late consumer after apparent readiness and verify reopening.
+17. Change source after validation and verify gate refusal.
+18. Change replacement schema, policy, validator configuration, or
+    authorization after validation and verify gate refusal.
+19. Exercise missing local state, unavailable DataHub read-back, tampered
+    artifacts, and an untrusted producer-run context.
+20. Bind the gate to one exact harmless producer plan and trusted invocation;
+    attempt replay, delayed use, and a different plan.
 
 ## Acceptance evidence
 
@@ -80,10 +89,19 @@ Required behavior:
 - representative unresolved external consumers yield `UNSAFE`;
 - missing required access yields `BLOCKED`;
 - a declared semantic decision yields `REVIEW_REQUIRED`;
-- only an all-closed, fresh fixture yields `READY_TO_RETIRE`;
-- the producer workflow executes no destructive step for non-ready outcomes;
+- a live isolated all-closed, fresh campaign yields `READY_TO_RETIRE`;
+- a live rich graph with unresolved external consumers yields `UNSAFE`;
+- the producer workflow executes its harmless sentinel only for the live ready
+  result and executes no producer step for non-ready outcomes;
 - the gate uses the same policy output as the CLI and report;
 - gate decision is recorded with the exact manifest digest.
+- table-level evidence is never promoted into field-level closure;
+- replacement, policy, configuration, validator, and authorization drift
+  invalidate readiness;
+- missing campaign state, failed publication verification, tampered evidence,
+  or untrusted execution provenance makes the gate non-zero.
+- a green result cannot be reused, delayed, or applied to a different producer
+  plan, campaign writer, or source version.
 
 Required commands:
 
@@ -121,4 +139,9 @@ Inspect:
 - R-09 complete product loop;
 - R-17 disappearing edge;
 - R-20 producer bypass;
-- R-23 resume across full workflow.
+- R-23 resume across full workflow;
+- R-30 replacement drift;
+- R-32 evidence granularity;
+- R-33 executable-input drift;
+- R-34 gate provenance and availability;
+- R-35 gate-to-action race.

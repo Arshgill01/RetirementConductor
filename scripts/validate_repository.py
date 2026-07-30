@@ -17,17 +17,22 @@ REQUIRED_FILES = {
     ".markdownlint-cli2.yaml",
     "AGENTS.md",
     "CONTRIBUTING.md",
+    "GOAL.md",
     "LICENSE",
     "Makefile",
     "PLAN.md",
     "README.md",
     "SECURITY.md",
+    "STATUS.md",
+    "docs/ACCESS.md",
     "docs/ARCHITECTURE.md",
     "docs/CONTRACTS.md",
     "docs/DECISIONS.md",
     "docs/EVIDENCE_BASELINE.md",
+    "docs/EVIDENCE_LEDGER.md",
     "docs/OPEN_QUESTIONS.md",
     "docs/PRODUCT.md",
+    "docs/REQUIREMENTS_TRACEABILITY.md",
     "docs/RISKS.md",
     "docs/phases/README.md",
     "docs/phases/00-foundation.md",
@@ -47,6 +52,24 @@ REQUIRED_FILES = {
     "docs/research/SOURCE_LEDGER.md",
 }
 
+GOAL_HEADINGS = {
+    "## Exact objective",
+    "## Current truth",
+    "## Instruction order",
+    "## Authority and repository boundary",
+    "## Required product outcome",
+    "## Phase authority",
+    "## Continuous execution protocol",
+    "## Work available before external access",
+    "## Evidence contract",
+    "## Failure-closed requirements",
+    "## Scope control",
+    "## External boundary protocol",
+    "## Reframe protocol",
+    "## Completion states",
+    "## Final handoff",
+}
+
 PHASE_HEADINGS = {
     "## Outcome",
     "## Dependencies",
@@ -56,6 +79,21 @@ PHASE_HEADINGS = {
     "## Acceptance evidence",
     "## Stop or reframe conditions",
     "## Risks changed",
+}
+
+REQUIRED_REQUIREMENT_IDS = {
+    f"RC-{number:03d}" for number in range(1, 19)
+}
+REQUIRED_EVIDENCE_IDS = {
+    f"EP-{number:03d}" for number in range(9)
+}
+ALLOWED_PHASE_STATES = {
+    "queued",
+    "active",
+    "access-dependent",
+    "blocked",
+    "complete",
+    "reframed",
 }
 
 LINK_PATTERN = re.compile(r"!?\[[^\]]*]\(([^)]+)\)")
@@ -160,6 +198,95 @@ def validate_plan_phase_links(errors: list[str]) -> None:
             errors.append(f"PLAN.md: missing phase {phase:02d} link")
 
 
+def validate_goal_contract(errors: list[str]) -> None:
+    path = ROOT / "GOAL.md"
+    content = path.read_text(encoding="utf-8")
+    headings = {
+        line for line in content.splitlines() if line.startswith("## ")
+    }
+    missing = sorted(GOAL_HEADINGS - headings)
+    if missing:
+        errors.append(
+            f"GOAL.md: missing controlling headings: {', '.join(missing)}"
+        )
+    for phase in range(9):
+        token = f"docs/phases/{phase:02d}-"
+        if token not in content:
+            errors.append(f"GOAL.md: missing phase {phase:02d} authority link")
+
+
+def validate_status_phase_ledger(errors: list[str]) -> None:
+    content = (ROOT / "STATUS.md").read_text(encoding="utf-8")
+    matches = re.findall(
+        r"^\|\s*(0[0-8])\s*\|\s*([a-z-]+)\s*\|",
+        content,
+        flags=re.MULTILINE,
+    )
+    phases = [phase for phase, _ in matches]
+    expected = [f"{phase:02d}" for phase in range(9)]
+    if phases != expected:
+        errors.append(
+            "STATUS.md: phase ledger must contain phases 00 through 08 "
+            "exactly once and in order"
+        )
+    states = [state for _, state in matches]
+    unknown = sorted(set(states) - ALLOWED_PHASE_STATES)
+    if unknown:
+        errors.append(
+            f"STATUS.md: unknown phase states: {', '.join(unknown)}"
+        )
+    if states.count("active") > 1:
+        errors.append("STATUS.md: at most one phase may be active")
+
+
+def validate_traceability(errors: list[str]) -> None:
+    content = (
+        ROOT / "docs" / "REQUIREMENTS_TRACEABILITY.md"
+    ).read_text(encoding="utf-8")
+    found = set(re.findall(r"\bRC-\d{3}\b", content))
+    missing = sorted(REQUIRED_REQUIREMENT_IDS - found)
+    if missing:
+        errors.append(
+            "docs/REQUIREMENTS_TRACEABILITY.md: missing requirement IDs: "
+            f"{', '.join(missing)}"
+        )
+
+
+def validate_evidence_ledger(errors: list[str]) -> None:
+    content = (
+        ROOT / "docs" / "EVIDENCE_LEDGER.md"
+    ).read_text(encoding="utf-8")
+    found = set(re.findall(r"\bEP-\d{3}\b", content))
+    missing = sorted(REQUIRED_EVIDENCE_IDS - found)
+    if missing:
+        errors.append(
+            "docs/EVIDENCE_LEDGER.md: missing phase evidence IDs: "
+            f"{', '.join(missing)}"
+        )
+
+
+def validate_risk_coverage(errors: list[str]) -> None:
+    register = (ROOT / "docs" / "RISKS.md").read_text(encoding="utf-8")
+    registered = set(re.findall(r"\bR-\d{2}\b", register))
+    phase_content = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((ROOT / "docs" / "phases").glob("[0-9][0-9]-*.md"))
+    )
+    referenced = set(re.findall(r"\bR-\d{2}\b", phase_content))
+    missing = sorted(registered - referenced)
+    unknown = sorted(referenced - registered)
+    if missing:
+        errors.append(
+            "docs/phases: registered risks missing phase ownership: "
+            f"{', '.join(missing)}"
+        )
+    if unknown:
+        errors.append(
+            "docs/phases: unknown risk references: "
+            f"{', '.join(unknown)}"
+        )
+
+
 def run() -> int:
     errors: list[str] = []
     validate_required_files(errors)
@@ -172,6 +299,11 @@ def run() -> int:
 
     validate_phase_files(errors)
     validate_plan_phase_links(errors)
+    validate_goal_contract(errors)
+    validate_status_phase_ledger(errors)
+    validate_traceability(errors)
+    validate_evidence_ledger(errors)
+    validate_risk_coverage(errors)
 
     if errors:
         print("Repository validation failed:")

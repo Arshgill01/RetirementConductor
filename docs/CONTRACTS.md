@@ -276,6 +276,11 @@ Output:
 The adapter rereads source and scope immediately before apply. Any mismatch
 refuses without mutation.
 
+If transport loss, timeout, cancellation, or process interruption makes the
+native result unknown, the adapter records `OUTCOME_UNKNOWN`. It must discover
+the actual native state and reconcile intended versus actual targets before
+retrying. It may not convert a retry into a fresh unbound operation.
+
 ### `validate`
 
 Output:
@@ -300,7 +305,12 @@ Output:
 - verification result;
 - remaining manual action.
 
-Compensation failure is retained as a first-class blocker.
+Compensation rereads the native object and requires the expected post-apply
+identity and fingerprint. If another actor changed it after apply,
+compensation must not overwrite that change. The campaign records an unsafe
+conflict requiring source-native recovery.
+
+Compensation failure or conflict is retained as a first-class blocker.
 
 ### `emit_receipt`
 
@@ -421,6 +431,24 @@ The policy produces exactly one:
 
 The gate exits zero only for `READY_TO_RETIRE`.
 
+Immediately before that result, the gate must also verify:
+
+- the campaign store and required artifacts are available and intact;
+- the manifest came from the expected repository commit or trusted execution
+  context;
+- the invocation is bound to the exact producer plan, source preconditions,
+  trusted run identity, and current campaign writer;
+- policy, configuration, validator, approval, and authorization digests still
+  match the accepted evidence;
+- target and replacement identities, schemas, and declared compatibility have
+  not drifted;
+- the reconciliation envelope remains fresh under the recorded clock policy;
+- the stable DataHub publication still reads back the expected digests.
+
+An unavailable check refuses. The producer workflow consumes the result in
+the same trusted invocation and records that attempt. A prior zero exit,
+report, manifest, or publication is never a reusable authorization token.
+
 ## Campaign manifest
 
 The canonical manifest includes:
@@ -455,5 +483,9 @@ Initial refusal codes use these prefixes:
 - `RECONCILIATION_`: graph refresh or comparison failure;
 - `POLICY_`: consumer or campaign cannot transition;
 - `INTEGRITY_`: digest, event, or artifact mismatch.
+- `RUNTIME_`: trusted clock, local state, isolation, or execution boundary is
+  unavailable;
+- `GATE_`: final provenance, freshness, publication, or enforcement check
+  failed.
 
 Codes are machine-stable. Messages may improve without changing code meaning.

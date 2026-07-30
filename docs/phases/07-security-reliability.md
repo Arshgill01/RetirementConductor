@@ -69,6 +69,16 @@ Excluded:
 12. Review dependency licenses, vulnerabilities, update path, and provenance.
 13. Define operational signals for stuck, repeatedly failing, or stale
     campaigns.
+14. Exercise clock skew, policy and configuration drift, recreated native
+    identities, and unknown apply outcomes.
+15. Run hostile repository validators with path, symlink, subprocess,
+    environment, secret, and network escape attempts.
+16. Exercise the gate with unavailable local state, untrusted CI provenance,
+    tampered artifacts, and failed DataHub read-back.
+17. Attempt gate-result replay, a different producer plan, delayed action, and
+    state change between check and action.
+18. Start two runners against copied or unsupported shared state and prove the
+    single-writer deployment refuses.
 
 ## Acceptance evidence
 
@@ -89,6 +99,15 @@ Required behavior:
 - state migration can roll forward safely;
 - dependency and secret scans pass;
 - no test produces false readiness.
+- clock, replacement, policy, configuration, authorization, and identity drift
+  all invalidate prior readiness;
+- unknown native outcomes are reconciled before retry;
+- hostile repository code cannot escape its declared validation boundary;
+- the gate fails closed when state, provenance, or publication verification is
+  unavailable.
+- gate success is single-use and bound to the exact trusted producer
+  invocation;
+- two campaign writers cannot each establish authoritative readiness.
 
 Required commands:
 
@@ -130,4 +149,14 @@ Inspect:
 - R-19 side effects;
 - R-20 gate bypass;
 - R-23 recovery;
-- R-25 source history.
+- R-25 source history;
+- R-27 trusted time;
+- R-28 untrusted execution;
+- R-29 recreated identity;
+- R-30 replacement drift;
+- R-31 unknown mutation outcome;
+- R-32 evidence granularity;
+- R-33 executable-input drift;
+- R-34 gate provenance and availability;
+- R-35 gate-to-action race;
+- R-36 divergent campaign writers.

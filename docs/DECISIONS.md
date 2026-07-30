@@ -73,7 +73,8 @@ Status: accepted.
 
 Retirement Conductor produces an enforceable readiness result. The producer
 workflow that removes or disables the legacy field uses separate credentials
-and must call the gate immediately before action.
+and must call the gate inside the exact trusted producer invocation immediately
+before action. The result is bound to that producer plan and is not reusable.
 
 Why: discovery and consumer-migration credentials should not also have broad
 warehouse removal authority.
@@ -129,3 +130,40 @@ campaign outcomes. They must include the precise evidence gap or unsafe
 consumer.
 
 Why: forcing a positive answer would destroy the system's core value.
+
+## D-013 — SQLite deployment is single-writer
+
+Status: accepted.
+
+One deployment identity owns the active SQLite state directory and campaign
+lock. A second runner, copied database, or unsupported shared filesystem must
+refuse rather than behave like coordinated state.
+
+Why: local locking cannot establish authority across divergent stores. A
+service or distributed store should be introduced only when a real
+multi-operator deployment requires it.
+
+## D-014 — uncertain native outcomes require discovery
+
+Status: accepted.
+
+A lost apply response is `OUTCOME_UNKNOWN`, not failure or success. Before
+retry or compensation, reread the exact native object. Compensation proceeds
+only when the current state still matches the expected post-apply fingerprint;
+otherwise preserve the intervening change and remain unsafe.
+
+Why: retrying can duplicate a successful unseen mutation, while blind rollback
+can erase another actor's valid edit.
+
+## D-015 — phase 04 proves live permission and refusal
+
+Status: accepted.
+
+The complete first vertical includes two disposable live campaigns: an
+isolated all-closed graph that permits one harmless producer sentinel, and a
+rich graph whose unresolved external consumers refuse that sentinel.
+Deterministic fixtures still cover the full decision matrix but cannot be the
+only positive path.
+
+Why: a gate proven green only by a fixture would leave the central live
+completion claim untested.

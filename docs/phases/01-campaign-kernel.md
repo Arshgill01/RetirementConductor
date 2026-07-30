@@ -62,6 +62,10 @@ Excluded:
 10. Detect two active campaigns claiming the same native consumer identity.
 11. Inject interruption before and after every event boundary.
 12. Rebuild manifests from the database and compare canonical digests.
+13. Evaluate freshness and expiration through an injected trusted-clock
+    boundary with an explicit skew policy.
+14. Bind policy, validator configuration, and authorization digests to the
+    accepted event sequence.
 
 ## Acceptance evidence
 
@@ -78,6 +82,10 @@ Required behavior:
 - process interruption at each boundary resumes without duplicate transition
   or false readiness;
 - corruption or digest mismatch produces `INTEGRITY_` refusal.
+- clock rollback, future timestamps, boundary expiration, and excessive skew
+  refuse without promoting state;
+- changing policy, validator configuration, or authorization invalidates the
+  prior evaluation.
 
 Required commands:
 
@@ -112,4 +120,6 @@ Inspect:
 - R-12 transactional state;
 - R-16 waiver bypass;
 - R-18 idempotency;
-- R-23 deterministic resume.
+- R-23 deterministic resume;
+- R-27 trusted time;
+- R-33 bound executable inputs.

@@ -49,7 +49,12 @@ The product is expected to preserve:
 - exact source and target preconditions before apply;
 - no readiness from partial, stale, ambiguous, or tampered evidence;
 - no silent success after partial mutation;
+- no blind retry after a mutation whose outcome is unknown;
+- no compensation that overwrites an intervening native change;
+- isolated execution of untrusted repositories, dbt code, macros, and hooks;
 - clear separation between integrity digests and trusted provenance;
+- one authoritative campaign writer for the SQLite deployment;
+- no reusable gate success outside its exact trusted producer invocation;
 - resumable safe state after interruption;
 - minimum required evidence retention;
 - stable audit history for policy decisions.

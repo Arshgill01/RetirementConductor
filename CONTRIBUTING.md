@@ -8,10 +8,12 @@ preserve evidence boundaries and refusal behavior, not only successful output.
 Read:
 
 1. [Agent operating rules](AGENTS.md)
-2. [Product definition](docs/PRODUCT.md)
-3. [Build plan](PLAN.md)
-4. the active [phase](docs/phases/README.md)
-5. relevant [contracts](docs/CONTRACTS.md),
+2. [Implementation goal](GOAL.md)
+3. [Execution status](STATUS.md)
+4. [Product definition](docs/PRODUCT.md)
+5. [Build plan](PLAN.md)
+6. the active [phase](docs/phases/README.md)
+7. relevant [contracts](docs/CONTRACTS.md),
    [risks](docs/RISKS.md), and [decisions](docs/DECISIONS.md)
 
 ## Change process
@@ -22,9 +24,10 @@ Read:
 4. Add successful, refusal, and interruption coverage appropriate to the
    change.
 5. Inspect generated evidence and public output.
-6. Update contracts, decisions, risks, and phase acceptance when behavior
-   changes.
-7. Run `make check` and the phase-specific commands.
+6. Update contracts, decisions, risks, traceability, phase acceptance, and the
+   evidence ledger when behavior changes.
+7. Update `STATUS.md` only after inspecting the direct evidence.
+8. Run `make check` and the phase-specific commands.
 
 ## Contract changes
 

@@ -74,6 +74,11 @@ This shape is enough to complete and resume one campaign, test failure modes,
 and integrate into producer CI. It avoids service orchestration before there is
 a demonstrated multi-user or scale requirement.
 
+The supported deployment is explicitly single-writer. One deployment identity
+owns the SQLite state directory and local campaign lock. A copied database,
+second runner, or network-shared filesystem is not treated as coordinated
+state; preflight and the gate must refuse unsupported multi-writer operation.
+
 ## Components
 
 ### Specification loader
@@ -166,6 +171,12 @@ preflight
 The adapter never decides campaign readiness. It returns evidence or a stable
 refusal.
 
+Native execution treats repositories, project code, macros, hooks, generated
+content, and API responses as untrusted input. Validators run with disposable
+credentials and bounded filesystem, subprocess, environment, and network
+access appropriate to the supported source. Path and symlink resolution must
+remain inside the approved root.
+
 ### Model-assisted planner
 
 Model assistance is optional and constrained to:
@@ -216,9 +227,14 @@ uses a saga with explicit preconditions:
 - compare source fingerprints immediately before apply;
 - record intended targets before mutation;
 - compare actual targets after mutation;
-- compensate when safe after partial failure;
+- treat a lost response as outcome unknown and reread native state before
+  retry;
+- compensate only when the current native fingerprint still matches the
+  expected post-apply state;
 - reconcile all evidence again;
-- invalidate readiness if state changes before the producer action.
+- invalidate readiness if target, replacement, policy, configuration,
+  authorization, validation, or graph state changes before the producer
+  action.
 
 Overlapping campaigns may target the same consumer. The first implementation
 detects this by native identity and refuses concurrent apply. It does not

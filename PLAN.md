@@ -2,6 +2,8 @@
 
 This plan is ordered by proof dependency. Each phase must leave behind working
 behavior and inspectable evidence; prose alone does not advance the product.
+The continuous execution and completion rules are defined in
+[GOAL.md](GOAL.md); live state is recorded in [STATUS.md](STATUS.md).
 
 ## Objective
 
@@ -40,6 +42,9 @@ The first supported workflow is complete only when a user can:
 11. Produce a deterministic manifest and human-readable report from the same
     state.
 12. Return a non-zero gate result unless policy yields `READY_TO_RETIRE`.
+13. Prove both sides live: an isolated all-closed disposable campaign permits
+    a harmless producer sentinel, and a rich graph with unresolved consumers
+    refuses it.
 
 No visual interface, second adapter, or broad asset support substitutes for
 this path.
@@ -66,15 +71,15 @@ adapters have been exercised.
 
 | Phase | Outcome | State |
 |---|---|---|
-| [00](docs/phases/00-foundation.md) | Proven experiment assets are promoted selectively and contracts become executable | active |
-| [01](docs/phases/01-campaign-kernel.md) | Deterministic campaign policy, receipts, and durable state work without integrations | queued |
-| [02](docs/phases/02-datahub-evidence.md) | Live DataHub inventory and write/read-back produce bounded evidence | queued |
-| [03](docs/phases/03-git-dbt-execution.md) | One authorized Git/dbt consumer is changed and natively validated | queued |
-| [04](docs/phases/04-reconciliation-gate.md) | Fresh reconciliation and the producer-side refusal gate complete the vertical | queued |
-| [05](docs/phases/05-operator-experience.md) | CLI and generated report make the same engine understandable and operable | queued |
-| [06](docs/phases/06-looker-adapter.md) | A second heterogeneous consumer crosses a live native boundary | access-dependent |
-| [07](docs/phases/07-security-reliability.md) | Least privilege, recovery, concurrency, and failure behavior withstand adversarial use | queued |
-| [08](docs/phases/08-deployment-adoption.md) | The product can be installed, operated, evaluated, and maintained by another team | queued |
+| [00](docs/phases/00-foundation.md) | Proven experiment assets are promoted selectively and contracts become executable | see `STATUS.md` |
+| [01](docs/phases/01-campaign-kernel.md) | Deterministic campaign policy, receipts, and durable state work without integrations | see `STATUS.md` |
+| [02](docs/phases/02-datahub-evidence.md) | Live DataHub inventory and write/read-back produce bounded evidence | see `STATUS.md` |
+| [03](docs/phases/03-git-dbt-execution.md) | One authorized Git/dbt consumer is changed and natively validated | see `STATUS.md` |
+| [04](docs/phases/04-reconciliation-gate.md) | Fresh reconciliation and the producer-side refusal gate complete the vertical | see `STATUS.md` |
+| [05](docs/phases/05-operator-experience.md) | CLI and generated report make the same engine understandable and operable | see `STATUS.md` |
+| [06](docs/phases/06-looker-adapter.md) | A second heterogeneous consumer crosses a live native boundary | see `STATUS.md` |
+| [07](docs/phases/07-security-reliability.md) | Least privilege, recovery, concurrency, and failure behavior withstand adversarial use | see `STATUS.md` |
+| [08](docs/phases/08-deployment-adoption.md) | The product can be installed, operated, evaluated, and maintained by another team | see `STATUS.md` |
 
 ## Cross-cutting workstreams
 
@@ -99,6 +104,10 @@ adapters have been exercised.
 - Record source version, time, scope, pagination, permissions, and freshness.
 - Make every decision traceable to receipt and evidence identifiers.
 - Never promote fixture evidence into a live claim.
+- Maintain the phase and requirement mapping in
+  [REQUIREMENTS_TRACEABILITY.md](docs/REQUIREMENTS_TRACEABILITY.md).
+- Maintain tested commits, modes, artifacts, and limitations in
+  [EVIDENCE_LEDGER.md](docs/EVIDENCE_LEDGER.md).
 
 ### Safety
 
@@ -128,12 +137,9 @@ A phase moves to `complete` only when:
 If a phase cannot satisfy its central product claim, follow its stop or reframe
 condition. Do not bury the result under broader scope.
 
-## Current focus
+## Execution rule
 
-Phase 00 owns the next work:
-
-- promote only the proven safety kernel and evidence needed by the product;
-- formalize the contracts in executable schemas and tests;
-- establish a small Python command-line package;
-- build a deterministic disposable campaign fixture;
-- leave DataHub and native source integrations for their dedicated phases.
+Start with the active phase in [STATUS.md](STATUS.md), then continue through
+every available phase under [GOAL.md](GOAL.md). A future access requirement
+does not prevent credential-independent implementation, tests, packaging, or
+fault work in later phases. Only direct acceptance evidence advances state.

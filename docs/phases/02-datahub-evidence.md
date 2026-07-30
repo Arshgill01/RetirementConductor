@@ -65,6 +65,12 @@ Excluded:
 12. Publish a blocked campaign summary at one stable identity.
 13. Update it idempotently and read it back through an agent-visible surface.
 14. Verify the target lifecycle remains unchanged.
+15. Preserve table-, field-, path-, and query-level evidence granularity
+    without promoting a weaker edge into a stronger claim.
+16. Bind ingestion run and observable source-freshness evidence to the graph
+    snapshot when the running edition exposes it.
+17. Exercise case, quoting, platform-instance, and same-display-name identity
+    collisions.
 
 ## Acceptance evidence
 
@@ -84,6 +90,12 @@ Required behavior:
 - read-back exposes decision, blockers, evidence-envelope digest, and manifest
   digest;
 - lifecycle mutation remains absent.
+- table-only lineage remains visibly qualified and cannot independently
+  authorize field mutation or closure;
+- source refresh or ingestion identity is recorded when available, and its
+  absence remains a limitation.
+- case variants, quoted identifiers, duplicate display names, and platform
+  instance collisions cannot authorize a guessed identity.
 
 Required commands:
 
@@ -123,4 +135,5 @@ Inspect:
 - R-11 Core and Cloud divergence;
 - R-12 state authority;
 - R-15 sensitive query evidence;
-- R-17 graph disappearance.
+- R-17 graph disappearance;
+- R-32 evidence granularity.

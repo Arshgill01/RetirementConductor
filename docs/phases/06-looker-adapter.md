@@ -80,6 +80,12 @@ Excluded:
 17. Reapply and validate idempotency.
 18. Apply the final intended state, refresh ingestion, and reconcile DataHub.
 19. Attach the live receipt without closing unrelated consumers.
+20. Delete and recreate a same-name disposable object and verify that identity
+    evidence, plan, and receipt are invalidated.
+21. Lose or cancel an apply response deliberately, discover actual native
+    state, and prove no blind retry occurs.
+22. Change the saved object after apply and prove compensation does not
+    overwrite the intervening edit.
 
 ## Acceptance evidence
 
@@ -102,6 +108,12 @@ Required behavior:
 - fresh DataHub evidence records the resulting edge state or an explicit
   connector limitation;
 - unrelated opaque consumers continue to block the broader campaign.
+- a recreated same-name object cannot inherit the old authorization or
+  receipt;
+- timeout, cancellation, and lost-response cases remain outcome unknown until
+  native reread establishes actual state.
+- compensation refuses on an unexpected post-apply fingerprint and preserves
+  the intervening native change.
 
 Required commands:
 
@@ -146,4 +158,6 @@ Inspect:
 - R-11 platform capability drift;
 - R-14 permissions;
 - R-18 idempotency;
-- R-19 validation side effects.
+- R-19 validation side effects;
+- R-29 recreated identity;
+- R-31 unknown mutation outcome.
