@@ -2,8 +2,9 @@
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
-	phase06-evidence phase07-evidence scan \
-	test test-ui test-end-to-end test-faults test-recovery test-security
+	phase06-evidence phase07-evidence package scan \
+	test test-install test-ui test-upgrade test-end-to-end test-faults \
+	test-recovery test-security
 
 check:
 	uv run ruff check src tests scripts
@@ -87,11 +88,17 @@ phase06-evidence:
 phase07-evidence:
 	uv run python -m scripts.generate_phase07_evidence
 
+package:
+	uv run python -m scripts.package_release
+
 scan:
 	uv run python scripts/run_security_scan.py
 
 test:
 	uv run pytest
+
+test-install: package
+	uv run python -m scripts.test_install
 
 test-ui:
 	uv run pytest -q \
@@ -134,3 +141,6 @@ test-recovery:
 		tests/integration/test_gate.py \
 		tests/integration/test_git_dbt_workflow.py \
 		tests/integration/test_looker_workflow.py
+
+test-upgrade: package
+	uv run python -m scripts.test_upgrade
