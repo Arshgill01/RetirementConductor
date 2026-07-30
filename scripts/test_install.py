@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import platform
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -109,6 +111,45 @@ def exercise_runtime(
     verify_digest(preflight, "preflight_digest")
     require(preflight["ready"] is True, "clean local preflight did not pass")
 
+    _, refused_preflight_value = installed_command(
+        environment_root,
+        [
+            "deployment",
+            "preflight",
+            "--profile",
+            "core-git-dbt",
+            "--store",
+            str(state / "campaigns.sqlite"),
+            "--writer-id",
+            "clean-install",
+            "--artifact-dir",
+            str(state / "artifacts"),
+        ],
+        cwd=work,
+        environment=environment,
+        expected_exit=2,
+    )
+    refused_preflight = payload_object(
+        refused_preflight_value,
+        "incomplete deployment preflight",
+    )
+    verify_digest(refused_preflight, "preflight_digest")
+    expected_missing = {
+        "DATAHUB_GMS_URL",
+        "DATAHUB_MCP_URL",
+        "GIT_DBT_REPOSITORY_ROOT",
+        "GIT_DBT_DBT_EXECUTABLE",
+        "GIT_DBT_PRINCIPAL",
+    }
+    require(
+        refused_preflight["refusal_code"] == "RUNTIME_CONFIGURATION_INCOMPLETE",
+        "incomplete configuration used the wrong refusal",
+    )
+    require(
+        set(refused_preflight["missing"]) == expected_missing,
+        "incomplete configuration did not name every missing reference",
+    )
+
     reference_summaries = []
     reference_directories = []
     for name in ("reference-one", "reference-two"):
@@ -157,6 +198,8 @@ def exercise_runtime(
         "package_version": origin_value["version"],
         "import_isolated": True,
         "preflight_digest": preflight["preflight_digest"],
+        "configuration_refusal": refused_preflight["refusal_code"],
+        "missing_configuration_references": sorted(expected_missing),
         "reference_manifest_digest": manifest["manifest_digest"],
         "reference_summary_digest": digest_file(
             reference_directories[0] / "summary.json"
@@ -195,6 +238,45 @@ def exercise_uninstall(root: Path) -> dict[str, Any]:
         ],
         cwd=work,
         environment=environment,
+    )
+    copied_state = home / "copied" / ".retirement-conductor"
+    copied_state.mkdir(parents=True)
+    copied_store = copied_state / "campaigns.sqlite"
+    shutil.copyfile(store, copied_store)
+    copied_digest = digest_file(copied_store)
+    _, copied_preflight_value = installed_command(
+        environment_root,
+        [
+            "deployment",
+            "preflight",
+            "--profile",
+            "local",
+            "--store",
+            str(copied_store),
+            "--writer-id",
+            "uninstall-test",
+            "--artifact-dir",
+            str(copied_state / "artifacts"),
+        ],
+        cwd=work,
+        environment=environment,
+        expected_exit=2,
+    )
+    copied_preflight = payload_object(
+        copied_preflight_value,
+        "copied-state preflight",
+    )
+    require(
+        copied_preflight["refusal_code"] == "RUNTIME_WRITER_MISMATCH",
+        "a copied campaign store did not refuse its new path",
+    )
+    require(
+        digest_file(copied_store) == copied_digest,
+        "copied-state preflight changed the copied store",
+    )
+    require(
+        not copied_store.with_name("campaigns.sqlite.lock").exists(),
+        "copied-state preflight created a writer lock",
     )
     plan_path = state / "removal-plan.json"
     _, planned_value = installed_command(
@@ -299,6 +381,8 @@ def exercise_uninstall(root: Path) -> dict[str, Any]:
     require(missing_import.returncode != 0, "package import survived uninstall")
     return {
         "unconfirmed_refusal": refused["refusal_code"],
+        "copied_state_refusal": copied_preflight["refusal_code"],
+        "copied_state_unchanged": True,
         "removal_plan_digest": planned["removal_plan_digest"],
         "removal_receipt_digest": receipt["removal_receipt_digest"],
         "state_removed": True,
@@ -333,6 +417,11 @@ def run() -> dict[str, Any]:
             "captured_at": utc_now(),
             "result": "CLEAN_INSTALL_VERIFIED",
             "package": package_identity(),
+            "host": {
+                "system": platform.system(),
+                "machine": platform.machine(),
+                "libc": list(platform.libc_ver()),
+            },
             "runtimes": observations,
             "uninstall": uninstall,
             "limitations": [

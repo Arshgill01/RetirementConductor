@@ -130,6 +130,69 @@ def datahub_preflight(
     }
 
 
+def installed_deployment_preflight(
+    environment_root: Path,
+    *,
+    base: Path,
+    environment: dict[str, str],
+) -> dict[str, Any]:
+    state = base / "home" / ".retirement-conductor"
+    selected = {
+        **environment,
+        "DATAHUB_GMS_URL": DATAHUB_GMS_URL,
+        "DATAHUB_MCP_URL": DATAHUB_MCP_URL,
+        "GIT_DBT_REPOSITORY_ROOT": str(ROOT / "fixtures/git-dbt-isolated-project"),
+        "GIT_DBT_DBT_EXECUTABLE": str(DBT_EXECUTABLE),
+        "GIT_DBT_PRINCIPAL": "local-disposable-operator",
+        "RETIREMENT_CONDUCTOR_LOCAL_METRICS": "true",
+    }
+    _, value = installed_command(
+        environment_root,
+        [
+            "deployment",
+            "preflight",
+            "--profile",
+            "core-git-dbt",
+            "--store",
+            str(state / "campaigns.sqlite"),
+            "--writer-id",
+            "phase08-reference",
+            "--artifact-dir",
+            str(state / "artifacts"),
+        ],
+        cwd=base,
+        environment=selected,
+    )
+    result = payload_object(value, "installed deployment preflight")
+    verify_digest(result, "preflight_digest")
+    require(result["ready"] is True, "installed deployment preflight refused")
+    require(
+        all(item["present"] for item in result["configuration"]),
+        "installed deployment preflight missed configuration",
+    )
+    require(
+        all(item["available"] for item in result["tools"]),
+        "installed deployment preflight missed a local tool",
+    )
+    require(
+        result["telemetry"]["enabled"] is True
+        and result["telemetry"]["remote_export"] is False,
+        "local metrics opt-in crossed its declared boundary",
+    )
+    return {
+        "profile": result["profile"],
+        "ready": result["ready"],
+        "preflight_digest": result["preflight_digest"],
+        "configuration_references": [
+            item["reference"] for item in result["configuration"]
+        ],
+        "available_tools": [item["name"] for item in result["tools"]],
+        "single_writer": result["state"]["single_writer"],
+        "store_exists": result["state"]["store_exists"],
+        "telemetry": result["telemetry"],
+    }
+
+
 def live_reference(
     environment_root: Path,
     *,
@@ -195,6 +258,11 @@ def run() -> dict[str, Any]:
             base=base,
             environment=environment,
         )
+        deployment = installed_deployment_preflight(
+            environment_root,
+            base=base,
+            environment=environment,
+        )
         with reference_services() as services:
             capability = datahub_preflight(
                 environment_root,
@@ -236,6 +304,7 @@ def run() -> dict[str, Any]:
             "package": package_identity(),
             "installed_version": __version__,
             "fixture_reference": fixture,
+            "deployment_preflight": deployment,
             "core_capability": capability,
             "services": service_evidence,
             "live_reference": {
