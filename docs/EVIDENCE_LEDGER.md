@@ -43,7 +43,7 @@ the produced artifacts have been inspected.
 | EP-004 | 04 | live and fixture | `25466a9` | `artifacts/public/phase04/`; equivalent reconciliation, late reopening, verified publication, one-time gate, and refusal matrix | passed | disposable Core, Git, DuckDB, and harmless sentinel; no warehouse deletion |
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
 | EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
-| EP-007 | 07 | live and fixture | not-run | threat, fault, recovery, concurrency, and scan evidence | not-run | none recorded |
+| EP-007 | 07 | live and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | access-dependent | credential-independent fixture and analysis checks passed; live Looker-specific checks depend on EP-006 |
 | EP-008 | 08 | live and operator | not-run | clean install, upgrade, reference run, and independent operation | not-run | independent operator required |
 
 ### Phase 06 pre-acceptance observations
@@ -170,6 +170,144 @@ digests; old-compensation rejection after replan; graph edge states; combined
 evidence-source set and selective invalidation; generated access packet;
 recipe model output; deterministic artifact twins; full test output; secret
 and public scans; and zero-cost pretrial result.
+
+### Phase 07 credential-independent observations
+
+These observations cover every Phase 07 check that can run without a live
+Looker instance. They do not complete `EP-007`: the required live mode still
+depends on `EP-006` and its adapter-specific permission, fault, retry,
+unknown-outcome, compensation, and concurrency probes.
+
+Evidence ID: EP-007 (credential-independent portion)
+
+Requirement IDs: RC-016
+
+Repository behavior commit:
+`4fc5b2d2b08e98b57a3cc1292fb85008549b2179`
+
+Tracked evidence commit:
+`6feb1bc890269fa443d68cb5b51760466d00c9f8`
+
+Captured at: `2026-07-30T16:19:15.366161Z`
+
+Mode: fixture for capability, fault, concurrency, and recovery behavior;
+analysis for dependency, license, secret-pattern, and public-artifact scans.
+No live Looker behavior is claimed.
+
+Source and tool versions: Python 3.11.15; SQLite 3.53.1; uv 0.11.28; pytest
+9.1.1; pip-audit 2.9.0; Retirement Conductor 0.1.0. The lock review covered
+20 third-party package records from PyPI with SHA-256-bound source and wheel
+artifacts.
+
+Command or operator action:
+
+```text
+make check
+make test-security
+make test-faults
+make test-recovery
+make scan
+make phase07-evidence
+git diff --check
+```
+
+Expected result: read and plan principals cannot mutate; target and approval
+scope remain exact; untrusted source text cannot expand authority; tampered,
+stale, conflicting, unavailable, and ambiguous outcomes refuse; reads retry
+within a bound while native mutations never retry blindly; backup and restore
+reproduce the canonical campaign; a copied store cannot become a second
+authority; scans expose any finding instead of silently passing it.
+
+Observed result: `make check` passed all 217 tests, Ruff, formatting, mypy,
+repository validation, secret and public-artifact review, source and wheel
+builds, and the diff check. The focused security, fault, and recovery targets
+passed 93, 72, and 43 tests. The Git/dbt plan-only receipt preserved the
+branch and target digest and created no apply artifact. The Looker plan-only
+receipt omitted `save_content`, made zero query-creation and PATCH calls, and
+retained no hostile source instruction.
+
+The injected read sequence recovered after 429, connection loss, and 503 in
+four bounded requests. Six ambiguous mutation cases each made exactly one
+request and returned `APPLY_OUTCOME_UNKNOWN`; definitive 401, 403, 404, 409,
+422, and 429 outcomes mapped to their stable actionable refusal. Campaign,
+gate, repository-isolation, overlap, recreated-identity, compensation, and
+tamper cases remained fail-closed.
+
+SQLite online backup published mode `0600` only after integrity,
+foreign-key, event-replay, manifest, gate-ledger, and logical-snapshot checks.
+Restore at the original bound path reproduced manifest
+`sha256:c86a4ea8a8989180c1abe972cbfe2670f51fb8c4f77656d30213561b8ad4e670`
+and schema versions 1 through 3. Opening a copied store refused with
+`RUNTIME_WRITER_MISMATCH` before changing the database. Diagnostics
+deliberately reported the fixture's one stuck campaign as unhealthy, proving
+the operational signal is observable rather than masking it.
+
+The final scan audited six runtime and 18 all-group installed packages with
+zero known vulnerabilities, accepted the recorded license expressions,
+reviewed 20 locked third-party records, checked 270 text files for recognizable
+secrets, and reviewed 46 public artifacts. An earlier all-group scan found
+the published pytest 8.4.2 advisory; commit `1400a1c` upgraded the constrained
+development version to 9.1.1, after which the repeated audit was clean.
+
+Refusal cases: apply-disabled Git/dbt and Looker
+(`AUTH_APPLY_DISABLED`); ambiguous native mutation
+(`APPLY_OUTCOME_UNKNOWN`); permission denial
+(`SOURCE_LOOKER_PERMISSION_DENIED`); missing or recreated identity
+(`IDENTITY_NOT_FOUND`, `IDENTITY_NATIVE_OBJECT_RECREATED`); source conflict
+(`SOURCE_FINGERPRINT_MISMATCH`); failed validation
+(`VALIDATION_RECEIPT_FAILED`); unavailable source
+(`SOURCE_LOOKER_UNAVAILABLE`); copied or wrong writer
+(`RUNTIME_WRITER_MISMATCH`); campaign overlap
+(`SOURCE_CONSUMER_OVERLAP`); compensation conflict
+(`COMPENSATION_CONFLICT`); and integrity, provenance, replay, drift, and
+unavailable-state gate refusals.
+
+Tracked artifact paths:
+`artifacts/public/phase07/security-evidence.json`,
+`artifacts/public/phase07/failure-matrix.json`,
+`artifacts/public/phase07/recovery-evidence.json`,
+`artifacts/public/phase07/scan-evidence.json`, and
+`artifacts/public/phase07/phase07-evidence.json`. Their file SHA-256 digests
+are, respectively,
+`97544b199767de6268948df9bd8043bbfe32e72e5b2cc5b607b2dc2fbcdb089c`,
+`0ec74a67bd130d33d8ed697599201edc910a77f919b69097f50bfacd50c81e23`,
+`4dd7162ea7e1ec4605b35e1914084d2b34f48376bb0aa12761e5fa21cdd9a6fb`,
+`f02972cc85b77433c0bdc78e530fe156268e2c9559c0e4ca81e6b56b760f7acd`,
+and
+`aca315f18fb50841d7194757b14837033897c5c776f3bf614481f30bbec59b28`.
+The canonical phase evidence digest is
+`sha256:43b5b2d44631df04f8a08c643b4c65f9524ba7854a17447fcf09f87e2275e8a0`.
+
+Private artifact digests: the ignored final scan file was byte-identical to
+the tracked redacted scan evidence with file SHA-256
+`f02972cc85b77433c0bdc78e530fe156268e2c9559c0e4ca81e6b56b760f7acd`
+and canonical scan digest
+`sha256:2108dab4cc7d54d36275693404c6bc1b4699b85491b2a4036a25e794d5d0a7e2`.
+Focused command output is retained only by its three digests in the phase
+summary; disposable recovery stores and injected transport responses were
+deleted after promotion.
+
+What this proves: the supported local single-writer runtime, Git/dbt boundary,
+deterministic Looker boundary, producer gate, evidence artifacts, dependency
+set, and recovery procedure withstand the recorded credential-independent
+security and reliability probes without producing false readiness or leaking
+the injected secrets. The deployment contract can distinguish plan from
+apply and a valid backup from a second campaign authority.
+
+What this does not prove: live Looker permissions or service behavior; a live
+Looker timeout, cancellation, rate limit, partial mutation, compensation, or
+concurrent attempt; production host or secret-provider security; distributed
+storage; arbitrary filesystem classification; binary reproducibility; signed
+package provenance; or completeness of a point-in-time advisory and static
+secret scan. Phase 07 therefore remains access-dependent.
+
+Reviewer inspection: verified all five canonical artifact digests and file
+digests; inspected plan-only mutation counts, required permissions, retry
+counts and delays, every mutation refusal, backup mode, restored manifest and
+schema versions, copied-store preflight order, unhealthy diagnostic signal,
+package/version/license findings, vulnerability counts, scan limitations,
+live-boundary wording, tracked public content, secret-scan result, and
+generated whitespace.
 
 ## Entry completion checklist
 

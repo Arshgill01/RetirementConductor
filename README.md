@@ -105,6 +105,18 @@ remains visibly `BLOCKED` because fixture evidence cannot satisfy live policy.
 See
 [EP-005](docs/EVIDENCE_LEDGER.md#ep-005--phase-05-operator-experience).
 
+The credential-independent Phase 07 boundary now separates plan from apply,
+classifies ambiguous mutations without blind retry, refuses copied campaign
+stores, verifies online backup and original-path restore, exposes redacted
+operational diagnostics, and audits dependencies, licenses, secrets, and
+public artifacts. The focused security, fault, and recovery suites passed 93,
+72, and 43 tests, and the all-group audit found no known vulnerability in 18
+installed packages after upgrading the one vulnerable development dependency.
+These fixture and analysis results do not complete Phase 07: live
+Looker-specific permission and failure behavior remains coupled to `EP-006`.
+See
+[the Phase 07 observations](docs/EVIDENCE_LEDGER.md#phase-07-credential-independent-observations).
+
 ## Complete supported path
 
 The first production-shaped vertical is:

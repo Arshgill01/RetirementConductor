@@ -7,18 +7,18 @@ contract; `PLAN.md` defines proof order.
 ## Current state
 
 - Execution state: active
-- Active phase: 07
+- Active phase: 08
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
 - Current external blocker: none
-- Next acceptance target: implement and inspect every credential-independent
-  phase 07 threat, fault, recovery, concurrency, retention, and deployment
-  safety case while preserving the exact live Looker boundary
-- Last repository validation: the phase 06 pre-acceptance bundle at
-  `e128e20` passed all 188 tests, including deterministic native lifecycle,
-  durable lost-response and interruption recovery, compensation conflict,
-  recreated identity, combined reconciliation, and recipe contracts, plus
-  Ruff, formatting, mypy, 131-file repository validation, secret and
-  public-artifact scans, source/wheel builds, and `git diff --check`
+- Next acceptance target: complete and inspect every credential-independent
+  phase 08 package, clean-install, preflight, reference-campaign, upgrade,
+  rollback, backup, removal, compatibility, and single-writer case before
+  requesting the remaining live Looker and independent-operator boundaries
+- Last repository validation: phase 07 behavior commit `4fc5b2d` passed
+  217 tests under `make check`; focused security, fault, and recovery targets
+  passed 93, 72, and 43 tests; the security scan audited 18 resolved packages
+  with zero known vulnerabilities; canonical recovery and capability evidence
+  was inspected and committed at `6feb1bc`
 
 ## Phase ledger
 
@@ -31,8 +31,8 @@ contract; `PLAN.md` defines proof order.
 | 04 | complete | `EP-004` at `25466a9`; equivalent live reconciliation, verified stable publication, one issued-plan sentinel, live late-consumer reopening, rich-graph refusal, and adversarial gate matrix | no production warehouse deletion was attempted |
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
 | 06 | access-dependent | `00db298`, `3435177`, `5454594`, `a57b06e`, `e6183d1`, `9380815`, and `e128e20`; deterministic API 4.0 lifecycle, durable intent recovery, campaign binding, exact LookML ingestion into local DataHub, official recipe validation, no-secret access packet, reconciliation, and an inspected non-live evidence bundle; 188 tests pass | one pre-existing user-approved disposable Looker instance/API plus live saved-Look ingestion, native query, compensation, delete/recreate, and lost-response evidence; fixture and local LookML results do not satisfy `EP-006` |
-| 07 | active | phase contract under implementation | finish all credential-independent hardening, then close live Looker-specific cases after access |
-| 08 | queued | none | clean operation plus independent operator evidence |
+| 07 | access-dependent | credential-independent EP-007 observations at `4fc5b2d`/`6feb1bc`; threat model, plan-only receipts, fault matrix, online backup/restore, copied-store refusal, diagnostics, dependency audit, secret scan, and five inspected public artifacts | phase 07 cannot close until EP-006 supplies live Looker permission, fault, retry, unknown-outcome, compensation, and concurrency evidence |
+| 08 | active | phase contract under implementation | finish every clean-machine and deployment task; independent operation and value evidence then require a real prospective operator |
 
 Allowed states are `queued`, `active`, `access-dependent`, `blocked`,
 `complete`, and `reframed`. At most one phase is `active`. A phase can return
@@ -45,7 +45,7 @@ to `active` if later evidence invalidates its acceptance result.
 | DataHub Core | no | agent may start a disposable local instance | `docs/ACCESS.md` |
 | Git/dbt target | no | agent may create disposable local resources | `docs/ACCESS.md` |
 | Looker | no; safe independent phase work remains | dedicated pretrial check verified zero instances, unallocated trial/paid quota, zero BigQuery query quota, and zero stored bytes; this is read-only GCP state, not Looker acceptance; `PROVISIONING_ALLOWED=false` forbids instance creation, IAM elevation, queries, quota changes, and paid resources | `docs/ACCESS.md` |
-| Independent operator | not until phase 08 proof | real human observation required | `docs/ACCESS.md` |
+| Independent operator | no; credential-independent phase 08 work remains | real human observation is required after the reproducible evaluation path is ready | `docs/ACCESS.md` |
 
 Do not turn a future access need into a current blocker. Complete every safe
 independent path first.
