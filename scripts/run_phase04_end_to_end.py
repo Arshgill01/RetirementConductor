@@ -676,10 +676,10 @@ def run() -> dict[str, Any]:
             ],
             timeout=240,
         )
-        ready_manifest = reconciled["manifest"]
+        ready_reconciliation_manifest = reconciled["manifest"]
         require(
-            ready_manifest["decision"] == "READY_TO_RETIRE"
-            and ready_manifest["campaign"]["state"] == "READY",
+            ready_reconciliation_manifest["decision"] == "READY_TO_RETIRE"
+            and ready_reconciliation_manifest["campaign"]["state"] == "READY",
             "the isolated all-closed campaign did not become ready",
         )
         require(
@@ -688,12 +688,15 @@ def run() -> dict[str, Any]:
                 "added": [],
                 "disappeared_without_closure": [],
                 "unchanged": [
-                    str(ready_manifest["consumers"][0]["id"]),
+                    str(ready_reconciliation_manifest["consumers"][0]["id"]),
                 ],
             },
             "ready reconciliation membership was not equivalent",
         )
-        write_json(run_root / "ready-manifest.json", ready_manifest)
+        write_json(
+            run_root / "ready-reconciliation-manifest.json",
+            ready_reconciliation_manifest,
+        )
         ready_publication = runner.json(
             "campaign-publish-ready",
             [
@@ -717,9 +720,13 @@ def run() -> dict[str, Any]:
             ],
         )
         require(
-            ready_verification["publication"]["readback_verified"] is True,
-            "ready publication was not read back",
+            ready_verification["publication"]["readback_verified"] is True
+            and ready_verification["publication"]["published_manifest_digest"]
+            == ready_reconciliation_manifest["manifest_digest"],
+            "ready publication did not bind and read back the reconciled manifest",
         )
+        ready_manifest = ready_verification["manifest"]
+        write_json(run_root / "ready-manifest.json", ready_manifest)
 
         producer_paths = [
             "--producer-repository",
@@ -744,6 +751,12 @@ def run() -> dict[str, Any]:
             ],
         )
         plan_digest = str(producer_plan["plan"]["plan_digest"])
+        require(
+            producer_plan["manifest"]["manifest_digest"]
+            == ready_manifest["manifest_digest"]
+            == producer_plan["plan"]["manifest"]["digest"],
+            "the producer plan was not bound to the verified ready manifest",
+        )
 
         untrusted = {**environment, "RETIREMENT_CONDUCTOR_TRUSTED_CONTEXT": "false"}
         runner.json(
@@ -1221,6 +1234,9 @@ def run() -> dict[str, Any]:
                     "validator_version": validated["validation"]["validator_version"],
                     "ready_decision": ready_manifest["decision"],
                     "ready_manifest_digest": ready_manifest["manifest_digest"],
+                    "ready_reconciliation_manifest_digest": (
+                        ready_reconciliation_manifest["manifest_digest"]
+                    ),
                     "ready_reconciliation_digest": reconciled["comparison"][
                         "comparison_digest"
                     ],
