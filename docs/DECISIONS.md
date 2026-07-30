@@ -507,3 +507,18 @@ showed the new edge. The same target query with the documented cache-bypass
 flag returned the late consumer immediately. Increasing a timeout or varying
 an unrelated parameter would conceal the stale-evidence mechanism rather than
 control it.
+
+## D-035 — publication visibility is polled without repeating the write
+
+Status: accepted from live DataHub Core v1.6.0 Phase 08 diagnosis.
+
+After one successful summary write, retry only the idempotent agent-visible
+read-back within a fixed bound. Preserve each transient mismatch or source
+refusal as a command observation, and accept publication only after exact
+content, identity, manifest, and lifecycle read-back succeeds. A
+non-retryable refusal or exhausted bound remains failure.
+
+Why: one immediate verification refused even though the unchanged read-back
+succeeded shortly afterward. Repeating the write could create or overwrite
+state without proving visibility; treating the successful write response as
+verification would manufacture publication evidence.

@@ -469,6 +469,12 @@ Default closure accepts only:
 expiration, and a policy that permits it. It remains visibly different from a
 successful migration.
 
+DataHub publication performs one idempotently bound write. Agent-visible
+read-back may be retried within a fixed bound because indexing is eventually
+consistent, but every transient refusal remains evidence and the write is not
+repeated merely to obtain visibility. A successful write response is never a
+substitute for exact read-back.
+
 ## Final decision
 
 The policy produces exactly one:

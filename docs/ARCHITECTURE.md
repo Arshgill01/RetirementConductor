@@ -158,7 +158,8 @@ Write path:
 
 - publish a stable campaign summary only after policy evaluation;
 - update the same logical record idempotently;
-- read it back through an agent-visible surface;
+- read it back through an agent-visible surface with bounded read-only polling,
+  without repeating the write;
 - mutate lifecycle state only through a separately authorized action after
   readiness.
 

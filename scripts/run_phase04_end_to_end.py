@@ -94,6 +94,8 @@ class Runner:
         environment: Mapping[str, str] | None = None,
         expected_exit: int = 0,
         expected_refusal: str | None = None,
+        allowed_exits: set[int] | None = None,
+        success_name: str | None = None,
         timeout: float = 300,
     ) -> dict[str, Any]:
         started = time.monotonic()
@@ -109,11 +111,6 @@ class Runner:
             timeout=timeout,
         )
         duration_ms = round((time.monotonic() - started) * 1000)
-        if result.returncode != expected_exit:
-            raise RuntimeError(
-                f"{name} exited {result.returncode}, expected {expected_exit}: "
-                f"{result.stderr[-500:]}"
-            )
         try:
             payload = json.loads(result.stdout)
         except json.JSONDecodeError as exc:
@@ -121,12 +118,24 @@ class Runner:
         if not isinstance(payload, dict):
             raise RuntimeError(f"{name} did not return a JSON object")
         refusal_code = payload.get("refusal_code")
+        accepted_exits = allowed_exits or {expected_exit}
+        if result.returncode not in accepted_exits:
+            raise RuntimeError(
+                f"{name} exited {result.returncode}, expected "
+                f"{sorted(accepted_exits)}; result="
+                f"{payload.get('result', 'UNKNOWN')} refusal={refusal_code}"
+            )
         if expected_refusal is not None and refusal_code != expected_refusal:
             raise RuntimeError(
                 f"{name} refused with {refusal_code}, expected {expected_refusal}"
             )
+        record_name = (
+            success_name
+            if success_name is not None and result.returncode == 0
+            else name
+        )
         self._record(
-            name,
+            record_name,
             result.returncode,
             str(payload.get("result", "UNKNOWN")),
             str(refusal_code) if refusal_code is not None else None,
@@ -377,6 +386,45 @@ def wait_for_replacement_drift(
             raise
         time.sleep(0.5)
     raise RuntimeError("replacement schema drift was not observable within the bound")
+
+
+def wait_for_publication(
+    *,
+    runner: Runner,
+    name: str,
+    arguments: Sequence[str],
+    timeout_seconds: float = 60,
+) -> tuple[dict[str, Any], dict[str, int]]:
+    """Poll an agent-visible read-back without accepting a stale mismatch."""
+
+    started = time.monotonic()
+    attempts = 0
+    retryable = {
+        "EVIDENCE_PUBLICATION_MISMATCH",
+        "SOURCE_DATAHUB_UNAVAILABLE",
+    }
+    while time.monotonic() - started <= timeout_seconds:
+        attempts += 1
+        result = runner.json(
+            f"{name}-pending-{attempts:02d}",
+            arguments,
+            allowed_exits={0, 2},
+            success_name=name,
+        )
+        if result.get("result") == "VERIFIED":
+            return result, {
+                "attempts": attempts,
+                "duration_ms": round((time.monotonic() - started) * 1000),
+            }
+        refusal_code = result.get("refusal_code")
+        if refusal_code not in retryable:
+            raise RuntimeError(
+                f"{name} returned a non-retryable refusal: {refusal_code}"
+            )
+        time.sleep(0.5)
+    raise RuntimeError(
+        f"{name} did not become visible within {timeout_seconds} seconds"
+    )
 
 
 @contextmanager
@@ -749,9 +797,10 @@ def run() -> dict[str, Any]:
                 *common,
             ],
         )
-        ready_verification = runner.json(
-            "campaign-verify-ready-publication",
-            [
+        ready_verification, ready_publication_settle = wait_for_publication(
+            runner=runner,
+            name="campaign-verify-ready-publication",
+            arguments=[
                 "uv",
                 "run",
                 "retirement-conductor",
@@ -1130,9 +1179,10 @@ def run() -> dict[str, Any]:
                 *common,
             ],
         )
-        late_verification = runner.json(
-            "campaign-verify-late-publication",
-            [
+        late_verification, late_publication_settle = wait_for_publication(
+            runner=runner,
+            name="campaign-verify-late-publication",
+            arguments=[
                 "uv",
                 "run",
                 "retirement-conductor",
@@ -1291,6 +1341,7 @@ def run() -> dict[str, Any]:
                     "ready_publication_content_digest": ready_publication[
                         "publication"
                     ]["content_digest"],
+                    "ready_publication_settle": ready_publication_settle,
                     "producer_plan_digest": plan_digest,
                     "gate_receipt_digest": executed["gate_receipt"]["receipt_digest"],
                     "sentinel_digest": digest_file(sentinels[0]),
@@ -1308,6 +1359,7 @@ def run() -> dict[str, Any]:
                     "late_publication_content_digest": late_publication["publication"][
                         "content_digest"
                     ],
+                    "late_publication_settle": late_publication_settle,
                     "stable_publication_identity_digest": digest_bytes(
                         str(ready_verification["publication"]["urn"]).encode()
                     ),
