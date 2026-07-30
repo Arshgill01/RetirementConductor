@@ -650,6 +650,52 @@ def test_append_resumes_without_duplicate_event(
         assert len(store.events(CAMPAIGN_ID)) == 2
 
 
+def test_inventory_extension_preserves_existing_native_receipt(
+    tmp_path: Path,
+) -> None:
+    looker_consumer = "consumer-looker-saved-look"
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        propose_and_approve(store, CAMPAIGN_ID)
+        begin_and_apply(store, CAMPAIGN_ID)
+        accepted = store.accept_receipt(
+            CAMPAIGN_ID,
+            CONSUMER_ID,
+            receipt_for(),
+            trusted_now=TRUSTED_NOW,
+            occurred_at="2026-01-01T11:30:00Z",
+            idempotency_key="accept-before-extension",
+        )
+        original_digest = accepted["consumers"][0]["receipt_digest"]
+
+        extended = store.extend_inventory(
+            CAMPAIGN_ID,
+            evidence_envelope=live_envelope(),
+            consumers=[
+                {
+                    "id": looker_consumer,
+                    "disposition": "OPAQUE",
+                    "receipt_digest": None,
+                }
+            ],
+            snapshot_digest=SNAPSHOT_TWO,
+            occurred_at="2026-01-01T11:40:00Z",
+            idempotency_key="add-looker-consumer",
+        )
+        projection = store.projection(CAMPAIGN_ID)
+
+        assert sorted(projection.inventory_consumer_ids) == [
+            CONSUMER_ID,
+            looker_consumer,
+        ]
+        assert projection.consumers[CONSUMER_ID]["disposition"] == "VALIDATED"
+        assert projection.consumers[CONSUMER_ID]["receipt_digest"] == original_digest
+        assert projection.consumers[looker_consumer]["disposition"] == "OPAQUE"
+        assert projection.reconciled is False
+        assert extended["campaign"]["state"] == "MIGRATING"
+        assert projection.snapshot_digests == [SNAPSHOT_ONE, SNAPSHOT_TWO]
+
+
 def test_idempotency_key_conflict_refuses(tmp_path: Path) -> None:
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
         create_and_inventory(store)

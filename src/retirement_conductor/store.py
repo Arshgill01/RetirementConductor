@@ -984,6 +984,30 @@ class CampaignStore:
             fault_injector=fault_injector,
         )
 
+    def extend_inventory(
+        self,
+        campaign_id: str,
+        *,
+        evidence_envelope: Mapping[str, Any],
+        consumers: Sequence[Mapping[str, Any]],
+        snapshot_digest: str,
+        occurred_at: str,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Add newly observed consumers without erasing prior native closure."""
+
+        return self.append_event(
+            campaign_id,
+            "INVENTORY_EXTENDED",
+            {
+                "evidence_envelope": dict(evidence_envelope),
+                "consumers": [dict(consumer) for consumer in consumers],
+                "snapshot_digest": snapshot_digest,
+            },
+            occurred_at=occurred_at,
+            idempotency_key=idempotency_key,
+        )
+
     def record_reconciliation(
         self,
         campaign_id: str,

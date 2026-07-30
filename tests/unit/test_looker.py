@@ -272,7 +272,12 @@ def test_apply_validate_compensate_and_reapply_are_exact_and_idempotent() -> Non
         occurred_at=NOW,
     )
     compensation = adapter.compensate(plan, applied, occurred_at=NOW)
-    reapplied = adapter.apply(plan, intent, occurred_at=NOW)
+    second_plan = adapter.plan(
+        campaign_id=CAMPAIGN_ID,
+        consumer_id=CONSUMER_ID,
+    )
+    second_intent = adapter.prepare_apply_intent(second_plan, recorded_at=NOW)
+    reapplied = adapter.apply(second_plan, second_intent, occurred_at=NOW)
 
     assert applied["actual_changed_fields"] == ["query_id"]
     assert applied["actual_targets"] == ["look:41"]
@@ -282,6 +287,7 @@ def test_apply_validate_compensate_and_reapply_are_exact_and_idempotent() -> Non
     assert compensation["result"] == "RESTORED"
     assert compensation["restored_query_id"] == "q-before"
     assert compensation["restored_fingerprint"] == plan["source"]["fingerprint"]
+    assert second_plan["plan_digest"] != plan["plan_digest"]
     assert reapplied["after_fingerprint"] == applied["after_fingerprint"]
     assert fake.patch_calls == 3
 

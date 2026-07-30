@@ -519,6 +519,25 @@ class LookerAdapter:
         )
         return with_digest(value, "intent_digest")
 
+    def mark_intent_resolved(
+        self,
+        intent: Mapping[str, Any],
+        *,
+        apply_digest: str,
+        observed_at: str,
+    ) -> dict[str, Any]:
+        value = dict(intent)
+        verify_digest(value, "intent_digest")
+        value.update(
+            {
+                "status": "RESOLVED",
+                "outcome_reason": "native_state_matches_planned_after",
+                "observed_at": observed_at,
+                "apply_digest": apply_digest,
+            }
+        )
+        return with_digest(value, "intent_digest")
+
     def apply(
         self,
         plan: Mapping[str, Any],
@@ -572,6 +591,15 @@ class LookerAdapter:
                         "after_fingerprint"
                     ],
                     "actual_fingerprint": snapshot["content_fingerprint"],
+                },
+            )
+        if snapshot["source_version"] != plan["source"]["version"]:
+            raise Refusal(
+                RefusalCode.SOURCE_FINGERPRINT_MISMATCH,
+                "The saved Look native source version changed after planning.",
+                {
+                    "expected_source_version": plan["source"]["version"],
+                    "actual_source_version": snapshot["source_version"],
                 },
             )
         if (
@@ -675,6 +703,11 @@ class LookerAdapter:
         self._validate_plan(plan)
         apply_value = dict(apply_record)
         verify_digest(apply_value, "apply_digest")
+        if apply_value.get("plan_digest") != plan["plan_digest"]:
+            raise Refusal(
+                RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+                "The Looker validation input belongs to another plan.",
+            )
         snapshot, query_body = self._snapshot_bundle(
             expected_identity=_mapping(plan["native_identity"])
         )
@@ -754,6 +787,11 @@ class LookerAdapter:
         self._validate_plan(plan)
         apply_value = dict(apply_record)
         verify_digest(apply_value, "apply_digest")
+        if apply_value.get("plan_digest") != plan["plan_digest"]:
+            raise Refusal(
+                RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+                "The Looker compensation input belongs to another plan.",
+            )
         if not self.settings.allow_apply:
             raise Refusal(
                 RefusalCode.AUTH_APPLY_DISABLED,
@@ -829,6 +867,11 @@ class LookerAdapter:
         validation_value = dict(validation)
         verify_digest(apply_value, "apply_digest")
         verify_digest(validation_value, "validation_digest")
+        if apply_value.get("plan_digest") != plan["plan_digest"]:
+            raise Refusal(
+                RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+                "The Looker receipt apply record belongs to another plan.",
+            )
         if validation_value["result"] != "PASSED":
             raise Refusal(
                 RefusalCode.VALIDATION_RECEIPT_FAILED,
@@ -1369,7 +1412,12 @@ class LookerAdapter:
             != digest_json(plan["native_identity"])
             or value.get("before_fingerprint") != plan["source"]["fingerprint"]
             or value.get("after_fingerprint") != plan["references"]["after_fingerprint"]
-            or value.get("status") not in {"PENDING", "OUTCOME_UNKNOWN"}
+            or value.get("status")
+            not in {
+                "PENDING",
+                "OUTCOME_UNKNOWN",
+                "RESOLVED",
+            }
         ):
             raise Refusal(
                 RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
@@ -1464,6 +1512,128 @@ class LookerAdapter:
             },
             "compensation_digest",
         )
+
+
+def merge_looker_evidence(
+    datahub_envelope: Mapping[str, Any],
+    preflight: Mapping[str, Any],
+    native_snapshot: Mapping[str, Any],
+    *,
+    artifact_ids: Sequence[str],
+    prior_envelope: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Join fresh Looker evidence while making unreread prior sources stale."""
+
+    datahub_value = dict(datahub_envelope)
+    preflight_value = dict(preflight)
+    snapshot_value = dict(native_snapshot)
+    verify_digest(datahub_value, "envelope_digest")
+    verify_digest(preflight_value, "preflight_digest")
+    verify_digest(snapshot_value, "snapshot_digest")
+    source_id = f"looker:{snapshot_value['native_identity']['platform_instance']}"
+    sources = [
+        dict(source) for source in datahub_value["sources"] if source["id"] != source_id
+    ]
+    if prior_envelope is not None:
+        prior_value = dict(prior_envelope)
+        verify_digest(prior_value, "envelope_digest")
+        incoming_ids = {str(source["id"]) for source in sources}
+        for raw_source in prior_value["sources"]:
+            prior_source = dict(raw_source)
+            prior_id = str(prior_source["id"])
+            if prior_id in incoming_ids or prior_id == source_id:
+                continue
+            sources.append(
+                {
+                    **prior_source,
+                    "status": "STALE",
+                    "freshness": {
+                        **dict(prior_source["freshness"]),
+                        "observed_at": snapshot_value["captured_at"],
+                    },
+                    "limitations": sorted(
+                        {
+                            *prior_source["limitations"],
+                            (
+                                "This prior source was not reread during the "
+                                "Looker inventory extension"
+                            ),
+                        }
+                    ),
+                }
+            )
+    capabilities = preflight_value["capabilities"]
+    effective = [
+        capability
+        for capability in ("read", "plan", "apply", "validate", "compensate")
+        if capabilities[capability]
+    ]
+    missing_ingestion = preflight_value["datahub_ingestion_permission_check"]["missing"]
+    limitations = [
+        "The native scope contains exactly one saved Look.",
+        "Looker query results are never retained by the adapter.",
+    ]
+    if missing_ingestion:
+        limitations.append(
+            "The adapter principal does not itself satisfy the separate DataHub "
+            "Looker ingestion permission set."
+        )
+    sources.append(
+        {
+            "id": source_id,
+            "required": True,
+            "status": "COMPLETE",
+            "source_version": snapshot_value["source_version"],
+            "identity": preflight_value["configuration"]["base_url_identity"],
+            "scope": {
+                "direction": "downstream",
+                "max_hops": 1,
+                "filters": [
+                    (
+                        "instance:"
+                        f"{snapshot_value['native_identity']['platform_instance']}"
+                    ),
+                    f"project:{snapshot_value['native_identity']['project_id']}",
+                    f"model:{snapshot_value['native_identity']['model_id']}",
+                    f"explore:{snapshot_value['native_identity']['explore_id']}",
+                    f"folder:{snapshot_value['native_identity']['folder_id']}",
+                    f"target:look:{snapshot_value['native_identity']['content_id']}",
+                ],
+                "pages": 1,
+                "reported_total": 1,
+                "returned_total": 1,
+            },
+            "freshness": {
+                "observed_at": snapshot_value["captured_at"],
+                "source_updated_at": (
+                    snapshot_value["look"]["updated_at"]
+                    or snapshot_value["captured_at"]
+                ),
+                "maximum_age_seconds": 86_400,
+            },
+            "permissions": {
+                "principal": preflight_value["principal"]["id_digest"],
+                "effective_scope": ",".join(effective),
+            },
+            "limitations": limitations,
+            "artifact_ids": sorted(set(artifact_ids)),
+        }
+    )
+    merged = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "captured_at": snapshot_value["captured_at"],
+            "mode": datahub_value["mode"],
+            "sources": sorted(sources, key=lambda source: str(source["id"])),
+        },
+        "envelope_digest",
+    )
+    validate_schema(
+        "evidence-envelope",
+        merged,
+        refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+    )
+    return merged
 
 
 def _query_items(value: Any) -> list[Any]:

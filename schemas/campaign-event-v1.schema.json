@@ -15,6 +15,7 @@
       "enum": [
         "CAMPAIGN_CREATED",
         "INVENTORY_RECORDED",
+        "INVENTORY_EXTENDED",
         "APPROVAL_RECORDED",
         "WAIVER_RECORDED",
         "NATIVE_IDENTITY_CLAIMED",

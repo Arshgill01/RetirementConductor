@@ -398,6 +398,15 @@ Before migration begins, a newly captured baseline may append another
 current consumer baseline and resets reconciliation, but preserves every
 earlier snapshot digest and event. It cannot import a closure disposition.
 
+After one native adapter has already produced campaign evidence,
+`INVENTORY_EXTENDED` may add consumers observed by a fresh bounded source
+without erasing existing plans or receipts. It is legal only while
+`INVENTORIED`, `MIGRATING`, or `BLOCKED`; it unions consumer membership,
+replaces the evidence envelope, appends the snapshot digest, and resets
+reconciliation. It cannot import a closure disposition. Any prior source not
+reread as part of the extension must be marked `STALE` rather than carried
+forward as fresh.
+
 Consumer dispositions:
 
 - `DISCOVERED`

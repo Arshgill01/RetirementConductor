@@ -241,6 +241,56 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
         projection.evidence_envelope = dict(payload["evidence_envelope"])
         projection.snapshot_digests.append(str(payload["snapshot_digest"]))
         projection.reconciled = False
+    elif event_type == "INVENTORY_EXTENDED":
+        if projection.state not in {
+            CampaignState.INVENTORIED,
+            CampaignState.MIGRATING,
+            CampaignState.BLOCKED,
+        }:
+            raise Refusal(
+                RefusalCode.POLICY_ILLEGAL_CAMPAIGN_TRANSITION,
+                "Inventory can only be extended while the campaign is "
+                "inventoried, migrating, or blocked.",
+                {"state": projection.state},
+            )
+        incoming = {
+            str(consumer["id"]): {
+                "id": str(consumer["id"]),
+                "disposition": ConsumerDisposition(str(consumer["disposition"])),
+                "receipt_digest": consumer.get("receipt_digest"),
+            }
+            for consumer in payload["consumers"]
+        }
+        if len(incoming) != len(payload["consumers"]):
+            raise Refusal(
+                RefusalCode.IDENTITY_AMBIGUOUS,
+                "The inventory extension contains duplicate consumer identities.",
+            )
+        permitted = {
+            ConsumerDisposition.DISCOVERED,
+            ConsumerDisposition.IDENTIFIED,
+            ConsumerDisposition.OPAQUE,
+            ConsumerDisposition.UNRESOLVED,
+        }
+        if any(
+            consumer["disposition"] not in permitted for consumer in incoming.values()
+        ):
+            raise Refusal(
+                RefusalCode.POLICY_ILLEGAL_CONSUMER_TRANSITION,
+                "Inventory extension cannot import a closure disposition.",
+            )
+        for consumer_id, consumer in incoming.items():
+            if consumer_id not in projection.consumers:
+                projection.consumers[consumer_id] = consumer
+        projection.inventory_consumer_ids = sorted(
+            set(projection.inventory_consumer_ids) | set(incoming)
+        )
+        projection.current_consumer_ids = sorted(
+            set(projection.current_consumer_ids) | set(incoming)
+        )
+        projection.evidence_envelope = dict(payload["evidence_envelope"])
+        projection.snapshot_digests.append(str(payload["snapshot_digest"]))
+        projection.reconciled = False
     elif event_type == "APPROVAL_RECORDED":
         verify_digest(dict(payload["approval"]), "approval_digest")
         projection.approvals[str(payload["approval"]["plan_digest"])] = dict(
