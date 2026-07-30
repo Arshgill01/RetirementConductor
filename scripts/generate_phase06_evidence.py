@@ -633,10 +633,23 @@ def access_evidence() -> dict[str, Any]:
     require(not any(marker in serialized for marker in markers), "summary leaked")
     require(summary["provisioning_allowed"] is False, "provisioning enabled")
     require(summary["apply_control"] == "DISABLED", "apply was not disabled")
+    require(
+        summary["resume_command"]
+        == "retirement-conductor deployment preflight --profile looker-plan",
+        "access packet resume assumed unavailable campaign state",
+    )
+    require(
+        summary["campaign_state_required_before_adapter_preflight"] is True,
+        "access packet omitted the exact campaign bootstrap prerequisite",
+    )
     return {
         "packet_digest": digest_bytes(packet.encode("utf-8")),
         "provisioning_allowed": summary["provisioning_allowed"],
         "apply_control": summary["apply_control"],
+        "resume_command": summary["resume_command"],
+        "campaign_state_required_before_adapter_preflight": summary[
+            "campaign_state_required_before_adapter_preflight"
+        ],
         "configuration_names": len(summary["configuration"]),
         "adapter_permissions": summary["adapter_permissions"],
         "ingestion_permissions": summary["ingestion_permissions"],

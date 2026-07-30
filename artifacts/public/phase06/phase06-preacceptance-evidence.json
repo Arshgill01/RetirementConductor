@@ -35,6 +35,7 @@
       }
     ],
     "apply_control": "DISABLED",
+    "campaign_state_required_before_adapter_preflight": true,
     "configuration_names": 20,
     "ingestion_permissions": [
       {
@@ -94,11 +95,12 @@
         "status": "UNVERIFIED"
       }
     ],
-    "packet_digest": "sha256:eef4d9e9196107505138f70dd147fd7b828506b3d1989ccc1f6589a6f464af51",
+    "packet_digest": "sha256:80b67e096a1f4d5bf01b6ce62c83bc5309f9e622676151c97ec4617408f84a74",
     "provisioning_allowed": false,
+    "resume_command": "retirement-conductor deployment preflight --profile looker-plan",
     "supplied_values_present": false
   },
-  "artifact_digest": "sha256:ff63536a8f17374eee3eaf0d7aa659b129116b89d40d76cfc1a1940b615d2d95",
+  "artifact_digest": "sha256:e1a9e9e3cf035dbd541fb71ed4e16940fff352093a0c3b0577aec8c42bafaed7",
   "artifacts": {
     "adapter": "sha256:2073b92854bbc1c5cc4389214aaba541923487f4e014efa738e8acef71221a26",
     "local_lookml_ingestion": "sha256:046e0e62ab8594facde35d98945d4ec1a009251414f7992c3a6ce47ad56d5a45",
@@ -120,7 +122,7 @@
   "evidence_mode": "fixture",
   "generated_at": "2026-07-30T12:00:00Z",
   "phase_acceptance": "NOT_SATISFIED_LIVE_BOUNDARY",
-  "repository_commit": "9380815c3f29497cecb3f593b5c3dda18f337be4",
+  "repository_commit": "813bf209cb5760b9963e195f57189152ad46cc41",
   "result": "CREDENTIAL_INDEPENDENT_WORK_VERIFIED",
   "schema_version": "1.0.0"
 }
