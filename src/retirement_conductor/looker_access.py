@@ -35,7 +35,6 @@ LOOKER_ACCESS_VARIABLES = (
     "LOOKER_LEGACY_REFERENCE",
     "LOOKER_REPLACEMENT_REFERENCE",
     "LOOKML_BASE_FOLDER",
-    "LOOKER_CONNECTION_NAME",
     "LOOKER_WAREHOUSE_PLATFORM",
     "LOOKER_WAREHOUSE_INSTANCE",
     "LOOKER_WAREHOUSE_DATABASE",
@@ -161,7 +160,7 @@ DataHub boundary may require this ignored local value.
 
 - one pre-existing disposable Looker instance;
 - one disposable LookML project, model, and Explore;
-- one safe pre-existing warehouse connection;
+- one safe pre-existing warehouse connection named `retirement_fixture`;
 - one isolated shared folder;
 - exactly one saved Look identified as `look:<numeric-id>`;
 - no production content, users, warehouse data, or wildcard mutation scope.

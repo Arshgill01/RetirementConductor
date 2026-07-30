@@ -122,7 +122,6 @@ LOOKER_FOLDER_PATH_PATTERN
 LOOKER_LEGACY_REFERENCE
 LOOKER_REPLACEMENT_REFERENCE
 LOOKML_BASE_FOLDER
-LOOKER_CONNECTION_NAME
 LOOKER_WAREHOUSE_PLATFORM
 LOOKER_WAREHOUSE_INSTANCE
 LOOKER_WAREHOUSE_DATABASE
@@ -181,7 +180,7 @@ The live boundary must contain:
 - one sandbox instance;
 - one disposable LookML project and checkout;
 - one model and Explore with legacy and compatible replacement fields;
-- one safe warehouse connection;
+- one safe warehouse connection named `retirement_fixture`;
 - one isolated folder;
 - exactly one saved Look identified as `look:<numeric-id>`;
 - no production content or users in the mutation scope.

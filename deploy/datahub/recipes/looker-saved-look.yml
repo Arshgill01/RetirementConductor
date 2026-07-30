@@ -60,3 +60,5 @@ sink:
   config:
     server: ${DATAHUB_GMS_URL}
     token: ${DATAHUB_GMS_TOKEN}
+    # Wait for each write; the entity reread remains the evidence authority.
+    mode: SYNC

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from datahub.ingestion.sink.datahub_rest import RestSinkMode
 
 ROOT = Path(__file__).resolve().parents[1]
 RECIPES = {
@@ -32,7 +33,6 @@ SYNTHETIC_VALUES = {
     "LOOKER_BASE_URL": "https://looker.example.invalid",
     "LOOKER_CLIENT_ID": "phase06-synthetic-client",
     "LOOKER_CLIENT_SECRET": "phase06-synthetic-client-secret",
-    "LOOKER_CONNECTION_NAME": "retirement_disposable",
     "LOOKER_CONTENT_ID_PATTERN": "^41$",
     "LOOKER_FOLDER_PATH_PATTERN": "^/Shared/Retirement Conductor$",
     "LOOKER_PLATFORM_INSTANCE": "retirement-disposable",
@@ -111,7 +111,7 @@ def _validate_lookml(config: dict[str, Any]) -> None:
         "LookML connection map",
     )
     _require(
-        set(connection_map) == {"retirement_disposable"},
+        set(connection_map) == {"retirement_fixture"},
         "LookML recipe must map one exact connection",
     )
     stateful = _mapping(config["stateful_ingestion"], "LookML stateful config")
@@ -143,7 +143,11 @@ def run() -> int:
         source_config = _mapping(source.get("config"), f"{filename} source config")
         sink_config = _mapping(sink.get("config"), f"{filename} sink config")
         _load_model(module_name, class_name).model_validate(source_config)
-        sink_model.model_validate(sink_config)
+        parsed_sink = sink_model.model_validate(sink_config)
+        _require(
+            parsed_sink.mode == RestSinkMode.SYNC,
+            f"{filename} sink must report only after durable writes",
+        )
         if source_type == "looker":
             _validate_saved_look(source_config)
         else:

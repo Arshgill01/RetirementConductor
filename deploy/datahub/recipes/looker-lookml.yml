@@ -16,8 +16,10 @@ source:
     emit_reachable_views_only: true
     use_api_for_view_lineage: false
 
+    # DataHub expands environment references in values, not mapping keys.
+    # The disposable LookML project therefore uses this fixed exact connection.
     connection_to_platform_map:
-      ${LOOKER_CONNECTION_NAME}:
+      retirement_fixture:
         platform: ${LOOKER_WAREHOUSE_PLATFORM}
         default_db: ${LOOKER_WAREHOUSE_DATABASE}
         default_schema: ${LOOKER_WAREHOUSE_SCHEMA}
@@ -34,3 +36,5 @@ sink:
   config:
     server: ${DATAHUB_GMS_URL}
     token: ${DATAHUB_GMS_TOKEN}
+    # Wait for each write; the entity reread remains the evidence authority.
+    mode: SYNC

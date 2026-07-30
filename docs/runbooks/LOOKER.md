@@ -31,7 +31,10 @@ make phase06-recipes
 ```
 
 The public LookML fixture under `fixtures/looker-lookml-project/` is parsing
-input only. It never connects to or queries a warehouse.
+input only. It never connects to or queries a warehouse. The model and the
+disposable live project must use the exact connection name
+`retirement_fixture`: DataHub 1.6.0 expands environment references in values,
+but not in `connection_to_platform_map` keys.
 
 ## Generate the no-secret access packet
 
@@ -75,9 +78,11 @@ uv run --python 3.11 \
 
 The saved-content recipe excludes dashboards, uses one anchored numeric Look
 ID and one anchored shared-folder path, runs one worker, emits column lineage,
-and disables usage queries and embed URLs. Inspect every ingestion report and
-the resulting DataHub entity. A zero-result ingestion is not proof that the
-consumer is absent.
+and disables usage queries and embed URLs. Both recipes use a synchronous sink
+so command completion waits for each DataHub write. DataHub 1.6.0 can still
+emit contradictory source and sink counters, so inspect every ingestion
+report and reread the resulting entity and lineage aspects. A zero-result
+ingestion is not proof that the consumer is absent.
 
 Resolve `LOOKER_DATAHUB_URN` from exact live search and set
 `LOOKER_GRAPH_SNAPSHOT_DIGEST` only from the fresh fully paged campaign

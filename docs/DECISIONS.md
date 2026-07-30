@@ -372,7 +372,8 @@ systems.
 
 ## D-028 — Looker ingestion uses separate API and LookML recipes
 
-Status: accepted for DataHub 1.6.0 configuration; live ingestion pending.
+Status: accepted from DataHub 1.6.0 configuration and local fixture parsing;
+live saved-content ingestion pending.
 
 Use the official DataHub `looker` source for one anchored saved Look and the
 official `lookml` source for its local project and column lineage. The API
@@ -380,7 +381,9 @@ recipe excludes dashboards, personal folders, usage history, and embed URLs,
 uses one worker, and keeps stateful ingestion enabled for the disposable
 delete/recreate probe. The LookML recipe uses an explicit local project and
 connection-to-platform map with partial lineage disabled; it does not request
-an admin API credential for view lineage.
+an admin API credential for view lineage. Its narrow disposable contract fixes
+the connection key to `retirement_fixture`, because the pinned DataHub runtime
+expands environment references in values but not mapping keys.
 
 During reconciliation, query the legacy and replacement fields separately.
 Recognize a field edge only when the exact consumer URN has a matching

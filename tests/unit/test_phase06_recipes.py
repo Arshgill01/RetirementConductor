@@ -47,6 +47,7 @@ def test_saved_look_recipe_is_secret_referenced_and_exactly_scoped() -> None:
         "config": {
             "server": "${DATAHUB_GMS_URL}",
             "token": "${DATAHUB_GMS_TOKEN}",
+            "mode": "SYNC",
         },
     }
 
@@ -66,7 +67,7 @@ def test_lookml_recipe_is_local_exact_and_fails_closed_on_partial_lineage() -> N
     assert config["allow_partial_lineage_results"] is False
     assert config["use_api_for_view_lineage"] is False
     assert config["connection_to_platform_map"] == {
-        "${LOOKER_CONNECTION_NAME}": {
+        "retirement_fixture": {
             "platform": "${LOOKER_WAREHOUSE_PLATFORM}",
             "default_db": "${LOOKER_WAREHOUSE_DATABASE}",
             "default_schema": "${LOOKER_WAREHOUSE_SCHEMA}",
@@ -74,3 +75,19 @@ def test_lookml_recipe_is_local_exact_and_fails_closed_on_partial_lineage() -> N
             "platform_env": "PROD",
         }
     }
+    sink = recipe["sink"]
+    assert isinstance(sink, dict)
+    assert sink["config"] == {
+        "server": "${DATAHUB_GMS_URL}",
+        "token": "${DATAHUB_GMS_TOKEN}",
+        "mode": "SYNC",
+    }
+
+
+def test_lookml_fixture_binds_manifest_and_disposable_connection() -> None:
+    fixture = ROOT / "fixtures/looker-lookml-project"
+    assert (fixture / "manifest.lkml").read_text(encoding="utf-8") == (
+        'project_name: "retirement_conductor"\n'
+    )
+    model = (fixture / "retirement.model.lkml").read_text(encoding="utf-8")
+    assert model.startswith('connection: "retirement_fixture"\n')
