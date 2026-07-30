@@ -11,7 +11,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from retirement_conductor.canonical import canonical_json, digest_json
+from retirement_conductor.canonical import (
+    canonical_json,
+    digest_json,
+    verify_digest,
+    with_digest,
+)
 from retirement_conductor.errors import Refusal
 from retirement_conductor.events import (
     CampaignProjection,
@@ -33,7 +38,7 @@ FaultInjector = Callable[[str], None]
 class CampaignStore:
     """The one supported single-writer SQLite campaign database."""
 
-    SCHEMA_VERSION = 1
+    SCHEMA_VERSION = 2
 
     def __init__(self, path: Path, *, writer_id: str) -> None:
         self.path = path.resolve()
@@ -144,6 +149,285 @@ class CampaignStore:
                 "SELECT version FROM schema_migrations ORDER BY version"
             )
         ]
+
+    def gate_attempts(self, campaign_id: str) -> list[dict[str, Any]]:
+        """Read and integrity-check the append-oriented producer gate ledger."""
+
+        rows = self.connection.execute(
+            """
+            SELECT status, attempt_json, outcome_json
+            FROM gate_attempts
+            WHERE campaign_id = ?
+            ORDER BY recorded_at, attempt_id
+            """,
+            (campaign_id,),
+        ).fetchall()
+        attempts: list[dict[str, Any]] = []
+        for row in rows:
+            attempt = json.loads(str(row["attempt_json"]))
+            verify_digest(attempt, "attempt_digest")
+            entry = {
+                "status": str(row["status"]),
+                "attempt": attempt,
+                "outcome": None,
+            }
+            outcome_text = row["outcome_json"]
+            if outcome_text is not None:
+                outcome = json.loads(str(outcome_text))
+                verify_digest(outcome, "outcome_digest")
+                entry["outcome"] = outcome
+            attempts.append(entry)
+        return attempts
+
+    def record_gate_refusal(
+        self,
+        campaign_id: str,
+        *,
+        manifest_digest: str,
+        decision: str,
+        refusal_code: str,
+        recorded_at: str,
+        plan_digest: str | None = None,
+        trusted_run_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Record a non-consuming gate refusal against the exact manifest."""
+
+        identity = digest_json(
+            {
+                "campaign_id": campaign_id,
+                "manifest_digest": manifest_digest,
+                "decision": decision,
+                "plan_digest": plan_digest,
+                "trusted_run_id": trusted_run_id,
+                "refusal_code": refusal_code,
+                "recorded_at": recorded_at,
+                "writer_id": self.writer_id,
+            }
+        ).removeprefix("sha256:")[:24]
+        attempt = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "attempt_id": f"gate-refusal-{identity}",
+                "campaign_id": campaign_id,
+                "status": "REFUSED",
+                "manifest_digest": manifest_digest,
+                "decision": decision,
+                "plan_digest": plan_digest,
+                "trusted_run_id": trusted_run_id,
+                "writer_id": self.writer_id,
+                "refusal_code": refusal_code,
+                "recorded_at": recorded_at,
+            },
+            "attempt_digest",
+        )
+        self._insert_gate_attempt(attempt)
+        return attempt
+
+    def claim_gate_plan(
+        self,
+        campaign_id: str,
+        *,
+        manifest_digest: str,
+        decision: str,
+        plan_digest: str,
+        trusted_run_id: str,
+        recorded_at: str,
+    ) -> dict[str, Any]:
+        """Durably consume one exact producer plan before its action."""
+
+        intent_identity = digest_json(
+            [campaign_id, plan_digest, trusted_run_id]
+        ).removeprefix("sha256:")[:24]
+        attempt = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "attempt_id": f"gate-intent-{intent_identity}",
+                "campaign_id": campaign_id,
+                "status": "INTENT_RECORDED",
+                "manifest_digest": manifest_digest,
+                "decision": decision,
+                "plan_digest": plan_digest,
+                "trusted_run_id": trusted_run_id,
+                "writer_id": self.writer_id,
+                "refusal_code": None,
+                "recorded_at": recorded_at,
+            },
+            "attempt_digest",
+        )
+        try:
+            self._insert_gate_attempt(attempt, allow_existing=False)
+        except sqlite3.IntegrityError as exc:
+            consumed = self.connection.execute(
+                """
+                SELECT status, attempt_id
+                FROM gate_attempts
+                WHERE plan_digest = ?
+                  AND status IN (
+                    'INTENT_RECORDED',
+                    'EXECUTED',
+                    'OUTCOME_UNKNOWN'
+                  )
+                """,
+                (plan_digest,),
+            ).fetchone()
+            if consumed is not None:
+                raise Refusal(
+                    RefusalCode.GATE_PLAN_REPLAYED,
+                    "The exact producer plan was already consumed by a gate attempt.",
+                    {
+                        "status": consumed["status"],
+                        "attempt_id": consumed["attempt_id"],
+                    },
+                ) from exc
+            raise
+        return attempt
+
+    def complete_gate_attempt(
+        self,
+        attempt_id: str,
+        *,
+        sentinel_digest: str,
+        executed_at: str,
+    ) -> dict[str, Any]:
+        """Record the exact successful action after a durable intent."""
+
+        outcome = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "attempt_id": attempt_id,
+                "result": "EXECUTED",
+                "sentinel_digest": sentinel_digest,
+                "executed_at": executed_at,
+            },
+            "outcome_digest",
+        )
+        self._finish_gate_attempt(
+            attempt_id,
+            status="EXECUTED",
+            outcome=outcome,
+        )
+        return outcome
+
+    def mark_gate_outcome_unknown(
+        self,
+        attempt_id: str,
+        *,
+        error_type: str,
+        observed_at: str,
+    ) -> dict[str, Any]:
+        """Make an interrupted producer action permanently non-retriable."""
+
+        outcome = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "attempt_id": attempt_id,
+                "result": "OUTCOME_UNKNOWN",
+                "error_type": error_type,
+                "observed_at": observed_at,
+            },
+            "outcome_digest",
+        )
+        self._finish_gate_attempt(
+            attempt_id,
+            status="OUTCOME_UNKNOWN",
+            outcome=outcome,
+        )
+        return outcome
+
+    def _insert_gate_attempt(
+        self,
+        attempt: Mapping[str, Any],
+        *,
+        allow_existing: bool = True,
+    ) -> None:
+        verify_digest(dict(attempt), "attempt_digest")
+        with self._write_lock(), self.connection:
+            existing = self.connection.execute(
+                "SELECT attempt_json FROM gate_attempts WHERE attempt_id = ?",
+                (attempt["attempt_id"],),
+            ).fetchone()
+            if existing is not None:
+                if not allow_existing:
+                    raise Refusal(
+                        RefusalCode.GATE_PLAN_REPLAYED,
+                        "The exact producer plan was already consumed by "
+                        "a gate attempt.",
+                    )
+                if json.loads(str(existing["attempt_json"])) != dict(attempt):
+                    raise Refusal(
+                        RefusalCode.INTEGRITY_IDEMPOTENCY_CONFLICT,
+                        "A gate attempt identity was reused for different content.",
+                    )
+                return
+            self.connection.execute(
+                """
+                INSERT INTO gate_attempts(
+                    attempt_id,
+                    campaign_id,
+                    recorded_at,
+                    status,
+                    manifest_digest,
+                    decision,
+                    plan_digest,
+                    trusted_run_id,
+                    writer_id,
+                    refusal_code,
+                    attempt_json,
+                    attempt_digest
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    attempt["attempt_id"],
+                    attempt["campaign_id"],
+                    attempt["recorded_at"],
+                    attempt["status"],
+                    attempt["manifest_digest"],
+                    attempt["decision"],
+                    attempt["plan_digest"],
+                    attempt["trusted_run_id"],
+                    attempt["writer_id"],
+                    attempt["refusal_code"],
+                    canonical_json(attempt),
+                    attempt["attempt_digest"],
+                ),
+            )
+
+    def _finish_gate_attempt(
+        self,
+        attempt_id: str,
+        *,
+        status: str,
+        outcome: Mapping[str, Any],
+    ) -> None:
+        verify_digest(dict(outcome), "outcome_digest")
+        with self._write_lock(), self.connection:
+            row = self.connection.execute(
+                "SELECT status FROM gate_attempts WHERE attempt_id = ?",
+                (attempt_id,),
+            ).fetchone()
+            if row is None or row["status"] != "INTENT_RECORDED":
+                raise Refusal(
+                    RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                    "The gate action has no current durable intent to finish.",
+                )
+            updated = self.connection.execute(
+                """
+                UPDATE gate_attempts
+                SET status = ?, outcome_json = ?, outcome_digest = ?
+                WHERE attempt_id = ? AND status = 'INTENT_RECORDED'
+                """,
+                (
+                    status,
+                    canonical_json(outcome),
+                    outcome["outcome_digest"],
+                    attempt_id,
+                ),
+            )
+            if updated.rowcount != 1:
+                raise Refusal(
+                    RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                    "The gate action intent changed before completion.",
+                )
 
     def _event_rows(self, campaign_id: str) -> list[sqlite3.Row]:
         rows = self.connection.execute(

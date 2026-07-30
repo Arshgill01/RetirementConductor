@@ -187,7 +187,7 @@ def test_schema_migration_and_replay_match_materialized_manifest(
     tmp_path: Path,
 ) -> None:
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
-        assert store.schema_versions() == [1]
+        assert store.schema_versions() == [1, 2]
         create_and_inventory(store)
 
         materialized = store.materialize(CAMPAIGN_ID)
@@ -195,6 +195,107 @@ def test_schema_migration_and_replay_match_materialized_manifest(
 
         assert materialized == replayed
         assert materialized["manifest_digest"] == replayed["manifest_digest"]
+
+
+def test_gate_ledger_consumes_plan_before_action_and_refuses_replay(
+    tmp_path: Path,
+) -> None:
+    plan_digest = f"sha256:{'4' * 64}"
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        manifest = store.materialize(CAMPAIGN_ID)
+        intent = store.claim_gate_plan(
+            CAMPAIGN_ID,
+            manifest_digest=manifest["manifest_digest"],
+            decision=manifest["decision"],
+            plan_digest=plan_digest,
+            trusted_run_id="trusted-run-one",
+            recorded_at="2026-01-01T11:00:00Z",
+        )
+
+        with pytest.raises(Refusal, match="GATE_PLAN_REPLAYED"):
+            store.claim_gate_plan(
+                CAMPAIGN_ID,
+                manifest_digest=manifest["manifest_digest"],
+                decision=manifest["decision"],
+                plan_digest=plan_digest,
+                trusted_run_id="trusted-run-one",
+                recorded_at="2026-01-01T11:00:00Z",
+            )
+
+        outcome = store.complete_gate_attempt(
+            intent["attempt_id"],
+            sentinel_digest=f"sha256:{'5' * 64}",
+            executed_at="2026-01-01T11:00:01Z",
+        )
+        ledger = store.gate_attempts(CAMPAIGN_ID)
+
+        assert ledger == [
+            {
+                "status": "EXECUTED",
+                "attempt": intent,
+                "outcome": outcome,
+            }
+        ]
+        with pytest.raises(Refusal, match="GATE_ACTION_OUTCOME_UNKNOWN"):
+            store.complete_gate_attempt(
+                intent["attempt_id"],
+                sentinel_digest=f"sha256:{'5' * 64}",
+                executed_at="2026-01-01T11:00:02Z",
+            )
+
+
+def test_gate_refusal_does_not_consume_plan_and_unknown_outcome_does(
+    tmp_path: Path,
+) -> None:
+    plan_digest = f"sha256:{'4' * 64}"
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        manifest = store.materialize(CAMPAIGN_ID)
+        refusal = store.record_gate_refusal(
+            CAMPAIGN_ID,
+            manifest_digest=manifest["manifest_digest"],
+            decision=manifest["decision"],
+            plan_digest=plan_digest,
+            trusted_run_id="untrusted-run",
+            refusal_code="GATE_PROVENANCE_UNTRUSTED",
+            recorded_at="2026-01-01T11:00:00Z",
+        )
+        intent = store.claim_gate_plan(
+            CAMPAIGN_ID,
+            manifest_digest=manifest["manifest_digest"],
+            decision=manifest["decision"],
+            plan_digest=plan_digest,
+            trusted_run_id="trusted-run-one",
+            recorded_at="2026-01-01T11:00:01Z",
+        )
+        unknown = store.mark_gate_outcome_unknown(
+            intent["attempt_id"],
+            error_type="OSError",
+            observed_at="2026-01-01T11:00:02Z",
+        )
+
+        assert store.gate_attempts(CAMPAIGN_ID) == [
+            {
+                "status": "REFUSED",
+                "attempt": refusal,
+                "outcome": None,
+            },
+            {
+                "status": "OUTCOME_UNKNOWN",
+                "attempt": intent,
+                "outcome": unknown,
+            },
+        ]
+        with pytest.raises(Refusal, match="GATE_PLAN_REPLAYED"):
+            store.claim_gate_plan(
+                CAMPAIGN_ID,
+                manifest_digest=manifest["manifest_digest"],
+                decision=manifest["decision"],
+                plan_digest=plan_digest,
+                trusted_run_id="trusted-run-two",
+                recorded_at="2026-01-01T11:00:03Z",
+            )
 
 
 def test_fresh_inventory_can_replace_pre_migration_baseline(
