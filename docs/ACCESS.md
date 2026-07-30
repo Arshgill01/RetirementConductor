@@ -276,7 +276,7 @@ Phase 08 requires a real prospective operator because code cannot establish
 workflow frequency, organizational friction, willingness to adopt, or buyer
 value.
 
-The agent must first provide:
+The repository now provides:
 
 - a clean install path;
 - a public-safe reference campaign;
@@ -284,10 +284,60 @@ The agent must first provide:
 - local opt-in measurements;
 - a no-sensitive-data observation template.
 
-Then the user supplies one operator willing to run or observe the safe
-workflow and answer the questions in `docs/OPEN_QUESTIONS.md`. Synthetic
-personas, model critique, repository activity, and author self-review do not
-satisfy this boundary.
+The remaining human input is one prospective operator independent of the
+implementation author who is willing to execute the safe workflow and answer
+the questions in `docs/OPEN_QUESTIONS.md`. Use
+`docs/EVALUATION.md` and
+`docs/templates/OPERATOR_OBSERVATION.md`; retain private notes only under an
+ignored, access-controlled local path. Synthetic personas, model critique,
+repository activity, author self-review, and the installed reference harness
+do not satisfy this boundary.
+
+## Current no-secret access request
+
+All safe credential-independent work is complete. Two inputs remain:
+
+1. one user-approved pre-existing disposable Looker instance or allocated
+   zero-cost trial containing exactly the objects and least-privilege roles
+   named above; and
+2. one independent prospective operator with a recent field-replacement or
+   retirement baseline.
+
+Do not send credentials, endpoint values, private object names, source
+content, or raw operator notes in chat. Place Looker values only in the
+ignored `.env.local` names listed by
+`.retirement-conductor/looker-access/access-request.md`. Keep
+`LOOKER_ALLOW_APPLY=false`. Store raw operator notes under
+`.retirement-conductor/operator-evaluation/` and promote only an inspected,
+redacted observation.
+
+Before resuming Looker work, the read-only safety verification is:
+
+```bash
+.retirement-conductor/looker-access/verify_zero_cost.sh
+```
+
+It must still report zero-cost controls and `PROVISIONING_ALLOWED=false`.
+This command does not authorize instance creation, IAM changes, queries,
+tables, quota changes, or paid resources.
+
+After the approved instance and ignored values exist, the exact resume
+command is:
+
+```bash
+retirement-conductor adapter looker preflight \
+  --campaign ret-orders-looker-live
+```
+
+Authentication does not authorize plan or apply. Ingestion, exact DataHub
+identity derivation, plan review, and any later apply authorization remain
+separate steps in `docs/runbooks/LOOKER.md`.
+
+The independent operator may run in parallel against the already supported
+Core/Git/dbt evaluation boundary. Record frequency, prior and observed time,
+steps, handoffs, author interventions, friction, value, willingness,
+rejection reasons, and buyer role. No production mutation or secret is
+required for that observation.
 
 ## Exact request protocol
 

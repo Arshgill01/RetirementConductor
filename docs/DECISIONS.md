@@ -448,7 +448,7 @@ authority would bypass the deterministic campaign contract.
 
 ## D-032 — ship the CLI as a wheel before adding a product container
 
-Status: accepted for the Phase 08 deployment boundary.
+Status: accepted from inspected Phase 08 package and reference evidence.
 
 Version the installable Python package independently of campaign and evidence
 schema versions. Include the strict schemas, deterministic reference data, and
@@ -467,9 +467,14 @@ single-process product. Containerization remains available when an adopter
 demonstrates a deployment requirement rather than as an untested packaging
 claim.
 
+The 0.2.0 wheel installed without source-checkout imports on CPython 3.11
+through 3.14. The complete disposable Core/Git/dbt reference then used the
+installed entry point for every product operation. No operator evidence has
+yet justified adding a product container.
+
 ## D-033 — state removal is separately planned and digest-confirmed
 
-Status: accepted from deterministic Phase 08 removal tests.
+Status: accepted from installed-package Phase 08 removal tests.
 
 Treat application-state removal as a destructive operation distinct from
 uninstalling the Python package. Generate a non-authoritative ignored plan
@@ -485,6 +490,12 @@ runners and retain a verified backup when recovery may be needed.
 Why: a broad recursive uninstall is unnecessarily destructive, while package
 removal alone can mislead an operator into believing sensitive campaign state
 was deleted.
+
+The clean-install acceptance run proved that missing confirmation refuses
+with `AUTH_APPROVAL_MISSING`, a byte-valid copied store refuses with
+`RUNTIME_WRITER_MISMATCH` before lock creation or database change, exact
+confirmation removes only planned state, the ignored plan remains, and
+package-manager uninstall removes the console entry point separately.
 
 ## D-034 — complete DataHub lineage inventory bypasses the graph cache
 
@@ -525,7 +536,7 @@ verification would manufacture publication evidence.
 
 ## D-036 — keep release inputs separate from operational evidence
 
-Status: accepted for the Phase 08 package boundary.
+Status: accepted from inspected Phase 08 package evidence.
 
 Build the source archive from an explicit allowlist of runtime source,
 wheel-required fixtures, schemas, package metadata, and stable operator
@@ -539,3 +550,7 @@ change the package digest recursively, while unrelated operational updates
 would change a release without changing its runtime. The explicit archive
 boundary keeps the artifact reproducible, reviewable, and independent of its
 acceptance record.
+
+The resulting source archive contained 72 reviewed members, excluded
+operational and acceptance state, reproduced byte-for-byte, and rebuilt the
+63-member release wheel byte-for-byte.

@@ -44,7 +44,7 @@ the produced artifacts have been inspected.
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
 | EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
 | EP-007 | 07 | live and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | access-dependent | credential-independent fixture and analysis checks passed; live Looker-specific checks depend on EP-006 |
-| EP-008 | 08 | live and operator | not-run | clean install, upgrade, reference run, and independent operation | not-run | independent operator required |
+| EP-008 | 08 | live and operator | `ded94f6` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | access-dependent | credential-independent checks passed; independent operator result remains `NOT_RUN` |
 
 ### Phase 06 pre-acceptance observations
 
@@ -308,6 +308,179 @@ schema versions, copied-store preflight order, unhealthy diagnostic signal,
 package/version/license findings, vulnerability counts, scan limitations,
 live-boundary wording, tracked public content, secret-scan result, and
 generated whitespace.
+
+### Phase 08 credential-independent observations
+
+These observations cover every Phase 08 acceptance task that can run without
+a live Looker instance or another human. They do not complete `EP-008`: its
+required independent operator and customer-value mode remains `NOT_RUN`.
+
+Evidence ID: EP-008 (credential-independent portion)
+
+Requirement IDs: RC-017; preparation and an explicit unsatisfied boundary for
+RC-018
+
+Repository behavior and tested commit:
+`ded94f6b1ea2d11e9ee63f2dc8c0765edd5cfec9`
+
+Tracked evidence commit:
+`a880d2f`
+
+Captured at: `2026-07-30T18:00:41.223212Z`
+
+Mode: live for the disposable loopback DataHub Core, MCP, Git, dbt, DuckDB,
+publication, and producer-sentinel path; fixture for built-in reference,
+clean-install state, upgrade, rollback, removal, and copied-state behavior;
+analysis for package inspection, compatibility, documentation, and the
+operator boundary. No independent operator result or live Looker result is
+claimed.
+
+Source and tool versions: Retirement Conductor 0.2.0; Linux x86_64 with glibc
+2.43; CPython 3.11.15, 3.12.13, 3.13.14, and 3.14.4; uv 0.11.28; Git 2.53.0;
+bubblewrap 0.11.1; Docker client 29.1.3; dbt-core 1.12.0; dbt-duckdb 1.10.1;
+DuckDB 1.5.5; DataHub GMS v1.6.0 image
+`sha256:672bceed7f36f751ab3302c30826c6ba124d1c0fd8d24c3724e725078b864018`;
+and MCP 0.6.0 at clean source commit
+`9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9`.
+
+Command or operator action:
+
+```text
+make check
+make package
+make test-install
+make test-upgrade
+make test-reference-campaign
+git diff --check
+make phase08-evidence
+```
+
+Expected result: one reviewable release installs without source-checkout
+imports; missing configuration names its exact references without values; the
+built-in fixture remains blocked; the installed product completes the
+Core/Git/dbt path; upgrade and backup-based rollback preserve the campaign;
+copied state refuses; removal requires exact confirmation and remains separate
+from package uninstall; compatibility and optional boundaries are labeled
+honestly; local metrics have no implicit or remote collection; and no
+independent-operation claim is made without a real operator.
+
+Observed package and install result: the 0.2.0 wheel contained 63 members and
+had digest
+`sha256:5d644d8776701eb410d60279beb482f0bc3e36274023d143f7dfdff4d36766a7`.
+The 72-member source archive had digest
+`sha256:8d4896c63f81b5d374ac5185f79191edff56409fd082c730728eccf27073f2e1`,
+excluded operational status, evidence, tests, scripts, and runtime state,
+reproduced byte-for-byte, and rebuilt the wheel byte-for-byte. Runtime
+requirements were hash-bound; a CycloneDX 1.5 SBOM and checksum manifest were
+inspected. The package remains unsigned, and the evidence says so.
+
+Four clean virtual environments imported only their installed wheels. Each
+reported the five missing Core/Git/dbt configuration references under
+`RUNTIME_CONFIGURATION_INCOMPLETE`, reproduced the same built-in reference
+manifest
+`sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3`,
+and kept it `BLOCKED` with `EVIDENCE_MODE_NOT_LIVE`. The Python 3.11 removal
+run rejected a byte-valid copied store with `RUNTIME_WRITER_MISMATCH` before
+creating a lock or changing the copy, rejected unconfirmed deletion with
+`AUTH_APPROVAL_MISSING`, removed only the exact confirmed state, retained the
+ignored plan, then removed the console entry point through the package
+manager.
+
+Observed lifecycle result: upgrading the package from 0.1.0 at
+`30173f160c3c87a8daf0a3c1988c7ccde10662ec` to 0.2.0 advanced schema versions
+from `[1]` to `[1, 2, 3]` without changing manifest
+`sha256:cc3400464ed98cd6afed3a1e5e1ccd0d8cc157b5872473b4ebe06cc2cf1d02d7`.
+The verified pre-upgrade database plus prior wheel restored that same
+manifest and byte-identical prior database; in-place downgrade remained
+explicitly unsupported.
+
+Observed live reference result: installed deployment preflight passed the
+`core-git-dbt` profile with one writer, all five named references, Git,
+bubblewrap, Docker, and dbt present. Local metrics were explicitly opted in
+for the test while `remote_export` remained false. DataHub Core and MCP were
+healthy on loopback. All 34 product operations used the installed wheel and
+zero used the source checkout. Native dbt parse, seed, build, and semantic
+test passed. The isolated one-consumer campaign reached
+`READY_TO_RETIRE`, verified its publication read-back, and wrote exactly one
+producer sentinel. A late second consumer reopened it to `UNSAFE`; the
+31-consumer rich graph remained `UNSAFE` and the producer gate refused with
+`GATE_DECISION_NOT_READY`. The gate ledger recorded one executed and 12
+refused attempts.
+
+The final tracked-evidence check passed 228 tests, Ruff, formatting, strict
+mypy, 164-file repository validation, a 294-file secret scan, a 53-file
+public-artifact review, source and wheel builds, and `git diff --check`.
+
+Refusal cases: missing deployment configuration
+(`RUNTIME_CONFIGURATION_INCOMPLETE`); fixture policy
+(`EVIDENCE_MODE_NOT_LIVE`); copied deployment state
+(`RUNTIME_WRITER_MISMATCH`); removal without exact digest confirmation
+(`AUTH_APPROVAL_MISSING`); late and opaque consumers (`UNSAFE`); and producer
+gate refusal (`GATE_DECISION_NOT_READY`). The operator artifact returns
+`NOT_RUN` and `NOT_SATISFIED`, rather than a synthetic pass.
+
+Tracked artifact paths:
+`artifacts/public/phase08/package-evidence.json`,
+`artifacts/public/phase08/install-evidence.json`,
+`artifacts/public/phase08/upgrade-evidence.json`,
+`artifacts/public/phase08/reference-evidence.json`,
+`artifacts/public/phase08/compatibility-evidence.json`,
+`artifacts/public/phase08/operator-boundary.json`, and
+`artifacts/public/phase08/phase08-preacceptance-evidence.json`. Their file
+SHA-256 digests are, respectively,
+`31305500c1ab200f97672ec910a542397df586fe5e831e022bc3a34c5972a23f`,
+`1f40994451784b34afed9ac9d6ee996efe082de9c75be7cd18bc46477dbbea6b`,
+`853347b5fcd8ec7e1c6ba55f3158e4d2b7f6802a2fe4b57d9997df9b2be58dbf`,
+`9d2a65c81f43aed055f509a55f351334092f8cfc21d5e4476f533bf4cb4ad441`,
+`73f07d75f1266ab12dfa0625018c494ab8b32063d5f32b2a2ba6fa5a29d54b88`,
+`04510ead7fd610c0535371114d5c65af6ac41dcf15bda61ea7a2735c52d7a292`,
+and
+`969a9e47d177c656b7e4d8edc8317226d9085777a0e927e89319e2c821e47c42`.
+The canonical phase pre-acceptance digest is
+`sha256:72e3a157b85246baaebde6b3b629648b13db6856762bb7649ab2377991bde249`.
+
+Private artifact digests: the ignored raw package, install, upgrade, and
+reference files had SHA-256 digests
+`79e126e19cafbcf9899dcdd1bfd0646350c400efb950455c732a2c4e612c4ddd`,
+`c75f12e9cd3b58c36e1e709233ba5481cc7cc0f86ec36f8786667afb3b409431`,
+`eb419c3384dae9f7abef2f4c2d323b66b867bad15cd27cb0a9388599337a73c8`,
+and
+`e1ef50892e5811926ae23070b3efe9412e99a98d402a7041bf87922edaf908d4`.
+Their canonical artifact digests were
+`sha256:42755744033df01244e99cea0557f8bef0fa26f1564ea38339051c8ad5d7a646`,
+`sha256:41be0767378cdeca9dd9ee680c76c0ba6548eebed4acddc714919150a775299e`,
+`sha256:22f163dcaab195425a6b2b9983e61baee68c0ea2088d334be6aa02daa3bf523f`,
+and
+`sha256:6cfa4a81e52acfc6c6ebb0d80ce6a9064ca0b54172dbef247b608718806baf44`.
+Raw clean-environment directories, campaign databases, backups, native
+content, and command logs were removed or retained only under ignored local
+state.
+
+What this proves: another clean Python environment can install the bounded
+single-writer product artifact, diagnose missing configuration, reproduce the
+fixture decision, execute the complete first vertical against disposable
+live Core through the installed entry point, preserve and restore campaign
+state across an upgrade, refuse copied authority, and remove only confirmed
+state. The repository now supplies an executed compatibility boundary and a
+complete independent-evaluation protocol.
+
+What this does not prove: an independent person can operate the runbook; that
+the workflow is frequent or valuable enough to adopt; a buyer exists;
+DataHub Cloud behavior; macOS, Windows, musl, shared-state, or product
+container support; signed release provenance; or any live Looker identity,
+mutation, native validation, compensation, ingestion, or failure behavior.
+Phase 08 and `EP-008` therefore remain access-dependent.
+
+Reviewer inspection: verified every raw and public canonical digest and file
+digest; compared one package identity across all four receipts; listed the
+wheel and source archive; checked source-archive exclusions and rebuild;
+inspected all Python versions, isolated imports, missing-reference names,
+fixture digests, schema versions, manifest parity, backup digests,
+copied-state ordering, removal receipt, package uninstall, service health and
+identity, installed/source operation counts, native validator result,
+publication settle attempts, gate counts, all decisions and refusals, local
+metrics boundary, executed/not-executed compatibility rows, operator
+`NOT_RUN` state, repository validation, and public/secret scans.
 
 ## Entry completion checklist
 

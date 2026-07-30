@@ -7,18 +7,20 @@ contract; `PLAN.md` defines proof order.
 ## Current state
 
 - Execution state: active
-- Active phase: 08
+- Active phase: none; phases 06 through 08 are access-dependent
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
-- Current external blocker: none
-- Next acceptance target: complete and inspect every credential-independent
-  phase 08 package, clean-install, preflight, reference-campaign, upgrade,
-  rollback, backup, removal, compatibility, and single-writer case before
-  requesting the remaining live Looker and independent-operator boundaries
-- Last repository validation: phase 07 behavior commit `4fc5b2d` passed
-  217 tests under `make check`; focused security, fault, and recovery targets
-  passed 93, 72, and 43 tests; the security scan audited 18 resolved packages
-  with zero known vulnerabilities; canonical recovery and capability evidence
-  was inspected and committed at `6feb1bc`
+- Current external blocker: the live disposable Looker boundary needed by
+  `EP-006`/the Looker-specific portion of `EP-007`, and one real independent
+  operator needed by `EP-008`; all safe credential-independent work is
+  complete
+- Next acceptance target: run the generated no-secret Looker preflight against
+  one user-approved pre-existing disposable instance and record one
+  independent operator using the published Core evaluation workflow
+- Last repository validation: behavior commit `ded94f6` passed all 228 tests,
+  Ruff, formatting, strict mypy, repository validation, secret and public
+  artifact scans, both package builds, and `git diff --check`; the complete
+  Phase 08 command set then passed, and seven inspected public-safe artifacts
+  were committed at `a880d2f`
 
 ## Phase ledger
 
@@ -32,7 +34,7 @@ contract; `PLAN.md` defines proof order.
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
 | 06 | access-dependent | `00db298`, `3435177`, `5454594`, `a57b06e`, `e6183d1`, `9380815`, and `e128e20`; deterministic API 4.0 lifecycle, durable intent recovery, campaign binding, exact LookML ingestion into local DataHub, official recipe validation, no-secret access packet, reconciliation, and an inspected non-live evidence bundle; 188 tests pass | one pre-existing user-approved disposable Looker instance/API plus live saved-Look ingestion, native query, compensation, delete/recreate, and lost-response evidence; fixture and local LookML results do not satisfy `EP-006` |
 | 07 | access-dependent | credential-independent EP-007 observations at `4fc5b2d`/`6feb1bc`; threat model, plan-only receipts, fault matrix, online backup/restore, copied-store refusal, diagnostics, dependency audit, secret scan, and five inspected public artifacts | phase 07 cannot close until EP-006 supplies live Looker permission, fault, retry, unknown-outcome, compensation, and concurrency evidence |
-| 08 | active | phase contract under implementation | finish every clean-machine and deployment task; independent operation and value evidence then require a real prospective operator |
+| 08 | access-dependent | credential-independent EP-008 observations at `ded94f6`/`a880d2f`; reproducible 0.2.0 wheel/source archive, four clean Python installs, actionable preflight, live installed-wheel Core reference, upgrade/rollback, backup, copied-state refusal, confirmed state removal, uninstall, compatibility matrix, and seven inspected public artifacts | one independent prospective operator must execute the runbook and provide redacted frequency, friction, value, willingness, and buyer evidence; `EP-008` remains not-run |
 
 Allowed states are `queued`, `active`, `access-dependent`, `blocked`,
 `complete`, and `reframed`. At most one phase is `active`. A phase can return
@@ -44,11 +46,12 @@ to `active` if later evidence invalidates its acceptance result.
 |---|---|---|---|
 | DataHub Core | no | agent may start a disposable local instance | `docs/ACCESS.md` |
 | Git/dbt target | no | agent may create disposable local resources | `docs/ACCESS.md` |
-| Looker | no; safe independent phase work remains | dedicated pretrial check verified zero instances, unallocated trial/paid quota, zero BigQuery query quota, and zero stored bytes; this is read-only GCP state, not Looker acceptance; `PROVISIONING_ALLOWED=false` forbids instance creation, IAM elevation, queries, quota changes, and paid resources | `docs/ACCESS.md` |
-| Independent operator | no; credential-independent phase 08 work remains | real human observation is required after the reproducible evaluation path is ready | `docs/ACCESS.md` |
+| Looker | yes | the generated packet requires one user-approved pre-existing disposable instance and values placed only in ignored local configuration; dedicated pretrial state still has zero instances, so no API preflight can run; `PROVISIONING_ALLOWED=false` forbids instance creation, IAM elevation, queries, quota changes, and paid resources | `docs/ACCESS.md` |
+| Independent operator | yes | install, deployment, evaluation, compatibility, and observation materials are ready; one prospective operator independent of the author must run the safe workflow and provide a redacted observation | `docs/ACCESS.md` |
 
-Do not turn a future access need into a current blocker. Complete every safe
-independent path first.
+No safe credential-independent acceptance task remains. Keep the Codex goal
+active and resume immediately when either external boundary is supplied; do
+not substitute author operation, fixture evidence, or new provisioning.
 
 ## Update rule
 
