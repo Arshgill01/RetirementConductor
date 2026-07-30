@@ -145,6 +145,15 @@ Source status is one of:
 A required source must be `COMPLETE` and fresh before readiness. `COMPLETE`
 describes the declared request, not global visibility.
 
+Complete DataHub lineage paging sets the supported GraphQL
+`SearchFlags.skipCache` flag, preserves both the redacted request and raw
+response by digest, and records whether the server exposed cache freshness.
+If the server reports `cached: true` despite the bypass, the source is
+`PARTIAL`. A missing freshness field remains an explicit limitation. The MCP
+field-lineage helper has no cache-bypass input in the supported version, so it
+may qualify a consumer claim but cannot remove any consumer from the
+cache-bypassed GMS result set.
+
 ## Evidence claim
 
 Normalized claims never erase raw observation:

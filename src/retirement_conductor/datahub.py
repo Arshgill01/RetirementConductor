@@ -31,6 +31,13 @@ query RetirementConductorLineage($input: SearchAcrossLineageInput!) {
     count
     total
     isPartial
+    freshness {
+      cached
+      systemFreshness {
+        systemName
+        freshnessMillis
+      }
+    }
     searchResults {
       degree
       entity {
@@ -471,33 +478,40 @@ class DataHubBoundary:
                                 "offset": offset,
                             },
                         )
-                    data = self.graph.graphql(
-                        LINEAGE_QUERY,
-                        {
-                            "input": {
-                                "urn": urn,
-                                "direction": "DOWNSTREAM",
-                                "query": "*",
-                                "start": offset,
-                                "count": self.settings.page_size,
-                                "orFilters": [
-                                    {
-                                        "and": [
-                                            {
-                                                "field": "degree",
-                                                "condition": "EQUAL",
-                                                "values": [degree_bucket],
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "searchFlags": {
-                                    "skipHighlighting": True,
-                                    "maxAggValues": 100,
-                                },
-                            }
-                        },
+                    variables = {
+                        "input": {
+                            "urn": urn,
+                            "direction": "DOWNSTREAM",
+                            "query": "*",
+                            "start": offset,
+                            "count": self.settings.page_size,
+                            "orFilters": [
+                                {
+                                    "and": [
+                                        {
+                                            "field": "degree",
+                                            "condition": "EQUAL",
+                                            "values": [degree_bucket],
+                                        }
+                                    ]
+                                }
+                            ],
+                            "searchFlags": {
+                                "skipCache": True,
+                                "skipHighlighting": True,
+                                "maxAggValues": 100,
+                            },
+                        }
+                    }
+                    request_artifact = writer.write(
+                        (
+                            "lineage-request-degree-"
+                            f"{degree_bucket.replace('+', '-plus')}"
+                            f"-page-{offset:05d}"
+                        ),
+                        variables,
                     )
+                    data = self.graph.graphql(LINEAGE_QUERY, variables)
                     page = data.get("searchAcrossLineage")
                     if not isinstance(page, dict):
                         raise Refusal(
@@ -520,9 +534,32 @@ class DataHubBoundary:
                         "degree_bucket": degree_bucket,
                         "offset": offset,
                         "artifact_id": page_artifact,
+                        "request_artifact_id": request_artifact,
                         **page,
                     }
                     pages.append(page_record)
+                    freshness = page.get("freshness")
+                    if isinstance(freshness, dict):
+                        cached = freshness.get("cached")
+                        if cached is True:
+                            status = EvidenceStatus.PARTIAL
+                            page_record["cache_observation"] = "CACHE_USED"
+                            limitations.append(
+                                "DataHub used a lineage cache despite an explicit "
+                                "bypass"
+                            )
+                        elif cached is False:
+                            page_record["cache_observation"] = "BYPASSED"
+                        else:
+                            page_record["cache_observation"] = "NOT_EXPOSED"
+                            limitations.append(
+                                "DataHub did not expose lineage cache freshness"
+                            )
+                    else:
+                        page_record["cache_observation"] = "NOT_EXPOSED"
+                        limitations.append(
+                            "DataHub did not expose lineage cache freshness"
+                        )
                     total = _integer(page.get("total"), 0)
                     if expected_bucket_total is None:
                         expected_bucket_total = total
@@ -708,7 +745,11 @@ class DataHubBoundary:
             field_lineage_artifact,
             query_artifact,
             lifecycle_artifact,
-            *(str(page["artifact_id"]) for page in paged.pages),
+            *(
+                str(page[artifact_key])
+                for page in paged.pages
+                for artifact_key in ("request_artifact_id", "artifact_id")
+            ),
         ]
         if path_artifact is not None:
             raw_artifact_ids.append(path_artifact)
@@ -717,6 +758,10 @@ class DataHubBoundary:
                 [
                     *paged.limitations,
                     *freshness_limitations,
+                    (
+                        "MCP field-lineage lookup does not expose a cache bypass; "
+                        "complete GMS consumer paging is cache-bypassed"
+                    ),
                     "Ownership is routing context only",
                     "Query-history absence is not closure evidence",
                     "Table-only lineage cannot authorize field mutation or closure",
@@ -767,6 +812,10 @@ class DataHubBoundary:
                     "reported_total": paged.reported_total,
                     "returned_total": paged.returned_total,
                     "pages": len(paged.pages),
+                    "cache_policy": "BYPASS_REQUESTED",
+                    "cache_observations": sorted(
+                        {str(page["cache_observation"]) for page in paged.pages}
+                    ),
                     "errors": paged.errors,
                 },
                 "counterfactual": counterfactual,

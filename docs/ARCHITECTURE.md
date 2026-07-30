@@ -150,6 +150,8 @@ Read path:
 - retrieve schema, owners, multi-hop lineage, lineage paths, and permitted
   query context;
 - page to termination using the strongest live API surface;
+- request the native lineage cache bypass, retain the request and response,
+  and mark the source partial if it reports that cached data was used;
 - retain response counts, truncation indicators, source freshness, and errors.
 
 Write path:

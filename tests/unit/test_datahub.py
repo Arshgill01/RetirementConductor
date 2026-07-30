@@ -119,9 +119,16 @@ class FakeMCP:
 
 
 class FakeGraph:
-    def __init__(self, *, mcp: FakeMCP | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        mcp: FakeMCP | None = None,
+        lineage_freshness: dict[str, Any] | None = None,
+    ) -> None:
         self.mcp = mcp
+        self.lineage_freshness = lineage_freshness
         self.lineage_degree_queries: list[tuple[str, int]] = []
+        self.lineage_search_flags: list[dict[str, Any]] = []
 
     def health(self) -> Any:
         return {"status": "ok"}
@@ -166,6 +173,9 @@ class FakeGraph:
             count = variables["input"]["count"]
             degree_bucket = variables["input"]["orFilters"][0]["and"][0]["values"][0]
             self.lineage_degree_queries.append((degree_bucket, offset))
+            self.lineage_search_flags.append(
+                copy.deepcopy(variables["input"]["searchFlags"])
+            )
             degree = {"1": 1, "2": 2, "3+": 3}[degree_bucket]
             candidates = [CONSUMER_URNS[degree - 1]]
             selected = candidates[offset : offset + count]
@@ -175,6 +185,7 @@ class FakeGraph:
                     "count": len(selected),
                     "total": len(candidates),
                     "isPartial": False,
+                    "freshness": copy.deepcopy(self.lineage_freshness),
                     "searchResults": [
                         {
                             "degree": degree,
@@ -257,9 +268,22 @@ def test_live_inventory_pages_to_total_and_keeps_weak_edges_qualified(
         "reported_total": 3,
         "returned_total": 3,
         "pages": 3,
+        "cache_policy": "BYPASS_REQUESTED",
+        "cache_observations": ["NOT_EXPOSED"],
         "errors": [],
     }
     assert graph.lineage_degree_queries == [("1", 0), ("2", 0), ("3+", 0)]
+    assert (
+        graph.lineage_search_flags
+        == [
+            {
+                "skipCache": True,
+                "skipHighlighting": True,
+                "maxAggValues": 100,
+            }
+        ]
+        * 3
+    )
     assert len(snapshot["consumers"]) == 3
     assert snapshot["query_history"]["total"] == 0
     assert snapshot["query_history"]["closure_authority"] is False
@@ -297,6 +321,29 @@ def test_forced_page_failure_and_stale_source_fail_closed(tmp_path: Path) -> Non
     )
     assert stale["pagination"]["status"] == "STALE"
     assert stale["evidence_envelope"]["sources"][0]["status"] == "STALE"
+
+
+def test_lineage_cache_use_despite_bypass_fails_closed(tmp_path: Path) -> None:
+    boundary = DataHubBoundary(
+        settings(),
+        mcp=FakeMCP(),
+        graph=FakeGraph(lineage_freshness={"cached": True}),
+    )
+
+    snapshot = boundary.inventory(
+        live_specification(),
+        artifact_root=tmp_path,
+        captured_at=CAPTURED_AT,
+    )
+
+    assert snapshot["pagination"]["status"] == "PARTIAL"
+    assert snapshot["pagination"]["cache_policy"] == "BYPASS_REQUESTED"
+    assert snapshot["pagination"]["cache_observations"] == ["CACHE_USED"]
+    assert snapshot["evidence_envelope"]["sources"][0]["status"] == "PARTIAL"
+    assert any(
+        "cache despite an explicit bypass" in limitation
+        for limitation in snapshot["evidence_envelope"]["sources"][0]["limitations"]
+    )
 
 
 @pytest.mark.parametrize(

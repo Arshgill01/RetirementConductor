@@ -485,3 +485,25 @@ runners and retain a verified backup when recovery may be needed.
 Why: a broad recursive uninstall is unnecessarily destructive, while package
 removal alone can mislead an operator into believing sensitive campaign state
 was deleted.
+
+## D-034 — complete DataHub lineage inventory bypasses the graph cache
+
+Status: accepted from live DataHub Core v1.6.0 Phase 08 diagnosis.
+
+Set `SearchFlags.skipCache=true` on every paged GMS lineage request and retain
+both the redacted request and raw response. Ask for the server freshness
+metadata. If DataHub reports that a cache was used despite the bypass, mark the
+source `PARTIAL`; if Core omits freshness metadata, preserve that limitation.
+
+The supported MCP field-lineage tool does not expose a cache-bypass argument.
+Use it only to qualify field-level confidence. It cannot remove a consumer from
+the complete cache-bypassed GMS consumer universe, so an uncertain table-only
+consumer still blocks readiness.
+
+Why: after a late consumer was emitted successfully, the repeated default
+degree-two query returned the prior zero-result cache for the entire
+reconciliation bound while a direct query from the intermediate model already
+showed the new edge. The same target query with the documented cache-bypass
+flag returned the late consumer immediately. Increasing a timeout or varying
+an unrelated parameter would conceal the stale-evidence mechanism rather than
+control it.
