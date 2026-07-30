@@ -321,6 +321,17 @@ def _stub_verification() -> dict[str, str]:
     }
 
 
+def test_gate_accepts_digest_bound_stored_specification(tmp_path: Path) -> None:
+    with _ready_store(tmp_path) as store:
+        workflow = _workflow(store, tmp_path)
+        projection = store.projection(CAMPAIGN_ID)
+
+        workflow._verify_campaign_inputs(
+            CAMPAIGN_ID,
+            projection.input_digests,
+        )
+
+
 def test_gate_executes_one_sentinel_and_refuses_replay(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

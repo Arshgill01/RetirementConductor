@@ -674,9 +674,14 @@ class ProducerGateWorkflow:
         recorded: Mapping[str, str],
     ) -> None:
         specification = self.store.specification(campaign_id)
+        source_specification = {
+            key: value
+            for key, value in specification.items()
+            if key != "specification_digest"
+        }
         validate_schema(
             "retirement-spec",
-            specification,
+            source_specification,
             refusal_code=RefusalCode.GATE_STATE_DRIFT,
         )
         verify_digest(specification, "specification_digest")
