@@ -17,6 +17,7 @@ SCHEMA_FILENAMES = {
     "consumer-receipt": "consumer-receipt-v1.schema.json",
     "datahub-snapshot": "datahub-snapshot-v1.schema.json",
     "git-dbt-plan": "git-dbt-plan-v1.schema.json",
+    "looker-plan": "looker-plan-v1.schema.json",
     "producer-plan": "producer-plan-v1.schema.json",
     "gate-receipt": "gate-receipt-v1.schema.json",
     "campaign-manifest": "campaign-manifest-v1.schema.json",
