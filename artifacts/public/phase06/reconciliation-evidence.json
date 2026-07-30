@@ -1,0 +1,44 @@
+{
+  "artifact_digest": "sha256:0d343747b4e9a1b5b22eb43ebc57017cefb6204f7cbc3c8bdef14366a2c5fd36",
+  "combined_campaign": {
+    "git_source_recorded": true,
+    "invalidated_receipts": [],
+    "looker_source_recorded": true,
+    "replacement_snapshot_recorded": true,
+    "result": "RECONCILED"
+  },
+  "evidence_mode": "fixture",
+  "exact_field_edges": {
+    "disappearance_alone_is_closure": false,
+    "field_closure": "SUPPORTED_BY_NATIVE_AND_EXACT_REPLACEMENT_EDGE",
+    "legacy": "NOT_OBSERVED",
+    "replacement": "FIELD_EDGE_PRESENT"
+  },
+  "generated_at": "2026-07-30T12:00:00Z",
+  "mode": "fixture",
+  "persisting_legacy_edge": {
+    "refusal_code": "RECONCILIATION_SCOPE_MISMATCH",
+    "result": "REFUSED"
+  },
+  "recreated_identity": {
+    "refusal_code": "IDENTITY_NATIVE_OBJECT_RECREATED",
+    "result": "REFUSED"
+  },
+  "result": "VERIFIED_FIXTURE_RECONCILIATION",
+  "schema_version": "1.0.0",
+  "selective_identity_invalidation": {
+    "git_disposition": "VALIDATED",
+    "invalidated_consumer_ids": [
+      "consumer-looker"
+    ],
+    "looker_disposition": "STALE",
+    "refusal_codes": [
+      "IDENTITY_NATIVE_OBJECT_RECREATED"
+    ]
+  },
+  "simulated_live_labels_are_not_acceptance_evidence": true,
+  "table_only_replacement": {
+    "field_closure": "NOT_CLAIMED_CONNECTOR_LIMITATION",
+    "state": "TABLE_EDGE_ONLY"
+  }
+}

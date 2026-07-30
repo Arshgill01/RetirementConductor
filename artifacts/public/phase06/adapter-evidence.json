@@ -1,0 +1,111 @@
+{
+  "artifact_digest": "sha256:2073b92854bbc1c5cc4389214aaba541923487f4e014efa738e8acef71221a26",
+  "artifact_digests": {
+    "compensation": "sha256:330df7dd7284ea6151d70b1e98632bf3d484a4c6eda4b05bb97deff0aabe40c9",
+    "first_apply": "sha256:3a689d212ff5e27e05884de8d644f30d5e8ad00f359560830996c3fa1cdb3f3e",
+    "first_plan": "sha256:7cd1043f1014fd99e2f53049ef2cf6d52385939e5c2d316c4893f50095725a0f",
+    "first_validation": "sha256:804661d0faace780b9120ff5a85cb3a56d9ed41a0c0f88ec422582dc9bd7f62f",
+    "receipt": "sha256:dd4623470ae3acf1eb061c46c816479d099456266db822432586f6ecc2a8fc5f",
+    "second_apply": "sha256:747104af69e035984aca2da6a6c8b664d454723760c9c23cfab81748d7a2b4ac",
+    "second_plan": "sha256:89690ef767ad7a9a5b3f3b239cf231317a065947f3aa721d4078cd37c7a6d013"
+  },
+  "compensation": {
+    "restored_source": true,
+    "result": "RESTORED"
+  },
+  "evidence_mode": "fixture",
+  "first_apply": {
+    "actual_changed_fields": [
+      "query_id"
+    ],
+    "actual_targets": [
+      "look:41"
+    ],
+    "automatic_mutation_retry": false,
+    "result": "APPLIED"
+  },
+  "fixture_receipt_live_acceptance": {
+    "refusal_code": "EVIDENCE_RECEIPT_MODE_NOT_LIVE",
+    "result": "REFUSED"
+  },
+  "generated_at": "2026-07-30T12:00:00Z",
+  "idempotent_replay": {
+    "patch_calls_after_replay": 1,
+    "same_apply_digest": true
+  },
+  "mode": "fixture",
+  "native_call_counts": {
+    "patch": 3,
+    "query_post": 2
+  },
+  "pagination": {
+    "complete": true,
+    "page_count": 2
+  },
+  "reapply": {
+    "new_plan": true,
+    "receipt_compensation_exercised": false,
+    "result": "APPLIED",
+    "validation": "PASSED"
+  },
+  "relevance": {
+    "alerts": {
+      "reason": "Looker API alerts are dashboard-scoped, not saved-Look scoped",
+      "status": "NOT_APPLICABLE"
+    },
+    "calculations": {
+      "policy": "unsupported_and_refused",
+      "present": false,
+      "status": "EVALUATED"
+    },
+    "filters": {
+      "included_in_query_fingerprint": true,
+      "present": true,
+      "status": "EVALUATED"
+    },
+    "merged_result": {
+      "policy": "unsupported_and_refused",
+      "present": false,
+      "status": "EVALUATED"
+    },
+    "schedules": {
+      "count": 0,
+      "policy": "must_be_empty",
+      "status": "EVALUATED"
+    }
+  },
+  "result": "VERIFIED_FIXTURE_LIFECYCLE",
+  "schema_version": "1.0.0",
+  "stale_compensation": {
+    "refusal_code": "AUTH_APPROVAL_WRONG_PLAN",
+    "result": "REFUSED"
+  },
+  "target_sets": {
+    "approved": [
+      "look:41"
+    ],
+    "discovered": [
+      "look:41"
+    ],
+    "proposed": [
+      "look:41"
+    ]
+  },
+  "validation": {
+    "content_scope": {
+      "project_names": [
+        "retirement_project"
+      ],
+      "space_ids": [
+        "9"
+      ]
+    },
+    "query_execution": {
+      "executed": true,
+      "raw_result_retained": false,
+      "row_count": 1,
+      "row_limit": 100
+    },
+    "result": "PASSED"
+  }
+}

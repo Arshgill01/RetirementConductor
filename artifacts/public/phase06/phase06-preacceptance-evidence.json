@@ -1,0 +1,126 @@
+{
+  "access_boundary": {
+    "adapter_permissions": [
+      {
+        "name": "access_data",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "explore",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "save_content",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_lookml",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_looks",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_queries",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_schedules",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_users",
+        "status": "UNVERIFIED"
+      }
+    ],
+    "apply_control": "DISABLED",
+    "configuration_names": 20,
+    "ingestion_permissions": [
+      {
+        "name": "access_data",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "explore",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "manage_models",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_datagroups",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_lookml",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_lookml_dashboards",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_looks",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_pdts",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_queries",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_schedules",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_sql",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_system_activity",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_user_dashboards",
+        "status": "UNVERIFIED"
+      },
+      {
+        "name": "see_users",
+        "status": "UNVERIFIED"
+      }
+    ],
+    "packet_digest": "sha256:eef4d9e9196107505138f70dd147fd7b828506b3d1989ccc1f6589a6f464af51",
+    "provisioning_allowed": false,
+    "supplied_values_present": false
+  },
+  "artifact_digest": "sha256:ff63536a8f17374eee3eaf0d7aa659b129116b89d40d76cfc1a1940b615d2d95",
+  "artifacts": {
+    "adapter": "sha256:2073b92854bbc1c5cc4389214aaba541923487f4e014efa738e8acef71221a26",
+    "local_lookml_ingestion": "sha256:046e0e62ab8594facde35d98945d4ec1a009251414f7992c3a6ce47ad56d5a45",
+    "reconciliation": "sha256:0d343747b4e9a1b5b22eb43ebc57017cefb6204f7cbc3c8bdef14366a2c5fd36",
+    "recovery": "sha256:04589a4119c6cc6cfd13e5e9be50c033c1313747f0ceb0902be3d1628ba4c845"
+  },
+  "claim_boundary": {
+    "bigquery_queried": false,
+    "fixture_adapter_receipt_is_live": false,
+    "live_looker_api_observed": false,
+    "live_saved_look_ingested": false,
+    "local_datahub_runtime_observed": true,
+    "local_lookml_input_mode": "fixture",
+    "native_looker_query_executed": false,
+    "paid_resource_provisioned": false,
+    "remaining_live_boundary": "one pre-existing user-approved disposable Looker instance with scoped content and least-privileged credentials"
+  },
+  "evidence_ledger_entry": "EP-006 remains not-run",
+  "evidence_mode": "fixture",
+  "generated_at": "2026-07-30T12:00:00Z",
+  "phase_acceptance": "NOT_SATISFIED_LIVE_BOUNDARY",
+  "repository_commit": "9380815c3f29497cecb3f593b5c3dda18f337be4",
+  "result": "CREDENTIAL_INDEPENDENT_WORK_VERIFIED",
+  "schema_version": "1.0.0"
+}
