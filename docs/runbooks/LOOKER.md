@@ -49,9 +49,12 @@ retirement-conductor adapter looker access-packet \
 Inspect
 `.retirement-conductor/looker-access/access-request.md`. It lists only
 configuration names and status, exact permission sets, one-object scope, a
-read-only verification command, a separate plan command, and the preserved
-resume point. Store values only in ignored `.env.local`; never place secrets
-in command arguments, tracked files, logs, reports, or chat.
+read-only deployment verification command, post-bootstrap adapter commands,
+and the preserved resume point. The resume command deliberately does not
+assume a campaign already exists: its exact saved-Look allowlist and DataHub
+identity cannot be frozen until live ingestion resolves them. Store values
+only in ignored `.env.local`; never place secrets in command arguments,
+tracked files, logs, reports, or chat.
 
 ## Ingest one exact disposable object
 
@@ -88,7 +91,27 @@ Resolve `LOOKER_DATAHUB_URN` from exact live search and set
 `LOOKER_GRAPH_SNAPSHOT_DIGEST` only from the fresh fully paged campaign
 inventory. Never predict either from a display name.
 
-## Preflight and plan
+## Bootstrap, preflight, and plan
+
+The first command after approved access is secret-safe deployment preflight:
+
+```bash
+retirement-conductor deployment preflight --profile looker-plan
+```
+
+It may initially report the two evidence-derived references as missing. After
+ingestion resolves the exact saved-Look URN and a fresh inventory supplies its
+graph digest, write an ignored campaign specification that:
+
+- binds the exact target and replacement field identities;
+- includes the exact `LOOKER_CONTENT_TARGET` in
+  `authorization.allowed_native_objects`;
+- requires a `looker` receipt;
+- keeps authorization in plan mode.
+
+Create the durable campaign from that reviewed specification. Never create a
+placeholder campaign or guess the native target, DataHub URN, or graph digest.
+Only then run adapter preflight and plan:
 
 Preflight authenticates, records a digested principal identity and effective
 permissions, checks model access, rereads the exact folder and saved Look,

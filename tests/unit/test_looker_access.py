@@ -47,8 +47,14 @@ def test_access_packet_reports_names_without_any_environment_values(
         assert marker not in serialized
     assert result["provisioning_allowed"] is False
     assert result["apply_control"] == "DISABLED"
+    assert result["resume_command"] == (
+        "retirement-conductor deployment preflight --profile looker-plan"
+    )
+    assert result["campaign_state_required_before_adapter_preflight"] is True
     assert {item["status"] for item in result["configuration"]} == {"CONFIGURED"}
     assert "PROVISIONING_ALLOWED=false" in rendered
+    assert "This resume point does not assume a campaign already exists." in rendered
+    assert "placeholder campaign or guess those identities" in rendered
     assert "There is intentionally no apply command" in rendered
     assert output.stat().st_mode & 0o777 == 0o600
 

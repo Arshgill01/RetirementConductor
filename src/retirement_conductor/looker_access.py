@@ -205,13 +205,34 @@ Inspect the fresh DataHub result, then set only the exact observed
 `LOOKER_DATAHUB_URN` and canonical `LOOKER_GRAPH_SNAPSHOT_DIGEST` in the
 ignored file.
 
-## Read-only verification command
+## Read-only configuration verification
+
+```bash
+retirement-conductor deployment preflight --profile looker-plan
+```
+
+This resume point does not assume a campaign already exists. It reports every
+missing configuration reference without constructing a Looker client or
+printing a value.
+
+## Campaign bootstrap prerequisite
+
+Adapter preflight requires a durable campaign specification that both
+allowlists the exact `LOOKER_CONTENT_TARGET` and requires a Looker receipt.
+That campaign cannot be created honestly until saved-Look ingestion resolves
+the exact DataHub URN, fresh graph digest, and native target. Do not create a
+placeholder campaign or guess those identities.
+
+After the read-only deployment preflight and scoped ingestion, return control
+to the active implementation run. It will inspect the live identities, write
+an ignored exact specification, create campaign `{campaign_id}`, and only then
+run adapter preflight.
+
+## Post-bootstrap preflight and plan commands
 
 ```bash
 retirement-conductor adapter looker preflight --campaign {campaign_id}
 ```
-
-## Separate plan command
 
 ```bash
 retirement-conductor adapter looker plan --campaign {campaign_id}
@@ -222,10 +243,10 @@ not authorize mutation.
 
 ## Exact resume command
 
-Resume at the preserved read-only boundary:
+Resume at the first actionable read-only boundary:
 
 ```bash
-retirement-conductor adapter looker preflight --campaign {campaign_id}
+retirement-conductor deployment preflight --profile looker-plan
 ```
 """
     summary: dict[str, Any] = {
@@ -233,6 +254,10 @@ retirement-conductor adapter looker preflight --campaign {campaign_id}
         "campaign_id": campaign_id,
         "provisioning_allowed": False,
         "apply_control": apply_state,
+        "resume_command": (
+            "retirement-conductor deployment preflight --profile looker-plan"
+        ),
+        "campaign_state_required_before_adapter_preflight": True,
         "configuration": access_statuses,
         "derived_evidence": derived_statuses,
         "optional_secrets": optional_statuses,

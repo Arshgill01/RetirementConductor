@@ -325,13 +325,16 @@ After the approved instance and ignored values exist, the exact resume
 command is:
 
 ```bash
-retirement-conductor adapter looker preflight \
-  --campaign ret-orders-looker-live
+retirement-conductor deployment preflight --profile looker-plan
 ```
 
-Authentication does not authorize plan or apply. Ingestion, exact DataHub
-identity derivation, plan review, and any later apply authorization remain
-separate steps in `docs/runbooks/LOOKER.md`.
+This command does not assume a campaign already exists. Adapter preflight
+requires a campaign specification that allowlists the exact saved Look and
+requires a Looker receipt; that specification must not be created until
+ingestion resolves the exact native and DataHub identities. Authentication
+does not authorize campaign creation, plan, or apply. Ingestion, exact
+identity derivation, campaign bootstrap, plan review, and any later apply
+authorization remain separate steps in `docs/runbooks/LOOKER.md`.
 
 The independent operator may run in parallel against the already supported
 Core/Git/dbt evaluation boundary. Record frequency, prior and observed time,
