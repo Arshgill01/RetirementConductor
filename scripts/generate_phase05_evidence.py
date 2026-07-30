@@ -9,7 +9,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from retirement_conductor.canonical import (
     digest_json,
@@ -70,7 +70,7 @@ def digest_bytes(content: bytes) -> str:
 def load_object(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     require(isinstance(value, dict), f"{path.name} is not an object")
-    return value
+    return cast(dict[str, Any], value)
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
@@ -341,7 +341,7 @@ def build_report(
 
 def focused_test_evidence(output: str) -> dict[str, Any]:
     matches = re.findall(r"(\d+) passed", output)
-    require(matches, "make test-ui output omitted a passing test count")
+    require(bool(matches), "make test-ui output omitted a passing test count")
     return {
         "command": "make test-ui",
         "result": "PASSED",
