@@ -1,0 +1,51 @@
+{
+  "backup": {
+    "campaigns": [
+      {
+        "campaign_id_digest": "sha256:85171fb7eaaff5c6bb55c602304628c0f336d53ebcdf02c6ef47e30c99c0d12e",
+        "event_count": 2,
+        "event_stream_digest": "sha256:4faa24466430efed418b7eb92aafc3e4ac1e4304235c8910395d1a3c8d506b55",
+        "manifest_digest": "sha256:c86a4ea8a8989180c1abe972cbfe2670f51fb8c4f77656d30213561b8ad4e670",
+        "state": "INVENTORIED"
+      }
+    ],
+    "database_digest": "sha256:fde6c192bd748e08fa0ea05600bf376c998bda7440c3d151f72739c5811e61da",
+    "file_mode": "0600",
+    "logical_snapshot_digest": "sha256:478404e11aa9b5d1ecdca05148a66247e9ba517a190f9d941e57e138123eb373",
+    "receipt_digest": "sha256:5104fd3fd58e7b513ac0044d49507cf173b216919333a983f2ff5931743d82ef",
+    "result": "BACKUP_VERIFIED",
+    "verification_digest": "sha256:8a4c32ff56a72c0770213c88616780c9127b6e040b6d778f99843de42f43cbd4"
+  },
+  "captured_at": "2026-07-30T18:00:00Z",
+  "copied_store": {
+    "refusal_code": "RUNTIME_WRITER_MISMATCH",
+    "refused_before_database_change": true,
+    "result": "REFUSED"
+  },
+  "diagnostics": {
+    "healthy": false,
+    "metrics_digest": "sha256:ee035aa8c4e04c9140c0e8b86c6d516f7ec204d694954b3bbd368b3aaf7237c9",
+    "stuck_campaign_count": 1,
+    "unknown_gate_outcomes": 0
+  },
+  "evidence_mode": "fixture",
+  "limitations": [
+    "This drill uses a deterministic local fixture store.",
+    "The application does not encrypt backups or implement distributed storage.",
+    "Live Looker recovery remains outside this evidence mode."
+  ],
+  "recovery_evidence_digest": "sha256:11799a3419a393c7b7f7d45149d668751f9c47b23d2321185252fdf69936064d",
+  "restore": {
+    "evidence_envelope_digest": "sha256:3f855256249b33383b0c4eda310ea913e8c488ee85bdcad4320270d5436feb97",
+    "manifest_digest": "sha256:c86a4ea8a8989180c1abe972cbfe2670f51fb8c4f77656d30213561b8ad4e670",
+    "manifest_reproduced": true,
+    "original_bound_path": true,
+    "schema_versions": [
+      1,
+      2,
+      3
+    ]
+  },
+  "result": "PASSED",
+  "schema_version": "1.0.0"
+}

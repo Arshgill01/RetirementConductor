@@ -1,0 +1,73 @@
+{
+  "acceptance": {
+    "ambiguous_mutations_are_not_retried": true,
+    "backup_restore_reproduces_manifest": true,
+    "copied_store_refuses": true,
+    "dependency_findings": 0,
+    "no_false_live_looker_claim": true,
+    "plan_only_cannot_apply": true,
+    "public_artifact_review": "PASSED",
+    "secret_scan": "PASSED",
+    "source_prompt_cannot_expand_authority": true
+  },
+  "artifacts": {
+    "failure_matrix": {
+      "artifact_digest": "sha256:398041de74f971c731badec67b90696e0890ea70a4b0d2d044f662b6047d5a54",
+      "file": "artifacts/public/phase07/failure-matrix.json",
+      "file_digest": "sha256:0ec74a67bd130d33d8ed697599201edc910a77f919b69097f50bfacd50c81e23"
+    },
+    "recovery": {
+      "artifact_digest": "sha256:11799a3419a393c7b7f7d45149d668751f9c47b23d2321185252fdf69936064d",
+      "file": "artifacts/public/phase07/recovery-evidence.json",
+      "file_digest": "sha256:4dd7162ea7e1ec4605b35e1914084d2b34f48376bb0aa12761e5fa21cdd9a6fb"
+    },
+    "scan": {
+      "artifact_digest": "sha256:2108dab4cc7d54d36275693404c6bc1b4699b85491b2a4036a25e794d5d0a7e2",
+      "file": "artifacts/public/phase07/scan-evidence.json",
+      "file_digest": "sha256:f02972cc85b77433c0bdc78e530fe156268e2c9559c0e4ca81e6b56b760f7acd"
+    },
+    "security": {
+      "artifact_digest": "sha256:41004d5cc3936cc533b7748f7bcee9641d14014805c6645dfdfefddb0fea7c16",
+      "file": "artifacts/public/phase07/security-evidence.json",
+      "file_digest": "sha256:97544b199767de6268948df9bd8043bbfe32e72e5b2cc5b607b2dc2fbcdb089c"
+    }
+  },
+  "captured_at": "2026-07-30T16:19:15.366161Z",
+  "commands": [
+    {
+      "command": "make test-security",
+      "output_digest": "sha256:98d6f80c2fb5b2d602c988cfd71609136d869f16af0ba591707c570895b34ede",
+      "result": "PASSED",
+      "test_count": 93
+    },
+    {
+      "command": "make test-faults",
+      "output_digest": "sha256:a60d938bf1e4a6fe2b1bb63b86ca8406970e03890a9c53156da5c12feee27fed",
+      "result": "PASSED",
+      "test_count": 72
+    },
+    {
+      "command": "make test-recovery",
+      "output_digest": "sha256:1ac1531fdb82924cab16d6921b537b7b0e0808841d38194fdaa504850179633c",
+      "result": "PASSED",
+      "test_count": 43
+    }
+  ],
+  "evidence_mode": "mixed fixture and analysis",
+  "limitations": [
+    "Phase 07 adapter and recovery probes are deterministic fixtures.",
+    "The scan is bounded to its captured advisory database and static secret patterns.",
+    "A real operator and live Looker boundary remain separate acceptance requirements."
+  ],
+  "live_boundary": {
+    "looker_api_acceptance": "not-run",
+    "phase06_status": "access-dependent",
+    "provisioning_allowed": false,
+    "remaining": "A user-approved disposable Looker instance or zero-cost trial with the exact objects and least-privilege permissions in docs/ACCESS.md."
+  },
+  "phase": "07",
+  "phase07_evidence_digest": "sha256:43b5b2d44631df04f8a08c643b4c65f9524ba7854a17447fcf09f87e2275e8a0",
+  "repository_commit": "4fc5b2d2b08e98b57a3cc1292fb85008549b2179",
+  "result": "CREDENTIAL_INDEPENDENT_ACCEPTANCE_PASSED",
+  "schema_version": "1.0.0"
+}

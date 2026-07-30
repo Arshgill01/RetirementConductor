@@ -1,0 +1,189 @@
+{
+  "captured_at": "2026-07-30T16:19:15.322160Z",
+  "evidence_mode": "analysis",
+  "license_review": {
+    "accepted_expressions": [
+      "Apache-2.0",
+      "Apache-2.0 OR BSD-2-Clause",
+      "BSD-2-Clause",
+      "MIT",
+      "MPL-2.0",
+      "PSF-2.0"
+    ],
+    "findings": [],
+    "packages": [
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "attrs",
+        "scope": "runtime",
+        "version": "26.1.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "iniconfig",
+        "scope": "development",
+        "version": "2.3.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "jsonschema",
+        "scope": "runtime",
+        "version": "4.26.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "jsonschema-specifications",
+        "scope": "runtime",
+        "version": "2025.9.1"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "librt",
+        "scope": "development",
+        "version": "0.13.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "mypy",
+        "scope": "development",
+        "version": "1.20.2"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "mypy-extensions",
+        "scope": "development",
+        "version": "1.1.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MPL-2.0",
+        "name": "pathspec",
+        "scope": "development",
+        "version": "1.1.1"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "pluggy",
+        "scope": "development",
+        "version": "1.6.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "BSD-2-Clause",
+        "name": "pygments",
+        "scope": "development",
+        "version": "2.20.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "pytest",
+        "scope": "development",
+        "version": "9.1.1"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "pyyaml",
+        "scope": "runtime",
+        "version": "6.0.3"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "referencing",
+        "scope": "runtime",
+        "version": "0.37.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "rpds-py",
+        "scope": "runtime",
+        "version": "2026.6.3"
+      },
+      {
+        "disposition": "compatible",
+        "license": "MIT",
+        "name": "ruff",
+        "scope": "development",
+        "version": "0.16.0"
+      },
+      {
+        "disposition": "compatible",
+        "license": "Apache-2.0",
+        "name": "types-jsonschema",
+        "scope": "development",
+        "version": "4.26.0.20260518"
+      },
+      {
+        "disposition": "compatible",
+        "license": "Apache-2.0",
+        "name": "types-pyyaml",
+        "scope": "development",
+        "version": "6.0.12.20260724"
+      },
+      {
+        "disposition": "compatible",
+        "license": "PSF-2.0",
+        "name": "typing-extensions",
+        "scope": "development",
+        "version": "4.16.0"
+      }
+    ],
+    "result": "PASSED"
+  },
+  "limitations": [
+    "The vulnerability result is bounded to the advisory database available to pip-audit at captured_at.",
+    "Package license metadata is publisher-supplied and was reviewed for compatibility, not independently re-licensed.",
+    "Static secret patterns cannot prove that every arbitrary value is non-sensitive.",
+    "This scan does not establish binary reproducibility or signed package provenance."
+  ],
+  "lock_provenance": {
+    "all_sources_and_wheels_sha256_bound": true,
+    "findings": [],
+    "lock_digest": "sha256:c68ffa218f7d9d2eb6401343cd42fbc5037aa8361903e87fdc66c2a40d9469ee",
+    "lock_revision": 3,
+    "lock_version": 1,
+    "registry": "https://pypi.org/simple",
+    "result": "PASSED",
+    "third_party_package_records": 20
+  },
+  "public_artifact_review": {
+    "checked_count": 46,
+    "output_digest": "sha256:d724168bdeabea58872370f995cdca52c076890c555ce14b654b116461173a52",
+    "result": "PASSED"
+  },
+  "result": "PASSED",
+  "scan_digest": "sha256:2108dab4cc7d54d36275693404c6bc1b4699b85491b2a4036a25e794d5d0a7e2",
+  "schema_version": "1.0.0",
+  "secret_scan": {
+    "checked_count": 270,
+    "output_digest": "sha256:5b4db7bc2cee5f70adb65f395bf212200ec0dec1d42e32313ab66e75263abc75",
+    "result": "PASSED"
+  },
+  "tools": {
+    "pip_audit": "2.9.0",
+    "uv": "uv 0.11.28 (x86_64-unknown-linux-gnu)"
+  },
+  "vulnerability_audit": {
+    "all_groups": {
+      "findings": [],
+      "package_count": 18,
+      "result": "PASSED"
+    },
+    "runtime": {
+      "findings": [],
+      "package_count": 6,
+      "result": "PASSED"
+    }
+  }
+}
