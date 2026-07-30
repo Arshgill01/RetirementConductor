@@ -85,7 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     campaign = subparsers.add_parser(
         "campaign",
-        help="create, replay, inspect, explain, evaluate, resume, or export a campaign",
+        help=("operate, inspect, back up, diagnose, or export a campaign deployment"),
     )
     campaign_subparsers = campaign.add_subparsers(
         dest="campaign_command", required=True
@@ -134,6 +134,29 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("campaign_id")
     export.add_argument("--output", type=Path, required=True)
     _add_store_arguments(export)
+
+    backup = campaign_subparsers.add_parser(
+        "backup",
+        help="create an integrity-checked, non-overwriting SQLite backup",
+    )
+    backup.add_argument("--output", type=Path, required=True)
+    backup.add_argument("--captured-at", required=True)
+    _add_store_arguments(backup)
+
+    verify_backup = campaign_subparsers.add_parser(
+        "verify-backup",
+        help="compare a retained backup with the live logical campaign state",
+    )
+    verify_backup.add_argument("backup", type=Path)
+    _add_store_arguments(verify_backup)
+
+    diagnostics = campaign_subparsers.add_parser(
+        "diagnostics",
+        help="emit redacted operational counts and recovery alerts",
+    )
+    diagnostics.add_argument("--observed-at", required=True)
+    diagnostics.add_argument("--stuck-after-seconds", type=int, default=3600)
+    _add_store_arguments(diagnostics)
 
     inventory = campaign_subparsers.add_parser("inventory")
     _add_live_campaign_arguments(inventory)
@@ -719,6 +742,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             _render(result)
             return 0
         if args.command == "campaign":
+            if args.campaign_command in {
+                "backup",
+                "verify-backup",
+                "diagnostics",
+            }:
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    if args.campaign_command == "backup":
+                        result = store.backup_to(
+                            args.output,
+                            captured_at=args.captured_at,
+                        )
+                    elif args.campaign_command == "verify-backup":
+                        result = store.verify_backup(args.backup)
+                    else:
+                        result = store.operational_metrics(
+                            observed_at=args.observed_at,
+                            stuck_after_seconds=args.stuck_after_seconds,
+                        )
+                _render(result)
+                return 0
             if args.campaign_command == "replay" or (
                 args.campaign_command == "evaluate" and args.source is not None
             ):

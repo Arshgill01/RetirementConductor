@@ -4,23 +4,29 @@ from __future__ import annotations
 
 import fcntl
 import json
+import os
 import sqlite3
+import tempfile
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from retirement_conductor.canonical import (
     canonical_json,
+    digest_file,
     digest_json,
     verify_digest,
     with_digest,
 )
+from retirement_conductor.clock import parse_timestamp
 from retirement_conductor.errors import Refusal
 from retirement_conductor.events import (
     CampaignProjection,
     build_event,
+    event_stream_digest,
     manifest_from_projection,
     project_events,
 )
@@ -30,9 +36,364 @@ from retirement_conductor.records import (
     validate_consumer_receipt,
     validate_waiver,
 )
+from retirement_conductor.schemas import validate_schema
 from retirement_conductor.vocabulary import CampaignState, RefusalCode
 
 FaultInjector = Callable[[str], None]
+UNSUPPORTED_SHARED_FILESYSTEMS = {
+    "9p",
+    "cifs",
+    "fuse.sshfs",
+    "nfs",
+    "nfs4",
+    "smb3",
+}
+
+
+def _decode_mount_path(value: str) -> str:
+    """Decode the octal escapes used by Linux mountinfo."""
+
+    return (
+        value.replace(r"\040", " ")
+        .replace(r"\011", "\t")
+        .replace(r"\012", "\n")
+        .replace(r"\134", "\\")
+    )
+
+
+def _filesystem_type(path: Path) -> str | None:
+    """Return the Linux filesystem type for the deepest matching mount."""
+
+    try:
+        candidate = path.resolve()
+        matches: list[tuple[int, str]] = []
+        mountinfo = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
+        for line in mountinfo.splitlines():
+            fields = line.split()
+            separator = fields.index("-")
+            mount_point = Path(_decode_mount_path(fields[4]))
+            filesystem_type = fields[separator + 1]
+            try:
+                candidate.relative_to(mount_point)
+            except ValueError:
+                continue
+            matches.append((len(mount_point.parts), filesystem_type))
+    except (OSError, ValueError):
+        return None
+    return max(matches)[1] if matches else None
+
+
+def _logical_store_snapshot(connection: sqlite3.Connection) -> dict[str, Any]:
+    """Validate and summarize the logical state without rewriting the store."""
+
+    integrity = connection.execute("PRAGMA integrity_check").fetchone()
+    if integrity is None or integrity[0] != "ok":
+        raise Refusal(
+            RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            "SQLite rejected the campaign database integrity check.",
+        )
+    if connection.execute("PRAGMA foreign_key_check").fetchone() is not None:
+        raise Refusal(
+            RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            "SQLite found a campaign database foreign-key violation.",
+        )
+    schema_versions = [
+        int(row["version"])
+        for row in connection.execute(
+            "SELECT version FROM schema_migrations ORDER BY version"
+        )
+    ]
+    metadata = {
+        str(row["key"]): str(row["value"])
+        for row in connection.execute(
+            "SELECT key, value FROM store_metadata ORDER BY key"
+        )
+    }
+    if not metadata.get("writer_id") or not metadata.get("store_path_identity"):
+        raise Refusal(
+            RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            "The campaign database is missing its deployment binding.",
+        )
+    campaigns: list[dict[str, Any]] = []
+    campaign_rows = connection.execute(
+        """
+        SELECT campaign_id,
+               specification_digest,
+               specification_json,
+               state,
+               materialized_manifest_json,
+               materialized_manifest_digest
+        FROM campaigns
+        ORDER BY campaign_id
+        """
+    ).fetchall()
+    for row in campaign_rows:
+        campaign_id = str(row["campaign_id"])
+        specification = json.loads(str(row["specification_json"]))
+        if not isinstance(specification, dict):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "A stored campaign specification is not an object.",
+            )
+        validate_schema(
+            "retirement-spec",
+            {
+                key: value
+                for key, value in specification.items()
+                if key != "specification_digest"
+            },
+            refusal_code=RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+        )
+        verify_digest(specification, "specification_digest")
+        if specification["specification_digest"] != row["specification_digest"]:
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "A campaign specification disagrees with its ledger column.",
+            )
+        event_rows = connection.execute(
+            """
+            SELECT sequence,
+                   event_type,
+                   occurred_at,
+                   idempotency_key,
+                   payload_json,
+                   previous_event_digest,
+                   event_digest,
+                   event_json
+            FROM campaign_events
+            WHERE campaign_id = ?
+            ORDER BY sequence
+            """,
+            (campaign_id,),
+        ).fetchall()
+        events: list[dict[str, Any]] = []
+        for event_row in event_rows:
+            event = json.loads(str(event_row["event_json"]))
+            if not isinstance(event, dict):
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A stored campaign event is not an object.",
+                )
+            columns = {
+                "sequence": event.get("sequence"),
+                "event_type": event.get("event_type"),
+                "occurred_at": event.get("occurred_at"),
+                "idempotency_key": event.get("idempotency_key"),
+                "previous_event_digest": event.get("previous_event_digest"),
+                "event_digest": event.get("event_digest"),
+            }
+            if any(value != event_row[key] for key, value in columns.items()):
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A campaign event disagrees with its ledger columns.",
+                )
+            if canonical_json(event.get("payload")) != event_row["payload_json"]:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A campaign event payload disagrees with its ledger column.",
+                )
+            events.append(event)
+        projection = project_events(events)
+        manifest = manifest_from_projection(projection)
+        cached_text = row["materialized_manifest_json"]
+        cached_digest = row["materialized_manifest_digest"]
+        if cached_text is not None:
+            cached = json.loads(str(cached_text))
+            if not isinstance(cached, dict):
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A cached campaign manifest is not an object.",
+                )
+            validate_schema(
+                "campaign-manifest",
+                cached,
+                refusal_code=RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            )
+            verify_digest(cached, "manifest_digest")
+            if cached["manifest_digest"] != cached_digest:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A cached campaign manifest disagrees with its ledger column.",
+                )
+            cached_events = [
+                item["event_digest"] for item in cached["transition_history"]
+            ]
+            projected_events = [
+                item["event_digest"] for item in manifest["transition_history"]
+            ]
+            if cached_events != projected_events[: len(cached_events)]:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A cached campaign manifest is not a replay prefix.",
+                )
+            if (
+                len(cached_events) == len(projected_events)
+                and cached["manifest_digest"] != manifest["manifest_digest"]
+            ):
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A current cached manifest differs from event replay.",
+                )
+            if cached["campaign"]["state"] != row["state"]:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "A campaign state disagrees with its cached manifest.",
+                )
+        elif cached_digest is not None:
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "A campaign has a cached digest without cached content.",
+            )
+        elif row["state"] != projection.state:
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "An uncached campaign state disagrees with event replay.",
+            )
+        campaigns.append(
+            {
+                "campaign_id_digest": digest_json(campaign_id),
+                "state": projection.state,
+                "event_count": len(events),
+                "event_stream_digest": event_stream_digest(events),
+                "manifest_digest": manifest["manifest_digest"],
+            }
+        )
+
+    gate_plans = []
+    for row in connection.execute(
+        "SELECT * FROM gate_plans ORDER BY campaign_id, prepared_at, plan_digest"
+    ):
+        plan = CampaignStore._validated_gate_plan(row)
+        gate_plans.append(
+            {
+                "campaign_id_digest": digest_json(str(plan["campaign_id"])),
+                "plan_digest": plan["plan_digest"],
+            }
+        )
+    gate_attempts = []
+    for row in connection.execute(
+        "SELECT * FROM gate_attempts ORDER BY campaign_id, recorded_at, attempt_id"
+    ):
+        attempt = CampaignStore._validated_gate_attempt(row)
+        gate_attempts.append(
+            {
+                "campaign_id_digest": digest_json(
+                    str(attempt["attempt"]["campaign_id"])
+                ),
+                "attempt_digest": attempt["attempt"]["attempt_digest"],
+                "status": attempt["status"],
+                "outcome_digest": (
+                    attempt["outcome"]["outcome_digest"]
+                    if attempt["outcome"] is not None
+                    else None
+                ),
+            }
+        )
+    identity_claims = [
+        {
+            "native_identity_digest": str(row["native_identity_digest"]),
+            "campaign_id_digest": digest_json(str(row["campaign_id"])),
+            "claimed_at": str(row["claimed_at"]),
+            "released_at": (
+                str(row["released_at"]) if row["released_at"] is not None else None
+            ),
+        }
+        for row in connection.execute(
+            """
+            SELECT native_identity_digest, campaign_id, claimed_at, released_at
+            FROM native_identity_claims
+            ORDER BY native_identity_digest
+            """
+        )
+    ]
+    return {
+        "schema_versions": schema_versions,
+        "writer_identity": digest_json(metadata.get("writer_id")),
+        "store_path_identity": metadata.get("store_path_identity"),
+        "campaigns": campaigns,
+        "gate_plans_digest": digest_json(gate_plans),
+        "gate_attempts_digest": digest_json(gate_attempts),
+        "native_identity_claims_digest": digest_json(identity_claims),
+    }
+
+
+def _logical_store_snapshot_path(path: Path) -> dict[str, Any]:
+    """Validate a SQLite store through a non-mutating read-only connection."""
+
+    encoded_path = quote(path.resolve().as_posix(), safe="/")
+    uri = f"file:{encoded_path}?mode=ro&immutable=1"
+    try:
+        connection = sqlite3.connect(uri, uri=True)
+    except sqlite3.Error as exc:
+        raise Refusal(
+            RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            "The campaign backup could not be opened read-only.",
+        ) from exc
+    connection.row_factory = sqlite3.Row
+    try:
+        connection.execute("PRAGMA foreign_keys = ON")
+        return _logical_store_snapshot(connection)
+    except (json.JSONDecodeError, sqlite3.Error) as exc:
+        raise Refusal(
+            RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            "The campaign backup could not be validated.",
+        ) from exc
+    finally:
+        connection.close()
+
+
+def _preflight_existing_store(path: Path, writer_id: str) -> None:
+    """Refuse a bound store copy before SQLite can modify its journal mode."""
+
+    if not path.is_file():
+        return
+    encoded_path = quote(path.resolve().as_posix(), safe="/")
+    connection: sqlite3.Connection | None = None
+    try:
+        connection = sqlite3.connect(f"file:{encoded_path}?mode=ro", uri=True)
+        connection.row_factory = sqlite3.Row
+        has_metadata = connection.execute(
+            "SELECT 1 FROM sqlite_master "
+            "WHERE type = 'table' AND name = 'store_metadata'"
+        ).fetchone()
+        if has_metadata is None:
+            return
+        metadata = {
+            str(row["key"]): str(row["value"])
+            for row in connection.execute(
+                "SELECT key, value FROM store_metadata "
+                "WHERE key IN ('writer_id', 'store_path_identity')"
+            )
+        }
+    except sqlite3.Error as exc:
+        raise Refusal(
+            RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+            "The existing campaign store could not be inspected safely.",
+        ) from exc
+    finally:
+        if connection is not None:
+            connection.close()
+    expected_writer = metadata.get("writer_id")
+    if expected_writer is not None and expected_writer != writer_id:
+        raise Refusal(
+            RefusalCode.RUNTIME_WRITER_MISMATCH,
+            "This SQLite store belongs to another deployment writer.",
+            {
+                "expected_writer_id": expected_writer,
+                "actual_writer_id": writer_id,
+            },
+        )
+    expected_path = metadata.get("store_path_identity")
+    actual_path = digest_json(str(path.resolve()))
+    if expected_path is not None and expected_path != actual_path:
+        raise Refusal(
+            RefusalCode.RUNTIME_WRITER_MISMATCH,
+            "This SQLite store was copied outside its bound deployment path.",
+            {
+                "expected_path_identity": expected_path,
+                "actual_path_identity": actual_path,
+            },
+        )
 
 
 class CampaignStore:
@@ -43,15 +404,28 @@ class CampaignStore:
     def __init__(self, path: Path, *, writer_id: str) -> None:
         self.path = path.resolve()
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.filesystem_type = _filesystem_type(self.path.parent)
+        if self.filesystem_type in UNSUPPORTED_SHARED_FILESYSTEMS:
+            raise Refusal(
+                RefusalCode.RUNTIME_WRITER_MISMATCH,
+                "The SQLite campaign store must use a supported local filesystem.",
+                {"filesystem_type": self.filesystem_type},
+            )
+        _preflight_existing_store(self.path, writer_id)
         self.writer_id = writer_id
         self.lock_path = self.path.with_name(f"{self.path.name}.lock")
         self.connection = sqlite3.connect(self.path, timeout=0)
-        self.connection.row_factory = sqlite3.Row
-        self.connection.execute("PRAGMA foreign_keys = ON")
-        self.connection.execute("PRAGMA journal_mode = WAL")
-        self.connection.execute("PRAGMA synchronous = FULL")
-        self._migrate()
-        self._bind_writer()
+        try:
+            self.path.chmod(0o600)
+            self.connection.row_factory = sqlite3.Row
+            self.connection.execute("PRAGMA foreign_keys = ON")
+            self.connection.execute("PRAGMA journal_mode = WAL")
+            self.connection.execute("PRAGMA synchronous = FULL")
+            self._migrate()
+            self._bind_writer()
+        except BaseException:
+            self.connection.close()
+            raise
 
     def close(self) -> None:
         self.connection.close()
@@ -65,6 +439,7 @@ class CampaignStore:
     @contextmanager
     def _write_lock(self) -> Iterator[None]:
         with self.lock_path.open("a+", encoding="utf-8") as lock_file:
+            os.fchmod(lock_file.fileno(), 0o600)
             try:
                 fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError as exc:
@@ -122,23 +497,45 @@ class CampaignStore:
                 )
 
     def _bind_writer(self) -> None:
-        row = self.connection.execute(
-            "SELECT value FROM store_metadata WHERE key = 'writer_id'"
-        ).fetchone()
-        if row is None:
+        values = {
+            str(row["key"]): str(row["value"])
+            for row in self.connection.execute(
+                "SELECT key, value FROM store_metadata "
+                "WHERE key IN ('writer_id', 'store_path_identity')"
+            )
+        }
+        if "writer_id" not in values:
             with self.connection:
                 self.connection.execute(
                     "INSERT INTO store_metadata(key, value) VALUES ('writer_id', ?)",
                     (self.writer_id,),
                 )
-            return
-        if row["value"] != self.writer_id:
+            values["writer_id"] = self.writer_id
+        if values["writer_id"] != self.writer_id:
             raise Refusal(
                 RefusalCode.RUNTIME_WRITER_MISMATCH,
                 "This SQLite store belongs to another deployment writer.",
                 {
-                    "expected_writer_id": row["value"],
+                    "expected_writer_id": values["writer_id"],
                     "actual_writer_id": self.writer_id,
+                },
+            )
+        path_identity = digest_json(str(self.path))
+        if "store_path_identity" not in values:
+            with self.connection:
+                self.connection.execute(
+                    "INSERT INTO store_metadata(key, value) "
+                    "VALUES ('store_path_identity', ?)",
+                    (path_identity,),
+                )
+            values["store_path_identity"] = path_identity
+        if values["store_path_identity"] != path_identity:
+            raise Refusal(
+                RefusalCode.RUNTIME_WRITER_MISMATCH,
+                "This SQLite store was copied outside its bound deployment path.",
+                {
+                    "expected_path_identity": values["store_path_identity"],
+                    "actual_path_identity": path_identity,
                 },
             )
 
@@ -149,6 +546,256 @@ class CampaignStore:
                 "SELECT version FROM schema_migrations ORDER BY version"
             )
         ]
+
+    def backup_to(
+        self,
+        destination: Path,
+        *,
+        captured_at: str,
+    ) -> dict[str, Any]:
+        """Create and verify one non-overwriting, path-bound SQLite backup."""
+
+        parse_timestamp(captured_at)
+        if destination.exists() or destination.is_symlink():
+            raise Refusal(
+                RefusalCode.SCOPE_TARGET_NOT_ALLOWED,
+                "The backup destination already exists and will not be overwritten.",
+            )
+        target = destination.resolve()
+        if target == self.path:
+            raise Refusal(
+                RefusalCode.SCOPE_TARGET_NOT_ALLOWED,
+                "The backup destination must differ from the live campaign store.",
+            )
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target_filesystem = _filesystem_type(target.parent)
+        if target_filesystem in UNSUPPORTED_SHARED_FILESYSTEMS:
+            raise Refusal(
+                RefusalCode.RUNTIME_WRITER_MISMATCH,
+                "Campaign backups must use a supported local filesystem.",
+                {"filesystem_type": target_filesystem},
+            )
+        temporary_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                dir=target.parent,
+                prefix=f".{target.name}.",
+                suffix=".sqlite",
+                delete=False,
+            ) as temporary:
+                temporary_path = Path(temporary.name)
+            backup = sqlite3.connect(temporary_path)
+            try:
+                with self._write_lock():
+                    source_snapshot = _logical_store_snapshot(self.connection)
+                    self.connection.backup(backup)
+                integrity = backup.execute("PRAGMA integrity_check").fetchone()
+                if integrity is None or integrity[0] != "ok":
+                    raise Refusal(
+                        RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                        "SQLite rejected the generated campaign backup.",
+                    )
+            finally:
+                backup.close()
+            backup_snapshot = _logical_store_snapshot_path(temporary_path)
+            if backup_snapshot != source_snapshot:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                    "The campaign backup does not reproduce the live logical state.",
+                )
+            temporary_path.chmod(0o600)
+            with temporary_path.open("rb") as backup_file:
+                os.fsync(backup_file.fileno())
+            os.replace(temporary_path, target)
+            temporary_path = None
+            directory_fd = os.open(target.parent, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+        finally:
+            if temporary_path is not None and temporary_path.exists():
+                temporary_path.unlink()
+        receipt = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "captured_at": captured_at,
+                "result": "BACKUP_VERIFIED",
+                "writer_identity": digest_json(self.writer_id),
+                "source_path_identity": digest_json(str(self.path)),
+                "backup_path_identity": digest_json(str(target)),
+                "database_digest": digest_file(target),
+                "logical_snapshot_digest": digest_json(source_snapshot),
+                "schema_versions": source_snapshot["schema_versions"],
+                "campaigns": source_snapshot["campaigns"],
+                "limitations": [
+                    "Restore is supported only to the original bound deployment path.",
+                    "The backup contains campaign evidence and must be protected.",
+                ],
+            },
+            "backup_receipt_digest",
+        )
+        return receipt
+
+    def verify_backup(self, backup_path: Path) -> dict[str, Any]:
+        """Reread a backup without rebinding or mutating the retained file."""
+
+        if not backup_path.is_file() or backup_path.is_symlink():
+            raise Refusal(
+                RefusalCode.SOURCE_NOT_FOUND,
+                "The campaign backup file was not found.",
+            )
+        with self._write_lock():
+            source_snapshot = _logical_store_snapshot(self.connection)
+        backup_snapshot = _logical_store_snapshot_path(backup_path)
+        if backup_snapshot != source_snapshot:
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The campaign backup and live logical state differ.",
+            )
+        return with_digest(
+            {
+                "schema_version": "1.0.0",
+                "result": "BACKUP_MATCHES_LIVE_STATE",
+                "writer_identity": digest_json(self.writer_id),
+                "database_digest": digest_file(backup_path),
+                "logical_snapshot_digest": digest_json(backup_snapshot),
+                "schema_versions": backup_snapshot["schema_versions"],
+                "campaigns": backup_snapshot["campaigns"],
+            },
+            "verification_digest",
+        )
+
+    def operational_metrics(
+        self,
+        *,
+        observed_at: str,
+        stuck_after_seconds: int,
+    ) -> dict[str, Any]:
+        """Return safe aggregate signals for stuck, stale, or failing work."""
+
+        now = parse_timestamp(observed_at)
+        if stuck_after_seconds < 1:
+            raise Refusal(
+                RefusalCode.SPEC_SCHEMA_INVALID,
+                "The stuck-campaign threshold must be positive.",
+            )
+        _logical_store_snapshot(self.connection)
+        state_counts: dict[str, int] = {}
+        event_counts = {
+            str(row["event_type"]): int(row["count"])
+            for row in self.connection.execute(
+                "SELECT event_type, COUNT(*) AS count "
+                "FROM campaign_events GROUP BY event_type"
+            )
+        }
+        gate_status_counts = {
+            str(row["status"]): int(row["count"])
+            for row in self.connection.execute(
+                "SELECT status, COUNT(*) AS count FROM gate_attempts GROUP BY status"
+            )
+        }
+        refusal_counts = {
+            str(row["refusal_code"]): int(row["count"])
+            for row in self.connection.execute(
+                "SELECT refusal_code, COUNT(*) AS count "
+                "FROM gate_attempts WHERE refusal_code IS NOT NULL "
+                "GROUP BY refusal_code"
+            )
+        }
+        campaigns = self.connection.execute(
+            """
+            SELECT c.campaign_id, MAX(e.occurred_at) AS last_event_at
+            FROM campaigns AS c
+            JOIN campaign_events AS e ON e.campaign_id = c.campaign_id
+            GROUP BY c.campaign_id
+            ORDER BY c.campaign_id
+            """
+        ).fetchall()
+        stuck: list[dict[str, Any]] = []
+        stale: list[dict[str, Any]] = []
+        for row in campaigns:
+            campaign_id = str(row["campaign_id"])
+            last_event_at = str(row["last_event_at"])
+            age_seconds = (now - parse_timestamp(last_event_at)).total_seconds()
+            manifest = manifest_from_projection(self.projection(campaign_id))
+            state = str(manifest["campaign"]["state"])
+            state_counts[state] = state_counts.get(state, 0) + 1
+            if (
+                state
+                not in {
+                    CampaignState.BLOCKED,
+                    CampaignState.READY,
+                    CampaignState.RETIRED,
+                }
+                and age_seconds > stuck_after_seconds
+            ):
+                stuck.append(
+                    {
+                        "campaign_id_digest": digest_json(campaign_id),
+                        "state": state,
+                        "age_seconds": int(age_seconds),
+                    }
+                )
+            sources = (manifest.get("evidence_envelope") or {}).get("sources", [])
+            stale_sources = sorted(
+                str(source.get("id"))
+                for source in sources
+                if isinstance(source, Mapping)
+                and source.get("status")
+                in {"STALE", "PARTIAL", "UNAVAILABLE", "UNKNOWN"}
+            )
+            if stale_sources:
+                stale.append(
+                    {
+                        "campaign_id_digest": digest_json(campaign_id),
+                        "source_count": len(stale_sources),
+                        "source_ids": stale_sources,
+                    }
+                )
+        repeated = [
+            {"refusal_code": code, "count": count}
+            for code, count in sorted(refusal_counts.items())
+            if count >= 3
+        ]
+        active_claims = int(
+            self.connection.execute(
+                "SELECT COUNT(*) FROM native_identity_claims WHERE released_at IS NULL"
+            ).fetchone()[0]
+        )
+        alerts = {
+            "stuck_campaigns": stuck,
+            "stale_campaigns": stale,
+            "repeated_gate_refusals": repeated,
+            "unknown_gate_outcomes": gate_status_counts.get("OUTCOME_UNKNOWN", 0),
+            "pending_gate_intents": gate_status_counts.get("INTENT_RECORDED", 0),
+            "active_native_identity_claims": active_claims,
+        }
+        return with_digest(
+            {
+                "schema_version": "1.0.0",
+                "observed_at": observed_at,
+                "writer_identity": digest_json(self.writer_id),
+                "store_path_identity": digest_json(str(self.path)),
+                "filesystem_type": self.filesystem_type or "unknown",
+                "schema_versions": self.schema_versions(),
+                "campaign_states": state_counts,
+                "event_types": event_counts,
+                "gate_statuses": gate_status_counts,
+                "gate_refusal_codes": refusal_counts,
+                "alerts": alerts,
+                "healthy": not any(
+                    (
+                        stuck,
+                        stale,
+                        repeated,
+                        alerts["unknown_gate_outcomes"],
+                        alerts["pending_gate_intents"],
+                    )
+                ),
+            },
+            "metrics_digest",
+        )
 
     def issue_gate_plan(self, plan: Mapping[str, Any]) -> dict[str, Any]:
         """Durably bind one exact producer plan to one canonical manifest."""
