@@ -51,6 +51,7 @@ REQUIRED_FILES = {
     "docs/research/PRODUCT_SUBSTANCE.md",
     "docs/research/SCOPE_PRESSURE.md",
     "docs/research/SOURCE_LEDGER.md",
+    "docs/runbooks/GIT_DBT.md",
     "artifacts/public/phase01/blocked-manifest.json",
     "artifacts/public/phase01/kernel-evidence.json",
     "artifacts/public/phase02/capability-evidence.json",

@@ -230,3 +230,36 @@ Why: calling every graph entity “additional” would silently assume that no
 repository consumer represents the same object. The conservative minimum
 still proved material expansion in the representative graph without
 manufacturing cross-source identity.
+
+## D-020 — Git/dbt mutation requires an explicit cross-source identity
+
+Status: accepted from phase 03 evidence.
+
+Authorize the first repository mutation only when one dbt manifest node
+explicitly declares a DataHub URN that appears in the fresh campaign inventory.
+Bind that match to the dbt unique ID, original file path, repository identity,
+branch, commit, and content fingerprint. Do not infer mutation authority from
+display names, text similarity, ownership, or lineage position.
+
+Why: the live graph and repository described the same consumer reliably only
+after exact manifest metadata joined their identities. Text and compiled SQL
+remain useful discovery layers, but neither proves which graph consumer is the
+authorized native object.
+
+## D-021 — validate untrusted dbt projects from a copied no-network boundary
+
+Status: accepted from phase 03 evidence.
+
+Run the pinned dbt toolchain against a copied project tree inside bubblewrap
+with an unshared network, no host home, no source-repository mount, an
+allowlisted environment, and explicit time, file, process, memory, and open-file
+bounds. Refuse symlinks and external dbt dependencies in the initial adapter,
+and force Git hooks and global/system configuration out of the mutation path.
+
+This is the supported Linux validation boundary, not a claim that arbitrary
+dbt projects are safe on every host. A deployment without an equivalent
+isolation mechanism refuses native validation.
+
+Why: dbt models, macros, dependencies, Git configuration, and hooks are
+repository-controlled code. Running them in the agent's ordinary environment
+would expose credentials and files that the campaign never authorized.

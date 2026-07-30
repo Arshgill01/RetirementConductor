@@ -7,13 +7,13 @@ contract; `PLAN.md` defines proof order.
 ## Current state
 
 - Execution state: active
-- Active phase: 03
+- Active phase: 04
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
 - Current external blocker: none
-- Next acceptance target: one exact allowlisted Git/dbt change with source,
-  authorization, native validation, recovery, and receipt evidence
-- Last repository validation: phase 02 acceptance passed at
-  `19bebb9d54f22dcbb7f6e3fc922f8213eb719d53`
+- Next acceptance target: equivalent fresh reconciliation, controlled
+  late-consumer refusal, final DataHub summary, and producer-side gate
+- Last repository validation: phase 03 acceptance passed at
+  `3ca39a111f8ad2e035152931960c314d832a0118`
 
 ## Phase ledger
 
@@ -22,8 +22,8 @@ contract; `PLAN.md` defines proof order.
 | 00 | complete | `EP-000` at `6692a3c`; strict schemas, 24 tests, eight refusal fixtures, clean wheel smoke test | none |
 | 01 | complete | `EP-001` at `30173f1`; 85 tests, SQLite replay parity, interruption and refusal matrix | none |
 | 02 | complete | `EP-002` at `19bebb9`; live Core resolved both fields, returned 31 consumers over seven pages, proved at least 30 beyond configured repository scope, and verified four updates to one document URN without lifecycle mutation | none |
-| 03 | active | prior experiment baseline only | implement product adapter and live disposable run |
-| 04 | queued | none | phases 02 and 03 |
+| 03 | complete | `EP-003` at `3ca39a1`; exact live DataHub-to-dbt mapping, two one-file applies, native validation receipt, verified rollback, idempotent retry, and contained adversarial probes | none |
+| 04 | active | phases 02 and 03 live campaign evidence | implement equivalent reconciliation and both live gate outcomes |
 | 05 | queued | none | canonical phase 04 manifests |
 | 06 | access-dependent | deterministic predecessor only | disposable Looker instance and scoped access |
 | 07 | queued | none | harden available paths, then close live Looker cases |

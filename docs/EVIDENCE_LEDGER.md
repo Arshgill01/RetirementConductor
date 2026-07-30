@@ -39,7 +39,7 @@ the produced artifacts have been inspected.
 | EP-000 | 00 | fixture | `6692a3c` | `artifacts/public/phase00/`; executable contracts, fixtures, package, and repository checks | passed | fixture evidence cannot satisfy a live policy |
 | EP-001 | 01 | fixture | `30173f1` | `artifacts/public/phase01/`; state, replay, interruption, policy, and integrity evidence | passed | no external or native integration exercised |
 | EP-002 | 02 | live | `19bebb9` | `artifacts/public/phase02/`; DataHub identity, pagination, envelope, scope comparison, and stable write/read-back | passed | synthetic disposable Core graph; no authenticated or Cloud boundary |
-| EP-003 | 03 | live | not-run | Git/dbt plan, apply, validation, rollback, and receipt | not-run | none recorded |
+| EP-003 | 03 | live | `3ca39a1` | `artifacts/public/phase03/`; Git/dbt identity, exact apply, rollback/reapply, native receipt, and adversarial containment | passed | local disposable Git repository and DuckDB; no production source |
 | EP-004 | 04 | live and fixture | not-run | reconciliation, late-consumer refusal, publication, and gate | not-run | none recorded |
 | EP-005 | 05 | live and fixture | not-run | canonical CLI/report parity, accessibility, and redaction | not-run | none recorded |
 | EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
@@ -347,3 +347,137 @@ lineage page digests, exact schema resolution, normalized claims, field- versus
 table-level limitations, source update time, one-versus-31 scope comparison,
 envelope and snapshot digests, publication event receipts, exact document
 content, unique document search result, and null lifecycle before and after.
+
+## EP-003 — phase 03 Git and dbt execution
+
+Evidence ID: EP-003
+
+Requirement IDs: RC-008, RC-009, RC-010
+
+Repository commit: `3ca39a111f8ad2e035152931960c314d832a0118`
+
+Captured at: `2026-07-30T10:57:13Z`
+
+Mode: live
+
+Source and tool versions: the phase 02 DataHub Core v1.6.0 and self-hosted MCP
+0.6.0 boundary; Git 2.53.0; dbt-core 1.12.0; dbt-duckdb 1.10.1; DuckDB 1.5.5;
+bubblewrap 0.11.1; Python 3.11.15; uv 0.11.28; Retirement Conductor Git/dbt
+adapter 0.1.0.
+
+Command or operator action:
+
+```text
+make git-dbt-tool
+make git-dbt-workspace
+make datahub-seed
+retirement-conductor campaign create fixtures/specs/git-dbt-live.yaml ...
+retirement-conductor adapter git-dbt preflight --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt plan --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt apply --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt authorize --campaign ret-orders-git-dbt ...
+retirement-conductor adapter git-dbt apply --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt compensate --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt plan --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt authorize --campaign ret-orders-git-dbt ...
+retirement-conductor adapter git-dbt apply --campaign ret-orders-git-dbt
+retirement-conductor adapter git-dbt validate --campaign ret-orders-git-dbt
+retirement-conductor campaign evaluate --campaign ret-orders-git-dbt
+make phase03-evidence
+make check
+git diff --check
+```
+
+The first apply command intentionally preceded authorization and exited 2.
+The authorized apply was then repeated before compensation, and the evidence
+generator separately repeated a native apply while counting Git commits.
+
+Expected result: one fresh DataHub consumer maps to one exact dbt manifest
+identity; repository evidence joins the coverage envelope; planning does not
+write; approval binds campaign, plan, source commit, path, and capability;
+only one allowlisted file changes on a review branch; dbt parse, seed, build,
+and test pass; rollback restores and validates the original; reapply produces
+one new change and one accepted live receipt; hostile or stale inputs cannot
+expand scope or escape the validator; readiness remains refused until fresh
+reconciliation closes the other consumers.
+
+Observed result: fresh DataHub evidence returned 31/31 consumers over four
+configured ten-item pages. Exact manifest metadata mapped
+`orders_model_00.sql` to one matching DataHub URN, while the repository source
+recorded main-only coverage and its blind spots. Both plans pinned source
+commit `a827ddfe4543b4f767e3628f131ee739ef681605` and the same before/after file
+fingerprints. Applies `fb4ba869579b603817f46354aa1e66a0ca918631` and
+`123e6908c229e0e207ee29968f31a5ee2e859736` each changed only
+`models/orders_model_00.sql`.
+
+The first apply replay retained one commit and the same apply digest. Git
+compensation commit `f7a2a0f3c9142282cea0d4cad630dea1e9e0e69f` restored the
+original fingerprint and passed native verification before the second plan.
+Final native parse, seed, build, and test each exited zero in a copied,
+allowlisted-environment bubblewrap workspace with no host home, source
+repository, or network namespace mounted. Receipt
+`sha256:b89b6010882e93c0cffeb01e893598e2e71fe223c8379d0c2b11e65e04ac6bab`
+closed exactly consumer `dh-39b6c65bcbecb310e0cd` as `VALIDATED` and retained
+the replacement identity plus matching DataHub/dbt `VARCHAR` evidence.
+
+The phase ended honestly `UNSAFE` and `BLOCKED`: 30 other graph consumers
+remain `OPAQUE`, and `RECONCILIATION_REQUIRED` remains present. Phase 03 did
+not convert successful native execution into a readiness claim.
+
+Refusal cases: missing approval (`AUTH_APPROVAL_MISSING`); disabled apply
+capability (`AUTH_APPLY_DISABLED`); dirty content (`SOURCE_GIT_DIRTY`); moved
+commit (`SOURCE_GIT_BRANCH_MOVED`); unauthorized or expanded targets
+(`SCOPE_TARGET_NOT_ALLOWED`); traversal (`SCOPE_PATH_OUTSIDE_ROOT`); symlink
+and external dependency (`VALIDATION_SCOPE_VIOLATION`); missing or
+incompatible replacement (`SPEC_REPLACEMENT_INCOMPATIBLE`); and intervening
+post-apply content (`COMPENSATION_CONFLICT`). The semantic-wrong model failed
+dbt build. Host-secret, subprocess, and network attempts failed inside the
+isolated validator; no host secret or marker appeared. A malicious Git
+post-commit hook was bypassed through the forced empty hooks path.
+
+Tracked artifact paths:
+`artifacts/public/phase03/execution-evidence.json`,
+`artifacts/public/phase03/adversarial-evidence.json`, and
+`artifacts/public/phase03/phase03-evidence.json`.
+
+Private artifact digests: repository preflight
+`sha256:615dcaf807e55d8b01d6f5ecb8e4db0b4153591864a6f41e899ae1282c80a3e3`;
+cross-source binding
+`sha256:8aa01e711b8ac43e996ce6f65454058158528507a8625b1014bfd39ac473f57c`;
+current plan
+`sha256:71a562a448f1cc76084d1d91e57106e198f06e5db9a5ac68dcc95e9e6e04dc1e`;
+current apply
+`sha256:557739197e41b3de7fd4de48343461ec1a2cd40150369166b9597bbfffe9a9f9`;
+compensation
+`sha256:23f6ee228141ff0feeb346546799bffbd2cd3f38a767e3b6092e3d4d568aefce`;
+final validation
+`sha256:f0eac4ea3c19c2af6747005fae4dd0f15a0b7678ef62c98fa7b8422779d88f93`;
+and event stream
+`sha256:df3ad815795d62da59b5f2babafc8f6c9b0c1002c7bee12a3a20e79c14562eea`.
+The ignored adversarial probe root is referenced only by safe identity
+`sha256:d34235f5262b10486e4b68cf5219c5a62f0ba0eb73ef091d764c4873b7e70ff8`.
+
+The tracked artifact file SHA-256 digests are
+`050f9829647bd78e96bba5775e7e7189b75abe79e60a83842bc59cb7abb8c9a4`,
+`49880a017904daa4106925489450bea9cc0fd1c679e5b8153e05d4afcf859f55`,
+and
+`200d54664d571b94b67dbfb0b17f574b90b82ffbc8c7bd35efa772ea3cf0cfc4`,
+respectively.
+
+What this proves: the product owns a real Git/dbt operational slice from
+fresh cross-source identity through bounded authorization, mutation, native
+validation, recovery, retry, receipt acceptance, and safe refusal. The
+campaign engine, not the adapter, still owns the non-ready decision.
+
+What this does not prove: production repository or warehouse behavior,
+non-default branch completeness, arbitrary dbt project safety, every kernel
+or container boundary, an interrupted mutation whose response is lost,
+reconciliation, producer-gate enforcement, Looker execution, or universal
+field-retirement safety.
+
+Reviewer inspection: inspected both plan and apply bindings, one-file Git
+diffs, branch heads, restored fingerprint, all native command exit codes,
+sandbox mounts and limits, exact receipt consumer/URN and compatibility
+evidence, campaign event digest, remaining blockers, every adverse refusal,
+failed semantic build, and absence of secret, hook, subprocess, and network
+escape markers.

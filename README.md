@@ -75,6 +75,15 @@ was deliberately `UNSAFE`: all graph consumers remain opaque until their
 native systems close them. See
 [EP-002](docs/EVIDENCE_LEDGER.md#ep-002--phase-02-datahub-evidence-boundary).
 
+Phase 03 then joined one of those fresh graph identities to one exact dbt
+manifest node and file. Two separately approved review branches each changed
+only that file; native dbt parse, seed, build, and test passed; Git rollback
+restored and revalidated the source; reapply produced one accepted live
+receipt. Stale, overbroad, incompatible, and hostile cases refused or remained
+inside the disposable validator boundary. The campaign still ended `UNSAFE`
+because 30 consumers remain opaque and reconciliation has not run. See
+[EP-003](docs/EVIDENCE_LEDGER.md#ep-003--phase-03-git-and-dbt-execution).
+
 ## Complete supported path
 
 The first production-shaped vertical is:
@@ -126,10 +135,10 @@ Deterministic policy decides.
 ## Working in this repository
 
 This repository contains the controlling product contracts and an executable
-Python foundation with strict specifications, versioned schemas, deterministic
-fixtures, and stable refusal behavior. The continuous implementation run is
-governed by [GOAL.md](GOAL.md); its active phase and honest external boundaries
-live in [STATUS.md](STATUS.md).
+Python campaign engine with live DataHub and Git/dbt boundaries, versioned
+schemas, deterministic fixtures, and stable refusal behavior. The continuous
+implementation run is governed by [GOAL.md](GOAL.md); its active phase and
+honest external boundaries live in [STATUS.md](STATUS.md).
 
 Create the pinned development environment and run the repository checks with:
 
@@ -155,6 +164,8 @@ retirement-conductor campaign evaluate fixtures/campaigns/blocked
 
 The disposable live DataHub workflow and its no-secret configuration are
 documented in [the DataHub Core runbook](docs/runbooks/DATAHUB_CORE.md).
+The bounded repository mutation and native validation sequence is documented
+in [the Git/dbt runbook](docs/runbooks/GIT_DBT.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.
