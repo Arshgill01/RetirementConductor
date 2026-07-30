@@ -779,10 +779,23 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 0
             if args.campaign_command == "reconcile":
                 with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    recorded_sources = (
+                        store.projection(args.campaign_id).evidence_envelope or {}
+                    ).get("sources", [])
+                    requires_looker = any(
+                        str(source.get("id", "")).startswith("looker:")
+                        for source in recorded_sources
+                        if isinstance(source, Mapping)
+                    )
                     reconciliation_workflow = ReconciliationWorkflow(
                         store=store,
                         boundary=_datahub_boundary(),
                         git_dbt=GitDbtAdapter(GitDbtSettings.from_environment()),
+                        looker=(
+                            LookerAdapter(LookerSettings.from_environment())
+                            if requires_looker
+                            else None
+                        ),
                         artifact_directory=Path(args.artifact_dir),
                         refresh_receipt=args.refresh_receipt,
                         indexing_timeout_seconds=args.indexing_timeout_seconds,

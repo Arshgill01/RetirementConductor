@@ -61,9 +61,11 @@ disposable dbt project:
   agent surface.
 
 A second adapter has deterministic contract coverage for one bounded Looker
-saved-content mutation, rollback, validation, and failure handling. Its live
-boundary remains unverified until a disposable instance and scoped credentials
-are available. See [Evidence baseline](docs/EVIDENCE_BASELINE.md).
+saved-content mutation, rollback, validation, recreated-identity handling,
+unknown-outcome recovery, and fresh legacy/replacement edge reconciliation.
+Its live boundary remains unverified until a disposable instance and scoped
+credentials are available. See
+[Evidence baseline](docs/EVIDENCE_BASELINE.md).
 
 This repository has now independently exercised its phase 02 product path
 against a fresh disposable DataHub Core v1.6.0 instance. It resolved the exact

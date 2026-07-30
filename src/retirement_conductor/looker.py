@@ -17,9 +17,11 @@ from retirement_conductor.canonical import (
     verify_digest,
     with_digest,
 )
+from retirement_conductor.clock import parse_timestamp
 from retirement_conductor.datahub import utc_now
 from retirement_conductor.errors import Refusal
 from retirement_conductor.looker_config import LookerSettings
+from retirement_conductor.records import validate_consumer_receipt
 from retirement_conductor.schemas import validate_schema
 from retirement_conductor.vocabulary import (
     ConsumerDisposition,
@@ -775,6 +777,163 @@ class LookerAdapter:
                 "artifact_ids": sorted(set(artifact_ids)),
             },
             "validation_digest",
+        )
+
+    def reconcile_source(
+        self,
+        plan: Mapping[str, Any],
+        apply_record: Mapping[str, Any],
+        receipt: Mapping[str, Any],
+        *,
+        legacy_snapshot: Mapping[str, Any],
+        replacement_snapshot: Mapping[str, Any],
+        require_live: bool = True,
+    ) -> dict[str, Any]:
+        """Reread native state and compare exact legacy/replacement graph edges."""
+
+        self._validate_plan(plan)
+        apply_value = dict(apply_record)
+        receipt_value = dict(receipt)
+        verify_digest(apply_value, "apply_digest")
+        verify_digest(receipt_value, "receipt_digest")
+        if apply_value.get("plan_digest") != plan["plan_digest"]:
+            raise Refusal(
+                RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+                "The Looker reconciliation apply record belongs to another plan.",
+            )
+        validate_consumer_receipt(
+            receipt_value,
+            campaign_id=str(plan["campaign_id"]),
+            consumer_id=str(plan["consumer_id"]),
+            plan_digest=str(plan["plan_digest"]),
+            source_version=str(plan["source"]["version"]),
+            approved_targets=list(plan["target_sets"]["approved"]),
+            require_live=require_live,
+            trusted_now=parse_timestamp(self.clock()),
+        )
+        if (
+            receipt_value["native_identity"] != plan["native_identity"]
+            or receipt_value["datahub_urn"] != plan["datahub_urn"]
+            or receipt_value["apply"]["before_fingerprint"]
+            != apply_value["before_fingerprint"]
+            or receipt_value["apply"]["after_fingerprint"]
+            != apply_value["after_fingerprint"]
+            or receipt_value["apply"]["native_change_ids"]
+            != apply_value["native_change_ids"]
+        ):
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "The accepted Looker receipt is not bound to the native apply record.",
+            )
+        preflight = self.preflight()
+        if require_live and preflight["mode"] != "live":
+            raise Refusal(
+                RefusalCode.EVIDENCE_MODE_NOT_LIVE,
+                "Live reconciliation requires a live Looker capability receipt.",
+            )
+        compatibility = self._replacement_evidence()
+        if compatibility["evidence_digest"] != plan["replacement"]["evidence_digest"]:
+            raise Refusal(
+                RefusalCode.SPEC_REPLACEMENT_INCOMPATIBLE,
+                "Looker replacement compatibility drifted before reconciliation.",
+            )
+        validation = self.validate(plan, apply_value)
+        snapshot, _ = self._snapshot_bundle(
+            expected_identity=_mapping(plan["native_identity"])
+        )
+        if (
+            not self._matches_after(plan, snapshot)
+            or snapshot["look"]["query_id"] != apply_value["after_query_id"]
+        ):
+            raise Refusal(
+                RefusalCode.SOURCE_FINGERPRINT_MISMATCH,
+                "The validated saved Look changed during reconciliation.",
+            )
+        legacy = _datahub_edge_observation(
+            legacy_snapshot,
+            datahub_urn=str(plan["datahub_urn"]),
+            expected_campaign_id=str(plan["campaign_id"]),
+            expected_field=_reference_field(str(plan["references"]["legacy"])),
+            require_live=require_live,
+        )
+        replacement = _datahub_edge_observation(
+            replacement_snapshot,
+            datahub_urn=str(plan["datahub_urn"]),
+            expected_campaign_id=str(plan["campaign_id"]),
+            expected_field=_reference_field(str(plan["references"]["replacement"])),
+            require_live=require_live,
+        )
+        if legacy["state"] == "FIELD_EDGE_PRESENT":
+            raise Refusal(
+                RefusalCode.RECONCILIATION_SCOPE_MISMATCH,
+                "Fresh DataHub evidence still contains the exact legacy field edge.",
+                {
+                    "datahub_urn": plan["datahub_urn"],
+                    "legacy_snapshot_digest": legacy["snapshot_digest"],
+                },
+            )
+        field_closure = (
+            "SUPPORTED_BY_NATIVE_AND_EXACT_REPLACEMENT_EDGE"
+            if replacement["state"] == "FIELD_EDGE_PRESENT"
+            else "NOT_CLAIMED_CONNECTOR_LIMITATION"
+        )
+        limitations = list(plan["limitations"])
+        if legacy["state"] != "NOT_OBSERVED":
+            limitations.append(
+                "Legacy dependency remains visible only at table level; its "
+                "field-level state is unproven."
+            )
+        if replacement["state"] != "FIELD_EDGE_PRESENT":
+            limitations.append(
+                "DataHub did not expose an exact replacement field edge; native "
+                "validation remains separate and no graph closure is claimed."
+            )
+        capabilities = preflight["capabilities"]
+        effective = [
+            capability
+            for capability in ("read", "plan", "apply", "validate", "compensate")
+            if capabilities[capability]
+        ]
+        return with_digest(
+            {
+                "schema_version": "1.0.0",
+                "result": "PASSED",
+                "mode": preflight["mode"],
+                "captured_at": snapshot["captured_at"],
+                "source": {
+                    "id": (
+                        f"looker:{snapshot['native_identity']['platform_instance']}"
+                    ),
+                    "required": True,
+                    "identity": preflight["configuration"]["base_url_identity"],
+                    "source_version": snapshot["source_version"],
+                    "source_updated_at": (
+                        snapshot["look"]["updated_at"] or snapshot["captured_at"]
+                    ),
+                    "principal": preflight["principal"]["id_digest"],
+                    "effective_capabilities": effective,
+                },
+                "native_identity": snapshot["native_identity"],
+                "native_state": {
+                    "content_fingerprint": snapshot["content_fingerprint"],
+                    "query_id": snapshot["look"]["query_id"],
+                    "query_fingerprint": snapshot["query"]["fingerprint"],
+                    "schedule_fingerprint": snapshot["schedules"]["fingerprint"],
+                },
+                "plan_digest": plan["plan_digest"],
+                "apply_digest": apply_value["apply_digest"],
+                "receipt_digest": receipt_value["receipt_digest"],
+                "preflight_digest": preflight["preflight_digest"],
+                "native_validation": validation,
+                "datahub_edges": {
+                    "legacy": legacy,
+                    "replacement": replacement,
+                    "field_closure": field_closure,
+                    "disappearance_alone_is_closure": False,
+                },
+                "limitations": sorted(set(limitations)),
+            },
+            "reconciliation_digest",
         )
 
     def compensate(
@@ -1634,6 +1793,190 @@ def merge_looker_evidence(
         refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
     )
     return merged
+
+
+def merge_looker_reconciliation_evidence(
+    evidence_envelope: Mapping[str, Any],
+    observation: Mapping[str, Any],
+    *,
+    baseline_source: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Join a fresh native Looker reread without changing declared scope."""
+
+    envelope_value = dict(evidence_envelope)
+    observation_value = dict(observation)
+    verify_digest(envelope_value, "envelope_digest")
+    verify_digest(observation_value, "reconciliation_digest")
+    source = _mapping(observation_value["source"])
+    source_id = str(source["id"])
+    if (
+        source_id != baseline_source["id"]
+        or source["identity"] != baseline_source["identity"]
+        or bool(source["required"]) != bool(baseline_source["required"])
+    ):
+        raise Refusal(
+            RefusalCode.RECONCILIATION_SCOPE_MISMATCH,
+            "The native Looker source identity changed during reconciliation.",
+        )
+    sources = [
+        dict(item) for item in envelope_value["sources"] if item["id"] != source_id
+    ]
+    sources.append(
+        {
+            "id": source_id,
+            "required": bool(baseline_source["required"]),
+            "status": "COMPLETE",
+            "source_version": source["source_version"],
+            "identity": source["identity"],
+            "scope": dict(baseline_source["scope"]),
+            "freshness": {
+                "observed_at": observation_value["captured_at"],
+                "source_updated_at": source["source_updated_at"],
+                "maximum_age_seconds": baseline_source["freshness"][
+                    "maximum_age_seconds"
+                ],
+            },
+            "permissions": {
+                "principal": source["principal"],
+                "effective_scope": ",".join(source["effective_capabilities"]),
+            },
+            "limitations": list(observation_value["limitations"]),
+            "artifact_ids": sorted(
+                {
+                    observation_value["reconciliation_digest"],
+                    observation_value["native_validation"]["validation_digest"],
+                }
+            ),
+        }
+    )
+    merged = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "captured_at": observation_value["captured_at"],
+            "mode": envelope_value["mode"],
+            "sources": sorted(sources, key=lambda item: str(item["id"])),
+        },
+        "envelope_digest",
+    )
+    validate_schema(
+        "evidence-envelope",
+        merged,
+        refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+    )
+    return merged
+
+
+def _reference_field(reference: str) -> str:
+    if "." not in reference:
+        raise Refusal(
+            RefusalCode.SPEC_SCHEMA_INVALID,
+            "Looker field references must use view.field identity.",
+        )
+    return reference.rsplit(".", 1)[1]
+
+
+def _datahub_edge_observation(
+    snapshot: Mapping[str, Any],
+    *,
+    datahub_urn: str,
+    expected_campaign_id: str,
+    expected_field: str,
+    require_live: bool,
+) -> dict[str, Any]:
+    value = dict(snapshot)
+    verify_digest(value, "snapshot_digest")
+    envelope = _mapping(value["evidence_envelope"])
+    verify_digest(envelope, "envelope_digest")
+    if value.get("campaign_id") != expected_campaign_id:
+        raise Refusal(
+            RefusalCode.AUTH_APPROVAL_WRONG_CAMPAIGN,
+            "The DataHub edge snapshot belongs to another campaign.",
+        )
+    if require_live and envelope.get("mode") != "live":
+        raise Refusal(
+            RefusalCode.EVIDENCE_MODE_NOT_LIVE,
+            "Live Looker reconciliation requires live DataHub edge evidence.",
+        )
+    datahub_sources = [
+        _mapping(source)
+        for source in envelope["sources"]
+        if source.get("id") == "datahub"
+    ]
+    if (
+        len(datahub_sources) != 1
+        or datahub_sources[0].get("status") != "COMPLETE"
+        or _mapping(value["pagination"]).get("status") != "COMPLETE"
+    ):
+        raise Refusal(
+            RefusalCode.EVIDENCE_REQUIRED_SOURCE_INCOMPLETE,
+            "The DataHub edge snapshot is incomplete or stale.",
+        )
+    target_field = _mapping(_mapping(value["resolution"])["target_field"])
+    if target_field.get("fieldPath") != expected_field:
+        raise Refusal(
+            RefusalCode.IDENTITY_FIELD_NOT_FOUND,
+            "The DataHub edge snapshot resolved a different field.",
+            {
+                "expected_field": expected_field,
+                "observed_field": target_field.get("fieldPath"),
+            },
+        )
+    dataset_urn = str(_mapping(_mapping(value["resolution"])["dataset"])["urn"])
+    expected_claim_object = f"urn:li:schemaField:({dataset_urn},{expected_field})"
+    matches = [
+        _mapping(consumer)
+        for consumer in value["consumers"]
+        if consumer.get("datahub_urn") == datahub_urn
+    ]
+    if len(matches) > 1:
+        raise Refusal(
+            RefusalCode.IDENTITY_AMBIGUOUS,
+            "The exact Looker URN appeared more than once in DataHub evidence.",
+            {"match_count": len(matches)},
+        )
+    claims_by_id = {
+        str(claim["claim_id"]): _mapping(claim)
+        for claim in value["claims"]
+        if isinstance(claim, Mapping) and isinstance(claim.get("claim_id"), str)
+    }
+    matching_claims: list[dict[str, Any]] = []
+    if matches:
+        for claim_id in matches[0].get("evidence_claim_ids", []):
+            claim = claims_by_id.get(str(claim_id))
+            if claim is not None and claim.get("subject") == datahub_urn:
+                matching_claims.append(claim)
+    exact_claims = [
+        claim
+        for claim in matching_claims
+        if claim.get("confidence_basis") == "column_lineage_edge"
+        and claim.get("object") == expected_claim_object
+    ]
+    if exact_claims:
+        state = "FIELD_EDGE_PRESENT"
+        limitations: list[str] = []
+    elif matches:
+        state = "TABLE_EDGE_ONLY"
+        limitations = [
+            "DataHub exposed only table-level lineage for the exact Looker URN."
+        ]
+    else:
+        state = "NOT_OBSERVED"
+        limitations = [
+            "Absence is bounded by the recorded DataHub source and scope and is "
+            "not native closure evidence."
+        ]
+    return with_digest(
+        {
+            "state": state,
+            "datahub_urn": datahub_urn,
+            "field": expected_field,
+            "snapshot_digest": value["snapshot_digest"],
+            "consumer_match_count": len(matches),
+            "field_claim_count": len(exact_claims),
+            "limitations": limitations,
+        },
+        "edge_digest",
+    )
 
 
 def _query_items(value: Any) -> list[Any]:

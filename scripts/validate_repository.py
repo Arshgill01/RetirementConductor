@@ -129,6 +129,7 @@ REQUIRED_FILES = {
     "tests/integration/test_campaign_store.py",
     "tests/integration/test_gate.py",
     "tests/integration/test_git_dbt_workflow.py",
+    "tests/integration/test_looker_reconciliation.py",
     "tests/integration/test_operator_cli.py",
     "tests/unit/test_looker_access.py",
     "tests/unit/test_operator.py",

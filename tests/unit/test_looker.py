@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from retirement_conductor.canonical import verify_digest
+from retirement_conductor.canonical import verify_digest, with_digest
 from retirement_conductor.clock import parse_timestamp
 from retirement_conductor.errors import Refusal
 from retirement_conductor.looker import (
@@ -23,6 +23,10 @@ NOW = "2026-07-30T12:00:00Z"
 CAMPAIGN_ID = "ret-orders-looker"
 CONSUMER_ID = "dh-aaaaaaaaaaaaaaaaaaaa"
 DATAHUB_URN = "urn:li:dashboard:(looker,retirement-disposable.look.41)"
+FIXTURE_DATASET_URN = (
+    "urn:li:dataset:(urn:li:dataPlatform:bigquery,"
+    "retirement.analytics.commerce.orders,PROD)"
+)
 
 
 class FakeLookerClient:
@@ -227,6 +231,122 @@ def _plan(
         campaign_id=CAMPAIGN_ID,
         consumer_id=CONSUMER_ID,
     )
+
+
+def _edge_snapshot(
+    field: str,
+    *,
+    state: str,
+) -> dict[str, Any]:
+    claims: list[dict[str, Any]] = []
+    consumers: list[dict[str, Any]] = []
+    if state in {"field", "table"}:
+        claim = with_digest(
+            {
+                "type": "CONSUMER_DEPENDS_ON_FIELD",
+                "subject": DATAHUB_URN,
+                "object": f"urn:li:schemaField:({FIXTURE_DATASET_URN},{field})",
+                "source_id": "datahub",
+                "observed_at": NOW,
+                "source_version": "fixture-datahub/1",
+                "confidence_basis": (
+                    "column_lineage_edge"
+                    if state == "field"
+                    else "canonical_lineage_edge"
+                ),
+                "artifact_ids": [f"sha256:{'6' * 64}"],
+                "limitations": (
+                    []
+                    if state == "field"
+                    else ["table-only lineage; field dependency remains unproven"]
+                ),
+            },
+            "claim_id",
+        )
+        claims.append(claim)
+        consumers.append(
+            {
+                "id": CONSUMER_ID,
+                "datahub_urn": DATAHUB_URN,
+                "evidence_claim_ids": [claim["claim_id"]],
+            }
+        )
+    envelope = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "captured_at": NOW,
+            "mode": "fixture",
+            "sources": [
+                {
+                    "id": "datahub",
+                    "required": True,
+                    "status": "COMPLETE",
+                    "source_version": "fixture-datahub/1",
+                    "identity": "fixture-datahub",
+                    "scope": {
+                        "direction": "downstream",
+                        "max_hops": 3,
+                        "filters": [],
+                        "pages": 1,
+                        "reported_total": len(consumers),
+                        "returned_total": len(consumers),
+                    },
+                    "freshness": {
+                        "observed_at": NOW,
+                        "source_updated_at": NOW,
+                        "maximum_age_seconds": 900,
+                    },
+                    "permissions": {
+                        "principal": "fixture",
+                        "effective_scope": "read",
+                    },
+                    "limitations": ["fixture"],
+                    "artifact_ids": [f"sha256:{'6' * 64}"],
+                }
+            ],
+        },
+        "envelope_digest",
+    )
+    return with_digest(
+        {
+            "schema_version": "1.0.0",
+            "campaign_id": CAMPAIGN_ID,
+            "captured_at": NOW,
+            "resolution": {
+                "dataset": {"urn": FIXTURE_DATASET_URN},
+                "target_field": {"fieldPath": field},
+            },
+            "consumers": consumers,
+            "claims": claims,
+            "pagination": {"status": "COMPLETE"},
+            "evidence_envelope": envelope,
+        },
+        "snapshot_digest",
+    )
+
+
+def _validated_migration(
+    fake: FakeLookerClient,
+) -> tuple[
+    LookerAdapter,
+    dict[str, Any],
+    dict[str, Any],
+    dict[str, Any],
+]:
+    adapter, plan = _plan(fake)
+    intent = adapter.prepare_apply_intent(plan, recorded_at=NOW)
+    applied = adapter.apply(plan, intent, occurred_at=NOW)
+    validation = adapter.validate(plan, applied)
+    receipt = adapter.emit_receipt(
+        plan,
+        applied,
+        validation,
+        compensation=None,
+        captured_at=NOW,
+        expires_at=None,
+        artifact_ids=[f"sha256:{'8' * 64}"],
+    )
+    return adapter, plan, applied, receipt
 
 
 def test_plan_is_exact_paged_redacted_and_explicit_about_relevance() -> None:
@@ -463,3 +583,87 @@ def test_fixture_receipt_is_structurally_valid_but_rejected_as_live() -> None:
         )
 
     assert raised.value.code == "EVIDENCE_RECEIPT_MODE_NOT_LIVE"
+
+
+def test_reconciliation_rereads_native_state_and_observes_replacement_edge() -> None:
+    fake = FakeLookerClient()
+    adapter, plan, applied, receipt = _validated_migration(fake)
+
+    observation = adapter.reconcile_source(
+        plan,
+        applied,
+        receipt,
+        legacy_snapshot=_edge_snapshot("legacy_status", state="absent"),
+        replacement_snapshot=_edge_snapshot("order_status", state="field"),
+        require_live=False,
+    )
+
+    verify_digest(observation, "reconciliation_digest")
+    assert observation["native_validation"]["result"] == "PASSED"
+    assert observation["datahub_edges"]["legacy"]["state"] == "NOT_OBSERVED"
+    assert observation["datahub_edges"]["replacement"]["state"] == "FIELD_EDGE_PRESENT"
+    assert (
+        observation["datahub_edges"]["field_closure"]
+        == "SUPPORTED_BY_NATIVE_AND_EXACT_REPLACEMENT_EDGE"
+    )
+    assert observation["datahub_edges"]["disappearance_alone_is_closure"] is False
+
+
+def test_reconciliation_records_table_only_connector_limitation() -> None:
+    fake = FakeLookerClient()
+    adapter, plan, applied, receipt = _validated_migration(fake)
+
+    observation = adapter.reconcile_source(
+        plan,
+        applied,
+        receipt,
+        legacy_snapshot=_edge_snapshot("legacy_status", state="absent"),
+        replacement_snapshot=_edge_snapshot("order_status", state="table"),
+        require_live=False,
+    )
+
+    assert observation["datahub_edges"]["replacement"]["state"] == "TABLE_EDGE_ONLY"
+    assert (
+        observation["datahub_edges"]["field_closure"]
+        == "NOT_CLAIMED_CONNECTOR_LIMITATION"
+    )
+    assert any(
+        "no graph closure is claimed" in limitation
+        for limitation in observation["limitations"]
+    )
+
+
+def test_reconciliation_refuses_a_persisting_exact_legacy_edge() -> None:
+    fake = FakeLookerClient()
+    adapter, plan, applied, receipt = _validated_migration(fake)
+
+    with pytest.raises(Refusal) as raised:
+        adapter.reconcile_source(
+            plan,
+            applied,
+            receipt,
+            legacy_snapshot=_edge_snapshot("legacy_status", state="field"),
+            replacement_snapshot=_edge_snapshot("order_status", state="field"),
+            require_live=False,
+        )
+
+    assert raised.value.code == "RECONCILIATION_SCOPE_MISMATCH"
+
+
+def test_reconciliation_invalidates_recreated_same_name_native_identity() -> None:
+    fake = FakeLookerClient()
+    adapter, plan, applied, receipt = _validated_migration(fake)
+    fake.look["content_metadata_id"] = "cm-recreated"
+    fake.look["created_at"] = "2026-07-30T12:00:01Z"
+
+    with pytest.raises(Refusal) as raised:
+        adapter.reconcile_source(
+            plan,
+            applied,
+            receipt,
+            legacy_snapshot=_edge_snapshot("legacy_status", state="absent"),
+            replacement_snapshot=_edge_snapshot("order_status", state="field"),
+            require_live=False,
+        )
+
+    assert raised.value.code == "IDENTITY_NATIVE_OBJECT_RECREATED"

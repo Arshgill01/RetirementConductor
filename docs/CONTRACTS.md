@@ -321,6 +321,34 @@ The receipt is rejected unless every referenced artifact exists, the target
 set matches the approved plan, digests verify, and the terminal disposition is
 legal.
 
+### `reconcile_source`
+
+Required inputs:
+
+- exact plan, apply record, and accepted receipt;
+- a native reread constrained by the plan's immutable identity;
+- fresh, fully paged DataHub snapshots for the legacy and replacement fields;
+- the same declared source identity, traversal scope, and effective principal.
+
+The adapter reruns its native validator and replacement-compatibility check.
+It verifies that the current saved object still has the exact post-apply
+fingerprint and native change ID. A recreated same-name object, permission
+loss, native drift, validator failure, receipt mismatch, or remaining exact
+legacy field edge invalidates only that consumer's receipt and makes it
+`STALE`.
+
+The graph observation distinguishes:
+
+- `FIELD_EDGE_PRESENT`: the exact consumer URN has a column-lineage claim for
+  the resolved field;
+- `TABLE_EDGE_ONLY`: canonical lineage contains the consumer, but field
+  dependency remains unproven;
+- `NOT_OBSERVED`: the consumer is absent within the recorded complete scope.
+
+Only native validation plus an exact replacement field edge supports a graph
+closure statement. Table-only lineage is retained as a connector limitation.
+Disappearance alone never closes a consumer.
+
 ## Consumer receipt
 
 A receipt contains:

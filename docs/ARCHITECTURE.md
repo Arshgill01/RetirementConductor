@@ -194,14 +194,20 @@ scope, content versions, target identity, and validator results.
 The reconciler:
 
 1. refreshes the relevant metadata source when supported;
-2. obtains a new graph snapshot;
-3. compares source identities and consumer membership;
-4. invalidates stale receipts;
-5. adds newly observed consumers as blockers;
-6. records vanished edges without treating disappearance alone as validation.
+2. obtains equivalent legacy-field and replacement-field graph snapshots;
+3. rereads every accepted native source and reruns its validator;
+4. compares source identities, immutable object identity, and membership;
+5. invalidates only the receipt whose native or exact legacy-edge evidence
+   drifted;
+6. adds newly observed consumers as blockers; and
+7. records table-only or vanished edges without treating disappearance alone
+   as validation.
 
 An edge disappearing is only one signal. A consumer closes through a valid
 native receipt, verified removal, or proved non-applicability under policy.
+For Looker, an exact replacement field edge can corroborate native closure;
+table-only lineage is recorded explicitly and never upgraded into a field
+claim.
 
 ### Operator views and gate
 

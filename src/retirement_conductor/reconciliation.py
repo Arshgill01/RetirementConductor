@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Mapping
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -21,8 +22,30 @@ from retirement_conductor.git_dbt import (
     merge_repository_reconciliation_evidence,
     write_versioned_artifact,
 )
+from retirement_conductor.looker import (
+    LookerAdapter,
+    merge_looker_reconciliation_evidence,
+)
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.vocabulary import ConsumerDisposition, RefusalCode
+
+_LOOKER_INVALIDATION_CODES = {
+    RefusalCode.AUTH_APPROVAL_WRONG_PLAN,
+    RefusalCode.EVIDENCE_MODE_NOT_LIVE,
+    RefusalCode.EVIDENCE_RECEIPT_EXPIRED,
+    RefusalCode.EVIDENCE_RECEIPT_MODE_NOT_LIVE,
+    RefusalCode.IDENTITY_NATIVE_OBJECT_RECREATED,
+    RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+    RefusalCode.RECONCILIATION_SCOPE_MISMATCH,
+    RefusalCode.SCOPE_RECEIPT_TARGET_MISMATCH,
+    RefusalCode.SOURCE_FINGERPRINT_MISMATCH,
+    RefusalCode.SOURCE_LOOKER_PERMISSION_DENIED,
+    RefusalCode.SOURCE_LOOKER_UNAVAILABLE,
+    RefusalCode.SOURCE_RECEIPT_VERSION_MISMATCH,
+    RefusalCode.SPEC_REPLACEMENT_INCOMPATIBLE,
+    RefusalCode.VALIDATION_RECEIPT_FAILED,
+    RefusalCode.VALIDATION_RECEIPT_INCONCLUSIVE,
+}
 
 
 class ReconciliationWorkflow:
@@ -34,6 +57,7 @@ class ReconciliationWorkflow:
         store: CampaignStore,
         boundary: DataHubBoundary,
         git_dbt: GitDbtAdapter,
+        looker: LookerAdapter | None = None,
         artifact_directory: Path,
         refresh_receipt: Path,
         indexing_timeout_seconds: float = 30,
@@ -41,6 +65,7 @@ class ReconciliationWorkflow:
         self.store = store
         self.boundary = boundary
         self.git_dbt = git_dbt
+        self.looker = looker
         self.artifact_directory = artifact_directory
         self.refresh_receipt = refresh_receipt
         self.indexing_timeout_seconds = indexing_timeout_seconds
@@ -140,6 +165,112 @@ class ReconciliationWorkflow:
                 invalidation,
             )
 
+        looker_observation: dict[str, Any] | None = None
+        replacement_snapshot: dict[str, Any] | None = None
+        baseline_looker_sources = [
+            dict(source)
+            for source in baseline_envelope["sources"]
+            if str(source["id"]).startswith("looker:")
+        ]
+        if self.looker is None and baseline_looker_sources:
+            raise Refusal(
+                RefusalCode.SOURCE_LOOKER_UNAVAILABLE,
+                "Reconciliation requires the configured Looker adapter for the "
+                "recorded native source.",
+            )
+        if self.looker is not None:
+            if len(baseline_looker_sources) != 1:
+                raise Refusal(
+                    RefusalCode.EVIDENCE_REQUIRED_SOURCE_INCOMPLETE,
+                    "Reconciliation requires one recorded Looker source.",
+                    {"source_count": len(baseline_looker_sources)},
+                )
+            replacement_snapshot = self.boundary.inventory(
+                _replacement_field_specification(specification),
+                artifact_root=(
+                    self._reconciliation_root(campaign_id)
+                    / "datahub"
+                    / "replacement-field"
+                ),
+            )
+            _require_refresh_visible(
+                replacement_snapshot,
+                refresh=refresh,
+            )
+            looker_plan = _load_looker_artifact(
+                self._looker_root(campaign_id) / "plan.json"
+            )
+            looker_apply = _load_looker_artifact(
+                self._looker_root(campaign_id) / "apply.json"
+            )
+            looker_receipt = _load_looker_artifact(
+                self._looker_root(campaign_id) / "receipt.json"
+            )
+            looker_consumer_id = str(looker_plan["consumer_id"])
+            baseline_looker = baseline_looker_sources[0]
+            try:
+                looker_observation = self.looker.reconcile_source(
+                    looker_plan,
+                    looker_apply,
+                    looker_receipt,
+                    legacy_snapshot=snapshot,
+                    replacement_snapshot=replacement_snapshot,
+                    require_live=True,
+                )
+                write_versioned_artifact(
+                    self._reconciliation_root(campaign_id),
+                    "looker-source-reconciliation",
+                    looker_observation,
+                )
+                envelope = merge_looker_reconciliation_evidence(
+                    envelope,
+                    looker_observation,
+                    baseline_source=baseline_looker,
+                )
+            except Refusal as exc:
+                if exc.code not in _LOOKER_INVALIDATION_CODES:
+                    raise
+                invalidation = with_digest(
+                    {
+                        "schema_version": "1.0.0",
+                        "captured_at": utc_now(),
+                        "consumer_id": looker_consumer_id,
+                        "receipt_digest": looker_receipt["receipt_digest"],
+                        "refusal_code": str(exc.code),
+                        "reason": exc.message,
+                    },
+                    "invalidation_digest",
+                )
+                write_versioned_artifact(
+                    self._reconciliation_root(campaign_id),
+                    "looker-receipt-invalidation",
+                    invalidation,
+                )
+                invalidated_receipts.append(invalidation)
+                current = self.store.projection(campaign_id).consumers.get(
+                    looker_consumer_id
+                )
+                if (
+                    current is not None
+                    and ConsumerDisposition(str(current["disposition"]))
+                    == ConsumerDisposition.VALIDATED
+                ):
+                    self.store.change_consumer_disposition(
+                        campaign_id,
+                        looker_consumer_id,
+                        ConsumerDisposition.STALE,
+                        occurred_at=str(invalidation["captured_at"]),
+                        idempotency_key=(
+                            "looker-reconciliation-stale-"
+                            f"{str(invalidation['invalidation_digest'])[-16:]}"
+                        ),
+                    )
+                envelope = _merge_unavailable_looker_source(
+                    envelope,
+                    baseline_looker,
+                    invalidation,
+                )
+
         baseline_scope = scope_signature(baseline_envelope)
         current_scope = scope_signature(envelope)
         if current_scope != baseline_scope:
@@ -175,6 +306,16 @@ class ReconciliationWorkflow:
                         if git_observation is not None
                         else None
                     ),
+                    "looker_reconciliation_digest": (
+                        looker_observation["reconciliation_digest"]
+                        if looker_observation is not None
+                        else None
+                    ),
+                    "replacement_datahub_snapshot_digest": (
+                        replacement_snapshot["snapshot_digest"]
+                        if replacement_snapshot is not None
+                        else None
+                    ),
                     "envelope_digest": envelope["envelope_digest"],
                     "scope_digest": digest_json(current_scope),
                     "consumer_count": len(current_ids),
@@ -194,6 +335,10 @@ class ReconciliationWorkflow:
                     (
                         "Equivalent scope proves comparison consistency, not "
                         "visibility outside the declared evidence envelope."
+                    ),
+                    (
+                        "Looker graph closure is claimed only when native "
+                        "validation and an exact replacement field edge agree."
                     ),
                 ],
             },
@@ -302,6 +447,9 @@ class ReconciliationWorkflow:
     def _git_root(self, campaign_id: str) -> Path:
         return self.artifact_directory / campaign_id / "git-dbt"
 
+    def _looker_root(self, campaign_id: str) -> Path:
+        return self.artifact_directory / campaign_id / "looker"
+
     def _reconciliation_root(self, campaign_id: str) -> Path:
         return self.artifact_directory / campaign_id / "reconciliation"
 
@@ -346,6 +494,38 @@ def _merge_unavailable_git_source(
     baseline_source: Mapping[str, Any],
     invalidation: Mapping[str, Any],
 ) -> dict[str, Any]:
+    return _merge_unavailable_native_source(
+        evidence_envelope,
+        baseline_source,
+        invalidation,
+        limitation=(
+            "The accepted Git/dbt receipt was invalidated during reconciliation"
+        ),
+    )
+
+
+def _merge_unavailable_looker_source(
+    evidence_envelope: Mapping[str, Any],
+    baseline_source: Mapping[str, Any],
+    invalidation: Mapping[str, Any],
+) -> dict[str, Any]:
+    return _merge_unavailable_native_source(
+        evidence_envelope,
+        baseline_source,
+        invalidation,
+        limitation=(
+            "The accepted Looker receipt was invalidated during reconciliation"
+        ),
+    )
+
+
+def _merge_unavailable_native_source(
+    evidence_envelope: Mapping[str, Any],
+    baseline_source: Mapping[str, Any],
+    invalidation: Mapping[str, Any],
+    *,
+    limitation: str,
+) -> dict[str, Any]:
     verify_digest(dict(evidence_envelope), "envelope_digest")
     sources = [
         dict(source)
@@ -363,7 +543,7 @@ def _merge_unavailable_git_source(
             "limitations": sorted(
                 {
                     *baseline_source["limitations"],
-                    "The accepted native receipt was invalidated during reconciliation",
+                    limitation,
                 }
             ),
             "artifact_ids": sorted(
@@ -383,3 +563,55 @@ def _merge_unavailable_git_source(
         },
         "envelope_digest",
     )
+
+
+def _replacement_field_specification(
+    specification: Mapping[str, Any],
+) -> dict[str, Any]:
+    value = deepcopy(dict(specification))
+    value["target"], value["replacement"] = (
+        deepcopy(dict(specification["replacement"])),
+        deepcopy(dict(specification["target"])),
+    )
+    unsigned = {
+        key: item for key, item in value.items() if key != "specification_digest"
+    }
+    value["specification_digest"] = digest_json(unsigned)
+    return value
+
+
+def _load_looker_artifact(path: Path) -> dict[str, Any]:
+    try:
+        return load_object(path)
+    except Refusal as exc:
+        if exc.code != RefusalCode.SOURCE_DBT_UNAVAILABLE:
+            raise
+        raise Refusal(
+            RefusalCode.SOURCE_LOOKER_UNAVAILABLE,
+            "A required Looker reconciliation artifact could not be read.",
+            {"artifact": path.name},
+        ) from exc
+
+
+def _require_refresh_visible(
+    snapshot: Mapping[str, Any],
+    *,
+    refresh: Mapping[str, Any],
+) -> None:
+    snapshot_value = dict(snapshot)
+    verify_digest(snapshot_value, "snapshot_digest")
+    envelope = dict(snapshot_value["evidence_envelope"])
+    verify_digest(envelope, "envelope_digest")
+    source = _source(envelope, "datahub")
+    source_updated_at = source["freshness"]["source_updated_at"]
+    if not isinstance(source_updated_at, str) or parse_timestamp(
+        source_updated_at
+    ) < parse_timestamp(str(refresh["source_updated_at"])):
+        raise Refusal(
+            RefusalCode.RECONCILIATION_REFRESH_TIMEOUT,
+            "The replacement-field snapshot did not expose the requested refresh.",
+            {
+                "observed_source_updated_at": source_updated_at,
+                "refresh_source_updated_at": refresh["source_updated_at"],
+            },
+        )
