@@ -1068,13 +1068,16 @@ def run() -> dict[str, Any]:
             ],
             timeout=240,
         )
-        late_manifest = late_reconciliation["manifest"]
+        late_reconciliation_manifest = late_reconciliation["manifest"]
         require(
-            late_manifest["decision"] == "UNSAFE"
+            late_reconciliation_manifest["decision"] == "UNSAFE"
             and len(late_reconciliation["comparison"]["membership"]["added"]) == 1,
             "the late consumer did not reopen readiness",
         )
-        write_json(run_root / "late-manifest.json", late_manifest)
+        write_json(
+            run_root / "late-reconciliation-manifest.json",
+            late_reconciliation_manifest,
+        )
         late_publication = runner.json(
             "campaign-publish-late",
             [
@@ -1100,9 +1103,13 @@ def run() -> dict[str, Any]:
         require(
             late_verification["publication"]["readback_verified"] is True
             and late_verification["publication"]["urn"]
-            == ready_verification["publication"]["urn"],
-            "late publication did not update and verify the stable summary",
+            == ready_verification["publication"]["urn"]
+            and late_verification["publication"]["published_manifest_digest"]
+            == late_reconciliation_manifest["manifest_digest"],
+            "late publication did not bind, update, and verify the stable summary",
         )
+        late_manifest = late_verification["manifest"]
+        write_json(run_root / "late-manifest.json", late_manifest)
         runner.json(
             "gate-late-consumer",
             [
@@ -1251,6 +1258,9 @@ def run() -> dict[str, Any]:
                     "late_consumer_count": len(late_settle["snapshot"]["consumers"]),
                     "late_decision": late_manifest["decision"],
                     "late_manifest_digest": late_manifest["manifest_digest"],
+                    "late_reconciliation_manifest_digest": (
+                        late_reconciliation_manifest["manifest_digest"]
+                    ),
                     "late_reconciliation_digest": late_reconciliation["comparison"][
                         "comparison_digest"
                     ],
