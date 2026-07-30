@@ -124,10 +124,12 @@ REQUIRED_FILES = {
     "scripts/generate_phase07_evidence.py",
     "scripts/package_release.py",
     "scripts/phase08_support.py",
+    "scripts/reference_services.py",
     "scripts/validate_phase06_recipes.py",
     "scripts/inspect_phase06_lookml_ingestion.py",
     "scripts/run_phase04_end_to_end.py",
     "scripts/run_phase05_browser_acceptance.py",
+    "scripts/run_phase08_reference_campaign.py",
     "scripts/run_security_scan.py",
     "scripts/test_install.py",
     "scripts/test_upgrade.py",
@@ -159,6 +161,7 @@ REQUIRED_FILES = {
     "tests/unit/test_deployment.py",
     "tests/unit/test_operator.py",
     "tests/unit/test_phase06_recipes.py",
+    "tests/unit/test_phase08_reference.py",
 }
 
 GOAL_HEADINGS = {

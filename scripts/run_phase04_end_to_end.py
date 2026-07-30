@@ -61,6 +61,7 @@ class CommandObservation:
     exit_code: int
     result: str
     refusal_code: str | None
+    execution_mode: str
     output_digest: str
     duration_ms: int
 
@@ -70,6 +71,7 @@ class CommandObservation:
             "exit_code": self.exit_code,
             "result": self.result,
             "refusal_code": self.refusal_code,
+            "execution_mode": self.execution_mode,
             "output_digest": self.output_digest,
             "duration_ms": self.duration_ms,
         }
@@ -95,10 +97,12 @@ class Runner:
         timeout: float = 300,
     ) -> dict[str, Any]:
         started = time.monotonic()
+        selected_environment = dict(environment or self.environment)
+        selected_arguments = product_command(arguments, selected_environment)
         result = subprocess.run(
-            list(arguments),
+            selected_arguments,
             cwd=ROOT,
-            env=dict(environment or self.environment),
+            env=selected_environment,
             capture_output=True,
             text=True,
             check=False,
@@ -126,6 +130,7 @@ class Runner:
             result.returncode,
             str(payload.get("result", "UNKNOWN")),
             str(refusal_code) if refusal_code is not None else None,
+            command_execution_mode(arguments, selected_environment),
             result.stdout,
             duration_ms,
             payload,
@@ -142,10 +147,12 @@ class Runner:
         record: bool = True,
     ) -> str:
         started = time.monotonic()
+        selected_environment = dict(environment or self.environment)
+        selected_arguments = product_command(arguments, selected_environment)
         result = subprocess.run(
-            list(arguments),
+            selected_arguments,
             cwd=ROOT,
-            env=dict(environment or self.environment),
+            env=selected_environment,
             capture_output=True,
             text=True,
             check=False,
@@ -162,6 +169,7 @@ class Runner:
                 result.returncode,
                 "OK",
                 None,
+                command_execution_mode(arguments, selected_environment),
                 result.stdout,
                 duration_ms,
                 {
@@ -177,6 +185,7 @@ class Runner:
         exit_code: int,
         result: str,
         refusal_code: str | None,
+        execution_mode: str,
         output: str,
         duration_ms: int,
         payload: Mapping[str, Any],
@@ -192,6 +201,7 @@ class Runner:
                 exit_code=exit_code,
                 result=result,
                 refusal_code=refusal_code,
+                execution_mode=execution_mode,
                 output_digest=digest_bytes(output.encode()),
                 duration_ms=duration_ms,
             )
@@ -200,6 +210,33 @@ class Runner:
 
 def safe_name(value: str) -> str:
     return "".join(character if character.isalnum() else "-" for character in value)
+
+
+def product_command(
+    arguments: Sequence[str],
+    environment: Mapping[str, str],
+) -> list[str]:
+    """Use an installed console entry point when Phase 08 supplies one."""
+
+    selected = list(arguments)
+    installed = environment.get("RETIREMENT_CONDUCTOR_CLI", "").strip()
+    if selected[:3] != ["uv", "run", "retirement-conductor"] or not installed:
+        return selected
+    executable = Path(installed)
+    if not executable.is_file() or not os.access(executable, os.X_OK):
+        raise RuntimeError("the configured installed product command is unavailable")
+    return [str(executable), *selected[3:]]
+
+
+def command_execution_mode(
+    arguments: Sequence[str],
+    environment: Mapping[str, str],
+) -> str:
+    if list(arguments[:3]) != ["uv", "run", "retirement-conductor"]:
+        return "orchestration"
+    if environment.get("RETIREMENT_CONDUCTOR_CLI", "").strip():
+        return "installed-product-cli"
+    return "source-product-cli"
 
 
 def timestamp() -> str:

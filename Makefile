@@ -3,8 +3,8 @@
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
 	phase06-evidence phase07-evidence package scan \
-	test test-install test-ui test-upgrade test-end-to-end test-faults \
-	test-recovery test-security
+	test test-install test-reference-campaign test-ui test-upgrade \
+	test-end-to-end test-faults test-recovery test-security
 
 check:
 	uv run ruff check src tests scripts
@@ -99,6 +99,9 @@ test:
 
 test-install: package
 	uv run python -m scripts.test_install
+
+test-reference-campaign: package
+	uv run python -m scripts.run_phase08_reference_campaign
 
 test-ui:
 	uv run pytest -q \
