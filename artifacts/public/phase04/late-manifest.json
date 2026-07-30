@@ -1,0 +1,253 @@
+{
+  "blockers": [
+    {
+      "code": "POLICY_CONSUMER_OPAQUE",
+      "message": "Consumer remains opaque."
+    },
+    {
+      "code": "RECONCILIATION_NEW_CONSUMER",
+      "message": "A consumer appeared after the frozen inventory."
+    }
+  ],
+  "campaign": {
+    "id": "ret-orders-phase04-9a0b74c6872b",
+    "name": "Phase 04 disposable isolated end-to-end campaign",
+    "state": "BLOCKED"
+  },
+  "consumers": [
+    {
+      "disposition": "VALIDATED",
+      "id": "dh-477310f4b3971b7103d3",
+      "receipt_digest": "sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c"
+    },
+    {
+      "disposition": "OPAQUE",
+      "id": "dh-aa68f56e6a72eb184768",
+      "receipt_digest": null
+    }
+  ],
+  "decision": "UNSAFE",
+  "evidence_envelope": {
+    "captured_at": "2026-07-30T12:45:00.596002Z",
+    "envelope_digest": "sha256:701fe46d7fedbfc30d990871839ca7421173f5c6a67f6fa821ee0f38dd64d3f3",
+    "mode": "live",
+    "schema_version": "1.0.0",
+    "sources": [
+      {
+        "artifact_ids": [
+          "sha256:1cf8c2aa477387ddf9c62c37e9cf01c17add4e3b08dc5315b54563a62ce0a554",
+          "sha256:202203a6b6de44f731ab6aaf823364a2cf88f2bb6df7e52a4d2f2d7512e79b07",
+          "sha256:2cccae6b47814e9fe179c474bc28f1f4ebc1074398c0f41ca4fbf4511dbae0dc",
+          "sha256:6290fef09189233eb59a9a70b99e28ef171235c35f418fa26e1277cda8a4e414",
+          "sha256:71d21cc99ac1a22c0d71aeefdda8da45953622748b74b80f2b3d601d0c1c0ee1",
+          "sha256:7b4012bc8ca0d8abcc894d5b7e85c29a2d6070955ec820c47f2b0809fc665225",
+          "sha256:969919f67e5b227df0d69938fd9d0f5c63216c7acdd83ef1d264bc8abe8af30f",
+          "sha256:b648ded6a069ae73f19aee95453f738cce0b0bbfcf034fa4fa235351c7dffadb",
+          "sha256:c32f0a3687625c89b6d6718f675bc0d484fb4f4ac08dc0b94ed2521bf77d4f88",
+          "sha256:d8da7110108d2b185b0b78dc5bed146c0db99ed3f9b1dada9acc4938340cddcf"
+        ],
+        "freshness": {
+          "maximum_age_seconds": 900,
+          "observed_at": "2026-07-30T12:44:57.581461Z",
+          "source_updated_at": "2026-07-30T12:44:39.998639Z"
+        },
+        "id": "datahub",
+        "identity": "http://127.0.0.1:18080",
+        "limitations": [
+          "DataHub Core did not expose isPartial",
+          "Ownership is routing context only",
+          "Query-history absence is not closure evidence",
+          "Table-only lineage cannot authorize field mutation or closure"
+        ],
+        "permissions": {
+          "effective_scope": "disposable Core metadata read and campaign document write",
+          "principal": "anonymous-disposable-core"
+        },
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "filters": [],
+          "max_hops": 3,
+          "pages": 3,
+          "reported_total": 2,
+          "returned_total": 2
+        },
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "status": "COMPLETE"
+      },
+      {
+        "artifact_ids": [
+          "sha256:116709267872a62a85ddafa72741eda19ed50da5407d45d60b764fd44aeba4aa"
+        ],
+        "freshness": {
+          "maximum_age_seconds": 31536000,
+          "observed_at": "2026-07-30T12:45:00.596002Z",
+          "source_updated_at": "2026-07-30T12:42:55Z"
+        },
+        "id": "git:analytics",
+        "identity": "sha256:55879050453099e04eb4090a4171484e45336515c6de1a5f6f4dd132a21af0e2",
+        "limitations": [
+          "Only the declared source branch was searched",
+          "Text discovery is high-recall evidence, not completeness proof",
+          "External dbt packages are refused in the initial adapter"
+        ],
+        "permissions": {
+          "effective_scope": "read,plan,apply,validate,compensate",
+          "principal": "local-disposable-operator"
+        },
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "filters": [
+            "branch:main",
+            "path:models/orders_isolated_model.sql"
+          ],
+          "max_hops": 1,
+          "pages": 1,
+          "reported_total": 1,
+          "returned_total": 1
+        },
+        "source_version": "6c3ee32a3aefe6fc4144b785c9e84905fa87e45c",
+        "status": "COMPLETE"
+      }
+    ]
+  },
+  "generated_at": "2026-07-30T12:45:04.877685Z",
+  "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece",
+  "policy": {
+    "id": "default-column-retirement",
+    "requires_live_evidence": true,
+    "version": 1
+  },
+  "publication": {
+    "content_digest": "sha256:8fb926c0ceaa8013e0a6022f05584bb21fb249b32446afa0ba27d46fe6ed0443",
+    "lifecycle_digest_after": "sha256:e0c103d36944fade20d9e64f1f55969c8c96b7ee9b61a2a23d342d519abfc356",
+    "lifecycle_digest_before": "sha256:e0c103d36944fade20d9e64f1f55969c8c96b7ee9b61a2a23d342d519abfc356",
+    "logical_key": "campaign/ret-orders-phase04-9a0b74c6872b",
+    "published_manifest_digest": "sha256:eb024ebae3f3096be9cf4d7d464dd39e1cb2d780489185ab2f6a14df902e4a2b",
+    "readback_artifact_id": "sha256:a3d0e4fb661bcbc7b81aa7f1ad72dd183964fe9496a0942cd8508ffa1a1a58fc",
+    "readback_verified": true,
+    "urn": "urn:li:document:shared-b1576d7c-f37b-4f9a-afa6-1274e03cdf09",
+    "verified_at": "2026-07-30T12:45:04.877685Z"
+  },
+  "receipt_digests": [
+    "sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c"
+  ],
+  "replacement": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "order_status",
+    "instance": "retirement_conductor",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders_isolated"
+  },
+  "schema_version": "1.0.0",
+  "snapshot_digests": [
+    "sha256:31d0e003b74f9695b6cc031eddc01f2f70eca88d50d994fac423f1909b819429",
+    "sha256:e6a86d0de5d2c55b5004e641a9994dc3b7a1b2ecb77995a684a7b6e7700b0f53",
+    "sha256:69269f775693bbb5810e262228bdb2c176a8bc1bbf30c2fc73e552b487afe54e"
+  ],
+  "specification_digest": "sha256:3ff06bc70123b38d578e380af6f06385061cfac707515b44475352ecec9cd1d0",
+  "target": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "legacy_status",
+    "instance": "retirement_conductor",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders_isolated"
+  },
+  "transition_history": [
+    {
+      "event_digest": "sha256:a7d81252200316cc4ac9fbd14a1b1b16e34fbc48a23efd89f069e179d5be876b",
+      "event_type": "CAMPAIGN_CREATED",
+      "sequence": 1
+    },
+    {
+      "event_digest": "sha256:4f8d161d622068cd3c082c45f9271a581867ab73f59227c726f8b0e3094b7651",
+      "event_type": "INVENTORY_RECORDED",
+      "sequence": 2
+    },
+    {
+      "event_digest": "sha256:ba1fd7e78757740f7ab267ea58c5577ad776b2434b8995139cd72f7a364fbe88",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "sequence": 3
+    },
+    {
+      "event_digest": "sha256:68b760a027aa6133e9085b28a7de60df35250d14441f93f4878ccf38ca2c15f6",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "sequence": 4
+    },
+    {
+      "event_digest": "sha256:733a4d0282a3514d7d5a27873a8540f874ec00d7e532498e0a4abfb23ed573e6",
+      "event_type": "APPROVAL_RECORDED",
+      "sequence": 5
+    },
+    {
+      "event_digest": "sha256:220a9a6fd4f26101a2497ccf4749cb850487dbc7d29b3475ee8018edd6d57230",
+      "event_type": "NATIVE_IDENTITY_CLAIMED",
+      "sequence": 6
+    },
+    {
+      "event_digest": "sha256:a87c531c5ddb54f83c380829ba78b7641aa84ac27a56daaac8134864fb1b9e55",
+      "event_type": "MIGRATION_STARTED",
+      "sequence": 7
+    },
+    {
+      "event_digest": "sha256:5341cad5800088d2659efa1ab26bd4e0f23838ed31387b7afc2ecd8029e5249f",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "sequence": 8
+    },
+    {
+      "event_digest": "sha256:ece47b598439244b05fc4b7e7418a45cf4a2c5e6c032bd1b9d591c35e4728745",
+      "event_type": "RECEIPT_ACCEPTED",
+      "sequence": 9
+    },
+    {
+      "event_digest": "sha256:316d249d6244323f3cb3b5397843ad67340e40bdfa55dc6e50733fa1095a1823",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 10
+    },
+    {
+      "event_digest": "sha256:8f4e506aad826f97d4e05bf606373670ca56fc3778e41d40bb10bc50791c5bb9",
+      "event_type": "RECONCILIATION_RECORDED",
+      "sequence": 11
+    },
+    {
+      "event_digest": "sha256:4d5dc33be902e0a07631f0de182c4e033bd2cfe0782861bb956685bbe8f4d35e",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 12
+    },
+    {
+      "event_digest": "sha256:c80c1eeb1167bbc5c4a92f11f4f0ef624b6481e9fa07f0edaccb61aadd2f4a12",
+      "event_type": "PUBLICATION_RECORDED",
+      "sequence": 13
+    },
+    {
+      "event_digest": "sha256:37a9be53ca1bd5967017fdcf79a8a9b5cd5d82cb701a3961b8e2d5339862688e",
+      "event_type": "PUBLICATION_VERIFIED",
+      "sequence": 14
+    },
+    {
+      "event_digest": "sha256:75caac03a731b2ceb516195bd5b971c23d0378266cdc4d9552a7cf998e80fff9",
+      "event_type": "RECONCILIATION_RECORDED",
+      "sequence": 15
+    },
+    {
+      "event_digest": "sha256:768ab2e49842ec2b28a8012c409600ed4447f8675c6fb734d28ae5182ce56362",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 16
+    },
+    {
+      "event_digest": "sha256:7781451832eb8ff6e4af81ae864d8ad82951eb00a6f2b2dcbeff55d83450bb5f",
+      "event_type": "PUBLICATION_RECORDED",
+      "sequence": 17
+    },
+    {
+      "event_digest": "sha256:f7ea200a924cfa45c023f7825cd436f9ff85b748ab513b9afb736430e25a621d",
+      "event_type": "PUBLICATION_VERIFIED",
+      "sequence": 18
+    }
+  ]
+}

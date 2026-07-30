@@ -1,0 +1,35 @@
+{
+  "artifacts": {
+    "gate": "artifacts/public/phase04/gate-evidence.json",
+    "late_manifest": "artifacts/public/phase04/late-manifest.json",
+    "ready_manifest": "artifacts/public/phase04/ready-manifest.json",
+    "reconciliation": "artifacts/public/phase04/reconciliation-evidence.json",
+    "refusals": "artifacts/public/phase04/refusal-evidence.json"
+  },
+  "assertions": {
+    "cli_report_and_gate_share_canonical_manifest": true,
+    "complete_supported_loop_exercised": true,
+    "four_way_policy_exercised": true,
+    "late_consumer_reopened_campaign": true,
+    "live_isolated_campaign_ready": true,
+    "live_rich_campaign_unsafe": true,
+    "non_ready_and_adversarial_gate_paths_refused": true,
+    "producer_gate_executed_exactly_once": true,
+    "stable_datahub_summary_verified": true
+  },
+  "campaign_id": "ret-orders-phase04-9a0b74c6872b",
+  "captured_at": "2026-07-30T12:45:46.007261Z",
+  "evidence_digest": "sha256:5eb523debe376e0e2a6015948884d73fd25c0ca3056894676025c59cc8a2785b",
+  "limitations": [
+    "The producer action is a harmless local sentinel, not a warehouse mutation.",
+    "Readiness is bounded by the recorded DataHub and Git evidence envelope.",
+    "The DataHub and Git/dbt systems are disposable local live services."
+  ],
+  "modes": [
+    "live",
+    "fixture"
+  ],
+  "private_run_evidence_digest": "sha256:8d06d08d84e6067b6ac34df1731b52f999c7bf5449247dca931a5d3b9a5fb5fe",
+  "schema_version": "1.0.0",
+  "tested_commit": "25466a9085d4e3beea194616a76b40e0a9a14f5c"
+}

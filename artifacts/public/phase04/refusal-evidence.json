@@ -1,0 +1,161 @@
+{
+  "assertions": {
+    "all_four_decisions_exercised": true,
+    "configuration_and_authorization_drift_refused": true,
+    "missing_access_failed_closed": true,
+    "replay_refused": true,
+    "source_and_replacement_drift_refused": true,
+    "tampered_evidence_refused": true,
+    "untrusted_provenance_refused": true
+  },
+  "captured_at": "2026-07-30T12:45:46.007261Z",
+  "covered_fixture_contracts": [
+    "partial and stale DataHub evidence block",
+    "changed validated Git source refuses reconciliation",
+    "disappeared unclosed consumer remains unsafe",
+    "policy, validator, and authorization input drift block",
+    "unissued, delayed, tampered, and replayed gate plans refuse",
+    "failed producer action becomes outcome unknown and consumes the plan",
+    "ready campaign without verified publication refuses"
+  ],
+  "decision_matrix": {
+    "blocked": "BLOCKED",
+    "ready": "READY_TO_RETIRE",
+    "review": "REVIEW_REQUIRED",
+    "unsafe": "UNSAFE"
+  },
+  "evidence_digest": "sha256:7d32729450535db276c4726fd57e65765517e1d50bd8cd0766375f4647d75d69",
+  "focused_contract_tests": {
+    "command": [
+      "uv",
+      "run",
+      "pytest",
+      "-q",
+      "tests/unit/test_datahub.py",
+      "tests/unit/test_git_dbt.py",
+      "tests/unit/test_policy.py",
+      "tests/integration/test_gate.py",
+      "tests/integration/test_campaign_store.py"
+    ],
+    "output_digest": "sha256:51ed2054b1408d2e790b96bdeae36718d87554e0c642c8b18e7d66b8d60b0661",
+    "result": "PASSED",
+    "summary": "61 passed in 16.90s",
+    "test_count": 61,
+    "test_sources": [
+      "tests/unit/test_datahub.py",
+      "tests/unit/test_git_dbt.py",
+      "tests/unit/test_policy.py",
+      "tests/integration/test_gate.py",
+      "tests/integration/test_campaign_store.py"
+    ]
+  },
+  "live_refusals": {
+    "gate-authorization-drift": {
+      "exit_code": 2,
+      "output_digest": "sha256:aa431852c2d9dac158db427bb4c8bc7ef23c520f02ebff73ec899c1a17b3ec5c",
+      "refusal_code": "GATE_STATE_DRIFT",
+      "result": "REFUSED"
+    },
+    "gate-configuration-drift": {
+      "exit_code": 2,
+      "output_digest": "sha256:aa431852c2d9dac158db427bb4c8bc7ef23c520f02ebff73ec899c1a17b3ec5c",
+      "refusal_code": "GATE_STATE_DRIFT",
+      "result": "REFUSED"
+    },
+    "gate-consumer-source-drift": {
+      "exit_code": 2,
+      "output_digest": "sha256:69a2acc6205504ac25adc3f5518eb036d356a4a970387d94ba02725ef5326d8b",
+      "refusal_code": "SOURCE_GIT_FILE_CHANGED",
+      "result": "REFUSED"
+    },
+    "gate-datahub-unavailable": {
+      "exit_code": 2,
+      "output_digest": "sha256:bf5d5df6331007491b8024a90779edaea88f837545b9d09cfb212adc02f94d83",
+      "refusal_code": "SOURCE_DATAHUB_UNAVAILABLE",
+      "result": "REFUSED"
+    },
+    "gate-late-consumer": {
+      "exit_code": 2,
+      "output_digest": "sha256:da054521d0a2a7b333bad54a19bad18e78af940e93defa9309c43eb0ab6e65bf",
+      "refusal_code": "GATE_DECISION_NOT_READY",
+      "result": "REFUSED"
+    },
+    "gate-missing-store": {
+      "exit_code": 2,
+      "output_digest": "sha256:2d3c6f21610418c4096db24256d841b5c310d2eeb84ed6f3b34a897ec37b3223",
+      "refusal_code": "RUNTIME_CAMPAIGN_NOT_FOUND",
+      "result": "REFUSED"
+    },
+    "gate-producer-source-drift": {
+      "exit_code": 2,
+      "output_digest": "sha256:4c6bab8117a7fe51835cbac4cfd0dd6b0e141fa556a976bcc44b877cb2b55b44",
+      "refusal_code": "GATE_SOURCE_DRIFT",
+      "result": "REFUSED"
+    },
+    "gate-replacement-drift": {
+      "exit_code": 2,
+      "output_digest": "sha256:d33952188880f331d9b85175f11ffa182876467b4eec06dd8f7db5d917aea840",
+      "refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+      "result": "REFUSED"
+    },
+    "gate-replay": {
+      "exit_code": 2,
+      "output_digest": "sha256:4ab49e56f0dc32f427518510f5641c688d608af128ac680d13b2a6bb40419de5",
+      "refusal_code": "GATE_PLAN_REPLAYED",
+      "result": "REFUSED"
+    },
+    "gate-tampered-validation": {
+      "exit_code": 2,
+      "output_digest": "sha256:bdb38c9e141af7cc238277fa6111cdfc0ee14726e50bf8aab245fc0b80213c84",
+      "refusal_code": "INTEGRITY_DIGEST_MISMATCH",
+      "result": "REFUSED"
+    },
+    "gate-untrusted": {
+      "exit_code": 2,
+      "output_digest": "sha256:0a748823ce0a09e51b20707f2d406471eb505f4ca4ebdaff4426d37dcbc55b3b",
+      "refusal_code": "GATE_PROVENANCE_UNTRUSTED",
+      "result": "REFUSED"
+    },
+    "gate-validator-drift": {
+      "exit_code": 2,
+      "output_digest": "sha256:aa431852c2d9dac158db427bb4c8bc7ef23c520f02ebff73ec899c1a17b3ec5c",
+      "refusal_code": "GATE_STATE_DRIFT",
+      "result": "REFUSED"
+    },
+    "gate-wrong-run": {
+      "exit_code": 2,
+      "output_digest": "sha256:07401df35bb196574918cd2de0b9dfca5aebcd908264f00e1ef8749599f14a35",
+      "refusal_code": "GATE_PROVENANCE_UNTRUSTED",
+      "result": "REFUSED"
+    },
+    "gate-wrong-writer": {
+      "exit_code": 2,
+      "output_digest": "sha256:fe82252f95e9a38e81f5a4a601fd0c25703efcf52bd528920ffaba4ca63c6baf",
+      "refusal_code": "RUNTIME_WRITER_MISMATCH",
+      "result": "REFUSED"
+    },
+    "git-dbt-apply-without-approval": {
+      "exit_code": 2,
+      "output_digest": "sha256:06cdeb5abf94163fbbd2403dd81cfbd24481af89f127e116dfd5a39a930f7b2b",
+      "refusal_code": "AUTH_APPROVAL_MISSING",
+      "result": "REFUSED"
+    },
+    "rich-gate-refusal": {
+      "exit_code": 2,
+      "output_digest": "sha256:da054521d0a2a7b333bad54a19bad18e78af940e93defa9309c43eb0ab6e65bf",
+      "refusal_code": "GATE_DECISION_NOT_READY",
+      "result": "REFUSED"
+    }
+  },
+  "modes": [
+    "live",
+    "fixture"
+  ],
+  "replacement_drift": {
+    "attempts": 1,
+    "duration_ms": 7280,
+    "refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE"
+  },
+  "schema_version": "1.0.0",
+  "tested_commit": "25466a9085d4e3beea194616a76b40e0a9a14f5c"
+}

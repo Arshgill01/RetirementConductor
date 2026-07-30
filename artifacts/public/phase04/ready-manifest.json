@@ -1,0 +1,217 @@
+{
+  "blockers": [],
+  "campaign": {
+    "id": "ret-orders-phase04-9a0b74c6872b",
+    "name": "Phase 04 disposable isolated end-to-end campaign",
+    "state": "READY"
+  },
+  "consumers": [
+    {
+      "disposition": "VALIDATED",
+      "id": "dh-477310f4b3971b7103d3",
+      "receipt_digest": "sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c"
+    }
+  ],
+  "decision": "READY_TO_RETIRE",
+  "evidence_envelope": {
+    "captured_at": "2026-07-30T12:43:37.944798Z",
+    "envelope_digest": "sha256:0f1a07eb6353a3dbfdc64b325577414ca6b82740656533f8133df3000392b570",
+    "mode": "live",
+    "schema_version": "1.0.0",
+    "sources": [
+      {
+        "artifact_ids": [
+          "sha256:1cf8c2aa477387ddf9c62c37e9cf01c17add4e3b08dc5315b54563a62ce0a554",
+          "sha256:2cccae6b47814e9fe179c474bc28f1f4ebc1074398c0f41ca4fbf4511dbae0dc",
+          "sha256:6290fef09189233eb59a9a70b99e28ef171235c35f418fa26e1277cda8a4e414",
+          "sha256:71d21cc99ac1a22c0d71aeefdda8da45953622748b74b80f2b3d601d0c1c0ee1",
+          "sha256:7b4012bc8ca0d8abcc894d5b7e85c29a2d6070955ec820c47f2b0809fc665225",
+          "sha256:afd25d823b0ff0760573d2be5733a7892341edba59d8967434bf6ed243ca1495",
+          "sha256:b648ded6a069ae73f19aee95453f738cce0b0bbfcf034fa4fa235351c7dffadb",
+          "sha256:c32f0a3687625c89b6d6718f675bc0d484fb4f4ac08dc0b94ed2521bf77d4f88",
+          "sha256:c8b4de95b88c12c0db2cbe38a589592702450943c24ef83e8fe837d76038902b"
+        ],
+        "freshness": {
+          "maximum_age_seconds": 900,
+          "observed_at": "2026-07-30T12:43:34.917961Z",
+          "source_updated_at": "2026-07-30T12:43:15.362222Z"
+        },
+        "id": "datahub",
+        "identity": "http://127.0.0.1:18080",
+        "limitations": [
+          "DataHub Core did not expose isPartial",
+          "Ownership is routing context only",
+          "Query-history absence is not closure evidence",
+          "Table-only lineage cannot authorize field mutation or closure"
+        ],
+        "permissions": {
+          "effective_scope": "disposable Core metadata read and campaign document write",
+          "principal": "anonymous-disposable-core"
+        },
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "filters": [],
+          "max_hops": 3,
+          "pages": 3,
+          "reported_total": 1,
+          "returned_total": 1
+        },
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "status": "COMPLETE"
+      },
+      {
+        "artifact_ids": [
+          "sha256:c114b840f6743064da3bac5fc91f1cf640f4761330786bd03f5ec10350185895"
+        ],
+        "freshness": {
+          "maximum_age_seconds": 31536000,
+          "observed_at": "2026-07-30T12:43:37.944798Z",
+          "source_updated_at": "2026-07-30T12:42:55Z"
+        },
+        "id": "git:analytics",
+        "identity": "sha256:55879050453099e04eb4090a4171484e45336515c6de1a5f6f4dd132a21af0e2",
+        "limitations": [
+          "Only the declared source branch was searched",
+          "Text discovery is high-recall evidence, not completeness proof",
+          "External dbt packages are refused in the initial adapter"
+        ],
+        "permissions": {
+          "effective_scope": "read,plan,apply,validate,compensate",
+          "principal": "local-disposable-operator"
+        },
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "filters": [
+            "branch:main",
+            "path:models/orders_isolated_model.sql"
+          ],
+          "max_hops": 1,
+          "pages": 1,
+          "reported_total": 1,
+          "returned_total": 1
+        },
+        "source_version": "6c3ee32a3aefe6fc4144b785c9e84905fa87e45c",
+        "status": "COMPLETE"
+      }
+    ]
+  },
+  "generated_at": "2026-07-30T12:43:42.722600Z",
+  "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+  "policy": {
+    "id": "default-column-retirement",
+    "requires_live_evidence": true,
+    "version": 1
+  },
+  "publication": {
+    "content_digest": "sha256:faf589618cb2275f451cab773c3cb9baf9ac6fdf7ebf4c584ebd5397b0b7db16",
+    "lifecycle_digest_after": "sha256:e0c103d36944fade20d9e64f1f55969c8c96b7ee9b61a2a23d342d519abfc356",
+    "lifecycle_digest_before": "sha256:e0c103d36944fade20d9e64f1f55969c8c96b7ee9b61a2a23d342d519abfc356",
+    "logical_key": "campaign/ret-orders-phase04-9a0b74c6872b",
+    "published_manifest_digest": "sha256:f7adf47d663e17ecf54b280365b5d1f6d102af091d7a69cd9346adee3b6970da",
+    "readback_artifact_id": "sha256:4a2539c6a711b0664c625f1fd224833a16dfdfefbf123d358b94b3b8838a4145",
+    "readback_verified": true,
+    "urn": "urn:li:document:shared-b1576d7c-f37b-4f9a-afa6-1274e03cdf09",
+    "verified_at": "2026-07-30T12:43:42.722600Z"
+  },
+  "receipt_digests": [
+    "sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c"
+  ],
+  "replacement": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "order_status",
+    "instance": "retirement_conductor",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders_isolated"
+  },
+  "schema_version": "1.0.0",
+  "snapshot_digests": [
+    "sha256:31d0e003b74f9695b6cc031eddc01f2f70eca88d50d994fac423f1909b819429",
+    "sha256:e6a86d0de5d2c55b5004e641a9994dc3b7a1b2ecb77995a684a7b6e7700b0f53"
+  ],
+  "specification_digest": "sha256:3ff06bc70123b38d578e380af6f06385061cfac707515b44475352ecec9cd1d0",
+  "target": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "legacy_status",
+    "instance": "retirement_conductor",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders_isolated"
+  },
+  "transition_history": [
+    {
+      "event_digest": "sha256:a7d81252200316cc4ac9fbd14a1b1b16e34fbc48a23efd89f069e179d5be876b",
+      "event_type": "CAMPAIGN_CREATED",
+      "sequence": 1
+    },
+    {
+      "event_digest": "sha256:4f8d161d622068cd3c082c45f9271a581867ab73f59227c726f8b0e3094b7651",
+      "event_type": "INVENTORY_RECORDED",
+      "sequence": 2
+    },
+    {
+      "event_digest": "sha256:ba1fd7e78757740f7ab267ea58c5577ad776b2434b8995139cd72f7a364fbe88",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "sequence": 3
+    },
+    {
+      "event_digest": "sha256:68b760a027aa6133e9085b28a7de60df35250d14441f93f4878ccf38ca2c15f6",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "sequence": 4
+    },
+    {
+      "event_digest": "sha256:733a4d0282a3514d7d5a27873a8540f874ec00d7e532498e0a4abfb23ed573e6",
+      "event_type": "APPROVAL_RECORDED",
+      "sequence": 5
+    },
+    {
+      "event_digest": "sha256:220a9a6fd4f26101a2497ccf4749cb850487dbc7d29b3475ee8018edd6d57230",
+      "event_type": "NATIVE_IDENTITY_CLAIMED",
+      "sequence": 6
+    },
+    {
+      "event_digest": "sha256:a87c531c5ddb54f83c380829ba78b7641aa84ac27a56daaac8134864fb1b9e55",
+      "event_type": "MIGRATION_STARTED",
+      "sequence": 7
+    },
+    {
+      "event_digest": "sha256:5341cad5800088d2659efa1ab26bd4e0f23838ed31387b7afc2ecd8029e5249f",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "sequence": 8
+    },
+    {
+      "event_digest": "sha256:ece47b598439244b05fc4b7e7418a45cf4a2c5e6c032bd1b9d591c35e4728745",
+      "event_type": "RECEIPT_ACCEPTED",
+      "sequence": 9
+    },
+    {
+      "event_digest": "sha256:316d249d6244323f3cb3b5397843ad67340e40bdfa55dc6e50733fa1095a1823",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 10
+    },
+    {
+      "event_digest": "sha256:8f4e506aad826f97d4e05bf606373670ca56fc3778e41d40bb10bc50791c5bb9",
+      "event_type": "RECONCILIATION_RECORDED",
+      "sequence": 11
+    },
+    {
+      "event_digest": "sha256:4d5dc33be902e0a07631f0de182c4e033bd2cfe0782861bb956685bbe8f4d35e",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 12
+    },
+    {
+      "event_digest": "sha256:c80c1eeb1167bbc5c4a92f11f4f0ef624b6481e9fa07f0edaccb61aadd2f4a12",
+      "event_type": "PUBLICATION_RECORDED",
+      "sequence": 13
+    },
+    {
+      "event_digest": "sha256:37a9be53ca1bd5967017fdcf79a8a9b5cd5d82cb701a3961b8e2d5339862688e",
+      "event_type": "PUBLICATION_VERIFIED",
+      "sequence": 14
+    }
+  ]
+}

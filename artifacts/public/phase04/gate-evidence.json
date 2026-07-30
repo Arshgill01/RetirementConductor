@@ -1,0 +1,232 @@
+{
+  "assertions": {
+    "durable_intent_preceded_action": true,
+    "exact_manifest_bound": true,
+    "exact_producer_plan_issued": true,
+    "late_and_rich_non_ready_actions_refused": true,
+    "one_ready_action_executed": true,
+    "replay_refused": true
+  },
+  "campaign_id": "ret-orders-phase04-9a0b74c6872b",
+  "captured_at": "2026-07-30T12:45:46.007261Z",
+  "evidence_digest": "sha256:2c298e99d0fa0f65423bf1bcd508202d781cfd6e8e73e96aa62da24e3fbef5cb",
+  "gate_receipt": {
+    "attempt_digest": "sha256:0c3c95e6d780cadc06282a23f61e96606e914ee46a26dd53a52a037a874c4572",
+    "campaign_id": "ret-orders-phase04-9a0b74c6872b",
+    "decision": "READY_TO_RETIRE",
+    "executed_at": "2026-07-30T12:44:31.539254Z",
+    "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+    "outcome_digest": "sha256:e159f3bc51df452bd204b447e05822d6811eadbb54a20fd6022396d40350069a",
+    "producer_plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+    "receipt_digest": "sha256:dd7a87f4031f735358d017050aca7e394178be69b97ee134618f9ae5f27070ed",
+    "result": "EXECUTED",
+    "schema_version": "1.0.0",
+    "sentinel": {
+      "digest": "sha256:122df7f835c626d0d0e584fbbd8a0036eb8399057ac44e93ce18bf08240b77ae",
+      "relative_path": "ret-orders-phase04-9a0b74c6872b/phase04-live-9a0b74c6872b-b33bebc85dd577a9a484.json"
+    },
+    "trusted_run_id": "phase04-live-9a0b74c6872b",
+    "verification": {
+      "datahub_snapshot_digest": "sha256:00509b8a2d966bb14769b00a1045d7e2f656e231eae9be3aae2700da0ddca347",
+      "publication_readback_artifact_id": "sha256:4a2539c6a711b0664c625f1fd224833a16dfdfefbf123d358b94b3b8838a4145",
+      "source_reconciliation_digest": "sha256:d814fbd79ceff890d3d2aea55568774088524b937521d68e0c2381b9d5c1b0ba"
+    },
+    "writer_id": "phase04-writer-9a0b74c6872b"
+  },
+  "ledger": {
+    "attempt_status_counts": {
+      "EXECUTED": 1,
+      "REFUSED": 12
+    },
+    "attempts": [
+      {
+        "attempt_digest": "sha256:5bde505e7e0aca1f316405820993fb048ce3b96763bd50862630c49f3c45a7c8",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_PROVENANCE_UNTRUSTED",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:397da07011b9dc0031ea2e894922879cc9c2f11b8a286ab4682ee0b95e729c18",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_PROVENANCE_UNTRUSTED",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:05b5d70cd82b7eed7c24287a11874a97b997a3ead0ffc58e1e6d1036d3851292",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "SOURCE_DATAHUB_UNAVAILABLE",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:759cd73c39eebf0c37ca1165a4c2108ce31fcf54705ae4d436c2fed34172d262",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_STATE_DRIFT",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:492165d5b4b19c54c1252cddd550343e98818aef633a9c345a46b730e3483f8b",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_STATE_DRIFT",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:57c694ce579ee2b372c8afaf447925fb3e680202671e859b67b354e77b37ef56",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_STATE_DRIFT",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:27a8a15471189474607604f1cc1002dde07cb0278f898bcc920a3400e333d8fa",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "SOURCE_GIT_FILE_CHANGED",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:b345c09c61e5d7ee734420a2d2200567ca2091ad131575baeff4a7aee1e2f7ca",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_SOURCE_DRIFT",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:7dd740b520de661ab44ef3d6703156964be9f0bea4c9ebc13869f9d50b398714",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "INTEGRITY_DIGEST_MISMATCH",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:0250980c4501cd63bee0ba362afe4ce7ee8a12e9c61a884bbbb95c3b3c8ee864",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "SPEC_REPLACEMENT_INCOMPATIBLE",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:0c3c95e6d780cadc06282a23f61e96606e914ee46a26dd53a52a037a874c4572",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": "sha256:e159f3bc51df452bd204b447e05822d6811eadbb54a20fd6022396d40350069a",
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": null,
+        "status": "EXECUTED"
+      },
+      {
+        "attempt_digest": "sha256:bbbbed201f838aa973afec052efd4e942d6856759a7cbef706817433a76debae",
+        "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+        "outcome_digest": null,
+        "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+        "refusal_code": "GATE_PLAN_REPLAYED",
+        "status": "REFUSED"
+      },
+      {
+        "attempt_digest": "sha256:17719049ec948b96ea07eb0caea07523e42e90af2eae63b4cfc9b60369ce8175",
+        "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece",
+        "outcome_digest": null,
+        "plan_digest": null,
+        "refusal_code": "GATE_DECISION_NOT_READY",
+        "status": "REFUSED"
+      }
+    ],
+    "issued_plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+    "schema_versions": [
+      1,
+      2,
+      3
+    ],
+    "sqlite_version": "3.53.1"
+  },
+  "limitations": [
+    "The producer action is a harmless local sentinel, not a warehouse mutation.",
+    "Readiness is bounded by the recorded DataHub and Git evidence envelope.",
+    "The DataHub and Git/dbt systems are disposable local live services."
+  ],
+  "mode": "live",
+  "producer_plan": {
+    "action": {
+      "action_id": "producer-sentinel-b33bebc85dd577a9a484",
+      "relative_path": "ret-orders-phase04-9a0b74c6872b/phase04-live-9a0b74c6872b-b33bebc85dd577a9a484.json",
+      "sentinel_root_identity": "sha256:a916db5fb49a8185262408cac2e8d0fce3d415bfe1c9b7102b96bb8163daaeaa",
+      "type": "write_public_safe_sentinel"
+    },
+    "campaign_id": "ret-orders-phase04-9a0b74c6872b",
+    "expires_at": "2026-07-30T12:57:42.918278Z",
+    "git_dbt": {
+      "apply_digest": "sha256:178d8ace3661b65585f2ad2a2eca6fc28392b532a4fea492a7927c767259477c",
+      "artifact_set_digest": "sha256:6f335cbc1b9a9ab16e470f3b8cb7b53801c5daee9f4f3c15d887427f54feef9a",
+      "migration_plan_digest": "sha256:71d3db98f19c60853669550fd865f012f4afc0adf6aa3c629489df9cb33d2acb",
+      "preflight_digest": "sha256:e3cde698206e61c47f96ff99f10584b222e9ca4fe6b91f12995dc144e44fe52d",
+      "receipt_digest": "sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c",
+      "settings_digest": "sha256:5e1c0dba4dd16cd06e31caa16e499b9e1b21386afa804fbd7e6f9c8e9a41947d",
+      "validation_digest": "sha256:7afdbbe9ee607b88e4d9653d03eeeeac933155fbd0ae5d27ea958fc314457f58",
+      "validator_binding_digest": "sha256:45ab0d78e1ba4fd8f701612ee8c9b1114dbd824cd856b14d45a29a679e7232a1"
+    },
+    "limitations": [
+      "The trusted run identity is deployment provenance, not cryptographic authorship.",
+      "The producer action is a public-safe local sentinel; it does not mutate a warehouse."
+    ],
+    "manifest": {
+      "decision": "READY_TO_RETIRE",
+      "digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+      "evidence_envelope_digest": "sha256:0f1a07eb6353a3dbfdc64b325577414ca6b82740656533f8133df3000392b570",
+      "input_digests": {
+        "authorization": "sha256:138ae5ae206c95fe4f5ccab27ab924d6d7b0aa36fd2e0daa644e8a20a955f13b",
+        "policy": "sha256:1acb488125c4439b1a123096fbc88919412aada01d1c02b29b2e413340af5ec1",
+        "validator_configuration": "sha256:7c1953d3874b71b431b095e661f158fba144b873b7622042767ffba4d686576b"
+      },
+      "publication_content_digest": "sha256:faf589618cb2275f451cab773c3cb9baf9ac6fdf7ebf4c584ebd5397b0b7db16",
+      "published_manifest_digest": "sha256:f7adf47d663e17ecf54b280365b5d1f6d102af091d7a69cd9346adee3b6970da",
+      "receipt_digests": [
+        "sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c"
+      ],
+      "reconciliation_digest": "sha256:e6a86d0de5d2c55b5004e641a9994dc3b7a1b2ecb77995a684a7b6e7700b0f53",
+      "specification_digest": "sha256:3ff06bc70123b38d578e380af6f06385061cfac707515b44475352ecec9cd1d0"
+    },
+    "plan_digest": "sha256:de6a134022b54eafd099afa33cffe2c2625e2b7f558d02b3c24449a78168b8ee",
+    "prepared_at": "2026-07-30T12:43:43.107698Z",
+    "producer_source": {
+      "branch": "main",
+      "marker_digest": "sha256:58861d5f75bc1d0dd26dbeceb611ad517aa792bb2f2790949da62cd55bea1102",
+      "marker_path": "fixtures/producer/retire-order-status.json",
+      "remote_identity": "sha256:e327999f33dbdd1d4ca9a280fdfc528d5e813f94cc4611550082a99740a06899",
+      "repository_identity": "sha256:eca873d2b585798f9a3cdcb826b5533b1d9ece3478e6b2c26131addefbd00a46",
+      "version": "25466a9085d4e3beea194616a76b40e0a9a14f5c",
+      "working_tree_clean": true
+    },
+    "schema_version": "1.0.0",
+    "trusted_run": {
+      "id": "phase04-live-9a0b74c6872b",
+      "provider": "disposable-local-ci"
+    },
+    "writer_id": "phase04-writer-9a0b74c6872b"
+  },
+  "rich_graph": {
+    "campaign_id": "ret-orders-git-dbt",
+    "consumer_count": 31,
+    "decision": "UNSAFE",
+    "gate_refusal": "GATE_DECISION_NOT_READY",
+    "snapshot_digest": "sha256:192cbbac0ba7368c66129f9db7bf84fdcfb6ebffdba0d7ad811662c91d743498"
+  },
+  "schema_version": "1.0.0",
+  "sentinel": {
+    "count": 1,
+    "digest": "sha256:122df7f835c626d0d0e584fbbd8a0036eb8399057ac44e93ce18bf08240b77ae"
+  },
+  "tested_commit": "25466a9085d4e3beea194616a76b40e0a9a14f5c"
+}
