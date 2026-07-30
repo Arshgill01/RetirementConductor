@@ -17,6 +17,7 @@ from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+from retirement_conductor.canonical import digest_bytes
 from scripts.phase08_support import PHASE08_RUNTIME, ROOT, checked
 
 DATAHUB_GMS_URL = "http://127.0.0.1:18080"
@@ -42,7 +43,7 @@ class ReferenceServices:
     def evidence(self) -> dict[str, Any]:
         return {
             "datahub_core": {
-                "health": http_json(f"{DATAHUB_GMS_URL}/health"),
+                "health": http_health(f"{DATAHUB_GMS_URL}/health"),
                 "started_for_run": self.gms_started,
                 "scope": "loopback disposable Core",
                 **datahub_core_identity(),
@@ -57,20 +58,44 @@ class ReferenceServices:
 
 
 def http_json(url: str) -> dict[str, Any]:
-    request = Request(url, headers={"Accept": "application/json"})
+    _, body = http_response(url)
     try:
-        with urlopen(request, timeout=3) as response:
-            value = json.loads(response.read().decode("utf-8"))
-    except (OSError, UnicodeError, URLError, json.JSONDecodeError) as exc:
-        raise RuntimeError("a required local reference service is unavailable") from exc
+        value = json.loads(body.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("a local reference endpoint returned invalid JSON") from exc
     if not isinstance(value, dict):
-        raise RuntimeError("a local reference health endpoint returned invalid JSON")
+        raise RuntimeError("a local reference endpoint returned non-object JSON")
     return value
 
 
-def healthy(url: str) -> bool:
+def http_response(url: str) -> tuple[int, bytes]:
+    request = Request(url, headers={"Accept": "application/json"})
     try:
-        http_json(url)
+        with urlopen(request, timeout=3) as response:
+            status = response.status
+            body = response.read()
+    except (OSError, URLError) as exc:
+        raise RuntimeError("a required local reference service is unavailable") from exc
+    if status < 200 or status >= 300:
+        raise RuntimeError("a local reference service returned an unhealthy status")
+    return status, body
+
+
+def http_health(url: str) -> dict[str, Any]:
+    status, body = http_response(url)
+    return {
+        "http_status": status,
+        "response_body_digest": digest_bytes(body),
+        "response_body_bytes": len(body),
+    }
+
+
+def healthy(url: str, *, json_required: bool = False) -> bool:
+    try:
+        if json_required:
+            http_json(url)
+        else:
+            http_health(url)
     except RuntimeError:
         return False
     return True
@@ -309,7 +334,7 @@ def mcp_listener_identity(*, expected_pid: int | None = None) -> dict[str, Any]:
 
 
 def start_mcp() -> tuple[subprocess.Popen[str] | None, dict[str, Any]]:
-    if healthy(MCP_HEALTH_URL):
+    if healthy(MCP_HEALTH_URL, json_required=True):
         return None, mcp_listener_identity()
     executable = prepare_mcp_tool()
     log_path = PHASE08_RUNTIME / "mcp-server.log"
@@ -338,7 +363,7 @@ def start_mcp() -> tuple[subprocess.Popen[str] | None, dict[str, Any]]:
     )
     log_file.close()
     for _ in range(90):
-        if healthy(MCP_HEALTH_URL):
+        if healthy(MCP_HEALTH_URL, json_required=True):
             return process, mcp_listener_identity(expected_pid=process.pid)
         if process.poll() is not None:
             raise RuntimeError("the pinned MCP server exited before health")
