@@ -61,14 +61,22 @@ Repository commits:
 - `5454594fb1e35f08ff3c008e337968d2e832a4ae` — scoped DataHub recipes,
   official configuration validation, LookML fixture, and no-secret packet;
 - `a57b06e70fba52d7644883f0278201c2bf4e1b69` — fresh native plus
-  legacy/replacement graph reconciliation and selective receipt invalidation.
+  legacy/replacement graph reconciliation and selective receipt invalidation;
+- `e6183d1d07936c6ce348b5fab50a770435faa574` — exact compensation-to-apply
+  binding across replan and reapply;
+- `9380815c3f29497cecb3f593b5c3dda18f337be4` — corrected exact LookML
+  connection mapping, official local ingestion, and direct entity reread;
+- `e128e206d079729abec2858ce28f4ec446992e7b` — deterministic phase 06
+  lifecycle, recovery, refusal, reconciliation, and claim-boundary artifacts.
 
-Captured through: `2026-07-30T15:07:50Z`
+Captured through: `2026-07-30T15:22:08Z`
 
 Modes:
 
 - fixture for native API and campaign behavior;
-- analysis for the public LookML parsing project and access contract;
+- live local DataHub Core with fixture LookML input for the parsing and
+  field-lineage observation, explicitly not live Looker evidence;
+- analysis for the access contract;
 - live read-only GCP control-plane observation for zero-cost pretrial state,
   explicitly not live Looker adapter evidence.
 
@@ -76,6 +84,9 @@ Commands or operator actions:
 
 ```text
 make phase06-recipes
+datahub ingest run -c deploy/datahub/recipes/looker-lookml.yml
+python scripts/inspect_phase06_lookml_ingestion.py --report <ignored-report>
+make phase06-evidence
 retirement-conductor adapter looker access-packet --campaign ret-orders-looker-live
 make check
 CLOUDSDK_CONFIG=<dedicated-looker-config> \
@@ -83,20 +94,39 @@ CLOUDSDK_CONFIG=<dedicated-looker-config> \
 ```
 
 Observed result: the pinned official DataHub 1.6.0 configuration models
-accepted both recipes with synthetic values. The access packet reported every
-unresolved variable by name, kept apply disabled, listed adapter and ingestion
-permissions as unverified, contained no supplied value, and had digest
-`sha256:27361a7cc132aee763adce1d9862f0bef04f99ba7b2bb4378760c96c357f2dac`.
+accepted both recipes. The first real parser run exposed that environment
+references are not expanded in mapping keys and dropped the model; the fixed
+recipe binds the fixture's exact `retirement_fixture` connection and includes
+its manifest. The corrected run emitted 20 source events, discovered one
+model and one view, dropped neither, and reported no source or sink warning or
+failure. Direct GMS reread then found the exact LookML dataset with fields
+`id`, `legacy_status`, and `order_status`, one upstream table, and three
+matching field-level lineage edges.
 
-The latest `make check` passed 187 tests, Ruff, formatting, strict mypy,
-repository validation, secret and public-artifact scans, source and wheel
-builds, and `git diff --check`. Deterministic cases cover exact one-Look
-planning, schedules and expanded scope, invalid replacement, native Content
-Validation and bounded query comparison, compensation and reapply, fixture
-receipt rejection, missing permissions, recreated identity, intervening edit,
-dropped response, hard interruption, table-only lineage, persisting legacy
-edge, combined Git/dbt plus Looker reconciliation, and selective stale
-receipt handling.
+DataHub's 1.6.0 report also set `event_not_produced_warn=true`, logged a
+contradictory no-metadata message, and reported zero sink records even though
+the aspects were stored. The tracked evidence therefore records those
+counters as a connector limitation and treats the direct aspect reread as
+authority. The raw ignored report digest is
+`sha256:e2fffb6cbc559ccdc60340b657287a04f8a410a9a54cf6428fd3af0345133a25`.
+
+The generated deterministic bundle covers exact one-Look planning, schedules
+and expanded scope, invalid replacement, native Content Validation and
+bounded query comparison, compensation, replan and reapply, stale
+compensation rejection, fixture receipt rejection, missing permissions,
+recreated identity, intervening edit, dropped response, hard interruption,
+table-only lineage, persisting legacy edge, combined Git/dbt plus Looker
+reconciliation, and selective stale receipt handling. It reproduced
+byte-for-byte on a second run. Its rollup states
+`NOT_SATISFIED_LIVE_BOUNDARY` and keeps `EP-006` `not-run`.
+
+The no-secret access packet reported every unresolved variable by name, kept
+apply disabled, listed adapter and ingestion permissions as unverified,
+contained no supplied value, and had digest
+`sha256:eef4d9e9196107505138f70dd147fd7b828506b3d1989ccc1f6589a6f464af51`.
+The latest `make check` passed 188 tests, Ruff, formatting, strict mypy,
+131-file repository validation, secret and 41-file public-artifact scans,
+source and wheel builds, and `git diff --check`.
 
 The dedicated read-only pretrial script observed zero Looker instances,
 unallocated trial and paid Looker quota, BigQuery daily query quota zero, and
@@ -105,23 +135,41 @@ table, query, quota, or paid resource was created or changed.
 
 What this proves: all currently exercised deterministic boundaries fail
 closed; the second adapter participates in the same campaign, receipt, and
-reconciliation semantics; recipe structure matches official DataHub 1.6.0
-models; and the missing live boundary can be requested without disclosing a
-secret.
+reconciliation semantics; official DataHub 1.6.0 both accepts the recipe
+configuration and parses the public LookML fixture into exact stored field
+lineage; contradictory connector reporting is detected by direct reread; and
+the missing live boundary can be requested without disclosing a secret.
 
 What this does not prove: Looker authentication or effective permissions; a
 live DataHub-to-Looker identity; a live saved-Look mutation, Content
 Validation run, query execution, compensation, delete/recreate, lost response,
-connector ingestion, graph refresh, accepted live receipt, combined live
-campaign, or `EP-006` acceptance. The zero-cost GCP observation is not a
-substitute for any of those.
+saved-Look connector ingestion, graph refresh, accepted live receipt, combined
+live campaign, or `EP-006` acceptance. The local LookML parse and zero-cost
+GCP observation are not substitutes for any of those.
 
-Reviewer inspection: inspected the plan and receipt schemas; redacted
+Tracked artifact paths:
+`artifacts/public/phase06/lookml-ingestion-evidence.json`,
+`artifacts/public/phase06/adapter-evidence.json`,
+`artifacts/public/phase06/recovery-evidence.json`,
+`artifacts/public/phase06/reconciliation-evidence.json`, and
+`artifacts/public/phase06/phase06-preacceptance-evidence.json`.
+Their file SHA-256 digests are
+`6fa061e1c3afeda47ba0bbb4fd493322479f7d5125cf3b403dfad9ab9ba33ba1`,
+`e396d28441cdaf6cd2053b8c660a041c6aae4f99489bae177d07fd08b0933890`,
+`83e9c04287463f35ff32d2031c8f4bac83b34a3e5d1a6313b4181ad443ee8d94`,
+`01ace2fb4ec80495aa97766a1a4b806ef93f970041e9bdbad95ca4e7f8010aec`,
+and
+`1036c8043b1ada9fa1f4d3c0da225dd8e2e7019d176f1ba8566736d12d0988e7`,
+respectively.
+
+Reviewer inspection: inspected the local ingestion report and stored schema
+and lineage aspects; the plan and receipt schemas; redacted
 snapshots; actual target and changed-field assertions; intent state
 transitions and PATCH counts; compensation conflict; recreated identity
-digests; graph edge states; combined evidence-source set; generated access
-packet; recipe model output; full test output; secret scan; and zero-cost
-pretrial result.
+digests; old-compensation rejection after replan; graph edge states; combined
+evidence-source set and selective invalidation; generated access packet;
+recipe model output; deterministic artifact twins; full test output; secret
+and public scans; and zero-cost pretrial result.
 
 ## Entry completion checklist
 

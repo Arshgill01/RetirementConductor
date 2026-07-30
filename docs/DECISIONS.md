@@ -394,3 +394,19 @@ Why: API content metadata and parsed LookML supply different parts of the
 identity and lineage chain. Combining them through explicit recipes preserves
 their provenance without turning either weaker table visibility or System
 Activity usage queries into field-level proof.
+
+## D-029 — LookML ingestion completion requires direct aspect reread
+
+Status: accepted from local DataHub Core v1.6.0 observation.
+
+Use a synchronous DataHub sink, require positive source events with no dropped
+model or view and no reported warning or failure, then reread the exact stored
+schema and upstream-lineage aspects. Only the reread can establish that the
+expected fields and field-level edges exist. Preserve connector counters and
+messages as diagnostics, not as the authority for completion or absence.
+
+Why: the official 1.6.0 LookML source emitted 20 events and stored the exact
+entity and three field-lineage edges while also setting its no-event flag,
+logging a no-metadata message, and reporting zero sink records. Accepting
+either the success exit or the contradictory counter alone would violate the
+empty-result and inspected-evidence rules.

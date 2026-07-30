@@ -7,19 +7,18 @@ contract; `PLAN.md` defines proof order.
 ## Current state
 
 - Execution state: active
-- Active phase: 06
+- Active phase: 07
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
 - Current external blocker: none
-- Next acceptance target: build and inspect the deterministic phase 06
-  acceptance bundle, including full lifecycle, combined-campaign,
-  recreated-identity, outcome-unknown, compensation-conflict, table-only,
-  and live-evidence refusal artifacts; then exhaust any remaining safe
-  credential-independent work
-- Last repository validation: Looker reconciliation at `a57b06e` passed all
-  187 tests, including combined Git/dbt plus Looker reconciliation and
-  selective receipt invalidation, plus Ruff, formatting, mypy, 123-file
-  repository validation, secret and public-artifact scans, source/wheel
-  builds, and `git diff --check`
+- Next acceptance target: implement and inspect every credential-independent
+  phase 07 threat, fault, recovery, concurrency, retention, and deployment
+  safety case while preserving the exact live Looker boundary
+- Last repository validation: the phase 06 pre-acceptance bundle at
+  `e128e20` passed all 188 tests, including deterministic native lifecycle,
+  durable lost-response and interruption recovery, compensation conflict,
+  recreated identity, combined reconciliation, and recipe contracts, plus
+  Ruff, formatting, mypy, 131-file repository validation, secret and
+  public-artifact scans, source/wheel builds, and `git diff --check`
 
 ## Phase ledger
 
@@ -31,8 +30,8 @@ contract; `PLAN.md` defines proof order.
 | 03 | complete | `EP-003` at `3ca39a1`; exact live DataHub-to-dbt mapping, two one-file applies, native validation receipt, verified rollback, idempotent retry, and contained adversarial probes | none |
 | 04 | complete | `EP-004` at `25466a9`; equivalent live reconciliation, verified stable publication, one issued-plan sentinel, live late-consumer reopening, rich-graph refusal, and adversarial gate matrix | no production warehouse deletion was attempted |
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
-| 06 | active | `00db298`, `3435177`, `5454594`, and `a57b06e`; deterministic API 4.0 lifecycle, durable intent recovery, campaign binding, official DataHub 1.6.0 recipe validation, no-secret access packet, and legacy/replacement reconciliation; 187 tests pass | live Looker instance/API, ingestion, native query, compensation, delete/recreate, and lost-response evidence remain unavailable; fixture results do not satisfy `EP-006` |
-| 07 | queued | none | harden available paths, then close live Looker cases |
+| 06 | access-dependent | `00db298`, `3435177`, `5454594`, `a57b06e`, `e6183d1`, `9380815`, and `e128e20`; deterministic API 4.0 lifecycle, durable intent recovery, campaign binding, exact LookML ingestion into local DataHub, official recipe validation, no-secret access packet, reconciliation, and an inspected non-live evidence bundle; 188 tests pass | one pre-existing user-approved disposable Looker instance/API plus live saved-Look ingestion, native query, compensation, delete/recreate, and lost-response evidence; fixture and local LookML results do not satisfy `EP-006` |
+| 07 | active | phase contract under implementation | finish all credential-independent hardening, then close live Looker-specific cases after access |
 | 08 | queued | none | clean operation plus independent operator evidence |
 
 Allowed states are `queued`, `active`, `access-dependent`, `blocked`,
