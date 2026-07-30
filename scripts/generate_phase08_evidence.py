@@ -44,6 +44,7 @@ EXPECTED_MISSING_REFERENCES = {
 EXPECTED_PYTHON_SERIES = {"3.11", "3.12", "3.13", "3.14"}
 EXPECTED_PREVIOUS_COMMIT = "30173f160c3c87a8daf0a3c1988c7ccde10662ec"
 EXPECTED_MCP_COMMIT = "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9"
+MINIMUM_INSTALLED_REFERENCE_OPERATIONS = 34
 FORBIDDEN_PUBLIC_FRAGMENTS = (
     "/home/",
     "/Users/",
@@ -405,7 +406,7 @@ def validate_reference(
         "live reference is not bound to the current commit",
     )
     require(
-        live["installed_cli_operation_count"] >= 35
+        live["installed_cli_operation_count"] >= MINIMUM_INSTALLED_REFERENCE_OPERATIONS
         and live["source_cli_operation_count"] == 0,
         "live reference bypassed or underused the installed product",
     )
