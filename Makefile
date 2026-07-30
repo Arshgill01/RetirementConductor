@@ -1,4 +1,5 @@
-.PHONY: check format phase00-evidence phase01-evidence test
+.PHONY: check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
+	format phase00-evidence phase01-evidence phase02-evidence test
 
 check:
 	uv run ruff check src tests scripts
@@ -15,11 +16,34 @@ format:
 	uv run ruff check --fix src tests scripts
 	uv run ruff format src tests scripts
 
+datahub-core-env:
+	uv run python scripts/datahub_core_env.py
+
+datahub-core-up: datahub-core-env
+	docker compose \
+		--env-file .retirement-conductor/datahub/core.env \
+		-f deploy/datahub/docker-compose.core.yml \
+		up -d --wait datahub-gms
+
+datahub-core-down:
+	docker compose \
+		--env-file .retirement-conductor/datahub/core.env \
+		-f deploy/datahub/docker-compose.core.yml \
+		down
+
+datahub-seed:
+	DATAHUB_GMS_URL=http://127.0.0.1:18080 \
+	uv run --python 3.11 --with 'acryl-datahub==1.6.0' \
+		python scripts/datahub_seed.py
+
 phase00-evidence:
 	uv run python scripts/generate_phase00_evidence.py
 
 phase01-evidence:
 	uv run python scripts/generate_phase01_evidence.py
+
+phase02-evidence:
+	uv run python scripts/generate_phase02_evidence.py
 
 test:
 	uv run pytest

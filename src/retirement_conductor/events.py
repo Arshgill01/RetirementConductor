@@ -48,6 +48,7 @@ class CampaignProjection:
     approvals: dict[str, dict[str, Any]] = field(default_factory=dict)
     waivers: dict[str, dict[str, Any]] = field(default_factory=dict)
     reconciled: bool = False
+    publication: dict[str, Any] | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
     last_policy_result: PolicyResult | None = None
     generated_at: str = ""
@@ -200,7 +201,11 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
     event_type = event["event_type"]
     payload = event["payload"]
     if event_type == "INVENTORY_RECORDED":
-        require_campaign_transition(projection.state, CampaignState.INVENTORIED)
+        if projection.state != CampaignState.INVENTORIED:
+            require_campaign_transition(
+                projection.state,
+                CampaignState.INVENTORIED,
+            )
         consumers = {
             str(consumer["id"]): {
                 "id": str(consumer["id"]),
@@ -302,6 +307,72 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
         projection.evidence_envelope = dict(payload["evidence_envelope"])
         projection.snapshot_digests.append(str(payload["snapshot_digest"]))
         projection.reconciled = True
+    elif event_type == "PUBLICATION_RECORDED":
+        publication = dict(payload["publication"])
+        required = {
+            "logical_key",
+            "urn",
+            "content_digest",
+            "published_manifest_digest",
+            "lifecycle_digest_before",
+            "readback_verified",
+        }
+        if (
+            set(publication) != required
+            or publication["readback_verified"] is not False
+        ):
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "A publication record must contain the exact unverified write receipt.",
+            )
+        if projection.publication is not None:
+            if publication["logical_key"] != projection.publication["logical_key"]:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                    "A campaign publication cannot change logical identity.",
+                )
+            if publication["urn"] != projection.publication["urn"]:
+                raise Refusal(
+                    RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                    "A campaign publication cannot move to another DataHub entity.",
+                )
+        projection.publication = publication
+    elif event_type == "PUBLICATION_VERIFIED":
+        if projection.publication is None:
+            raise Refusal(
+                RefusalCode.INTEGRITY_EVENT_SEQUENCE_INVALID,
+                "Publication read-back cannot precede publication.",
+            )
+        required = {
+            "urn",
+            "content_digest",
+            "lifecycle_digest_after",
+            "readback_artifact_id",
+            "verified_at",
+        }
+        if set(payload) != required:
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "A publication verification payload has unexpected fields.",
+            )
+        if (
+            payload["urn"] != projection.publication["urn"]
+            or payload["content_digest"] != projection.publication["content_digest"]
+            or payload["lifecycle_digest_after"]
+            != projection.publication["lifecycle_digest_before"]
+        ):
+            raise Refusal(
+                RefusalCode.EVIDENCE_PUBLICATION_MISMATCH,
+                "Publication read-back or target lifecycle did not match "
+                "the write receipt.",
+            )
+        projection.publication = {
+            **projection.publication,
+            "readback_verified": True,
+            "readback_artifact_id": payload["readback_artifact_id"],
+            "verified_at": payload["verified_at"],
+            "lifecycle_digest_after": payload["lifecycle_digest_after"],
+        }
     elif event_type == "POLICY_EVALUATED":
         require_bound_inputs(
             recorded=projection.input_digests,
@@ -413,7 +484,7 @@ def manifest_from_projection(projection: CampaignProjection) -> dict[str, Any]:
                 }
                 for event in projection.events
             ],
-            "publication": None,
+            "publication": projection.publication,
             "decision": result.decision,
             "generated_at": projection.generated_at,
         },

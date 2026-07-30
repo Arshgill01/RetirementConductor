@@ -1,0 +1,49 @@
+api_version: retirement-conductor/v1alpha1
+kind: column_retirement
+campaign:
+  id: ret-orders-live-status
+  name: Replace legacy order status in the live disposable graph
+target:
+  datahub_urn: null
+  platform: snowflake
+  instance: retirement_conductor
+  database: analytics
+  schema: commerce
+  table: orders
+  field: legacy_status
+replacement:
+  datahub_urn: null
+  platform: snowflake
+  instance: retirement_conductor
+  database: analytics
+  schema: commerce
+  table: orders
+  field: order_status
+evidence:
+  datahub:
+    required: true
+    direction: downstream
+    max_hops: 3
+    platform_filters: []
+    maximum_age_seconds: 900
+  repositories:
+    - id: analytics
+      path: fixtures/repository
+      branch: main
+      required: true
+  query_history:
+    required: false
+    requested_window_days: 30
+authorization:
+  mode: plan
+  allowed_repositories:
+    - analytics
+  allowed_paths:
+    - models/
+  allowed_native_objects: []
+validation:
+  required_receipt_types:
+    - dbt
+policy:
+  id: default-column-retirement
+  version: 1

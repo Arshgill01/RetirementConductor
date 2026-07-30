@@ -15,6 +15,7 @@ SCHEMA_FILENAMES = {
     "retirement-spec": "retirement-spec-v1alpha1.schema.json",
     "evidence-envelope": "evidence-envelope-v1.schema.json",
     "consumer-receipt": "consumer-receipt-v1.schema.json",
+    "datahub-snapshot": "datahub-snapshot-v1.schema.json",
     "campaign-manifest": "campaign-manifest-v1.schema.json",
     "campaign-event": "campaign-event-v1.schema.json",
     "fixture-scenario": "fixture-scenario-v1.schema.json",

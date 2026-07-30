@@ -164,6 +164,27 @@ class CampaignStore:
             json.loads(str(row["event_json"])) for row in self._event_rows(campaign_id)
         ]
 
+    def specification(self, campaign_id: str) -> dict[str, Any]:
+        """Return the immutable normalized specification bound to a campaign."""
+
+        row = self.connection.execute(
+            "SELECT specification_json FROM campaigns WHERE campaign_id = ?",
+            (campaign_id,),
+        ).fetchone()
+        if row is None:
+            raise Refusal(
+                RefusalCode.RUNTIME_CAMPAIGN_NOT_FOUND,
+                "The requested campaign does not exist.",
+                {"campaign_id": campaign_id},
+            )
+        value = json.loads(str(row["specification_json"]))
+        if not isinstance(value, dict):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The stored campaign specification is not an object.",
+            )
+        return value
+
     def _insert_event(self, event: Mapping[str, Any]) -> None:
         self.connection.execute(
             """
@@ -441,6 +462,42 @@ class CampaignStore:
                 "consumer_ids": sorted(consumer_ids),
                 "snapshot_digest": snapshot_digest,
             },
+            occurred_at=occurred_at,
+            idempotency_key=idempotency_key,
+        )
+
+    def record_publication(
+        self,
+        campaign_id: str,
+        publication: Mapping[str, Any],
+        *,
+        occurred_at: str,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Record a DataHub write receipt without treating the write as validation."""
+
+        return self.append_event(
+            campaign_id,
+            "PUBLICATION_RECORDED",
+            {"publication": dict(publication)},
+            occurred_at=occurred_at,
+            idempotency_key=idempotency_key,
+        )
+
+    def verify_publication(
+        self,
+        campaign_id: str,
+        verification: Mapping[str, Any],
+        *,
+        occurred_at: str,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Record independent read-back and unchanged target lifecycle evidence."""
+
+        return self.append_event(
+            campaign_id,
+            "PUBLICATION_VERIFIED",
+            dict(verification),
             occurred_at=occurred_at,
             idempotency_key=idempotency_key,
         )

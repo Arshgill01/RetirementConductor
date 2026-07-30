@@ -197,6 +197,31 @@ def test_schema_migration_and_replay_match_materialized_manifest(
         assert materialized["manifest_digest"] == replayed["manifest_digest"]
 
 
+def test_fresh_inventory_can_replace_pre_migration_baseline(
+    tmp_path: Path,
+) -> None:
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+
+        refreshed = store.record_inventory(
+            CAMPAIGN_ID,
+            evidence_envelope=live_envelope(),
+            consumers=[
+                {
+                    "id": CONSUMER_ID,
+                    "disposition": "IDENTIFIED",
+                    "receipt_digest": None,
+                }
+            ],
+            snapshot_digest=SNAPSHOT_TWO,
+            occurred_at="2026-01-01T10:15:00Z",
+            idempotency_key="inventory-refresh",
+        )
+
+        assert refreshed["campaign"]["state"] == "INVENTORIED"
+        assert refreshed["snapshot_digests"] == [SNAPSHOT_ONE, SNAPSHOT_TWO]
+
+
 def test_complete_validated_flow_reaches_ready(tmp_path: Path) -> None:
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
         create_and_inventory(store)

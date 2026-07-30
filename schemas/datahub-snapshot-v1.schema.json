@@ -1,0 +1,81 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/datahub-snapshot-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "claims": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "consumers": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "counterfactual": {
+      "type": "object"
+    },
+    "evidence_envelope": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "type": "object"
+    },
+    "ownership": {
+      "type": "object"
+    },
+    "pagination": {
+      "type": "object"
+    },
+    "query_history": {
+      "type": "object"
+    },
+    "raw_artifact_ids": {
+      "items": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "resolution": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "snapshot_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "captured_at",
+    "resolution",
+    "consumers",
+    "claims",
+    "query_history",
+    "ownership",
+    "lifecycle",
+    "pagination",
+    "counterfactual",
+    "evidence_envelope",
+    "raw_artifact_ids",
+    "snapshot_digest"
+  ],
+  "title": "DataHub snapshot v1",
+  "type": "object"
+}

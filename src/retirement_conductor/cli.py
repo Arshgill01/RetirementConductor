@@ -4,12 +4,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from retirement_conductor.canonical import write_json
+from retirement_conductor.canonical import digest_json, write_json
+from retirement_conductor.datahub import (
+    DataHubBoundary,
+    render_campaign_summary,
+    utc_now,
+)
+from retirement_conductor.datahub_config import DataHubSettings
+from retirement_conductor.datahub_http import DataHubGraphClient
 from retirement_conductor.errors import Refusal
 from retirement_conductor.events import (
     event_stream_digest,
@@ -17,6 +25,7 @@ from retirement_conductor.events import (
     project_events,
 )
 from retirement_conductor.fixtures import run_fixture
+from retirement_conductor.mcp_http import HttpMCPClient
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.vocabulary import CampaignState
@@ -41,6 +50,21 @@ def build_parser() -> argparse.ArgumentParser:
     fixture_run.add_argument("specification", type=Path)
     fixture_run.add_argument("--scenario", type=Path)
     fixture_run.add_argument("--output-dir", type=Path)
+
+    datahub = subparsers.add_parser(
+        "datahub",
+        help="inspect the live DataHub evidence boundary",
+    )
+    datahub_subparsers = datahub.add_subparsers(
+        dest="datahub_command",
+        required=True,
+    )
+    preflight = datahub_subparsers.add_parser("preflight")
+    preflight.add_argument(
+        "--output",
+        type=Path,
+        default=Path(".retirement-conductor/datahub/capability-fingerprint.json"),
+    )
 
     campaign = subparsers.add_parser(
         "campaign",
@@ -82,12 +106,95 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("campaign_id")
     export.add_argument("--output", type=Path, required=True)
     _add_store_arguments(export)
+
+    inventory = campaign_subparsers.add_parser("inventory")
+    _add_live_campaign_arguments(inventory)
+
+    publish = campaign_subparsers.add_parser("publish")
+    _add_live_campaign_arguments(publish)
+
+    verify_publication = campaign_subparsers.add_parser("verify-publication")
+    _add_live_campaign_arguments(verify_publication)
     return parser
 
 
 def _add_store_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--store", type=Path, required=True)
     parser.add_argument("--writer-id", required=True)
+
+
+def _add_live_campaign_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--campaign", dest="campaign_id", required=True)
+    parser.add_argument(
+        "--store",
+        type=Path,
+        default=Path(
+            os.environ.get(
+                "RETIREMENT_CONDUCTOR_STORE",
+                ".retirement-conductor/campaigns.sqlite",
+            )
+        ),
+    )
+    parser.add_argument(
+        "--writer-id",
+        default=os.environ.get("RETIREMENT_CONDUCTOR_WRITER_ID", "local-operator"),
+    )
+    parser.add_argument(
+        "--artifact-dir",
+        type=Path,
+        default=Path(
+            os.environ.get(
+                "RETIREMENT_CONDUCTOR_ARTIFACT_DIR",
+                ".retirement-conductor/artifacts",
+            )
+        ),
+    )
+
+
+def _datahub_boundary() -> DataHubBoundary:
+    settings = DataHubSettings.from_environment()
+    return DataHubBoundary(
+        settings,
+        mcp=HttpMCPClient(
+            settings.mcp_url,
+            timeout_seconds=settings.timeout_seconds,
+        ),
+        graph=DataHubGraphClient(
+            settings.gms_url,
+            token=settings.token,
+            timeout_seconds=settings.timeout_seconds,
+        ),
+    )
+
+
+def _campaign_artifact_root(args: argparse.Namespace, operation: str) -> Path:
+    return Path(args.artifact_dir) / str(args.campaign_id) / "datahub" / operation
+
+
+def _publication_source_manifest(
+    store: CampaignStore,
+    campaign_id: str,
+    content_digest: str,
+) -> dict[str, Any]:
+    events = store.events(campaign_id)
+    for index in range(len(events) - 1, 0, -1):
+        event = events[index]
+        if (
+            event["event_type"] == "PUBLICATION_RECORDED"
+            and event["payload"]["publication"]["content_digest"] == content_digest
+        ):
+            manifest = manifest_from_projection(project_events(events[:index]))
+            recorded = event["payload"]["publication"]["published_manifest_digest"]
+            if manifest["manifest_digest"] != recorded:
+                raise Refusal(
+                    "INTEGRITY_MATERIALIZED_STATE_MISMATCH",
+                    "The publication source manifest could not be reconstructed.",
+                )
+            return manifest
+    raise Refusal(
+        "EVIDENCE_PUBLICATION_MISMATCH",
+        "The publication write receipt was not found in campaign history.",
+    )
 
 
 def _load_fixture_events(source: Path) -> list[dict[str, Any]]:
@@ -141,6 +248,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             _render(summary)
             return 0
+        if args.command == "datahub" and args.datahub_command == "preflight":
+            fingerprint = _datahub_boundary().preflight()
+            write_json(args.output, fingerprint)
+            _render(
+                {
+                    "result": "OK",
+                    "capability_fingerprint": fingerprint,
+                    "output": str(args.output),
+                }
+            )
+            return 0
         if args.command == "campaign":
             if args.campaign_command in {"replay", "evaluate"}:
                 events = _load_fixture_events(args.source)
@@ -165,6 +283,160 @@ def main(argv: Sequence[str] | None = None) -> int:
                         }
                     )
                 return 0
+            if args.campaign_command in {
+                "inventory",
+                "publish",
+                "verify-publication",
+            }:
+                boundary = _datahub_boundary()
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    specification = store.specification(args.campaign_id)
+                    if args.campaign_command == "inventory":
+                        snapshot = boundary.inventory(
+                            specification,
+                            artifact_root=_campaign_artifact_root(
+                                args,
+                                "baseline",
+                            ),
+                        )
+                        manifest = store.record_inventory(
+                            args.campaign_id,
+                            evidence_envelope=snapshot["evidence_envelope"],
+                            consumers=[
+                                {
+                                    "id": consumer["id"],
+                                    "disposition": consumer["disposition"],
+                                    "receipt_digest": None,
+                                }
+                                for consumer in snapshot["consumers"]
+                            ],
+                            snapshot_digest=snapshot["snapshot_digest"],
+                            occurred_at=snapshot["captured_at"],
+                            idempotency_key=(
+                                f"inventory-{snapshot['snapshot_digest'][-16:]}"
+                            ),
+                        )
+                        _render(
+                            {
+                                "result": "INVENTORIED",
+                                "snapshot": snapshot,
+                                "manifest": manifest,
+                            }
+                        )
+                        return 0
+                    resolved = boundary.resolve_field_pair(
+                        specification["target"],
+                        specification["replacement"],
+                    )
+                    target_urn = str(resolved["dataset"]["urn"])
+                    manifest = store.materialize(args.campaign_id)
+                    if args.campaign_command == "publish":
+                        content = render_campaign_summary(manifest)
+                        existing = manifest.get("publication")
+                        existing_urn = (
+                            str(existing["urn"])
+                            if isinstance(existing, dict)
+                            and isinstance(existing.get("urn"), str)
+                            else None
+                        )
+                        lifecycle_digest = digest_json(boundary.lifecycle(target_urn))
+                        receipt = boundary.save_summary(
+                            campaign_id=args.campaign_id,
+                            target_urn=target_urn,
+                            content=content,
+                            existing_urn=existing_urn,
+                            artifact_root=_campaign_artifact_root(
+                                args,
+                                "publication",
+                            ),
+                        )
+                        publication_record = {
+                            "logical_key": f"campaign/{args.campaign_id}",
+                            "urn": receipt["urn"],
+                            "content_digest": receipt["content_digest"],
+                            "published_manifest_digest": manifest["manifest_digest"],
+                            "lifecycle_digest_before": lifecycle_digest,
+                            "readback_verified": False,
+                        }
+                        updated = store.record_publication(
+                            args.campaign_id,
+                            publication_record,
+                            occurred_at=utc_now(),
+                            idempotency_key=(
+                                f"publication-{receipt['content_digest'][-16:]}"
+                            ),
+                        )
+                        _render(
+                            {
+                                "result": "PUBLISHED",
+                                "publication": updated["publication"],
+                                "write_artifact_ids": receipt["artifact_ids"],
+                                "manifest": updated,
+                            }
+                        )
+                        return 0
+                    publication_value = manifest.get("publication")
+                    if not isinstance(publication_value, dict):
+                        raise Refusal(
+                            "EVIDENCE_PUBLICATION_MISMATCH",
+                            "The campaign has no DataHub publication to verify.",
+                        )
+                    source_manifest = _publication_source_manifest(
+                        store,
+                        args.campaign_id,
+                        str(publication_value["content_digest"]),
+                    )
+                    expected_content = render_campaign_summary(source_manifest)
+                    verification = boundary.verify_summary(
+                        campaign_id=args.campaign_id,
+                        urn=str(publication_value["urn"]),
+                        expected_content=expected_content,
+                        target_urn=target_urn,
+                        expected_lifecycle_digest=str(
+                            publication_value["lifecycle_digest_before"]
+                        ),
+                        artifact_root=_campaign_artifact_root(
+                            args,
+                            "publication",
+                        ),
+                    )
+                    if publication_value.get("readback_verified") is True:
+                        _render(
+                            {
+                                "result": "VERIFIED",
+                                "publication": publication_value,
+                                "manifest": manifest,
+                            }
+                        )
+                        return 0
+                    verified_at = utc_now()
+                    updated = store.verify_publication(
+                        args.campaign_id,
+                        {
+                            "urn": publication_value["urn"],
+                            "content_digest": publication_value["content_digest"],
+                            "lifecycle_digest_after": verification[
+                                "lifecycle_digest_after"
+                            ],
+                            "readback_artifact_id": verification[
+                                "readback_artifact_id"
+                            ],
+                            "verified_at": verified_at,
+                        },
+                        occurred_at=verified_at,
+                        idempotency_key=(
+                            f"publication-verify-"
+                            f"{str(publication_value['content_digest'])[-16:]}"
+                        ),
+                    )
+                    _render(
+                        {
+                            "result": "VERIFIED",
+                            "publication": updated["publication"],
+                            "manifest": updated,
+                        }
+                    )
+                    return 0
             with CampaignStore(args.store, writer_id=args.writer_id) as store:
                 if args.campaign_command == "create":
                     specification = load_specification(args.specification)
