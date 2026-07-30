@@ -1,0 +1,76 @@
+# Contributing
+
+Retirement Conductor handles consequential source changes. Contributions must
+preserve evidence boundaries and refusal behavior, not only successful output.
+
+## Before changing code or contracts
+
+Read:
+
+1. [Agent operating rules](AGENTS.md)
+2. [Product definition](docs/PRODUCT.md)
+3. [Build plan](PLAN.md)
+4. the active [phase](docs/phases/README.md)
+5. relevant [contracts](docs/CONTRACTS.md),
+   [risks](docs/RISKS.md), and [decisions](docs/DECISIONS.md)
+
+## Change process
+
+1. State the product invariant or risk the change addresses.
+2. Identify the authoritative source or observed behavior.
+3. Add the smallest implementation that completely addresses it.
+4. Add successful, refusal, and interruption coverage appropriate to the
+   change.
+5. Inspect generated evidence and public output.
+6. Update contracts, decisions, risks, and phase acceptance when behavior
+   changes.
+7. Run `make check` and the phase-specific commands.
+
+## Contract changes
+
+A contract change must include:
+
+- old and new schema versions;
+- compatibility or migration behavior;
+- a decision-log entry;
+- positive and negative fixtures;
+- replay behavior for existing campaigns;
+- updated operator explanation.
+
+Do not reuse a field with changed meaning.
+
+## Adapter changes
+
+An adapter contribution must:
+
+- map DataHub evidence to an exact native identity;
+- declare read, plan, apply, validate, and compensate capabilities;
+- default to no mutation;
+- pin source version and target scope before apply;
+- use a documented native surface;
+- compare actual targets with the approved plan;
+- invoke a source-native validator;
+- emit a strict receipt or a stable refusal;
+- test retry, stale source, permission failure, scope expansion, partial
+  failure, and compensation;
+- distinguish live, fixture, and replay evidence.
+
+## Evidence rules
+
+- Store only redacted public-safe artifacts in version control.
+- Address raw artifacts by digest and keep sensitive material outside Git.
+- Record source version, capture time, scope, permissions, pagination,
+  freshness, and limitations.
+- Do not turn fixture behavior into a live claim.
+- Do not turn ownership or acknowledgment into native validation.
+
+## Pull request checklist
+
+- [ ] The change advances a named phase or contains a justified contract fix.
+- [ ] Product behavior and non-claims remain accurate.
+- [ ] Successful and refusal paths are tested.
+- [ ] Interrupted or repeated execution remains safe where applicable.
+- [ ] No new dependency was added without a clear need and review.
+- [ ] No credentials, private paths, raw SQL, or sensitive data are present.
+- [ ] Documentation links and repository checks pass.
+- [ ] Risks and decisions match the observed result.

@@ -1,0 +1,124 @@
+# Retirement Conductor
+
+Retirement Conductor safely replaces and retires legacy data fields by finding
+known consumers across systems, changing the consumers it is authorized to
+change, validating each change with the consumer's own tools, and refusing the
+producer-side retirement action until the evidence closes.
+
+## The problem in plain language
+
+An old warehouse column can look unused in its repository while still feeding
+a dashboard, scheduled report, notebook, pipeline, or model elsewhere. A
+catalog can reveal much of that blast radius, but a list of affected assets
+does not move those consumers or prove that they still work after a change.
+
+Retirement Conductor turns the change into one controlled campaign:
+
+```text
+Declare what is being replaced
+  → build an evidence-scoped consumer inventory
+  → migrate authorized consumers
+  → run source-native validation
+  → discover again from fresh state
+  → permit or refuse retirement
+```
+
+Its central promise is deliberately bounded:
+
+> Never confuse “nothing was returned” with “nothing depends on it.”
+
+## Why this is a product rather than one catalog feature
+
+DataHub supplies cross-system lineage, ownership, schemas, usage context,
+queries, metadata mutation, and an agent-readable context surface. Native
+platform tools know how to change and validate their own objects. Retirement
+Conductor owns the part between them:
+
+- one durable campaign across unrelated consumer systems;
+- a common adapter and evidence contract;
+- source-version and scope preconditions before mutation;
+- per-consumer native validation receipts;
+- a fresh reconciliation pass that can reopen the campaign;
+- a deterministic producer-side gate;
+- an auditable explanation of what is closed, unknown, stale, or unsafe.
+
+The system does not replace DataHub, dbt, Looker, Git, or their validators. It
+makes them participate in one completion criterion.
+
+## Evidence already established
+
+The preceding experiment exercised a live DataHub Core graph and a real
+disposable dbt project:
+
+- repository analysis found one consumer;
+- DataHub expanded the inventory to 35 consumers across multiple platforms;
+- DataHub therefore changed the decision from allowed to refused;
+- the repository consumer was protected by a content hash, changed, parsed,
+  built, and tested;
+- stale source and invalid replacement cases refused safely;
+- unresolved external consumers remained blocking;
+- a stable refusal summary was written to DataHub and read back through its
+  agent surface.
+
+A second adapter has deterministic contract coverage for one bounded Looker
+saved-content mutation, rollback, validation, and failure handling. Its live
+boundary remains unverified until a disposable instance and scoped credentials
+are available. See [Evidence baseline](docs/EVIDENCE_BASELINE.md).
+
+## Complete supported path
+
+The first production-shaped vertical is:
+
+- one warehouse column and one compatible replacement;
+- DataHub as the cross-system inventory and reconciliation surface;
+- one Git repository containing dbt or SQL consumers;
+- reviewable branch-based changes;
+- dbt-native validation;
+- a durable local campaign record plus a DataHub summary;
+- a command that exits non-zero when producer retirement is not permitted.
+
+Looker is the next native adapter after this path works completely. Other asset
+types and platforms are explicitly outside the current build boundary.
+
+## Product rules
+
+```text
+The model proposes.
+Native tools validate.
+Deterministic policy decides.
+```
+
+- `READY_TO_RETIRE` means ready within a declared evidence envelope, never
+  universally safe.
+- Missing required evidence is `BLOCKED`.
+- A known active or failed consumer is `UNSAFE`.
+- Semantic or ownership judgment that cannot be automated is
+  `REVIEW_REQUIRED`.
+- A new consumer or stale receipt reopens the campaign.
+
+## Repository map
+
+- [Product definition](docs/PRODUCT.md)
+- [Build plan](PLAN.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Core contracts](docs/CONTRACTS.md)
+- [Risk register](docs/RISKS.md)
+- [Decision log](docs/DECISIONS.md)
+- [Phase index](docs/phases/README.md)
+- [Research passes](docs/research/README.md)
+- [Agent operating rules](AGENTS.md)
+
+## Working in this repository
+
+This repository currently contains the controlling product and engineering
+foundation. Implementation begins with the campaign kernel only after its
+contracts and acceptance evidence are explicit.
+
+Run the repository checks with:
+
+```bash
+make check
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
+phase boundary.

@@ -1,0 +1,31 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Runtime state and evidence that may contain sensitive material
+.retirement-conductor/
+*.sqlite
+*.sqlite3
+artifacts/raw/
+artifacts/private/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
