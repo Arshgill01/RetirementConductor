@@ -1,0 +1,36 @@
+Phase 04 disposable isolated end-to-end campaign
+Decision: UNSAFE — A known consumer or changed condition makes retirement unsafe
+Change: analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status
+Consumers: 2 total, 1 closed, 1 open
+Open conditions: 2 blockers, 0 reviews
+Evidence: Complete within declared scope — 2 of 2 required sources (mode: live)
+Next action: Migrate or resolve every unsafe consumer, validate in its native system, then reconcile again.
+Manifest digest: sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece
+
+Evidence sources
+- datahub: COMPLETE; required; 2 of 2 reported results over 3 pages
+  Freshness: observed 2026-07-30T12:44:57.581461Z; source updated 2026-07-30T12:44:39.998639Z
+  Limitation: DataHub Core did not expose isPartial
+  Limitation: Ownership is routing context only
+  Limitation: Query-history absence is not closure evidence
+  Limitation: Table-only lineage cannot authorize field mutation or closure
+- git:analytics: COMPLETE; required; 1 of 1 reported results over 1 pages
+  Freshness: observed 2026-07-30T12:45:00.596002Z; source updated 2026-07-30T12:42:55Z
+  Limitation: Only the declared source branch was searched
+  Limitation: Text discovery is high-recall evidence, not completeness proof
+  Limitation: External dbt packages are refused in the initial adapter
+
+Consumers
+- dh-477310f4b3971b7103d3: VALIDATED; VALIDATED — native receipt accepted at manifest time
+  Native change: analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status
+  Receipt: sha256:b738c82bd66d043ece524c046ef7d2b01e622e21dd143d35be90b70966f15e5c
+- dh-aa68f56e6a72eb184768: OPAQUE; MISSING — no accepted native validation receipt
+  Native change: analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status
+
+Blockers, review requirements, and recovery
+- Blocker · POLICY_CONSUMER_OPAQUE: Consumer remains opaque.
+  Evidence source: campaign policy
+  Recovery: Resolve the named consumer state or policy input, then evaluate again.
+- Blocker · RECONCILIATION_NEW_CONSUMER: A consumer appeared after the frozen inventory.
+  Evidence source: fresh reconciliation
+  Recovery: Refresh equivalent evidence scope and reconcile the complete observed set again.

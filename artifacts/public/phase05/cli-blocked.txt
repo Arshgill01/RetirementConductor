@@ -1,0 +1,8 @@
+Replace legacy order status
+Decision: BLOCKED — Required proof or authority is missing
+Change: analytics.commerce.orders.legacy_status → analytics.commerce.orders.order_status
+Consumers: 1 total, 0 closed, 1 open
+Open conditions: 3 blockers, 0 reviews
+Evidence: Bounded fixture evidence — not acceptable as live proof (mode: fixture)
+Next action: Resolve the blocking evidence or authorization, then resume at the step named below.
+Manifest digest: sha256:5466473b6fe03d35c2a9d3b5f6e86301245ecb3dcdf8e804fa1f58d1fbaf70ce

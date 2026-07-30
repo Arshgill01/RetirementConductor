@@ -1,0 +1,67 @@
+{
+  "reports": [
+    {
+      "checks": {
+        "aria_references": 5,
+        "contrast_ratios": {
+          "danger_on_paper": 6.12,
+          "ink_on_paper": 13.96,
+          "muted_on_paper": 5.52,
+          "paper-raised_on_ink": 15.62,
+          "safe_on_paper": 6.97,
+          "warning_on_paper": 5.19
+        },
+        "fragment_targets": 6,
+        "headings": 12,
+        "interactive_controls": 8,
+        "landmarks": 4
+      },
+      "file": "artifacts/public/phase05/live-refusal-report.html",
+      "result": "PASSED",
+      "violations": []
+    },
+    {
+      "checks": {
+        "aria_references": 5,
+        "contrast_ratios": {
+          "danger_on_paper": 6.12,
+          "ink_on_paper": 13.96,
+          "muted_on_paper": 5.52,
+          "paper-raised_on_ink": 15.62,
+          "safe_on_paper": 6.97,
+          "warning_on_paper": 5.19
+        },
+        "fragment_targets": 6,
+        "headings": 9,
+        "interactive_controls": 7,
+        "landmarks": 4
+      },
+      "file": "artifacts/public/phase05/all-closed-fixture-report.html",
+      "result": "PASSED",
+      "violations": []
+    },
+    {
+      "checks": {
+        "aria_references": 5,
+        "contrast_ratios": {
+          "danger_on_paper": 6.12,
+          "ink_on_paper": 13.96,
+          "muted_on_paper": 5.52,
+          "paper-raised_on_ink": 15.62,
+          "safe_on_paper": 6.97,
+          "warning_on_paper": 5.19
+        },
+        "fragment_targets": 6,
+        "headings": 12,
+        "interactive_controls": 8,
+        "landmarks": 4
+      },
+      "file": "artifacts/public/phase05/public-export.html",
+      "result": "PASSED",
+      "violations": []
+    }
+  ],
+  "result": "PASSED",
+  "schema_version": "1.0.0",
+  "standard": "WCAG 2.2 AA deterministic structural subset"
+}

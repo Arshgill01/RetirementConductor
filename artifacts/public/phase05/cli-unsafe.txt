@@ -1,0 +1,8 @@
+Phase 04 disposable isolated end-to-end campaign
+Decision: UNSAFE — A known consumer or changed condition makes retirement unsafe
+Change: analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status
+Consumers: 2 total, 1 closed, 1 open
+Open conditions: 2 blockers, 0 reviews
+Evidence: Complete within declared scope — 2 of 2 required sources (mode: live)
+Next action: Migrate or resolve every unsafe consumer, validate in its native system, then reconcile again.
+Manifest digest: sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece

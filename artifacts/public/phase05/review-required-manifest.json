@@ -1,0 +1,121 @@
+{
+  "blockers": [],
+  "campaign": {
+    "id": "phase05-review-required-fixture",
+    "name": "Review one bounded fixture waiver",
+    "state": "BLOCKED"
+  },
+  "consumers": [
+    {
+      "disposition": "WAIVED",
+      "id": "consumer-review",
+      "receipt_digest": null
+    }
+  ],
+  "decision": "REVIEW_REQUIRED",
+  "evidence_envelope": {
+    "captured_at": "2026-01-01T00:01:00Z",
+    "envelope_digest": "sha256:0de0ee235b2b2707d183b0854d398d0d2772156f02fd099118ca47fe7d12e499",
+    "mode": "fixture",
+    "schema_version": "1.0.0",
+    "sources": [
+      {
+        "artifact_ids": [
+          "sha256:7c1f49f20baeb7a6e1aff11bf2756dff747ecd2302928c9f7907330a46d1ad63"
+        ],
+        "freshness": {
+          "maximum_age_seconds": 900,
+          "observed_at": "2026-01-01T00:01:00Z",
+          "source_updated_at": "2026-01-01T00:01:00Z"
+        },
+        "id": "datahub",
+        "identity": "public-fixture",
+        "limitations": [
+          "Fixture review evidence does not establish a live outcome."
+        ],
+        "permissions": {
+          "effective_scope": "controlled fixture only",
+          "principal": "public-fixture"
+        },
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "filters": [],
+          "max_hops": 1,
+          "pages": 1,
+          "reported_total": 1,
+          "returned_total": 1
+        },
+        "source_version": "public-fixture/1.0",
+        "status": "COMPLETE"
+      }
+    ]
+  },
+  "generated_at": "2026-01-01T00:04:00Z",
+  "manifest_digest": "sha256:0e1582839e48b577ffa4b104c2d4142770e7f34c5dc9efefa3f955e6afd3e491",
+  "policy": {
+    "id": "default-column-retirement",
+    "requires_live_evidence": false,
+    "version": 1
+  },
+  "publication": null,
+  "receipt_digests": [],
+  "replacement": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "order_status",
+    "instance": "public-fixture",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders"
+  },
+  "review_requirements": [
+    {
+      "code": "POLICY_WAIVER_REVIEW",
+      "consumer_id": "consumer-review",
+      "message": "An allowed waiver remains visibly reviewable."
+    }
+  ],
+  "schema_version": "1.0.0",
+  "snapshot_digests": [
+    "sha256:3a10b78352a71da93d7419bb37c1974a7a1b9ff058750a294623df462187f1b8",
+    "sha256:8def559117ccee5b480fc01abd5e99eef1a84e5497ca7b7521c7bc03d6c5b5f4"
+  ],
+  "specification_digest": "sha256:b7c7b5d73ee71030b5a464ca2a3a1cce023b84d234de67f9cc5464ff9468ce39",
+  "target": {
+    "database": "analytics",
+    "datahub_urn": null,
+    "field": "legacy_status",
+    "instance": "public-fixture",
+    "platform": "snowflake",
+    "schema": "commerce",
+    "table": "orders"
+  },
+  "transition_history": [
+    {
+      "event_digest": "sha256:c7914e781e2f7cf4e1cece68eb7ba3b4d99eaa104fc0959fe64f388099eb80a4",
+      "event_type": "CAMPAIGN_CREATED",
+      "sequence": 1
+    },
+    {
+      "event_digest": "sha256:51c521108eea8b991728bddff09c4b6d021ab6282b101a416f131f4a86a3c8c3",
+      "event_type": "INVENTORY_RECORDED",
+      "sequence": 2
+    },
+    {
+      "event_digest": "sha256:5fee575e80d2e64dcf9ceea0b1399ebee5a6d8bce77b75b060e58a7e6c5a15e1",
+      "event_type": "WAIVER_RECORDED",
+      "sequence": 3
+    },
+    {
+      "event_digest": "sha256:0b8934b6828d1bc9b848fd2922330dc81500a3d225d9d0f96490de7d9ff02934",
+      "event_type": "RECONCILIATION_RECORDED",
+      "sequence": 4
+    },
+    {
+      "event_digest": "sha256:ae82f9c49c112fee8f7114d7d451e01794c448d18c195f8c91d06193a69e62d2",
+      "event_type": "POLICY_EVALUATED",
+      "sequence": 5
+    }
+  ]
+}

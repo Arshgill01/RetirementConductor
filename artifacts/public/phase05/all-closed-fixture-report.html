@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" data-export="local">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f0e6">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Replace legacy order status · Retirement Conductor</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f0e6;
+      --paper-raised: #fffdf7;
+      --ink: #20231f;
+      --muted: #5b625b;
+      --line: #b9b6a9;
+      --strong-line: #6b6f67;
+      --safe: #245b41;
+      --warning: #8a5a13;
+      --danger: #943f32;
+      --focus: #6b3e1f;
+      --measure: 78rem;
+      font-family: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html {
+      -webkit-tap-highlight-color: rgb(107 62 31 / 18%);
+      background: var(--paper);
+      color: var(--ink);
+    }
+    body { margin: 0; font-size: 1rem; line-height: 1.55; }
+    a, summary { touch-action: manipulation; }
+    a { color: inherit; text-underline-offset: .18em; }
+    a:hover { text-decoration-thickness: .14em; }
+    summary:hover { color: var(--focus); }
+    a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+    .skip-link {
+      background: var(--ink);
+      color: var(--paper-raised);
+      left: 1rem;
+      padding: .6rem .8rem;
+      position: fixed;
+      top: -5rem;
+      z-index: 10;
+    }
+    .skip-link:focus { top: 1rem; }
+    header, main, footer {
+      margin-inline: auto;
+      max-width: var(--measure);
+      padding-inline: clamp(1rem, 4vw, 3rem);
+    }
+    header { padding-block: clamp(2rem, 6vw, 5rem) 2rem; }
+    .campaign-line {
+      align-items: baseline;
+      border-bottom: 1px solid var(--strong-line);
+      display: flex;
+      gap: 1rem;
+      justify-content: space-between;
+      padding-bottom: .75rem;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+    h1 { font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: -.04em; line-height: 1.02; max-width: 18ch; }
+    h2 { font-size: 1.35rem; letter-spacing: -.015em; margin-bottom: 1rem; }
+    h3 { font-size: 1rem; margin-bottom: .25rem; overflow-wrap: anywhere; }
+    code {
+      font-family: "Berkeley Mono", "IBM Plex Mono", ui-monospace, monospace;
+      font-size: .82em;
+      overflow-wrap: anywhere;
+    }
+    nav ul { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; list-style: none; margin: 1rem 0 0; padding: 0; }
+    .decision {
+      border-bottom: 6px solid var(--strong-line);
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: minmax(0, 1.6fr) minmax(16rem, .8fr);
+      padding-block: 2rem;
+    }
+    .decision-value { font-size: clamp(1.35rem, 3vw, 2.2rem); font-weight: 750; line-height: 1.15; }
+    .decision-code { color: var(--muted); font-family: "Berkeley Mono", "IBM Plex Mono", ui-monospace, monospace; margin-bottom: .4rem; }
+    .change-line { font-size: 1.1rem; margin-bottom: 0; overflow-wrap: anywhere; }
+    .next-action { border-left: 4px solid var(--warning); padding-left: 1rem; }
+    .next-action strong { display: block; margin-bottom: .25rem; }
+    .facts {
+      border-bottom: 1px solid var(--strong-line);
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 0;
+    }
+    .facts div { border-right: 1px solid var(--line); padding: 1rem; }
+    .facts div:last-child { border-right: 0; }
+    dt { color: var(--muted); font-size: .85rem; }
+    dd { margin: .2rem 0 0; overflow-wrap: anywhere; }
+    .facts dd { font-size: 1.15rem; font-weight: 700; }
+    section { border-bottom: 1px solid var(--strong-line); padding-block: 2rem; scroll-margin-top: 1rem; }
+    .scope-warning {
+      background: #ede4cf;
+      border-left: 5px solid var(--warning);
+      margin-bottom: 2rem;
+      padding: 1rem;
+    }
+    .scope-warning p:last-child { margin-bottom: 0; }
+    .ledger-row { border-top: 1px solid var(--line); padding-block: 1.1rem; }
+    .source-row { display: grid; gap: 1rem; grid-template-columns: minmax(10rem, .6fr) minmax(0, 1.4fr); }
+    .source-row details { grid-column: 1 / -1; }
+    .source-facts, .detail-list { display: grid; gap: .65rem 1.25rem; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+    summary { cursor: pointer; font-weight: 700; padding-block: .25rem; }
+    .limitations { margin-bottom: 0; padding-left: 1.25rem; }
+    .status-text { font-weight: 750; }
+    .status-complete, .status-validated, .status-ready-to-retire { color: var(--safe); }
+    .status-stale, .status-failed, .status-unsafe, .status-incomplete { color: var(--danger); }
+    .status-partial, .status-unknown, .status-blocked, .status-review-required { color: var(--warning); }
+    .condition-type { color: var(--muted); font-weight: 700; margin-bottom: .25rem; }
+    .consumer-list, .blocker-list { list-style: none; margin: 0; padding: 0; }
+    .consumer-heading { align-items: baseline; display: flex; gap: 1rem; justify-content: space-between; }
+    .empty-state { border-top: 1px solid var(--line); color: var(--muted); padding-block: 1rem; }
+    .history-list { list-style: none; margin: 0; padding: 0; }
+    .history-list li { border-top: 1px solid var(--line); display: grid; gap: .75rem; grid-template-columns: 3rem minmax(12rem, .6fr) minmax(0, 1.4fr); padding-block: .65rem; }
+    footer { color: var(--muted); padding-block: 2rem 4rem; }
+    footer p { margin-bottom: .4rem; overflow-wrap: anywhere; }
+    @media (max-width: 44rem) {
+      .campaign-line { align-items: flex-start; flex-direction: column; gap: .25rem; }
+      .decision { grid-template-columns: 1fr; }
+      .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .facts div:nth-child(2) { border-right: 0; }
+      .facts div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .source-row { grid-template-columns: 1fr; }
+      .source-facts, .detail-list { grid-template-columns: 1fr; }
+      .consumer-heading { align-items: flex-start; flex-direction: column; gap: .25rem; }
+      .history-list li { grid-template-columns: 2rem minmax(0, 1fr); }
+      .history-list code { grid-column: 1 / -1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+    @media print {
+      :root { --paper: #fff; --paper-raised: #fff; }
+      nav, .skip-link { display: none; }
+      details { display: block; }
+      details > * { display: block; }
+      header, main, footer { max-width: none; padding-inline: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to campaign evidence</a>
+  <header>
+    <div class="campaign-line">
+      <strong>Retirement Conductor</strong>
+      <span translate="no">Campaign ret-orders-legacy-status</span>
+    </div>
+    <h1>Replace legacy order status</h1>
+    <nav aria-label="Campaign report">
+      <ul>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#evidence">Evidence</a></li>
+        <li><a href="#consumers">Consumers</a></li>
+        <li><a href="#blockers">Blockers</a></li>
+        <li><a href="#history">History</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main">
+    <section id="decision" aria-labelledby="decision-heading">
+      <div class="decision">
+        <div>
+          <p class="decision-code">BLOCKED</p>
+          <h2 id="decision-heading" class="decision-value">Required proof or authority is missing</h2>
+          <p class="change-line">analytics.commerce.orders.legacy_status → analytics.commerce.orders.order_status</p>
+        </div>
+        <p class="next-action"><strong>Required next action</strong>Resolve the blocking evidence or authorization, then resume at the step named below.</p>
+      </div>
+      <dl class="facts">
+        <div><dt>Consumers</dt><dd>1</dd></div>
+        <div><dt>Closed</dt><dd>1</dd></div>
+        <div><dt>Open</dt><dd>0</dd></div>
+        <div><dt>Open conditions</dt><dd>1</dd></div>
+      </dl>
+    </section>
+    <section id="evidence" aria-labelledby="evidence-heading">
+      <h2 id="evidence-heading">Evidence envelope</h2>
+      <div class="scope-warning">
+        <p><strong>Bounded fixture evidence — not acceptable as live proof</strong></p>
+        <p>Mode: fixture. Captured: 2026-01-01T00:00:00Z. This report never claims visibility beyond the sources and limitations listed here.</p>
+      </div>
+      <article class="ledger-row source-row">
+          <div>
+            <h3>datahub</h3>
+            <p class="status-text status-complete">
+              COMPLETE
+              · required
+            </p>
+          </div>
+          <dl class="source-facts">
+            <div><dt>Observed</dt><dd>2026-01-01T00:00:00Z</dd></div>
+            <div><dt>Source updated</dt><dd>2026-01-01T00:00:00Z</dd></div>
+            <div><dt>Pagination</dt><dd>1 pages; 1 of 1 reported</dd></div>
+            <div><dt>Traversal</dt><dd>downstream; 5 hops</dd></div>
+          </dl>
+          <details>
+            <summary>Scope identity, version, and limitations</summary>
+            <dl class="detail-list">
+              <div><dt>Identity</dt><dd>public-fixture</dd></div>
+              <div><dt>Version</dt><dd>fixture-datahub/1.0</dd></div>
+            </dl>
+            <ul class="limitations"><li>Controlled fixture evidence is not a live DataHub observation.</li></ul>
+          </details>
+        </article>
+    </section>
+    <section id="consumers" aria-labelledby="consumers-heading">
+      <h2 id="consumers-heading">Consumer inventory and native receipts</h2>
+      <ol class="consumer-list">
+        <li class="ledger-row consumer-row">
+          <div class="consumer-heading">
+            <h3>consumer-dbt-order-summary</h3>
+            <strong class="status-text status-validated">
+              VALIDATED
+            </strong>
+          </div>
+          <p>VALIDATED — native receipt accepted at manifest time</p>
+          <dl class="detail-list">
+            <div><dt>Native change</dt><dd>analytics.commerce.orders.legacy_status → analytics.commerce.orders.order_status</dd></div>
+            <div><dt>Receipt</dt><dd><code>sha256:3ca170208a98525b47ef6a91fd618319343fb879feadad64a33570d17f0be25d</code></dd></div>
+          </dl>
+        </li></ol>
+    </section>
+    <section id="blockers" aria-labelledby="blockers-heading">
+      <h2 id="blockers-heading">Blockers, reviews, and safe recovery</h2>
+      <ul class="blocker-list">
+        <li class="ledger-row blocker-row">
+          <p class="condition-type">Blocker</p>
+          <h3><code>EVIDENCE_MODE_NOT_LIVE</code></h3>
+          <p>Fixture evidence cannot satisfy a live-evidence policy.</p>
+          <dl class="detail-list">
+            <div><dt>Evidence source</dt><dd>evidence envelope</dd></div>
+            <div><dt>Safe recovery</dt><dd>Refresh or restore the required source, verify complete pagination and freshness, then inventory or reconcile again.</dd></div>
+          </dl>
+        </li></ul>
+    </section>
+    <section id="history" aria-labelledby="history-heading">
+      <h2 id="history-heading">Canonical campaign history</h2>
+      <p>DataHub publication: <strong>Not recorded</strong>.</p>
+      <ol class="history-list"><li><span>1</span><strong>SPECIFICATION_VALIDATED</strong><code>sha256:f71b20f8f10a283c8dacd38e8364527bb94e321b96b8d98cf643614742e388ad</code></li><li><span>2</span><strong>EVIDENCE_CAPTURED</strong><code>sha256:8193e22c834bc0c6593e5fa50f3eed49d24e642e2f4d27aee056caf2aef53f74</code></li><li><span>3</span><strong>CONSUMER_IDENTIFIED</strong><code>sha256:b7e99b9c191885b5341701b8f50b95b3883c1de59125faa713410a74a800099e</code></li><li><span>4</span><strong>RECEIPT_RECORDED</strong><code>sha256:986cfcf6d411f35cb3476ba5a54849140c22c0c79c08f084880e8e94d436ac5c</code></li><li><span>5</span><strong>POLICY_EVALUATED</strong><code>sha256:beef533c60955bfff63c86aaa59cea3a3b1e6f7cea662260a8a3873c6e07f946</code></li></ol>
+    </section>
+  </main>
+  <footer>
+    <p>Canonical state generated 2026-01-01T00:00:00Z</p>
+    <p>Manifest digest <code>sha256:d59ee4d346eb7abc3aff365ba391a1d420207db241b5e26a742791f4f37c071c</code></p>
+    <p>Export mode: local</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,131 @@
+{
+  "accessibility_evidence": {
+    "digest": "sha256:f634ee5a52d7051b6f13fb1ac6f8a466dbad99dad1f9b71c938b7fc4dae99e90",
+    "file": "artifacts/public/phase05/accessibility-evidence.json",
+    "report_count": 3
+  },
+  "apply_confirmation": {
+    "evidence": "tests/integration/test_git_dbt_workflow.py and scripts/run_phase04_end_to_end.py",
+    "missing_approval_refusal": "AUTH_APPROVAL_MISSING",
+    "required_argument": "--confirm-plan-digest",
+    "wrong_digest_refusal": "AUTH_APPROVAL_WRONG_PLAN"
+  },
+  "browser_evidence": {
+    "axe_incomplete": 0,
+    "axe_violations": 0,
+    "digest": "sha256:45be7e089b451e58f6220ad15c2bb75d452826c643699bb5c5bd93f36dc2a655",
+    "file": "artifacts/public/phase05/browser-evidence.json",
+    "keyboard_control_count": 15,
+    "page_count": 2,
+    "playwright_cli_version": "0.1.17"
+  },
+  "canonical_inputs": {
+    "blocked_fixture": {
+      "file": "artifacts/public/phase01/blocked-manifest.json",
+      "manifest_digest": "sha256:5466473b6fe03d35c2a9d3b5f6e86301245ecb3dcdf8e804fa1f58d1fbaf70ce"
+    },
+    "ready_live": {
+      "file": "artifacts/public/phase04/ready-manifest.json",
+      "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2"
+    },
+    "review_fixture": {
+      "file": "artifacts/public/phase05/review-required-manifest.json",
+      "manifest_digest": "sha256:0e1582839e48b577ffa4b104c2d4142770e7f34c5dc9efefa3f955e6afd3e491"
+    },
+    "unsafe_live": {
+      "file": "artifacts/public/phase04/late-manifest.json",
+      "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece"
+    }
+  },
+  "cli_decisions": {
+    "blocked": {
+      "decision": "BLOCKED",
+      "manifest_digest": "sha256:5466473b6fe03d35c2a9d3b5f6e86301245ecb3dcdf8e804fa1f58d1fbaf70ce",
+      "output": "artifacts/public/phase05/cli-blocked.txt",
+      "output_digest": "sha256:02118485c542f610806fea958490383b768724aa26d0cc049213e212b3127a35"
+    },
+    "ready": {
+      "decision": "READY_TO_RETIRE",
+      "manifest_digest": "sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2",
+      "output": "artifacts/public/phase05/cli-ready.txt",
+      "output_digest": "sha256:323056ce5c0653a876073e18df28e4aa9d4280f53372a729d818c9b9a75d030b"
+    },
+    "review-required": {
+      "decision": "REVIEW_REQUIRED",
+      "manifest_digest": "sha256:0e1582839e48b577ffa4b104c2d4142770e7f34c5dc9efefa3f955e6afd3e491",
+      "output": "artifacts/public/phase05/cli-review-required.txt",
+      "output_digest": "sha256:4ece77b4a88aa559e8224708478856ffe6d38e48358b86a8766cc30fc92d15ef"
+    },
+    "unsafe": {
+      "decision": "UNSAFE",
+      "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece",
+      "output": "artifacts/public/phase05/cli-unsafe.txt",
+      "output_digest": "sha256:81e0ecb9970b4958871dc52fa2e22667c029228d3bd0c06abd4eaf89b48f07a8"
+    }
+  },
+  "evidence_digest": "sha256:05aeb6bdb606db132f0ac255ce329dae82d30ab4d691f5599a822776b94debaf",
+  "evidence_modes": [
+    "live",
+    "fixture"
+  ],
+  "limitations": [
+    "The live report is derived from the disposable Phase 04 campaign.",
+    "The all-closed report is fixture evidence and remains BLOCKED because fixture evidence cannot satisfy live policy.",
+    "Automated browser and accessibility checks do not establish nontechnical human comprehension or independent operation.",
+    "Public export redaction removes identities; the original canonical manifest remains the integrity authority."
+  ],
+  "phase": "05",
+  "reports": {
+    "all_closed_fixture": {
+      "decision": "BLOCKED",
+      "deterministic": true,
+      "export_mode": "local",
+      "manifest_digest": "sha256:d59ee4d346eb7abc3aff365ba391a1d420207db241b5e26a742791f4f37c071c",
+      "output": "artifacts/public/phase05/all-closed-fixture-report.html",
+      "output_digest": "sha256:b3e63e925d3adb1b9e56a7fb5acd996a5c14a309c03f9b9d98e0bc8dc44f8631"
+    },
+    "live_refusal": {
+      "decision": "UNSAFE",
+      "deterministic": true,
+      "export_mode": "local",
+      "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece",
+      "output": "artifacts/public/phase05/live-refusal-report.html",
+      "output_digest": "sha256:64719fe09dfd58050fada852b4c7eb9d14c9b45e59ea7c6da70c635e41a32b1c"
+    },
+    "public_export": {
+      "decision": "UNSAFE",
+      "deterministic": true,
+      "export_mode": "public",
+      "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece",
+      "output": "artifacts/public/phase05/public-export.html",
+      "output_digest": "sha256:ae887766b5f308e04157be998fdd4986fbbdc0ede7907a9319a33fe18a42f0be"
+    }
+  },
+  "repository_commit": "ae62486ce85e14f9328d69d840325da7d728df09",
+  "result": "PASSED",
+  "schema_version": "1.0.0",
+  "validation": {
+    "accessibility_output_digest": "sha256:76dea9f0d8f9a205c1f3b43262abdd0d194ffa144ce2d735218657838de41533",
+    "git_diff_check": {
+      "command": "git diff --check",
+      "output_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": "PASSED"
+    },
+    "public_artifact_scan": {
+      "command": "uv run python scripts/check_public_artifacts.py",
+      "output_digest": "sha256:fd9a285efb095bb6d23b16508c8d2a760a1989617d6d59c31249a44646dbaca5",
+      "result": "PASSED"
+    },
+    "secret_scan": {
+      "command": "uv run python scripts/check_secrets.py",
+      "output_digest": "sha256:f965edcc65cfa4475c10ead0eb75ee10914ccd9548e506144c1d515b89f6a104",
+      "result": "PASSED"
+    },
+    "test_ui": {
+      "command": "make test-ui",
+      "output_digest": "sha256:c50782f85f292fe3aab4f69e11fa1c3c1ebc656abff6d4f29c2020016ad7982a",
+      "result": "PASSED",
+      "test_count": 16
+    }
+  }
+}

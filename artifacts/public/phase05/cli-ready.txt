@@ -1,0 +1,8 @@
+Phase 04 disposable isolated end-to-end campaign
+Decision: READY_TO_RETIRE — Permitted within the recorded evidence envelope
+Change: analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status
+Consumers: 1 total, 1 closed, 0 open
+Open conditions: 0 blockers, 0 reviews
+Evidence: Complete within declared scope — 2 of 2 required sources (mode: live)
+Next action: Prepare one short-lived producer plan and run the gate immediately before the producer change.
+Manifest digest: sha256:5b7c72d7febcb5d5bf4c6d547ebcb6cc720264a8f5f5e081a1849d229bfb54f2

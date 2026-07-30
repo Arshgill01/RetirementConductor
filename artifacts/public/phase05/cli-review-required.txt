@@ -1,0 +1,8 @@
+Review one bounded fixture waiver
+Decision: REVIEW_REQUIRED — Accountable review is required
+Change: analytics.commerce.orders.legacy_status → analytics.commerce.orders.order_status
+Consumers: 1 total, 0 closed, 1 open
+Open conditions: 0 blockers, 1 reviews
+Evidence: Bounded fixture evidence — not acceptable as live proof (mode: fixture)
+Next action: Resolve the recorded review requirement, preserve any residual risk, then reconcile and evaluate again.
+Manifest digest: sha256:0e1582839e48b577ffa4b104c2d4142770e7f34c5dc9efefa3f955e6afd3e491

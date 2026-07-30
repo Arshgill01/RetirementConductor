@@ -1,0 +1,160 @@
+{
+  "axe": [
+    {
+      "engine": {
+        "name": "axe-core",
+        "version": "4.10.3"
+      },
+      "incomplete": 0,
+      "page": "live-refusal-report.html",
+      "passes": 35,
+      "violations": 0
+    },
+    {
+      "engine": {
+        "name": "axe-core",
+        "version": "4.10.3"
+      },
+      "incomplete": 0,
+      "page": "all-closed-fixture-report.html",
+      "passes": 35,
+      "violations": 0
+    }
+  ],
+  "pages": [
+    {
+      "accessibility_snapshot": true,
+      "content_width": 1440,
+      "decision": "UNSAFE",
+      "external_resource_requests": 0,
+      "horizontal_overflow": false,
+      "keyboard": {
+        "control_count": 8,
+        "details_toggled": true,
+        "focus_order": [
+          {
+            "href": "#main",
+            "tag": "A",
+            "text": "Skip to campaign evidence"
+          },
+          {
+            "href": "#decision",
+            "tag": "A",
+            "text": "Decision"
+          },
+          {
+            "href": "#evidence",
+            "tag": "A",
+            "text": "Evidence"
+          },
+          {
+            "href": "#consumers",
+            "tag": "A",
+            "text": "Consumers"
+          },
+          {
+            "href": "#blockers",
+            "tag": "A",
+            "text": "Blockers"
+          },
+          {
+            "href": "#history",
+            "tag": "A",
+            "text": "History"
+          },
+          {
+            "href": null,
+            "tag": "SUMMARY",
+            "text": "Scope identity, version, and limitations"
+          },
+          {
+            "href": null,
+            "tag": "SUMMARY",
+            "text": "Scope identity, version, and limitations"
+          }
+        ]
+      },
+      "label": "live-refusal-desktop",
+      "manifest_digest": "sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece",
+      "screenshot": {
+        "digest": "sha256:a7efcafacf892a8084f76535445fce50e5b68b9f2e44c08a674423fb7860dd7b",
+        "file": "docs/assets/phase05/live-refusal-desktop.png",
+        "height": 3770,
+        "width": 1440
+      },
+      "title": "Phase 04 disposable isolated end-to-end campaign · Retirement Conductor",
+      "viewport_width": 1440
+    },
+    {
+      "accessibility_snapshot": true,
+      "content_width": 360,
+      "decision": "BLOCKED",
+      "external_resource_requests": 0,
+      "horizontal_overflow": false,
+      "keyboard": {
+        "control_count": 7,
+        "details_toggled": true,
+        "focus_order": [
+          {
+            "href": "#main",
+            "tag": "A",
+            "text": "Skip to campaign evidence"
+          },
+          {
+            "href": "#decision",
+            "tag": "A",
+            "text": "Decision"
+          },
+          {
+            "href": "#evidence",
+            "tag": "A",
+            "text": "Evidence"
+          },
+          {
+            "href": "#consumers",
+            "tag": "A",
+            "text": "Consumers"
+          },
+          {
+            "href": "#blockers",
+            "tag": "A",
+            "text": "Blockers"
+          },
+          {
+            "href": "#history",
+            "tag": "A",
+            "text": "History"
+          },
+          {
+            "href": null,
+            "tag": "SUMMARY",
+            "text": "Scope identity, version, and limitations"
+          }
+        ]
+      },
+      "label": "all-closed-fixture-mobile",
+      "manifest_digest": "sha256:d59ee4d346eb7abc3aff365ba391a1d420207db241b5e26a742791f4f37c071c",
+      "screenshot": {
+        "digest": "sha256:b92db147b0a7ada0bf981d33b29a0a1bc5280ad664bd7fb8325ee1259c39f661",
+        "file": "docs/assets/phase05/all-closed-mobile.png",
+        "height": 3656,
+        "width": 360
+      },
+      "title": "Replace legacy order status · Retirement Conductor",
+      "viewport_width": 360
+    }
+  ],
+  "playwright_cli_version": "0.1.17",
+  "reports": {
+    "all-closed-fixture": {
+      "digest": "sha256:b3e63e925d3adb1b9e56a7fb5acd996a5c14a309c03f9b9d98e0bc8dc44f8631",
+      "file": "artifacts/public/phase05/all-closed-fixture-report.html"
+    },
+    "live-refusal": {
+      "digest": "sha256:64719fe09dfd58050fada852b4c7eb9d14c9b45e59ea7c6da70c635e41a32b1c",
+      "file": "artifacts/public/phase05/live-refusal-report.html"
+    }
+  },
+  "result": "PASSED",
+  "schema_version": "1.0.0"
+}
