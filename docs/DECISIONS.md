@@ -294,3 +294,37 @@ degree values were supplied together for a sparse graph, even though the
 degree-two late consumer existed. Independent buckets exposed that consumer
 and allowed it to reopen readiness without assuming a complete multi-value
 filter.
+
+## D-024 — apply confirmation binds the reviewed plan digest
+
+Status: accepted from phase 05 evidence.
+
+Require the operator to pass the exact current plan digest at apply time in
+addition to the campaign's durable approval. Missing confirmation refuses as
+`AUTH_APPROVAL_MISSING`; a different digest refuses as
+`AUTH_APPROVAL_WRONG_PLAN`. The confirmation cannot alter the approved target
+set, source fingerprint, capability, authority, or expiry.
+
+Why: a stored approval proves authority for one plan, but it does not prove
+that the person invoking mutation reviewed the current command output. An
+explicit digest makes the plan/apply boundary visible without turning a
+free-form prompt into authorization.
+
+## D-025 — operator explanations remain canonical and public redaction is structural
+
+Status: accepted from phase 05 evidence.
+
+Validate the canonical manifest and digest, reduce it through one shared
+presentation model, and render every terminal and HTML view from that model.
+New review-required manifests carry their explicit review reasons; schema
+version 1 omits an empty `review_requirements` field to preserve previously
+issued digests.
+
+Build public export from a structurally redacted presentation model rather
+than scrubbing completed HTML. Retain decision, digest, counts, bounded
+coverage, and recovery shape while replacing source and native identities.
+The private manifest remains the integrity authority.
+
+Why: duplicated policy or post-hoc string scrubbing could make the interface
+disagree with the gate or leak an unanticipated field. Preserving historical
+digests also matters more than normalizing an optional empty array.

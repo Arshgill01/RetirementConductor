@@ -41,7 +41,7 @@ the produced artifacts have been inspected.
 | EP-002 | 02 | live | `19bebb9` | `artifacts/public/phase02/`; DataHub identity, pagination, envelope, scope comparison, and stable write/read-back | passed | synthetic disposable Core graph; no authenticated or Cloud boundary |
 | EP-003 | 03 | live | `3ca39a1` | `artifacts/public/phase03/`; Git/dbt identity, exact apply, rollback/reapply, native receipt, and adversarial containment | passed | local disposable Git repository and DuckDB; no production source |
 | EP-004 | 04 | live and fixture | `25466a9` | `artifacts/public/phase04/`; equivalent reconciliation, late reopening, verified publication, one-time gate, and refusal matrix | passed | disposable Core, Git, DuckDB, and harmless sentinel; no warehouse deletion |
-| EP-005 | 05 | live and fixture | not-run | canonical CLI/report parity, accessibility, and redaction | not-run | none recorded |
+| EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
 | EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
 | EP-007 | 07 | live and fixture | not-run | threat, fault, recovery, concurrency, and scan evidence | not-run | none recorded |
 | EP-008 | 08 | live and operator | not-run | clean install, upgrade, reference run, and independent operation | not-run | independent operator required |
@@ -627,3 +627,136 @@ non-mutation, producer source and trusted-run bindings, issued-plan and attempt
 ledger, exact sentinel count and digest, every live refusal payload, rich
 inventory result, four-way decision matrix, 61-test focused result, public
 artifact scan, and secret scan.
+
+## EP-005 — phase 05 operator experience
+
+Evidence ID: EP-005
+
+Requirement IDs: RC-013, RC-014
+
+Repository commit: `ae62486ce85e14f9328d69d840325da7d728df09`
+
+Captured at: `2026-07-30T13:51:09Z`
+
+Mode: live-derived canonical state from the disposable phase 04 campaign plus
+deterministic fixtures; real local browser execution. No new DataHub or native
+source mutation was claimed by this phase.
+
+Source and tool versions: phase 04 DataHub Core v1.6.0 and Git/dbt canonical
+manifests; Python 3.11.15; uv 0.11.28; Retirement Conductor 0.1.0; Playwright
+CLI 0.1.17; synchronized Chrome major 150 browser/driver; axe-core 4.10.3.
+
+Command or operator action:
+
+```text
+retirement-conductor campaign inspect --campaign <phase04-id> ...
+retirement-conductor campaign explain --campaign <phase04-id> ...
+retirement-conductor report build --campaign <phase04-id> ...
+make phase05-browser
+make phase05-evidence
+make test-ui
+make check
+git diff --check
+```
+
+The exact store-backed inspect, explain, and report commands were run against
+the reopened phase 04 campaign. The evidence promoter also rendered portable
+canonical manifests for all four final decisions and ran secret,
+public-artifact, determinism, and structural accessibility checks. The browser
+harness served only local self-contained reports, tabbed through every
+interactive control, activated native disclosures with Enter, captured
+desktop and mobile screenshots, measured layout, counted external requests,
+and ran axe in each page.
+
+Expected result: the first view states target, replacement, current decision,
+consumer and open-condition counts, bounded evidence coverage, next action,
+and exact manifest digest. Expanded views retain source scope, freshness,
+pagination, limitations, native action, receipt state, stable condition code,
+evidence source, and safe recovery. CLI and HTML agree; unknown coverage never
+looks complete; stale never looks validated; plan and apply remain separate;
+public export is structurally redacted; keyboard, mobile, and accessibility
+checks pass.
+
+Observed result: `BLOCKED`, `UNSAFE`, `REVIEW_REQUIRED`, and
+`READY_TO_RETIRE` CLI outputs each retained their canonical decision and
+digest. The store-backed live command showed two consumers, one closed, one
+open, two blockers, complete-within-scope evidence from two required sources,
+and the exact late manifest digest
+`sha256:f301e730cda6949969fcf7657aab5f6172719665daef5f56ee734df5b639fece`.
+Its expanded output named both source limitations, the validated and missing
+receipt states, `POLICY_CONSUMER_OPAQUE`,
+`RECONCILIATION_NEW_CONSUMER`, their evidence sources, and recovery actions.
+
+Three reports reproduced byte-for-byte: live refusal
+`sha256:64719fe09dfd58050fada852b4c7eb9d14c9b45e59ea7c6da70c635e41a32b1c`,
+all-closed fixture
+`sha256:b3e63e925d3adb1b9e56a7fb5acd996a5c14a309c03f9b9d98e0bc8dc44f8631`,
+and public export
+`sha256:ae887766b5f308e04157be998fdd4986fbbdc0ede7907a9319a33fe18a42f0be`.
+The all-closed consumer was visibly `VALIDATED`, but the fixture campaign
+remained `BLOCKED` with `EVIDENCE_MODE_NOT_LIVE`.
+
+At 1440 pixels and 360 pixels, measured content width equaled viewport width,
+external request count was zero, and all 15 links and disclosures were
+keyboard reachable; both Enter disclosure probes succeeded. Axe-core reported
+35 passing rule groups per page, zero violations, and zero incomplete checks.
+The deterministic WCAG 2.2 AA structural subset passed three reports,
+including contrast ratios from 5.19:1 through 15.62:1. The final desktop and
+mobile screenshots were inspected after the last regeneration. The closure
+`make check` passed all 151 tests, Ruff, formatting, mypy, repository
+validation, secret and public-artifact scans, source and wheel builds, and the
+diff check.
+
+Apply requires `--confirm-plan-digest` in addition to durable approval.
+Focused integration coverage proved missing approval or confirmation refuses
+as `AUTH_APPROVAL_MISSING`, while a different digest refuses as
+`AUTH_APPROVAL_WRONG_PLAN`; the phase 04 live runner passed the exact reviewed
+digest.
+
+Refusal cases: missing apply confirmation or approval
+(`AUTH_APPROVAL_MISSING`); wrong confirmed plan
+(`AUTH_APPROVAL_WRONG_PLAN`); fixture evidence
+(`EVIDENCE_MODE_NOT_LIVE`); opaque and late consumers
+(`POLICY_CONSUMER_OPAQUE`, `RECONCILIATION_NEW_CONSUMER`); unknown evidence
+coverage; stale receipt; digest or schema-invalid manifest; attempted HTML
+injection; traversal-shaped report filename; and public source/principal,
+field, limitation, or secret-like content.
+
+Tracked artifact paths: `artifacts/public/phase05/phase05-evidence.json`,
+`artifacts/public/phase05/browser-evidence.json`,
+`artifacts/public/phase05/accessibility-evidence.json`, the five
+`cli-*.txt` summaries, three generated reports,
+`artifacts/public/phase05/review-required-manifest.json`, and the two
+screenshots under `docs/assets/phase05/`.
+
+Private artifact digests: ignored raw axe result
+`sha256:7a9d131795325fc27ae2f53a0ee993cd2e08fd074c03162625b85a14109326d6`;
+canonical browser evidence
+`sha256:45be7e089b451e58f6220ad15c2bb75d452826c643699bb5c5bd93f36dc2a655`;
+canonical accessibility evidence
+`sha256:f634ee5a52d7051b6f13fb1ac6f8a466dbad99dad1f9b71c938b7fc4dae99e90`;
+and phase evidence
+`sha256:05aeb6bdb606db132f0ac255ce329dae82d30ab4d691f5599a822776b94debaf`.
+The tracked phase evidence file SHA-256 is
+`0e80d0d32839d20220e97b6fdd3de887b645161d41dbc1a6baaa673654c83072`.
+
+What this proves: a single verified canonical state supplies mutually
+consistent terminal and report decisions, bounded evidence explanations,
+native receipt distinctions, actionable refusal recovery, and explicit plan
+confirmation. The generated view is deterministic, self-contained,
+responsive, keyboard operable, automatically audited, and structurally
+redactable without becoming a second policy or authorization layer.
+
+What this does not prove: independent nontechnical comprehension, production
+browser policy, universal assistive-technology behavior, authorship from a
+digest, a newly executed source mutation, a production DataHub boundary,
+Looker operation, or safety outside the displayed evidence envelope.
+
+Reviewer inspection: inspected all four CLI decisions and manifest digests;
+the exact store-backed live inspect/explain/report output; live refusal,
+all-closed fixture, and public HTML; deterministic twin digests; explicit
+fixture and limitation language; validated versus missing/stale receipt
+rendering; plan confirmation tests; public and secret scans; final desktop and
+mobile screenshots; keyboard focus order and disclosure activation; measured
+overflow and external requests; axe results; structural/contrast results; and
+generated whitespace via staged `git diff --check`.

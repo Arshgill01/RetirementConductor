@@ -261,6 +261,7 @@ Required inputs:
 
 - approved plan digest;
 - approval bound to that digest;
+- exact operator-confirmed current plan digest;
 - original source version and fingerprint;
 - exact target allowlist;
 - explicit apply capability.
@@ -274,7 +275,9 @@ Output:
 - raw artifact references.
 
 The adapter rereads source and scope immediately before apply. Any mismatch
-refuses without mutation.
+refuses without mutation. Missing confirmation and a confirmation for any
+other plan are separate stable authorization refusals; an approval alone does
+not imply that the operator reviewed the current native scope.
 
 If transport loss, timeout, cancellation, or process interruption makes the
 native result unknown, the adapter records `OUTCOME_UNKNOWN`. It must discover
@@ -476,6 +479,33 @@ The canonical manifest includes:
 The manifest is deterministic except for explicitly supplied event times and
 native identifiers. Rebuilding from the same event log must yield the same
 digest.
+
+Schema-version 1 manifests may omit `review_requirements` when none were
+recorded so previously issued canonical digests remain stable. A newly
+generated `REVIEW_REQUIRED` manifest carries each review code and plain
+reason separately from blockers; presentation must not infer those reasons
+from the decision label.
+
+## Operator rendering
+
+Every operator view validates the campaign-manifest schema and digest before
+rendering. One shared presentation model supplies terminal inspect, terminal
+explain, local HTML, and public HTML. It may translate stable codes into safe
+recovery language, but it may not recompute a policy result or add UI-only
+campaign state.
+
+The first view includes target, replacement, exact decision, consumer and open
+condition counts, bounded evidence coverage, required next action, and
+manifest digest. Expanded views retain source mode, scope, freshness,
+pagination, limitations, native action, receipt state, blocker or review
+source, and canonical history. Unknown or empty coverage never renders as
+complete, and a recorded receipt that is stale never renders as validated.
+
+Public export is structural. Before rendering it replaces campaign, field,
+consumer, source, principal, version, limitation, and event identities with
+safe labels while retaining the decision, manifest digest, counts, coverage
+state, and recovery shape. The original private manifest remains the
+authority; the public view cannot be used as apply or gate authorization.
 
 ## Stable refusal families
 

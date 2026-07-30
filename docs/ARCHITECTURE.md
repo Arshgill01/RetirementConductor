@@ -206,7 +206,29 @@ native receipt, verified removal, or proved non-applicability under policy.
 ### Operator views and gate
 
 The command line and generated report consume the canonical manifest. They do
-not reimplement policy.
+not reimplement policy. Before rendering, they validate the manifest schema
+and canonical digest, then reduce it through one shared presentation model.
+That model exposes:
+
+- target, replacement, decision, counts, evidence coverage, and next action;
+- each source's mode, scope, freshness, pagination, permissions, versions, and
+  limitations;
+- each consumer's disposition, native action, receipt digest, and current
+  receipt acceptance state;
+- stable blocker or review code, evidence source, and safe recovery action;
+- canonical transition and DataHub publication history.
+
+The concise terminal view, expanded explanation, local HTML report, and
+structurally redacted public report all render this model. Public rendering
+removes native identities and sensitive source detail before HTML generation;
+it is not a post-processing scrub. Reports are deterministic, self-contained,
+and non-authoritative: the verified private manifest remains the integrity
+source, and a report or digest is never apply or gate authorization.
+
+Native planning and mutation stay distinct. Apply requires both the durable
+approval for the current plan and an exact operator-confirmed plan digest.
+Neither confirmation nor presentation can expand the plan's authorized target
+set.
 
 The producer-side gate:
 

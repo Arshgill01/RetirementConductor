@@ -93,6 +93,16 @@ same campaign to `UNSAFE`, while the representative 31-consumer graph also
 refused the producer action. See
 [EP-004](docs/EVIDENCE_LEDGER.md#ep-004--phase-04-reconciliation-and-producer-gate).
 
+Phase 05 now renders that same canonical state through plain-language
+`inspect` and `explain` commands plus deterministic single-campaign HTML.
+The evidence covers all four final decisions, exact plan-digest confirmation,
+structurally redacted public export, desktop and 360-pixel mobile browser
+flows, 15 keyboard-reachable controls, and two axe-core audits with zero
+violations or incomplete results. The positive-looking all-closed fixture
+remains visibly `BLOCKED` because fixture evidence cannot satisfy live policy.
+See
+[EP-005](docs/EVIDENCE_LEDGER.md#ep-005--phase-05-operator-experience).
+
 ## Complete supported path
 
 The first production-shaped vertical is:
@@ -178,6 +188,9 @@ in [the Git/dbt runbook](docs/runbooks/GIT_DBT.md).
 Fresh reconciliation, stable publication, and the one-time producer gate are
 documented in
 [the reconciliation and gate runbook](docs/runbooks/RECONCILIATION_GATE.md).
+Campaign inspection, exact plan confirmation, resume, local and public report
+generation, and operator acceptance checks are documented in
+[the operator runbook](docs/runbooks/OPERATOR.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
 phase boundary.

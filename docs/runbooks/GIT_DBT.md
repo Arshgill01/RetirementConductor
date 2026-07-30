@@ -66,7 +66,12 @@ Inspect the preflight, inventory binding, and plan under
 `.retirement-conductor/artifacts/ret-orders-git-dbt/git-dbt/`. Confirm the
 DataHub URN, dbt unique ID, source commit, main-only search limitation, exact
 file, before/after fingerprints, replacement types, and target branch before
-authorizing.
+authorizing. Copy the exact displayed plan digest into
+`RC_PLAN_DIGEST` only after that review:
+
+```bash
+export RC_PLAN_DIGEST='<exact-plan-digest-from-reviewed-plan>'
+```
 
 ## Authorize and apply
 
@@ -80,13 +85,16 @@ retirement-conductor adapter git-dbt authorize \
   --expires-at 2026-07-30T11:05:00Z
 
 retirement-conductor adapter git-dbt apply \
-  --campaign ret-orders-git-dbt
+  --campaign ret-orders-git-dbt \
+  --confirm-plan-digest "$RC_PLAN_DIGEST"
 ```
 
 Inspect the disposable repository with ordinary Git commands. The review
 branch must be clean and its diff from the pinned source commit must name only
 `models/orders_model_00.sql`. Repeating the same apply must retain the same
-commit and apply digest.
+commit and apply digest. Missing confirmation refuses with
+`AUTH_APPROVAL_MISSING`; a digest other than the current approved plan refuses
+with `AUTH_APPROVAL_WRONG_PLAN`.
 
 ## Exercise recovery
 
@@ -100,13 +108,16 @@ retirement-conductor adapter git-dbt compensate \
 retirement-conductor adapter git-dbt plan \
   --campaign ret-orders-git-dbt
 
+export RC_PLAN_DIGEST='<exact-reapply-plan-digest>'
+
 retirement-conductor adapter git-dbt authorize \
   --campaign ret-orders-git-dbt \
   --authorized-at 2026-07-30T10:15:00Z \
   --expires-at 2026-07-30T11:15:00Z
 
 retirement-conductor adapter git-dbt apply \
-  --campaign ret-orders-git-dbt
+  --campaign ret-orders-git-dbt \
+  --confirm-plan-digest "$RC_PLAN_DIGEST"
 ```
 
 Compensation refuses if the applied file or branch changed after apply. It
