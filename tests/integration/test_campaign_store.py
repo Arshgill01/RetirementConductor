@@ -71,6 +71,32 @@ def second_specification() -> dict[str, Any]:
     return specification
 
 
+def issue_gate_plan(
+    store: CampaignStore,
+    manifest_digest: str,
+    *,
+    trusted_run_id: str = "trusted-run-one",
+    action_id: str = "producer-action-one",
+) -> dict[str, Any]:
+    plan = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "campaign_id": CAMPAIGN_ID,
+            "prepared_at": "2026-01-01T10:55:00Z",
+            "expires_at": "2026-01-01T11:10:00Z",
+            "writer_id": "writer-one",
+            "trusted_run": {
+                "id": trusted_run_id,
+                "provider": "fixture-ci",
+            },
+            "manifest": {"digest": manifest_digest},
+            "action": {"id": action_id},
+        },
+        "plan_digest",
+    )
+    return store.issue_gate_plan(plan)
+
+
 def approval_for(
     store: CampaignStore,
     campaign_id: str,
@@ -187,7 +213,7 @@ def test_schema_migration_and_replay_match_materialized_manifest(
     tmp_path: Path,
 ) -> None:
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
-        assert store.schema_versions() == [1, 2]
+        assert store.schema_versions() == [1, 2, 3]
         create_and_inventory(store)
 
         materialized = store.materialize(CAMPAIGN_ID)
@@ -200,10 +226,11 @@ def test_schema_migration_and_replay_match_materialized_manifest(
 def test_gate_ledger_consumes_plan_before_action_and_refuses_replay(
     tmp_path: Path,
 ) -> None:
-    plan_digest = f"sha256:{'4' * 64}"
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
         create_and_inventory(store)
         manifest = store.materialize(CAMPAIGN_ID)
+        plan = issue_gate_plan(store, manifest["manifest_digest"])
+        plan_digest = plan["plan_digest"]
         intent = store.claim_gate_plan(
             CAMPAIGN_ID,
             manifest_digest=manifest["manifest_digest"],
@@ -245,13 +272,44 @@ def test_gate_ledger_consumes_plan_before_action_and_refuses_replay(
             )
 
 
-def test_gate_refusal_does_not_consume_plan_and_unknown_outcome_does(
+def test_gate_ledger_refuses_unissued_and_second_manifest_plan(
     tmp_path: Path,
 ) -> None:
-    plan_digest = f"sha256:{'4' * 64}"
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
         create_and_inventory(store)
         manifest = store.materialize(CAMPAIGN_ID)
+
+        with pytest.raises(Refusal, match="GATE_PLAN_INVALID"):
+            store.claim_gate_plan(
+                CAMPAIGN_ID,
+                manifest_digest=manifest["manifest_digest"],
+                decision=manifest["decision"],
+                plan_digest=f"sha256:{'4' * 64}",
+                trusted_run_id="trusted-run-one",
+                recorded_at="2026-01-01T11:00:00Z",
+            )
+
+        first = issue_gate_plan(store, manifest["manifest_digest"])
+        assert (
+            store.require_issued_gate_plan(CAMPAIGN_ID, first)["plan_digest"]
+            == first["plan_digest"]
+        )
+        with pytest.raises(Refusal, match="GATE_PLAN_REPLAYED"):
+            issue_gate_plan(
+                store,
+                manifest["manifest_digest"],
+                action_id="different-producer-action",
+            )
+
+
+def test_gate_refusal_does_not_consume_plan_and_unknown_outcome_does(
+    tmp_path: Path,
+) -> None:
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        manifest = store.materialize(CAMPAIGN_ID)
+        plan = issue_gate_plan(store, manifest["manifest_digest"])
+        plan_digest = plan["plan_digest"]
         refusal = store.record_gate_refusal(
             CAMPAIGN_ID,
             manifest_digest=manifest["manifest_digest"],
@@ -293,16 +351,17 @@ def test_gate_refusal_does_not_consume_plan_and_unknown_outcome_does(
                 manifest_digest=manifest["manifest_digest"],
                 decision=manifest["decision"],
                 plan_digest=plan_digest,
-                trusted_run_id="trusted-run-two",
+                trusted_run_id="trusted-run-one",
                 recorded_at="2026-01-01T11:00:03Z",
             )
 
 
 def test_gate_ledger_status_tampering_refuses_replay(tmp_path: Path) -> None:
-    plan_digest = f"sha256:{'4' * 64}"
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
         create_and_inventory(store)
         manifest = store.materialize(CAMPAIGN_ID)
+        plan = issue_gate_plan(store, manifest["manifest_digest"])
+        plan_digest = plan["plan_digest"]
         store.claim_gate_plan(
             CAMPAIGN_ID,
             manifest_digest=manifest["manifest_digest"],
@@ -331,7 +390,7 @@ def test_gate_ledger_status_tampering_refuses_replay(tmp_path: Path) -> None:
                 manifest_digest=manifest["manifest_digest"],
                 decision=manifest["decision"],
                 plan_digest=plan_digest,
-                trusted_run_id="trusted-run-two",
+                trusted_run_id="trusted-run-one",
                 recorded_at="2026-01-01T11:00:01Z",
             )
 

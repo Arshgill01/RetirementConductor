@@ -38,7 +38,7 @@ FaultInjector = Callable[[str], None]
 class CampaignStore:
     """The one supported single-writer SQLite campaign database."""
 
-    SCHEMA_VERSION = 2
+    SCHEMA_VERSION = 3
 
     def __init__(self, path: Path, *, writer_id: str) -> None:
         self.path = path.resolve()
@@ -150,6 +150,138 @@ class CampaignStore:
             )
         ]
 
+    def issue_gate_plan(self, plan: Mapping[str, Any]) -> dict[str, Any]:
+        """Durably bind one exact producer plan to one canonical manifest."""
+
+        value = dict(plan)
+        verify_digest(value, "plan_digest")
+        campaign_id = str(value["campaign_id"])
+        manifest_digest = str(value["manifest"]["digest"])
+        trusted_run_id = str(value["trusted_run"]["id"])
+        if str(value["writer_id"]) != self.writer_id:
+            raise Refusal(
+                RefusalCode.RUNTIME_WRITER_MISMATCH,
+                "The producer plan belongs to another deployment writer.",
+            )
+        with self._write_lock(), self.connection:
+            existing_row = self.connection.execute(
+                """
+                SELECT *
+                FROM gate_plans
+                WHERE campaign_id = ? AND manifest_digest = ?
+                """,
+                (campaign_id, manifest_digest),
+            ).fetchone()
+            if existing_row is not None:
+                existing = self._validated_gate_plan(existing_row)
+                if existing == value:
+                    return existing
+                raise Refusal(
+                    RefusalCode.GATE_PLAN_REPLAYED,
+                    "The canonical manifest is already bound to another producer plan.",
+                    {"issued_plan_digest": existing["plan_digest"]},
+                )
+            self.connection.execute(
+                """
+                INSERT INTO gate_plans(
+                    plan_digest,
+                    campaign_id,
+                    manifest_digest,
+                    trusted_run_id,
+                    writer_id,
+                    prepared_at,
+                    expires_at,
+                    plan_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    value["plan_digest"],
+                    campaign_id,
+                    manifest_digest,
+                    trusted_run_id,
+                    self.writer_id,
+                    value["prepared_at"],
+                    value["expires_at"],
+                    canonical_json(value),
+                ),
+            )
+        return value
+
+    def gate_plan_for_manifest(
+        self,
+        campaign_id: str,
+        manifest_digest: str,
+    ) -> dict[str, Any] | None:
+        """Return the integrity-checked issued plan for one manifest."""
+
+        row = self.connection.execute(
+            """
+            SELECT *
+            FROM gate_plans
+            WHERE campaign_id = ? AND manifest_digest = ?
+            """,
+            (campaign_id, manifest_digest),
+        ).fetchone()
+        return self._validated_gate_plan(row) if row is not None else None
+
+    def require_issued_gate_plan(
+        self,
+        campaign_id: str,
+        plan: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """Require byte-equivalent canonical content from the issuance ledger."""
+
+        value = dict(plan)
+        verify_digest(value, "plan_digest")
+        row = self.connection.execute(
+            "SELECT * FROM gate_plans WHERE plan_digest = ?",
+            (value["plan_digest"],),
+        ).fetchone()
+        if row is None:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The producer plan was not issued by this campaign writer.",
+            )
+        issued = self._validated_gate_plan(row)
+        if issued != value or issued["campaign_id"] != campaign_id:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The producer plan differs from the exact issued plan.",
+            )
+        return issued
+
+    @staticmethod
+    def _validated_gate_plan(row: sqlite3.Row) -> dict[str, Any]:
+        plan = json.loads(str(row["plan_json"]))
+        if not isinstance(plan, dict):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The producer plan ledger entry is not an object.",
+            )
+        verify_digest(plan, "plan_digest")
+        manifest = plan.get("manifest")
+        trusted_run = plan.get("trusted_run")
+        if not isinstance(manifest, dict) or not isinstance(trusted_run, dict):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The producer plan ledger is missing immutable bindings.",
+            )
+        columns = {
+            "plan_digest": plan.get("plan_digest"),
+            "campaign_id": plan.get("campaign_id"),
+            "manifest_digest": manifest.get("digest"),
+            "trusted_run_id": trusted_run.get("id"),
+            "writer_id": plan.get("writer_id"),
+            "prepared_at": plan.get("prepared_at"),
+            "expires_at": plan.get("expires_at"),
+        }
+        if any(value != row[key] for key, value in columns.items()):
+            raise Refusal(
+                RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
+                "The producer plan ledger columns and content disagree.",
+            )
+        return plan
+
     def gate_attempts(self, campaign_id: str) -> list[dict[str, Any]]:
         """Read and integrity-check the append-oriented producer gate ledger."""
 
@@ -223,6 +355,17 @@ class CampaignStore:
     ) -> dict[str, Any]:
         """Durably consume one exact producer plan before its action."""
 
+        issued = self.require_issued_gate_plan_digest(
+            campaign_id,
+            manifest_digest=manifest_digest,
+            plan_digest=plan_digest,
+            trusted_run_id=trusted_run_id,
+        )
+        if issued["writer_id"] != self.writer_id:
+            raise Refusal(
+                RefusalCode.RUNTIME_WRITER_MISMATCH,
+                "The issued producer plan belongs to another writer.",
+            )
         intent_identity = digest_json(
             [campaign_id, plan_digest, trusted_run_id]
         ).removeprefix("sha256:")[:24]
@@ -249,14 +392,17 @@ class CampaignStore:
                 """
                 SELECT status, attempt_id
                 FROM gate_attempts
-                WHERE plan_digest = ?
+                WHERE (
+                    plan_digest = ?
+                    OR (campaign_id = ? AND manifest_digest = ?)
+                )
                   AND status IN (
                     'INTENT_RECORDED',
                     'EXECUTED',
                     'OUTCOME_UNKNOWN'
                   )
                 """,
-                (plan_digest,),
+                (plan_digest, campaign_id, manifest_digest),
             ).fetchone()
             if consumed is not None:
                 raise Refusal(
@@ -269,6 +415,37 @@ class CampaignStore:
                 ) from exc
             raise
         return attempt
+
+    def require_issued_gate_plan_digest(
+        self,
+        campaign_id: str,
+        *,
+        manifest_digest: str,
+        plan_digest: str,
+        trusted_run_id: str,
+    ) -> dict[str, Any]:
+        """Verify the immutable issuance binding before recording intent."""
+
+        row = self.connection.execute(
+            "SELECT * FROM gate_plans WHERE plan_digest = ?",
+            (plan_digest,),
+        ).fetchone()
+        if row is None:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The producer plan was not issued by this campaign writer.",
+            )
+        plan = self._validated_gate_plan(row)
+        if (
+            plan["campaign_id"] != campaign_id
+            or plan["manifest"]["digest"] != manifest_digest
+            or plan["trusted_run"]["id"] != trusted_run_id
+        ):
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The producer plan issuance does not match this gate intent.",
+            )
+        return plan
 
     def complete_gate_attempt(
         self,

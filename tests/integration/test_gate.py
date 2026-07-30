@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -241,7 +242,7 @@ def _plan(
         else manifest["manifest_digest"]
     )
     common_digest = f"sha256:{'6' * 64}"
-    return with_digest(
+    plan = with_digest(
         {
             "schema_version": "1.0.0",
             "campaign_id": CAMPAIGN_ID,
@@ -296,6 +297,8 @@ def _plan(
         },
         "plan_digest",
     )
+    store.issue_gate_plan(plan)
+    return plan
 
 
 def _workflow(
@@ -456,6 +459,32 @@ def test_gate_refuses_source_drift_and_tampered_plan(
         assert not (tmp_path / "sentinels").exists()
 
 
+def test_gate_refuses_recomputed_but_unissued_plan(
+    tmp_path: Path,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        workflow = _workflow(store, tmp_path)
+        issued = _plan(store, tmp_path)
+        changed = deepcopy(issued)
+        changed["action"]["action_id"] = "different-producer-action"
+        changed["action"]["relative_path"] = (
+            f"{CAMPAIGN_ID}/different-producer-action.json"
+        )
+        changed.pop("plan_digest")
+        changed = with_digest(changed, "plan_digest")
+        plan_path = tmp_path / "producer-plan.json"
+        write_json(plan_path, changed)
+
+        with pytest.raises(Refusal, match="GATE_PLAN_INVALID"):
+            workflow.execute(
+                CAMPAIGN_ID,
+                context=_context(),
+                plan_path=plan_path,
+                executed_at="2026-01-01T12:05:00Z",
+            )
+        assert not (tmp_path / "sentinels").exists()
+
+
 def test_gate_marks_failed_action_unknown_and_consumes_plan(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -493,7 +522,7 @@ def test_gate_marks_failed_action_unknown_and_consumes_plan(
                 manifest_digest=str(plan["manifest"]["digest"]),
                 decision="READY_TO_RETIRE",
                 plan_digest=str(plan["plan_digest"]),
-                trusted_run_id="trusted-run-two",
+                trusted_run_id="trusted-run-one",
                 recorded_at="2026-01-01T12:06:00Z",
             )
 

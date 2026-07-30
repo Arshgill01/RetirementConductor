@@ -213,6 +213,7 @@ class ProducerGateWorkflow:
             plan,
             refusal_code=RefusalCode.GATE_PLAN_INVALID,
         )
+        self.store.issue_gate_plan(plan)
         write_versioned_artifact(
             self._producer_artifact_root(campaign_id),
             "plan",
@@ -243,6 +244,7 @@ class ProducerGateWorkflow:
             plan = self._load_producer_plan(
                 plan_path or self._producer_artifact_root(campaign_id) / "plan.json"
             )
+            self.store.require_issued_gate_plan(campaign_id, plan)
             self._verify_plan_context(
                 campaign_id,
                 manifest=manifest,
