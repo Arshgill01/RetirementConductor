@@ -107,7 +107,7 @@ phase06-data:
 		--right .retirement-conductor/benchmark/generation-b
 
 phase06-benchmark: benchmark-workspace
-	uv run python scripts/run_phase06_benchmark.py
+	uv run python -m scripts.run_phase06_benchmark
 
 phase06-recipes:
 	uv run --python 3.11 \
