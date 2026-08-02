@@ -1,0 +1,65 @@
+{
+  "all_verified": true,
+  "assets": [
+    {
+      "archive_members": [],
+      "asset_id": "fiction-retail-database",
+      "dataset_id": "fiction-retail",
+      "license_id": "CC0-1.0",
+      "sha256": "sha256:9f95373e46219e880ae54f995b6f2c2c439c3746e500e484fe3ab2bf9ac55754",
+      "size_bytes": 99655680,
+      "variant": "clean",
+      "verified": true
+    },
+    {
+      "archive_members": [],
+      "asset_id": "healthcare-database",
+      "dataset_id": "healthcare",
+      "license_id": "CC0-1.0",
+      "sha256": "sha256:287a47c53216c2322074ae802976c6c7196e2e17dc77272c6a6bd38af34ec488",
+      "size_bytes": 31084544,
+      "variant": "planted-quality-faults",
+      "verified": true
+    },
+    {
+      "archive_members": [],
+      "asset_id": "nyc-taxi-clean-database",
+      "dataset_id": "nyc-taxi",
+      "license_id": "LicenseRef-NYC-Public-Domain",
+      "sha256": "sha256:fef53dcc005294046da76e0484f099e81d809a05dfa433fe3e38bc1b7f46537d",
+      "size_bytes": 90673152,
+      "variant": "clean",
+      "verified": true
+    },
+    {
+      "archive_members": [],
+      "asset_id": "nyc-taxi-stale-database",
+      "dataset_id": "nyc-taxi",
+      "license_id": "LicenseRef-NYC-Public-Domain",
+      "sha256": "sha256:35573de0d1d05ffe4e03d3339385da3c69c986539e3d4ef24790a91a054c9871",
+      "size_bytes": 90673152,
+      "variant": "stale",
+      "verified": true
+    }
+  ],
+  "evidence_digest": "sha256:1017ac149fa7bd5b00967b251a5b6b57ef4b76ecdb30d04ebcc19748594bac8a",
+  "evidence_mode": "fixture acquisition with offline byte verification",
+  "license_manifest": [
+    [
+      "CC0-1.0",
+      "https://raw.githubusercontent.com/datahub-project/static-assets/a6479c691dd2a40dd89563396d9c8b2b28bee83c/datasets/fiction-retail/README.md"
+    ],
+    [
+      "CC0-1.0",
+      "https://raw.githubusercontent.com/datahub-project/static-assets/a6479c691dd2a40dd89563396d9c8b2b28bee83c/datasets/healthcare/README.md"
+    ],
+    [
+      "LicenseRef-NYC-Public-Domain",
+      "https://raw.githubusercontent.com/datahub-project/static-assets/a6479c691dd2a40dd89563396d9c8b2b28bee83c/datasets/nyc-taxi/README.md"
+    ]
+  ],
+  "offline_receipt_digest": "sha256:0a2b09c521d273dc8f98724f098f12140246c0f8034ba26353c67d1e5f987488",
+  "registry_digest": "sha256:b0a4c716c932df7967453ce66a59863b7dc6e79ad39b46fff69464774176c6e4",
+  "schema_version": "1.0.0",
+  "upstream_revision": "a6479c691dd2a40dd89563396d9c8b2b28bee83c"
+}

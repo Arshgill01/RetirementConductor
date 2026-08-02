@@ -1,0 +1,142 @@
+{
+  "evidence_digest": "sha256:f6ab6f625f0e3296e21f8713b2f89c8fcd4ea9c905d5c2c2564dc8e78c4c2430",
+  "live_command_refusals": [
+    {
+      "exit_code": 2,
+      "id": "apply-without-approval",
+      "refusal_code": "AUTH_APPROVAL_MISSING",
+      "result": "REFUSED"
+    },
+    {
+      "exit_code": 2,
+      "id": "late-consumer",
+      "refusal_code": "GATE_DECISION_NOT_READY",
+      "result": "REFUSED"
+    },
+    {
+      "exit_code": 2,
+      "id": "rich-graph",
+      "refusal_code": "GATE_DECISION_NOT_READY",
+      "result": "REFUSED"
+    }
+  ],
+  "oracle_scenarios": [
+    {
+      "decision": "BLOCKED",
+      "id": "ambiguous-identity-blocked",
+      "matched": true,
+      "refusal_codes": [
+        "IDENTITY_AMBIGUOUS"
+      ]
+    },
+    {
+      "decision": "READY_TO_RETIRE",
+      "id": "clean-isolated-ready",
+      "matched": true,
+      "refusal_codes": []
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "disappearing-edge-no-closure",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_STALE"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "healthcare-selective-impact-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_FAILED",
+        "VALIDATION_RECEIPT_FAILED"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "incompatible-type-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "SPEC_REPLACEMENT_INCOMPATIBLE"
+      ]
+    },
+    {
+      "decision": "BLOCKED",
+      "id": "incomplete-pagination-blocked",
+      "matched": true,
+      "refusal_codes": [
+        "EVIDENCE_PAGINATION_FAILED",
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "late-consumer-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_DISCOVERED",
+        "RECONCILIATION_NEW_CONSUMER"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "null-inflation-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_FAILED",
+        "VALIDATION_RECEIPT_FAILED"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "ownership-context-no-closure",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_OPAQUE"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "rich-graph-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_OPAQUE"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "semantic-drift-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_FAILED",
+        "VALIDATION_RECEIPT_FAILED"
+      ]
+    },
+    {
+      "decision": "BLOCKED",
+      "id": "stale-native-data-blocked",
+      "matched": true,
+      "refusal_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "table-only-lineage-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_OPAQUE"
+      ]
+    },
+    {
+      "decision": "UNSAFE",
+      "id": "unmapped-value-unsafe",
+      "matched": true,
+      "refusal_codes": [
+        "POLICY_CONSUMER_FAILED",
+        "VALIDATION_RECEIPT_FAILED"
+      ]
+    }
+  ],
+  "schema_version": "1.0.0"
+}

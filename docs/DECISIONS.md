@@ -657,3 +657,33 @@ between fresh metadata ingestion and stale native data. Any future revision
 must be probed and reviewed again.
 
 Status: accepted from checkpoint C aggregate probe inspection.
+
+## D-041 — validate replacement truth separately from migrated-consumer truth
+
+Date: 2026-08-02
+
+Decision: require both source-level `legacy_status` to `order_status` parity and
+consumer-level migrated-output equivalence in the benchmark dbt project. Run
+the three planted replacement variants through dbt seed, run, and test, and
+accept each benchmark refusal only when its expected native test names fail.
+
+Why: the first native fault probe revealed that a migrated model and a faulty
+replacement can agree with each other. The prior consumer semantic test
+therefore passed null and semantic drift in the replacement even though the
+campaign's replacement premise was false. A source-level parity test makes
+that premise independently executable rather than inferring it from the
+migrated consumer.
+
+Observed consequence: the clean path passed dbt parse, seed, build, and seven
+tests. Null inflation failed source parity plus `not_null`; valid-category
+semantic drift failed source parity only; and an unmapped value failed source
+parity plus accepted values. All three yielded
+`VALIDATION_RECEIPT_FAILED` without changing the production scope.
+
+For reproducibility, compare live runs through a time-independent semantic
+projection. Preserve the distinct raw manifest, publication, gate, and run
+digests as time-bound evidence; do not claim they should be byte-identical.
+Two full runs at commit `34df09e` matched semantic digest
+`sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54`.
+
+Status: accepted from Phase 06 live benchmark evidence.

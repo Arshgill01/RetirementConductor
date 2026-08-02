@@ -1,0 +1,351 @@
+{
+  "comparison": {
+    "comparison_digest": "sha256:6bf1b9980e220049b6145d432556bde1ba8742c06762c8d7746d95da420fca69",
+    "corrupt_oracle_detection": "REJECTED",
+    "false_readiness_count": 0,
+    "matched_scenario_count": 14,
+    "results": [
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "BLOCKED",
+          "refusal_codes": [
+            "IDENTITY_AMBIGUOUS"
+          ]
+        },
+        "id": "ambiguous-identity-blocked",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "BLOCKED",
+          "refusal_codes": [
+            "IDENTITY_AMBIGUOUS"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "READY_TO_RETIRE",
+          "refusal_codes": []
+        },
+        "id": "clean-isolated-ready",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "READY_TO_RETIRE",
+          "refusal_codes": []
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "tableau:retirement_benchmark.executive_orders"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_STALE"
+          ]
+        },
+        "id": "disappearing-edge-no-closure",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "tableau:retirement_benchmark.executive_orders"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_STALE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "sqlite:fiction_retail.inventory",
+            "sqlite:healthcare.mart_billing",
+            "sqlite:healthcare.mart_demographics"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        },
+        "id": "healthcare-selective-impact-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "sqlite:fiction_retail.inventory",
+            "sqlite:healthcare.mart_billing",
+            "sqlite:healthcare.mart_demographics"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "SPEC_REPLACEMENT_INCOMPATIBLE"
+          ]
+        },
+        "id": "incompatible-type-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "SPEC_REPLACEMENT_INCOMPATIBLE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "BLOCKED",
+          "refusal_codes": [
+            "EVIDENCE_PAGINATION_FAILED",
+            "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+          ]
+        },
+        "id": "incomplete-pagination-blocked",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "BLOCKED",
+          "refusal_codes": [
+            "EVIDENCE_PAGINATION_FAILED",
+            "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "spark:retirement_benchmark.late_order_export"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_DISCOVERED",
+            "RECONCILIATION_NEW_CONSUMER"
+          ]
+        },
+        "id": "late-consumer-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "spark:retirement_benchmark.late_order_export"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_DISCOVERED",
+            "RECONCILIATION_NEW_CONSUMER"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        },
+        "id": "null-inflation-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "tableau:retirement_benchmark.executive_orders"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_OPAQUE"
+          ]
+        },
+        "id": "ownership-context-no-closure",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "tableau:retirement_benchmark.executive_orders"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_OPAQUE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "tableau:retirement_benchmark.executive_orders"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_OPAQUE"
+          ]
+        },
+        "id": "rich-graph-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "tableau:retirement_benchmark.executive_orders"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_OPAQUE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        },
+        "id": "semantic-drift-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "BLOCKED",
+          "refusal_codes": [
+            "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+          ]
+        },
+        "id": "stale-native-data-blocked",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "BLOCKED",
+          "refusal_codes": [
+            "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "external:retirement_benchmark.table_only_consumer"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_OPAQUE"
+          ]
+        },
+        "id": "table-only-lineage-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary",
+            "external:retirement_benchmark.table_only_consumer"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_OPAQUE"
+          ]
+        }
+      },
+      {
+        "expected": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        },
+        "id": "unmapped-value-unsafe",
+        "matched": true,
+        "observed": {
+          "consumer_ids": [
+            "dbt:retirement_benchmark.orders_status_summary"
+          ],
+          "decision": "UNSAFE",
+          "refusal_codes": [
+            "POLICY_CONSUMER_FAILED",
+            "VALIDATION_RECEIPT_FAILED"
+          ]
+        }
+      }
+    ],
+    "schema_version": "1.0.0"
+  },
+  "evidence_digest": "sha256:056afac872158a00ba008f58aa2db3a25a60a53f41867f05073fd615e747d1d9",
+  "independence": {
+    "expected_result_module": "retirement_conductor.benchmark_oracle",
+    "imports_campaign_policy": false,
+    "intentional_corruption_result": "REJECTED"
+  },
+  "oracle_digest": "sha256:aa07af1bf4d416a7729ce0a39a8fccee9766cd23153b844b09b000b7a71c25f5",
+  "oracle_version": "1.0.0",
+  "scenario_count": 14,
+  "schema_version": "1.0.0"
+}

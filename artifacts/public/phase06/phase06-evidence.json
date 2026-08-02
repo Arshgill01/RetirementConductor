@@ -1,0 +1,40 @@
+{
+  "acceptance": {
+    "exact_expected_consumer_recall": 1.0,
+    "false_readiness_count": 0,
+    "matched_scenario_count": 14,
+    "native_fault_count": 3,
+    "publication_readback_verified": true,
+    "ready_decision": "READY_TO_RETIRE",
+    "rich_decision": "UNSAFE",
+    "sentinel_count": 1,
+    "twin_live_semantic_digest": "sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54",
+    "twin_live_semantically_equivalent": true
+  },
+  "artifact_digests": {
+    "campaign-evidence.json": "sha256:cc4c64caa2fb68b17506f30c57add20dc30b28aa434158347b0616559c7a469f",
+    "corpus-evidence.json": "sha256:1bb64aab3aa8089e0b909effac4fb859641a6179be591d292c4f2de64077b422",
+    "datahub-evidence.json": "sha256:d54101986943a56505b6d3b5fdb33adcabd7a869de88c4fa392681919f7fbfd2",
+    "dataset-evidence.json": "sha256:e6dd502fd0843effdf0c6200dc5fc5caede189de8c13a780401577b9c659e8b3",
+    "native-validation-evidence.json": "sha256:17bb628b7f77b7c541d3aa785c41c3cf3446207dfd9227c6409da7ee83a520cc",
+    "oracle-evidence.json": "sha256:5759eed7624d818862165f39d6b7f19a0ed4df7f7bbeb42ec375889d335cce2c",
+    "refusal-matrix.json": "sha256:c270978ea1389173d8dee61e72454e9d33ca4addddaf7ad8d44a9252e3586a83"
+  },
+  "evidence_digest": "sha256:f1b5965eb5f70d20d9e5410f3673a23c9ebd781bef3145163da3d2271117c285",
+  "evidence_mode": "live local DataHub/Git/dbt integration over pinned official and generated fixture data",
+  "limitations": [
+    "Official and generated data are fixture evidence, not production coverage.",
+    "Readiness is bounded by DataHub and one Git/dbt repository.",
+    "The producer action is one harmless local sentinel.",
+    "Opaque non-Git consumers are inventoried but never auto-mutated."
+  ],
+  "repository_commit": "34df09e5d10696e3de86e8717d43bf61fd34d966",
+  "schema_version": "1.0.0",
+  "source_receipts": {
+    "generation": "sha256:bcda2b5a4ed0b4f133b0b130ca0ffad1ef8735685e2f9521e84dcb94b811b83a",
+    "offline_dataset_verification": "sha256:0a2b09c521d273dc8f98724f098f12140246c0f8034ba26353c67d1e5f987488",
+    "oracle": "sha256:aa07af1bf4d416a7729ce0a39a8fccee9766cd23153b844b09b000b7a71c25f5",
+    "quality": "sha256:14fda1e5e15d93530f96e82145297d97c496378ad27ebd769933efa7610c4fda",
+    "semantic_live_run": "sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54"
+  }
+}

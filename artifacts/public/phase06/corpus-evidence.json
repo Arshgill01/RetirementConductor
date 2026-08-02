@@ -1,0 +1,267 @@
+{
+  "artifact_classification": "public-safe aggregates; no source rows",
+  "evidence_digest": "sha256:ae387283d70d698089342cbee2f5620b08fe64afdc8f25b10da42b37d155e07e",
+  "faults": [
+    {
+      "affected_count": 25,
+      "affected_rate": 0.01,
+      "field": "order_status",
+      "impact": [
+        "dbt:retirement_benchmark.orders_status_summary"
+      ],
+      "mutation": "set-to-null",
+      "variant_id": "null-inflated"
+    },
+    {
+      "affected_count": 25,
+      "affected_rate": 0.01,
+      "field": "order_status",
+      "impact": [
+        "dbt:retirement_benchmark.orders_status_summary"
+      ],
+      "mutation": "replace-with-different-valid-status",
+      "variant_id": "semantic-drift"
+    },
+    {
+      "affected_count": 25,
+      "affected_rate": 0.01,
+      "field": "order_status",
+      "impact": [
+        "dbt:retirement_benchmark.orders_status_summary"
+      ],
+      "mutation": "set-to-unmapped-category",
+      "variant_id": "unmapped-value"
+    }
+  ],
+  "generation": {
+    "artifact_digests": {
+      "data/clean/customers.csv": "sha256:3a8fae2aebac261635e9a6ff40c58f99ef894ff95c5fea70a846984f7e00e27b",
+      "data/clean/inventory.csv": "sha256:9ac1cfdc3b83fc6e030304b38f303b208e3c40e1b18f05da26c487cd5bef3a9d",
+      "data/clean/order_items.csv": "sha256:4ecdecfab189d422d3c1893e4c9c6a08bf4d5d3e2722590f169dc0daf01a752e",
+      "data/clean/orders.csv": "sha256:80f368e66a7ceeb58cadfb5a5f20638c9d6ccf8971a9ae87b35ff861e9c32ca7",
+      "data/clean/products.csv": "sha256:83e4879983c0b11d5c15aef179f19e4c5956c2f04f70b49f3604c8d779d659df",
+      "data/clean/promotions.csv": "sha256:75c39b5bcadec09a788d8d6e718c4b9155fa205027f9d47d6376dad79c15868a",
+      "data/clean/returns.csv": "sha256:490fc2a4a5b53e46b7f5be5a65b5480da083447b55e057d581338bf0dc7ad340",
+      "data/clean/shipments.csv": "sha256:0a01eb5cbe2241a175f7ceabe0ab652e4a2e3dc0efd0d44d0dc332211441b005",
+      "data/clean/suppliers.csv": "sha256:ff294fd48ae8be2bc9d92b3b5d3a420160012e34e02e19237850a61cfb10066c",
+      "data/clean/warehouses.csv": "sha256:2ebf89317c6deee0a9d6d630cac36dcee19dc8ff6f3a4efb4030953e319443cd",
+      "data/variants/null-inflated/orders.csv": "sha256:483aac5ecc9c3931d2c443ccf7478b0046eb6541083453c885bc97f033b91971",
+      "data/variants/semantic-drift/orders.csv": "sha256:9ea2772aa56ab5a0e0cd4f90280431dc3dabb8793b7f0131946d0c71d05b20c2",
+      "data/variants/unmapped-value/orders.csv": "sha256:4b5bb41c302a32643afb311b107bfcc7a6a9099af109e30a70a515bb42fc74fb",
+      "fault-manifest.json": "sha256:7f92a98b56fed3de10f27a09f3f04a98535fc3be7d5886eecd4ff6e99345b919",
+      "oracle.json": "sha256:a9cb571ce904537e3b2786bb278fa995dff30ea4379d1189d1ce538bb695890f",
+      "quality-report.json": "sha256:9b128044456a41bc06361a8bc3098fbb077acb3c9202ef66d7f85ab7c00d5846"
+    },
+    "generator_version": "1.1.0",
+    "receipt_digest": "sha256:bcda2b5a4ed0b4f133b0b130ca0ffad1ef8735685e2f9521e84dcb94b811b83a",
+    "scale": "medium",
+    "seed": 20260802
+  },
+  "quality": {
+    "artifact_classification": "public-safe-aggregate",
+    "generated": {
+      "distribution_bounds": {
+        "order_date_max": "2024-04-30",
+        "order_date_min": "2023-01-01",
+        "order_status_counts": {
+          "backordered": 52,
+          "canceled": 99,
+          "confirmed": 134,
+          "delivered": 1624,
+          "disputed": 16,
+          "fulfilling": 137,
+          "in_transit": 156,
+          "pending": 79,
+          "returned": 203
+        },
+        "total_amount_max": 13968.12,
+        "total_amount_min": 5.88
+      },
+      "foreign_key_violations": {
+        "inventory.product_id": 0,
+        "inventory.warehouse_id": 0,
+        "order_items.order_id": 0,
+        "order_items.product_id": 0,
+        "orders.customer_id": 0,
+        "orders.promo_id": 0,
+        "products.supplier_id": 0,
+        "returns.order_id": 0,
+        "returns.product_id": 0,
+        "shipments.order_id": 0,
+        "shipments.warehouse_id": 0
+      },
+      "numeric_bound_violations": 0,
+      "primary_key_violations": 0,
+      "semantic_pair": {
+        "legacy_replacement_mismatches": 0,
+        "replacement_nulls": 0
+      },
+      "tables": {
+        "customers": {
+          "content_digest": "sha256:3a8fae2aebac261635e9a6ff40c58f99ef894ff95c5fea70a846984f7e00e27b",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 2355
+        },
+        "inventory": {
+          "content_digest": "sha256:9ac1cfdc3b83fc6e030304b38f303b208e3c40e1b18f05da26c487cd5bef3a9d",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 7826
+        },
+        "order_items": {
+          "content_digest": "sha256:4ecdecfab189d422d3c1893e4c9c6a08bf4d5d3e2722590f169dc0daf01a752e",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 5765
+        },
+        "orders": {
+          "content_digest": "sha256:80f368e66a7ceeb58cadfb5a5f20638c9d6ccf8971a9ae87b35ff861e9c32ca7",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 2500
+        },
+        "products": {
+          "content_digest": "sha256:83e4879983c0b11d5c15aef179f19e4c5956c2f04f70b49f3604c8d779d659df",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 3400
+        },
+        "promotions": {
+          "content_digest": "sha256:75c39b5bcadec09a788d8d6e718c4b9155fa205027f9d47d6376dad79c15868a",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 151
+        },
+        "returns": {
+          "content_digest": "sha256:490fc2a4a5b53e46b7f5be5a65b5480da083447b55e057d581338bf0dc7ad340",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 203
+        },
+        "shipments": {
+          "content_digest": "sha256:0a01eb5cbe2241a175f7ceabe0ab652e4a2e3dc0efd0d44d0dc332211441b005",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 1983
+        },
+        "suppliers": {
+          "content_digest": "sha256:ff294fd48ae8be2bc9d92b3b5d3a420160012e34e02e19237850a61cfb10066c",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 499
+        },
+        "warehouses": {
+          "content_digest": "sha256:2ebf89317c6deee0a9d6d630cac36dcee19dc8ff6f3a4efb4030953e319443cd",
+          "duplicate_primary_keys": 0,
+          "null_primary_keys": 0,
+          "row_count": 15
+        }
+      },
+      "temporal_violations": 0,
+      "total_quality_violations": 0
+    },
+    "official_probes": {
+      "fiction_retail": {
+        "documented_role": "relational-control",
+        "foreign_key_orphans": 0,
+        "quick_check": "ok",
+        "row_counts": {
+          "customers": 50000,
+          "inventory": 11476,
+          "order_items": 346202,
+          "orders": 150000,
+          "products": 5000,
+          "promotions": 200,
+          "returns": 11934,
+          "shipments": 119936,
+          "suppliers": 500,
+          "warehouses": 15
+        },
+        "status_counts": {
+          "backordered": 3039,
+          "canceled": 6069,
+          "confirmed": 7535,
+          "delivered": 97540,
+          "disputed": 1483,
+          "fulfilling": 7347,
+          "in_transit": 10462,
+          "pending": 4591,
+          "returned": 11934
+        }
+      },
+      "healthcare": {
+        "branch_observations": {
+          "billing": {
+            "date_swap_rows": 277,
+            "negative_billing_rows": 1215,
+            "null_name_rows": 555,
+            "row_count": 55500
+          },
+          "demographics": {
+            "invalid_age_rows": 832,
+            "null_name_rows": 555,
+            "row_count": 55500
+          }
+        },
+        "branch_selectivity": {
+          "age_absent_from_billing": true,
+          "billing_amount_absent_from_demographics": true,
+          "null_name_physically_propagates_to_both": true
+        },
+        "documented_role": "branch-selective-quality",
+        "quick_check": "ok",
+        "raw_fault_counts": {
+          "date_swap_rows": 277,
+          "invalid_age_rows": 832,
+          "negative_billing_rows": 1215,
+          "null_name_rows": 555,
+          "row_count": 55500
+        }
+      },
+      "nyc_taxi": {
+        "clean": {
+          "mart_max_date": "2016-03-10",
+          "mart_trip_count": 248315,
+          "quick_check": "ok",
+          "raw_max_date": "2016-03-10",
+          "raw_row_count": 250000,
+          "staging_max_date": "2016-03-10",
+          "staging_row_count": 248315,
+          "zero_trip_days": 0
+        },
+        "documented_expectations": {
+          "empty_load_row": true,
+          "staleness_gap_days": 3
+        },
+        "documented_role": "native-freshness-control",
+        "observed_documentation_discrepancies": {
+          "empty_load_row_absent": true,
+          "staleness_gap_days": 9
+        },
+        "stale": {
+          "mart_max_date": "2016-03-01",
+          "mart_trip_count": 208675,
+          "quick_check": "ok",
+          "raw_max_date": "2016-03-10",
+          "raw_row_count": 250000,
+          "staging_max_date": "2016-03-01",
+          "staging_row_count": 208675,
+          "zero_trip_days": 0
+        }
+      }
+    },
+    "quality_report_digest": "sha256:14fda1e5e15d93530f96e82145297d97c496378ad27ebd769933efa7610c4fda",
+    "registry_digest": "sha256:b0a4c716c932df7967453ce66a59863b7dc6e79ad39b46fff69464774176c6e4",
+    "scale": "medium",
+    "schema_version": "benchmark-quality-report/v1",
+    "seed": 20260802,
+    "upstream_revision": "a6479c691dd2a40dd89563396d9c8b2b28bee83c"
+  },
+  "schema_version": "1.0.0",
+  "twin_generation": {
+    "artifact_count": 16,
+    "byte_equivalent": true,
+    "generation_receipt_digest": "sha256:bcda2b5a4ed0b4f133b0b130ca0ffad1ef8735685e2f9521e84dcb94b811b83a"
+  }
+}

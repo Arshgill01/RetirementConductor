@@ -1,0 +1,151 @@
+{
+  "clean": {
+    "actual_targets": [
+      "models/orders_status_summary.sql"
+    ],
+    "commands": [
+      {
+        "arguments": [
+          "parse",
+          "--no-partial-parse"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "arguments": [
+          "seed",
+          "--full-refresh"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "arguments": [
+          "build"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "arguments": [
+          "test"
+        ],
+        "exit_code": 0,
+        "timed_out": false
+      }
+    ],
+    "receipt_digest": "sha256:710ddf97eb370ec5897fcacdc21153694c0475b360d3512097ba316eec0dde78",
+    "result": "PASSED",
+    "validator": "dbt parse + seed + build + test on DuckDB",
+    "validator_version": "1.12.0"
+  },
+  "evidence_digest": "sha256:290504654f414b111f16de1b7e01678f7f02522ea86cd1c7068743274fe6aab8",
+  "evidence_mode": "live local dbt over generated fixture data",
+  "fault_variants": {
+    "evidence_mode": "live local dbt over generated fixture data",
+    "observations": [
+      {
+        "commands": [
+          {
+            "arguments": [
+              "seed"
+            ],
+            "exit_code": 0
+          },
+          {
+            "arguments": [
+              "run"
+            ],
+            "exit_code": 0
+          },
+          {
+            "arguments": [
+              "test"
+            ],
+            "exit_code": 1
+          }
+        ],
+        "dbt_exit_code": 1,
+        "expected_failed_tests": [
+          "not_null_orders_status_summary_normalized_status",
+          "orders_source_status_parity"
+        ],
+        "failed_tests": [
+          "not_null_orders_status_summary_normalized_status",
+          "orders_source_status_parity"
+        ],
+        "result": "VALIDATION_RECEIPT_FAILED",
+        "variant": "null-inflated"
+      },
+      {
+        "commands": [
+          {
+            "arguments": [
+              "seed"
+            ],
+            "exit_code": 0
+          },
+          {
+            "arguments": [
+              "run"
+            ],
+            "exit_code": 0
+          },
+          {
+            "arguments": [
+              "test"
+            ],
+            "exit_code": 1
+          }
+        ],
+        "dbt_exit_code": 1,
+        "expected_failed_tests": [
+          "orders_source_status_parity"
+        ],
+        "failed_tests": [
+          "orders_source_status_parity"
+        ],
+        "result": "VALIDATION_RECEIPT_FAILED",
+        "variant": "semantic-drift"
+      },
+      {
+        "commands": [
+          {
+            "arguments": [
+              "seed"
+            ],
+            "exit_code": 0
+          },
+          {
+            "arguments": [
+              "run"
+            ],
+            "exit_code": 0
+          },
+          {
+            "arguments": [
+              "test"
+            ],
+            "exit_code": 1
+          }
+        ],
+        "dbt_exit_code": 1,
+        "expected_failed_tests": [
+          "accepted_values_orders_status_summary_normalized_status__backordered__canceled__confirmed__delivered__disputed__fulfilling__in_transit__pending__returned",
+          "orders_source_status_parity"
+        ],
+        "failed_tests": [
+          "accepted_values_orders_status_summary_normalized_status__backordered__canceled__confirmed__delivered__disputed__fulfilling__in_transit__pending__returned",
+          "orders_source_status_parity"
+        ],
+        "result": "VALIDATION_RECEIPT_FAILED",
+        "variant": "unmapped-value"
+      }
+    ],
+    "receipt_digest": "sha256:274523635074ec210ab8a22f24f849f153c055ec2a2ee3ca7547c88f29948bd7",
+    "schema_version": "1.0.0",
+    "validator": "dbt build"
+  },
+  "schema_version": "1.0.0"
+}

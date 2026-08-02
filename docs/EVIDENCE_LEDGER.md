@@ -167,6 +167,87 @@ DataHub, oracle results have not yet been compared with the campaign engine,
 native dbt has not run on this corpus, and no Phase 06 public evidence has been
 promoted. `EP-006` remains active.
 
+### Phase 06 checkpoints D/E — live evidence-quality campaign
+
+Tested behavior commit: `34df09e`
+
+Modes: live local DataHub Core, MCP, Git, and dbt over pinned official and
+deterministically generated fixture data. This is integration evidence, not
+production or customer coverage.
+
+Commands:
+
+```text
+make phase06-benchmark
+make phase06-benchmark
+make phase06-evidence
+make phase06-evidence
+make check
+uv run python scripts/check_secrets.py
+uv run python scripts/check_public_artifacts.py
+git diff --check
+```
+
+Observed result: DataHub Core image `acryldata/datahub-gms:v1.6.0` was healthy
+on loopback and the pinned MCP source commit
+`9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9` was clean. Direct GMS aspect
+reread recovered the exact six-field schema, `legacy_status ->
+normalized_status` field lineage, owner, domain, tag, glossary term, and one
+successful quality assertion bound to quality digest
+`sha256:14fda1e5e15d93530f96e82145297d97c496378ad27ebd769933efa7610c4fda`.
+The direct-readback digest is
+`sha256:f7523d432743b0d94fbeccd1469596ca07d9c8e0666434201b354bc81db847cf`.
+
+The controlled isolated graph recalled its one expected dbt consumer exactly.
+An injected first-page failure produced `PARTIAL` with
+`EVIDENCE_PAGINATION_FAILED`; replacement `TEXT` to `INTEGER` drift refused
+as `SPEC_REPLACEMENT_INCOMPATIBLE`. The independent oracle matched all 14
+scenario decisions and refusal-code sets through the real policy boundary,
+reported zero false readiness, and rejected an intentionally corrupted
+expectation.
+
+The approved apply changed exactly
+`models/orders_status_summary.sql`. dbt 1.12.0 parse, seed, build, and test all
+passed on the clean corpus. Native fault probes then observed null inflation
+fail `not_null` and source parity, semantic drift fail source parity, and an
+unmapped category fail accepted values and source parity. Their receipt digest
+is `sha256:274523635074ec210ab8a22f24f849f153c055ec2a2ee3ca7547c88f29948bd7`.
+
+The reconciled isolated campaign reached `READY_TO_RETIRE`, one DataHub
+document write was agent-read-back verified without lifecycle mutation, and
+one producer plan wrote exactly one harmless sentinel. A late Spark consumer
+changed the same campaign to `UNSAFE` with `POLICY_CONSUMER_OPAQUE` and
+`RECONCILIATION_NEW_CONSUMER`; the gate refused and the sentinel count stayed
+one. The separate rich graph retained both dbt and table-only Tableau entities
+as opaque and `UNSAFE`.
+
+Two complete live runs had different honest time-bound evidence digests but
+the same time-independent semantic digest
+`sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54`.
+Two public promotions were byte-identical. Phase evidence digest is
+`sha256:f1b5965eb5f70d20d9e5410f3673a23c9ebd781bef3145163da3d2271117c285`;
+its tracked file SHA-256 is
+`cc0baa002668cab4d956181b39b15b26767f65308ddab98ff13d62977acc8c9d`.
+
+Validation result: 242 tests, Ruff, formatting, strict mypy, 187 required-file
+and 144-link validation, a 322-file secret scan, the 56-file public-artifact
+review, source and wheel builds, and `git diff --check` passed. Public review
+found no raw source rows, exact planted row IDs, credentials, cache paths,
+private host paths, or raw native output.
+
+Reviewer inspection: inspected both live summaries and semantic digests; all
+14 expected/observed comparisons; direct schema, lineage, context, and quality
+aspects; clean and failing dbt receipts; exact apply targets; ready, late, and
+rich manifests; publication read-back; gate ledger and sentinel count; all
+eight public artifacts and their digests; package build output; public and
+secret scans; and staged whitespace.
+
+Limitations: fixture data does not prove production coverage; readiness is
+bounded by one DataHub and Git/dbt evidence envelope; opaque consumers are not
+auto-mutated; and the producer action is a harmless sentinel. The benchmark
+acceptance has passed, but `EP-006` remains active until the deprecated Looker
+release surface is removed and post-removal acceptance is rerun.
+
 ### Historical Phase 06 Looker observations — superseded
 
 These observations truthfully record the former credential-independent Looker
