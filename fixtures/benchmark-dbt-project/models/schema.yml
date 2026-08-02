@@ -7,11 +7,11 @@ seeds:
       - name: order_id
         data_type: varchar
       - name: legacy_status
-        data_type: varchar
+        data_type: TEXT
         meta:
           retirement_conductor_role: legacy
       - name: order_status
-        data_type: varchar
+        data_type: TEXT
         meta:
           retirement_conductor_role: replacement
       - name: total_amount
