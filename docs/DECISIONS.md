@@ -607,3 +607,30 @@ reconciliation, publication, and producer enforcement. Requiring a paid BI
 instance added cost and access ceremony without strengthening the core
 hackathon claim. Evidence quality, reproducibility, and refusal behavior can
 be tested more deeply and honestly with the official public data resources.
+
+## D-039 — pin source databases; distribute only the registry
+
+Date: 2026-08-02
+
+Decision: the Phase 06 benchmark acquires the four selected official SQLite
+assets from exact raw URLs at one full static-assets commit. The tracked
+registry records reviewed license evidence, size, and SHA-256. Database bytes
+remain in an ignored content-addressed cache; the source and wheel packages
+contain only the registry and verification schemas.
+
+Why: this preserves exact upstream data without copying hundreds of megabytes
+into the product repository, relying on a moving branch, or silently replacing
+an official dataset with a local approximation. A separate offline receipt
+proves the cached inputs can be reused without network access.
+
+Rejected alternatives: a shallow Git clone as the runtime contract, direct
+Kaggle acquisition, checking database bytes into this repository, trusting
+HTTP success or filename alone, and recording only documentation-level
+provenance without byte integrity.
+
+Consequences: first acquisition transfers 312,086,528 bytes and requires
+public network access. Subsequent generation can be strictly offline. Any
+revision, URL, license, size, archive-member, or digest change refuses and
+must be reviewed as a new input, not normalized into the prior evidence.
+
+Status: accepted after checkpoint B acquisition and offline verification.

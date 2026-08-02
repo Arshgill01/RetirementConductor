@@ -8,17 +8,17 @@ contract; `PLAN.md` defines proof order.
 
 - Execution state: active under the DataHub-native reframe in `GOAL.md`
 - Active phase: 06 — DataHub evidence-quality benchmark
-- Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
+- Current benchmark foundation commit: `4148020`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: replace the abandoned Looker phase with a pinned
-  official-dataset registry, deterministic field-retirement corpus, independent
-  truth oracle, and live local DataHub Core benchmark
-- Last repository validation: behavior commit `eb72067` passed all 228 tests,
-  Ruff, formatting, strict mypy, repository validation, secret and public
-  artifact scans, both package builds, and `git diff --check`; the complete
-  Phase 08 command set then passed, and seven inspected public-safe artifacts
-  were committed at `4411e8b`
+- Next acceptance target: build the deterministic field-retirement corpus,
+  independent truth oracle, and official freshness/branch-impact probes on the
+  verified dataset cache
+- Last repository validation: benchmark input commit `4148020` passed 236
+  tests, Ruff, formatting, strict mypy, 168-file repository validation, a
+  299-file secret scan, the 53-file historical public-artifact review, source
+  and wheel builds, and `git diff --check`; `make phase06-data` also acquired
+  and then offline-verified four official assets totaling 312,086,528 bytes
 
 ## Phase ledger
 
@@ -30,7 +30,7 @@ contract; `PLAN.md` defines proof order.
 | 03 | complete | `EP-003` at `3ca39a1`; exact live DataHub-to-dbt mapping, two one-file applies, native validation receipt, verified rollback, idempotent retry, and contained adversarial probes | none |
 | 04 | complete | `EP-004` at `25466a9`; equivalent live reconciliation, verified stable publication, one issued-plan sentinel, live late-consumer reopening, rich-graph refusal, and adversarial gate matrix | no production warehouse deletion was attempted |
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
-| 06 | active | former Looker work at `00db298` through `eb72067` is historical fixture/analysis evidence and no longer an acceptance dependency; the replacement contract is `docs/phases/06-data-quality-benchmark.md` | implement the official-dataset registry, deterministic synthetic truth corpus, live local DataHub evaluation, and zero-false-readiness refusal matrix |
+| 06 | active | checkpoint B at `4148020` pins four official assets from static-assets commit `a6479c6`, verifies 312,086,528 bytes by size and SHA-256, reproduces an offline cache receipt, and tests the fail-closed acquisition boundary; former Looker work remains historical only | implement the deterministic synthetic truth corpus and independent oracle, live local DataHub evaluation, full campaign, and zero-false-readiness refusal matrix |
 | 07 | queued | credential-independent observations at `4fc5b2d`/`6feb1bc`; threat model, fault matrix, recovery, diagnostics, dependency audit, and scans | rerun and refresh security, fault, recovery, and evidence after the Looker surface is removed and the benchmark is integrated |
 | 08 | queued | prior package observations at `eb72067`/`4411e8b`; clean installs, live Core reference, upgrade/rollback, backup, removal, and compatibility | rebuild and revalidate the release after Looker removal; independent operator evidence remains follow-on and must stay `NOT_RUN` until observed |
 

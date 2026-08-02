@@ -46,6 +46,59 @@ the produced artifacts have been inspected.
 | EP-007 | 07 | live local and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | refresh-required | prior checks passed; rerun after benchmark integration and Looker removal |
 | EP-008 | 08 | live local and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | refresh-required | engineering checks passed before the reframe; package refresh remains, and independent operator result stays `NOT_RUN` |
 
+### Phase 06 checkpoint B — pinned official inputs
+
+Tested behavior commit: `4148020`
+
+Modes: live public-source acquisition plus deterministic local verification and
+fixture refusal tests. This is not live campaign or customer evidence.
+
+Observed source: `datahub-project/static-assets` commit
+`a6479c691dd2a40dd89563396d9c8b2b28bee83c`, selected from the official
+DataHub hackathon resources page. The registry pins the fiction-retail,
+healthcare, nyc-taxi clean, and nyc-taxi stale SQLite assets with their
+documented CC0 or NYC public-domain license evidence.
+
+Commands:
+
+```text
+make phase06-data
+make check
+unzip -l dist/retirement_conductor-0.2.0-py3-none-any.whl
+tar -tzf dist/retirement_conductor-0.2.0.tar.gz
+```
+
+Observed result: acquisition downloaded four pinned assets totaling
+312,086,528 bytes into the ignored content-addressed cache. Every byte size,
+SHA-256, pinned URL, reviewed license, and SQLite header matched the registry.
+The immediate network-free verification matched all four entries. The
+registry digest is
+`sha256:b0a4c716c932df7967453ce66a59863b7dc6e79ad39b46fff69464774176c6e4`;
+the acquire and offline receipt digests are
+`sha256:516b01344e792c6e8fdca2a8dace629ea38fd87f01d12e9c91b00fc954635081`
+and
+`sha256:0a2b09c521d273dc8f98724f098f12140246c0f8034ba26353c67d1e5f987488`.
+The package inspection found the registry and both schemas in the wheel and
+source archive, but no database bytes.
+
+Failure evidence: fixture tests refuse a moving source URL, an unreviewed
+license, a missing offline entry, wrong size, wrong checksum, and an
+unexpected ZIP member. Cache receipts expose only logical content keys, not
+host paths or source rows.
+
+Validation result: 236 tests, Ruff, formatting, strict mypy, 168 required-file
+and 144-link validation, a 299-file secret scan, the 53-file historical
+public-artifact review, source and wheel builds, and `git diff --check` passed.
+
+Reviewer inspection: inspected both real receipts, the exact registry, all
+four upstream README license statements, the package member lists, and the
+refusal assertions. The large databases remain ignored.
+
+Limitations: no corpus was generated, no source table was queried for the
+benchmark, no DataHub ingestion or direct reread occurred, no campaign ran,
+and no public Phase 06 artifact was promoted. `EP-006` therefore remains
+active and not passed.
+
 ### Historical Phase 06 Looker observations — superseded
 
 These observations truthfully record the former credential-independent Looker

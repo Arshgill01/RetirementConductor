@@ -21,6 +21,7 @@ from retirement_conductor.errors import Refusal
 from retirement_conductor.vocabulary import RefusalCode
 
 REVISION = "a6479c691dd2a40dd89563396d9c8b2b28bee83c"
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class DownloadResponse(io.BytesIO):
@@ -156,6 +157,24 @@ def test_acquisition_refuses_checksum_mismatch(
     assert caught.value.code == RefusalCode.DATASET_CHECKSUM_MISMATCH
 
 
+def test_acquisition_refuses_size_mismatch(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    content = sqlite_content(tmp_path / "source.db")
+    registry = registry_value(content)
+    registry["assets"][0]["size_bytes"] = len(content) + 1
+    registry_path = tmp_path / "datasets.json"
+    write_registry(registry_path, registry)
+    source_url = str(registry["assets"][0]["source_url"])
+    install_download(monkeypatch, content, source_url)
+
+    with pytest.raises(Refusal) as caught:
+        acquire_datasets(registry_path, tmp_path / "cache", offline=False)
+
+    assert caught.value.code == RefusalCode.DATASET_SIZE_MISMATCH
+
+
 def test_registry_refuses_unreviewed_license(tmp_path: Path) -> None:
     content = sqlite_content(tmp_path / "source.db")
     registry = registry_value(content)
@@ -209,3 +228,15 @@ def test_acquisition_refuses_unexpected_archive_member(
         acquire_datasets(registry_path, tmp_path / "cache", offline=False)
 
     assert caught.value.code == RefusalCode.DATASET_ARCHIVE_UNEXPECTED_MEMBER
+
+
+def test_tracked_registry_pins_the_reviewed_official_assets() -> None:
+    registry = load_dataset_registry(ROOT / "fixtures/data-quality/datasets.json")
+
+    assert registry["upstream"]["revision"] == REVISION
+    assert {asset["asset_id"] for asset in registry["assets"]} == {
+        "fiction-retail-database",
+        "healthcare-database",
+        "nyc-taxi-clean-database",
+        "nyc-taxi-stale-database",
+    }
