@@ -106,14 +106,24 @@ remains visibly `BLOCKED` because fixture evidence cannot satisfy live policy.
 See
 [EP-005](docs/EVIDENCE_LEDGER.md#ep-005--phase-05-operator-experience).
 
+Phase 06 now stress-tests that same engine over four checksum-pinned official
+DataHub datasets and deterministic synthetic truth. A live-local Core run
+directly reread schema, field lineage, owner, domain, tag, glossary, and
+quality aspects; the independent oracle matched all 14 scenarios with zero
+false readiness. The clean isolated campaign reached `READY_TO_RETIRE`, while
+partial, stale, ambiguous, table-only, incompatible, null-inflated,
+semantic-drift, late, and opaque-rich cases stayed blocked or unsafe. Three
+full runs share one time-independent semantic digest. See
+[EP-006](docs/EVIDENCE_LEDGER.md#phase-06-post-removal-confirmation).
+
 The Phase 07 boundary separates plan from apply, refuses copied campaign
 stores, verifies online backup and original-path restore, exposes redacted
 operational diagnostics, and audits dependencies, licenses, secrets, and
 public artifacts. The focused security, fault, and recovery suites passed 93,
 72, and 43 tests, and the all-group audit found no known vulnerability in 18
 installed packages after upgrading the one vulnerable development dependency.
-These results will be refreshed after the deprecated Looker surface is
-removed and the new benchmark is integrated. See
+These results are being refreshed against the narrowed post-removal package.
+See
 [the Phase 07 observations](docs/EVIDENCE_LEDGER.md#phase-07-credential-independent-observations).
 
 ## Complete supported path

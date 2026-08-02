@@ -55,14 +55,18 @@ Implemented and tested:
 
 This establishes implementation behavior, not live product proof.
 
-## Not yet proven under the current goal
+## Proven under the current goal
 
 - official dataset acquisition pinned by revision, license, and checksum;
 - a deterministic fiction-retail retirement corpus and independent oracle;
-- nyc-taxi native freshness evidence bound to a campaign envelope;
-- healthcare quality-fault impact compared with exact oracle branches;
-- controlled graph recall and zero false readiness across the new benchmark;
-- package, upgrade, fault, and recovery behavior after Looker removal;
+- nyc-taxi native freshness and healthcare branch-selectivity truth;
+- controlled graph recall and zero false readiness across 14 scenarios;
+- a post-removal live-local DataHub, Git/dbt, publication, and gate campaign;
+- removal of the deprecated adapter from runtime and release package content.
+
+## Not yet proven under the current goal
+
+- refreshed package, upgrade, fault, and recovery behavior after removal;
 - user frequency, willingness to adopt, and economic value;
 - external-receipt usefulness for non-repository consumers.
 

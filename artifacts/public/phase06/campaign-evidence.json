@@ -1,12 +1,12 @@
 {
-  "evidence_digest": "sha256:535cbf06e77d9dfb73087fad4195a3133c262b8f35761fe0555cfa0721611744",
+  "evidence_digest": "sha256:5903732a90a309f2a5cfeea2213426fa9cc090399ede30dcdbba022d670a51d5",
   "evidence_mode": "live local systems over fixture data",
   "gate": {
     "attempt_count": 2,
     "ready_result": "EXECUTED",
-    "receipt_digest": "sha256:edb515d4255a65c3cb8f58b2d2bd4997509e0bac098d3a2e9ce454b813c1e3c3",
+    "receipt_digest": "sha256:31cd6879c9412fed2494ec4ac1d93078019b99975764279a1291317223de760a",
     "sentinel_count": 1,
-    "sentinel_digest": "sha256:5376cf20687a8ef47d0351e699af1ab4f8920da7f62ed05e7df2fcbb84a341f7"
+    "sentinel_digest": "sha256:205555c8edefa9335cbf3e121a17f09c46514f249503a14c654af9b6e45f6a36"
   },
   "late": {
     "blocker_codes": [
@@ -14,7 +14,7 @@
       "RECONCILIATION_NEW_CONSUMER"
     ],
     "decision": "UNSAFE",
-    "manifest_digest": "sha256:bf1ee2f47fc1c9d0cb3e9f600591c9aa2e0a9effab7ec88d6fa9f7608e2640ec",
+    "manifest_digest": "sha256:66e3b77a903a3594e2c4e27614ea87289006b6d5320b980d08f657ba25c65455",
     "membership": {
       "added": [
         "dh-4a5b47e377298037115b"
@@ -26,9 +26,9 @@
     }
   },
   "publication": {
-    "content_digest": "sha256:373d6ff001b3d90ea54bc2ea5126db6664fc9d40383d1fa6fb9d5ac950c5355a",
+    "content_digest": "sha256:6bdb01525dcd65b2bba343540b3bcfa09a93a6a223033685ff0808b4efb10e6f",
     "lifecycle_unchanged": true,
-    "published_manifest_digest": "sha256:5e8fc39126c2029e8b0405492c7c463ed13b28ebb1e210508a8533dd26657f46",
+    "published_manifest_digest": "sha256:091767d5cebed5b8e74953a67ef3f8276e623e3de9700eb99257417d10dbf808",
     "readback_verified": true,
     "write_count": 1
   },
@@ -37,7 +37,7 @@
       "VALIDATED"
     ],
     "decision": "READY_TO_RETIRE",
-    "manifest_digest": "sha256:5e8fc39126c2029e8b0405492c7c463ed13b28ebb1e210508a8533dd26657f46",
+    "manifest_digest": "sha256:091767d5cebed5b8e74953a67ef3f8276e623e3de9700eb99257417d10dbf808",
     "state": "READY"
   },
   "rich": {
@@ -48,7 +48,7 @@
     ],
     "consumer_count": 2,
     "decision": "UNSAFE",
-    "manifest_digest": "sha256:221634eeef207f50eb0a2723b1f208ef7ff2cabbadae5356fb288b3fcb6a7e8b"
+    "manifest_digest": "sha256:2f6ec5cd239b9d11c9514274a68db95ae93d821c8a5eb868a682be862ff9238d"
   },
   "schema_version": "1.0.0"
 }

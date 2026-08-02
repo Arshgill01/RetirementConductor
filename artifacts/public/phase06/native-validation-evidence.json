@@ -35,12 +35,12 @@
         "timed_out": false
       }
     ],
-    "receipt_digest": "sha256:710ddf97eb370ec5897fcacdc21153694c0475b360d3512097ba316eec0dde78",
+    "receipt_digest": "sha256:0f90e7cb47b3f0618e02d76f5bfe4fc753058e12364b9dc7a9847cb3f2077789",
     "result": "PASSED",
     "validator": "dbt parse + seed + build + test on DuckDB",
     "validator_version": "1.12.0"
   },
-  "evidence_digest": "sha256:290504654f414b111f16de1b7e01678f7f02522ea86cd1c7068743274fe6aab8",
+  "evidence_digest": "sha256:33cd439aae70ceeee5da158fd285d4ff0013e2e33afab28c1aa113a623a9aade",
   "evidence_mode": "live local dbt over generated fixture data",
   "fault_variants": {
     "evidence_mode": "live local dbt over generated fixture data",

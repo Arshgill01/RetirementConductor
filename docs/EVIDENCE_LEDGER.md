@@ -42,7 +42,7 @@ the produced artifacts have been inspected.
 | EP-003 | 03 | live | `3ca39a1` | `artifacts/public/phase03/`; Git/dbt identity, exact apply, rollback/reapply, native receipt, and adversarial containment | passed | local disposable Git repository and DuckDB; no production source |
 | EP-004 | 04 | live and fixture | `25466a9` | `artifacts/public/phase04/`; equivalent reconciliation, late reopening, verified publication, one-time gate, and refusal matrix | passed | disposable Core, Git, DuckDB, and harmless sentinel; no warehouse deletion |
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
-| EP-006 | 06 | live local and fixture | not-run | official dataset registry, deterministic corpus and oracle, live local DataHub comparison, exact Git/dbt receipt, refusal matrix, and zero false readiness | active | replacement phase introduced by D-038; no benchmark evidence exists yet |
+| EP-006 | 06 | live local and fixture | `8f5eb58` | `artifacts/public/phase06/`; pinned official inputs, deterministic corpus and oracle, direct DataHub readback, exact Git/dbt receipt, refusal matrix, one producer sentinel, and zero false readiness | passed | fixture inputs do not prove production coverage; readiness is bounded by one DataHub and Git/dbt envelope |
 | EP-007 | 07 | live local and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | refresh-required | prior checks passed; rerun after benchmark integration and Looker removal |
 | EP-008 | 08 | live local and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | refresh-required | engineering checks passed before the reframe; package refresh remains, and independent operator result stays `NOT_RUN` |
 
@@ -244,9 +244,45 @@ secret scans; and staged whitespace.
 
 Limitations: fixture data does not prove production coverage; readiness is
 bounded by one DataHub and Git/dbt evidence envelope; opaque consumers are not
-auto-mutated; and the producer action is a harmless sentinel. The benchmark
-acceptance has passed, but `EP-006` remains active until the deprecated Looker
-release surface is removed and post-removal acceptance is rerun.
+auto-mutated; and the producer action is a harmless sentinel.
+
+### Phase 06 post-removal confirmation
+
+Tested behavior commit: `8f5eb58dc5f8c05149a819a92907ff0c8ce96901`
+
+Commands:
+
+```text
+make check
+make phase06-benchmark
+make phase06-evidence
+uv run python scripts/check_public_artifacts.py
+uv run python scripts/check_secrets.py
+git diff --check
+```
+
+Observed result: the supported CLI, deployment profiles, runtime modules,
+schemas, recipes, fixtures, and active tests contain only DataHub and Git/dbt
+product boundaries. The full post-removal live-local campaign again matched
+all 14 oracle scenarios with zero false readiness. Its raw evidence digest is
+`sha256:d4f563f64cd71bde350c6968570c75d576016268c43d4eda4c98e5457447c0f7`.
+The time-independent semantic digest remained
+`sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54`
+and matched two earlier full runs.
+
+The exact Git/dbt target, clean dbt commands, three expected native fault
+failures, DataHub direct-readback digest, ready/late/rich decisions,
+publication read-back, and one-sentinel gate behavior were unchanged. The
+regenerated Phase 06 evidence digest is
+`sha256:b930045d5769c9b7d938f5079dd4a37e4621b23796a0fdf45ad2ddd34e20e4b9`;
+the tracked summary file SHA-256 is
+`73701eaf920b0da5b9388a9372c4118a70ba7bdd1f82dcc7b19b101538c059de`.
+
+Validation result: 182 tests, Ruff, formatting, strict mypy, 174 required-file
+and 144-link validation, a 302-file secret scan, the 56-file public-artifact
+review, source and wheel builds, and `git diff --check` passed. Inspection of
+the current 0.2.0 source archive and wheel found no deprecated adapter or
+modeling-language member. `EP-006` is complete.
 
 ### Historical Phase 06 Looker observations — superseded
 

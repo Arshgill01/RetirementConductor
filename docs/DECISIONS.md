@@ -683,7 +683,33 @@ parity plus accepted values. All three yielded
 For reproducibility, compare live runs through a time-independent semantic
 projection. Preserve the distinct raw manifest, publication, gate, and run
 digests as time-bound evidence; do not claim they should be byte-identical.
-Two full runs at commit `34df09e` matched semantic digest
+Two full runs at commit `34df09e` and one post-removal run at `8f5eb58`
+matched semantic digest
 `sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54`.
 
 Status: accepted from Phase 06 live benchmark evidence.
+
+## D-042 — delete the deprecated adapter instead of shipping dormant code
+
+Date: 2026-08-02
+
+Decision: remove the former BI adapter modules, CLI surface, schema,
+deployment profiles, ingestion recipes, fixtures, and adapter-specific tests
+from the supported source and package. Preserve only clearly superseded
+historical decisions and evidence needed to explain old observations.
+
+Why: an unsupported dormant integration still expands attack surface,
+configuration ambiguity, package weight, maintenance cost, and the chance an
+operator mistakes fixture behavior for a supported live boundary. The safer
+compatibility contract is explicit: Git/dbt is the sole automated consumer
+mutation path and every other DataHub-observed consumer remains opaque or
+requires an independent external receipt.
+
+Observed consequence: commit `8f5eb58` removed 7,566 lines across runtime,
+schemas, recipes, fixtures, and tests. The CLI exposes only `git-dbt`;
+deployment profiles are `local` and `core-git-dbt`; the current 0.2.0 wheel
+and source archive contain no removed module or schema. The repository gate
+passed 182 tests, and the full live-local benchmark retained the same semantic
+digest as two earlier runs.
+
+Status: accepted from post-removal package inspection and Phase 06 replay.

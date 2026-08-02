@@ -2,9 +2,10 @@
 
 This file is the controlling execution contract for the current Retirement
 Conductor run. It supersedes the former requirement for a live Looker adapter.
-The existing Looker implementation and evidence remain historical repository
-material until removed through the explicit compatibility work below; they are
-not part of the supported product, acceptance path, or completion claim.
+The former Looker implementation was removed from the supported source and
+package at checkpoint `8f5eb58`; only clearly superseded historical decisions
+and evidence remain. It is not part of the supported product, acceptance path,
+or completion claim.
 
 ## Exact objective
 

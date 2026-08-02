@@ -64,8 +64,8 @@ substitutes for this path.
 ```
 
 Phases 05 and 06 may proceed independently only after phase 04 passes. Phase
-07 refreshes the hardening evidence after the benchmark lands and the
-deprecated Looker surface is removed.
+07 refreshes the hardening evidence now that the benchmark has landed and the
+deprecated adapter surface has been removed.
 
 ## Phase index
 

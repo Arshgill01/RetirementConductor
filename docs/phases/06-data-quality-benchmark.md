@@ -178,6 +178,19 @@ Inspect:
 - If the complete Git/dbt/DataHub path stops working after the reframe, repair
   it before expanding the benchmark.
 
+## Observed acceptance
+
+Complete at post-removal behavior commit `8f5eb58`. The pinned registry and
+deterministic corpus produced byte-identical twins; the independent oracle
+matched all 14 expected decisions and refusal sets with zero false readiness;
+direct DataHub readback verified schema, field lineage, ownership, domain,
+glossary, tags, and quality context; native dbt passed the clean case and
+failed all three planted faults as expected; the isolated campaign reached
+`READY_TO_RETIRE` with one producer sentinel; and late and opaque-rich graphs
+remained `UNSAFE`. Public evidence is in `artifacts/public/phase06/` with
+summary evidence digest
+`sha256:b930045d5769c9b7d938f5079dd4a37e4621b23796a0fdf45ad2ddd34e20e4b9`.
+
 ## Risks changed
 
 - R-01 incomplete or stale catalog evidence;
