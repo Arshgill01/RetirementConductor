@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import time
 import urllib.parse
@@ -450,8 +451,8 @@ def direct_readback(
     return with_digest(
         {
             "assertion": {
+                "matching_run_observed": True,
                 "result": "SUCCESS",
-                "run_count": len(matching_runs),
                 "total_quality_violations": 0,
                 "urn": ASSERTION_URN,
             },
@@ -571,6 +572,168 @@ def compare_oracle(oracle: Mapping[str, Any]) -> dict[str, Any]:
             "schema_version": "1.0.0",
         },
         "comparison_digest",
+    )
+
+
+def native_fault_probes(
+    runner: Runner,
+    *,
+    repository: Path,
+    run_root: Path,
+) -> dict[str, Any]:
+    """Run the migrated model against each planted replacement fault."""
+
+    expected_failures = {
+        "null-inflated": {
+            "not_null_orders_status_summary_normalized_status",
+            "orders_status_semantic_equivalence",
+        },
+        "semantic-drift": {"orders_status_semantic_equivalence"},
+        "unmapped-value": {
+            (
+                "accepted_values_orders_status_summary_normalized_status__"
+                "backordered__canceled__confirmed__delivered__disputed__"
+                "fulfilling__in_transit__pending__returned"
+            ),
+            "orders_status_semantic_equivalence",
+        },
+    }
+    observations: list[dict[str, Any]] = []
+    for variant, expected in expected_failures.items():
+        project = run_root / "native-faults" / variant
+        shutil.copytree(
+            repository,
+            project,
+            ignore=shutil.ignore_patterns(".git", ".runtime", "logs", "target"),
+        )
+        shutil.copyfile(
+            GENERATION / "data" / "variants" / variant / "orders.csv",
+            project / "seeds" / "orders.csv",
+        )
+        profile = yaml.safe_load((project / "profiles.yml").read_text())
+        profile["retirement_conductor_benchmark"]["outputs"]["local"]["path"] = str(
+            project / ".runtime" / "warehouse.duckdb"
+        )
+        (project / "profiles.yml").write_text(
+            yaml.safe_dump(profile, sort_keys=False), encoding="utf-8"
+        )
+        started = time.monotonic()
+        result = subprocess.run(
+            [
+                str(DBT_EXECUTABLE),
+                "build",
+                "--project-dir",
+                str(project),
+                "--profiles-dir",
+                str(project),
+                "--no-use-colors",
+            ],
+            cwd=project,
+            env=runner.environment,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=300,
+        )
+        require(result.returncode != 0, f"{variant} unexpectedly passed dbt build")
+        run_results = json.loads(
+            (project / "target" / "run_results.json").read_text(encoding="utf-8")
+        )
+        failed = {
+            str(item["unique_id"]).split(".", 2)[-1]
+            for item in run_results["results"]
+            if item["status"] in {"error", "fail"}
+        }
+        require(
+            expected <= failed,
+            f"{variant} missed expected native failures: {sorted(expected - failed)}",
+        )
+        runner._record(
+            f"dbt-fault-{variant}",
+            result.returncode,
+            result.stdout,
+            {
+                "result": "EXPECTED_NATIVE_FAILURE",
+                "refusal_code": "VALIDATION_RECEIPT_FAILED",
+            },
+            started,
+        )
+        observations.append(
+            {
+                "dbt_exit_code": result.returncode,
+                "expected_failed_tests": sorted(expected),
+                "failed_tests": sorted(failed),
+                "result": "VALIDATION_RECEIPT_FAILED",
+                "variant": variant,
+            }
+        )
+    receipt = with_digest(
+        {
+            "evidence_mode": "live local dbt over generated fixture data",
+            "observations": observations,
+            "schema_version": "1.0.0",
+            "validator": "dbt build",
+        },
+        "receipt_digest",
+    )
+    write_json(run_root / "native-fault-probes.json", receipt)
+    return receipt
+
+
+def semantic_projection(
+    *,
+    readback: Mapping[str, Any],
+    oracle_comparison: Mapping[str, Any],
+    fault_probes: Mapping[str, Any],
+    applied: Mapping[str, Any],
+    validated: Mapping[str, Any],
+    partial_status: str,
+    drift_refusal: str,
+    ready_decision: str,
+    late_decision: str,
+    rich_decision: str,
+) -> dict[str, Any]:
+    """Build a time- and run-id-free projection for twin-run comparison."""
+
+    return with_digest(
+        {
+            "campaign": {
+                "apply_targets": applied["apply"]["actual_targets"],
+                "dbt_commands": [
+                    {
+                        "arguments": item["arguments"],
+                        "exit_code": item["exit_code"],
+                    }
+                    for item in validated["validation"]["commands"]
+                ],
+                "late_decision": late_decision,
+                "ready_decision": ready_decision,
+                "rich_decision": rich_decision,
+                "sentinel_count": 1,
+            },
+            "datahub": {
+                "context": readback["context"],
+                "field_lineage": readback["field_lineage"],
+                "partial_pagination_status": partial_status,
+                "replacement_drift_refusal": drift_refusal,
+                "schema_fields": readback["schema_fields"],
+            },
+            "native_faults": [
+                {
+                    "expected_failed_tests": item["expected_failed_tests"],
+                    "failed_tests": item["failed_tests"],
+                    "result": item["result"],
+                    "variant": item["variant"],
+                }
+                for item in fault_probes["observations"]
+            ],
+            "oracle": {
+                "false_readiness_count": oracle_comparison["false_readiness_count"],
+                "results": oracle_comparison["results"],
+            },
+            "schema_version": "1.0.0",
+        },
+        "semantic_digest",
     )
 
 
@@ -879,6 +1042,11 @@ def run() -> dict[str, Any]:
                 ),
                 "dbt-native validation did not pass",
             )
+            fault_probes = native_fault_probes(
+                runner,
+                repository=repository,
+                run_root=run_root,
+            )
             runner.json(
                 "evaluate-before-reconciliation",
                 [
@@ -1092,6 +1260,30 @@ def run() -> dict[str, Any]:
 
             with CampaignStore(store_path, writer_id=writer_id) as store:
                 gate_attempts = store.gate_attempts(clean_campaign)
+            semantic = semantic_projection(
+                readback=readback,
+                oracle_comparison=oracle_comparison,
+                fault_probes=fault_probes,
+                applied=applied,
+                validated=validated,
+                partial_status=str(partial_source["status"]),
+                drift_refusal=drift_refusal,
+                ready_decision=str(ready["manifest"]["decision"]),
+                late_decision=str(late["manifest"]["decision"]),
+                rich_decision=str(rich_evaluation["decision"]),
+            )
+            prior_semantic_digests = []
+            for candidate in sorted(RUNTIME_ROOT.glob("run-*/summary.json")):
+                previous = json.loads(candidate.read_text(encoding="utf-8"))
+                previous_semantic = previous.get("semantic_evidence")
+                if isinstance(previous_semantic, dict):
+                    verify_digest(previous_semantic, "semantic_digest")
+                    prior_semantic_digests.append(
+                        str(previous_semantic["semantic_digest"])
+                    )
+            matched_prior_runs = sum(
+                item == semantic["semantic_digest"] for item in prior_semantic_digests
+            )
             summary = with_digest(
                 {
                     "campaign": {
@@ -1157,10 +1349,27 @@ def run() -> dict[str, Any]:
                         ],
                         "oracle_digest": oracle["oracle_digest"],
                     },
+                    "native_faults": {
+                        "receipt_digest": fault_probes["receipt_digest"],
+                        "results": [
+                            {
+                                "dbt_exit_code": item["dbt_exit_code"],
+                                "failed_tests": item["failed_tests"],
+                                "result": item["result"],
+                                "variant": item["variant"],
+                            }
+                            for item in fault_probes["observations"]
+                        ],
+                    },
                     "producer_plan_digest": producer_plan["plan"]["plan_digest"],
                     "repository_commit": git(ROOT, "rev-parse", "HEAD"),
                     "run_id": f"run-{token}",
                     "schema_version": "1.0.0",
+                    "semantic_evidence": semantic,
+                    "twin_run": {
+                        "matched_prior_run_count": matched_prior_runs,
+                        "semantic_digest": semantic["semantic_digest"],
+                    },
                 },
                 "evidence_digest",
             )
