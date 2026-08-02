@@ -1,0 +1,80 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/benchmark-fault-manifest-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_classification": {
+      "const": "private-exact-fault-provenance"
+    },
+    "fault_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "benchmark-fault-manifest/v1"
+    },
+    "seed": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "variants": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "affected_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "affected_rate": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "field": {
+            "type": "string"
+          },
+          "impact": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "mutation": {
+            "type": "string"
+          },
+          "row_ids": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          },
+          "variant_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "variant_id",
+          "field",
+          "mutation",
+          "affected_count",
+          "affected_rate",
+          "row_ids",
+          "impact"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "seed",
+    "artifact_classification",
+    "variants",
+    "fault_manifest_digest"
+  ],
+  "title": "Exact benchmark fault manifest v1",
+  "type": "object"
+}

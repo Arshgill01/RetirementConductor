@@ -1,0 +1,164 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/benchmark-oracle-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "campaign": {
+      "additionalProperties": false,
+      "properties": {
+        "legacy_field": {
+          "const": "legacy_status"
+        },
+        "replacement_field": {
+          "const": "order_status"
+        },
+        "target_dataset_urn": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_dataset_urn",
+        "legacy_field",
+        "replacement_field"
+      ],
+      "type": "object"
+    },
+    "expected_graph": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "downstream": {
+                "type": "string"
+              },
+              "precision": {
+                "enum": [
+                  "field",
+                  "table"
+                ]
+              },
+              "upstream": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "upstream",
+              "downstream",
+              "precision"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "entities": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "entities",
+        "edges"
+      ],
+      "type": "object"
+    },
+    "oracle_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "oracle_version": {
+      "const": "1.0.0"
+    },
+    "scale": {
+      "enum": [
+        "full",
+        "medium",
+        "small"
+      ]
+    },
+    "scenarios": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expected": {
+            "additionalProperties": false,
+            "properties": {
+              "consumer_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "decision": {
+                "enum": [
+                  "BLOCKED",
+                  "READY_TO_RETIRE",
+                  "REVIEW_REQUIRED",
+                  "UNSAFE"
+                ]
+              },
+              "refusal_codes": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "decision",
+              "refusal_codes",
+              "consumer_ids"
+            ],
+            "type": "object"
+          },
+          "facts": {
+            "type": "object"
+          },
+          "id": {
+            "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "facts",
+          "expected"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "benchmark-oracle/v1"
+    },
+    "seed": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "oracle_version",
+    "seed",
+    "scale",
+    "campaign",
+    "expected_graph",
+    "scenarios",
+    "oracle_digest"
+  ],
+  "title": "Independent benchmark oracle v1",
+  "type": "object"
+}

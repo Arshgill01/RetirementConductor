@@ -87,6 +87,21 @@ phase06-data:
 		--cache .retirement-conductor/datasets \
 		--offline \
 		--receipt .retirement-conductor/benchmark/data-verify-receipt.json
+	uv run retirement-conductor benchmark data generate \
+		--registry fixtures/data-quality/datasets.json \
+		--cache .retirement-conductor/datasets \
+		--seed 20260802 \
+		--scale medium \
+		--output .retirement-conductor/benchmark/generation-a
+	uv run retirement-conductor benchmark data generate \
+		--registry fixtures/data-quality/datasets.json \
+		--cache .retirement-conductor/datasets \
+		--seed 20260802 \
+		--scale medium \
+		--output .retirement-conductor/benchmark/generation-b
+	uv run retirement-conductor benchmark data compare \
+		--left .retirement-conductor/benchmark/generation-a \
+		--right .retirement-conductor/benchmark/generation-b
 
 phase06-recipes:
 	uv run --python 3.11 \

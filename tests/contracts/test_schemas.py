@@ -18,4 +18,8 @@ def test_schema_set_covers_every_phase_zero_contract() -> None:
         "campaign-manifest",
         "dataset-registry",
         "dataset-cache-receipt",
+        "benchmark-oracle",
+        "benchmark-fault-manifest",
+        "benchmark-quality-report",
+        "benchmark-generation-receipt",
     }

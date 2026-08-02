@@ -11,6 +11,10 @@ from pathlib import Path
 from typing import Any
 
 from retirement_conductor import __version__
+from retirement_conductor.benchmark_data import (
+    compare_generation_outputs,
+    generate_benchmark_corpus,
+)
 from retirement_conductor.canonical import digest_json, write_json
 from retirement_conductor.datahub import (
     DataHubBoundary,
@@ -183,6 +187,41 @@ def build_parser() -> argparse.ArgumentParser:
             action="store_true",
             help="forbid network access and require every cache entry",
         )
+    benchmark_generate = benchmark_data_subparsers.add_parser("generate")
+    benchmark_generate.add_argument(
+        "--registry",
+        type=Path,
+        default=Path(
+            os.environ.get(
+                "RETIREMENT_CONDUCTOR_DATASET_REGISTRY",
+                str(default_registry_path()),
+            )
+        ),
+    )
+    benchmark_generate.add_argument(
+        "--cache",
+        type=Path,
+        default=Path(
+            os.environ.get(
+                "RETIREMENT_CONDUCTOR_DATASET_CACHE",
+                ".retirement-conductor/datasets",
+            )
+        ),
+    )
+    benchmark_generate.add_argument(
+        "--seed",
+        type=int,
+        default=os.environ.get("RETIREMENT_CONDUCTOR_BENCHMARK_SEED", "20260802"),
+    )
+    benchmark_generate.add_argument(
+        "--scale",
+        choices=("small", "medium", "full"),
+        default=os.environ.get("RETIREMENT_CONDUCTOR_BENCHMARK_SCALE", "medium"),
+    )
+    benchmark_generate.add_argument("--output", type=Path, required=True)
+    benchmark_compare = benchmark_data_subparsers.add_parser("compare")
+    benchmark_compare.add_argument("--left", type=Path, required=True)
+    benchmark_compare.add_argument("--right", type=Path, required=True)
 
     campaign = subparsers.add_parser(
         "campaign",
@@ -742,6 +781,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 0
         if args.command == "benchmark" and args.benchmark_command == "data":
+            if args.benchmark_data_command == "generate":
+                _render(
+                    generate_benchmark_corpus(
+                        args.registry,
+                        args.cache,
+                        args.output,
+                        seed=args.seed,
+                        scale=args.scale,
+                    )
+                )
+                return 0
+            if args.benchmark_data_command == "compare":
+                _render(compare_generation_outputs(args.left, args.right))
+                return 0
             receipt = acquire_datasets(
                 args.registry,
                 args.cache,

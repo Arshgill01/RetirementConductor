@@ -1,0 +1,68 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/benchmark-generation-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_digests": {
+      "additionalProperties": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+      },
+      "type": "object"
+    },
+    "fault_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "generator_version": {
+      "const": "1.0.0"
+    },
+    "oracle_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "quality_report_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "receipt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "registry_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "scale": {
+      "enum": [
+        "full",
+        "medium",
+        "small"
+      ]
+    },
+    "schema_version": {
+      "const": "benchmark-generation-receipt/v1"
+    },
+    "seed": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "generator_version",
+    "seed",
+    "scale",
+    "registry_digest",
+    "oracle_digest",
+    "fault_manifest_digest",
+    "quality_report_digest",
+    "artifact_digests",
+    "receipt_digest"
+  ],
+  "title": "Benchmark generation receipt v1",
+  "type": "object"
+}

@@ -1,0 +1,55 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/benchmark-quality-report-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_classification": {
+      "const": "public-safe-aggregate"
+    },
+    "generated": {
+      "type": "object"
+    },
+    "official_probes": {
+      "type": "object"
+    },
+    "quality_report_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "registry_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "scale": {
+      "enum": [
+        "full",
+        "medium",
+        "small"
+      ]
+    },
+    "schema_version": {
+      "const": "benchmark-quality-report/v1"
+    },
+    "seed": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "upstream_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "seed",
+    "scale",
+    "upstream_revision",
+    "registry_digest",
+    "artifact_classification",
+    "official_probes",
+    "generated",
+    "quality_report_digest"
+  ],
+  "title": "Public-safe benchmark quality report v1",
+  "type": "object"
+}
