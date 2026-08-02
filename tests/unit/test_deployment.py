@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import shutil
 from pathlib import Path
 
@@ -38,27 +37,6 @@ def create_state(store_path: Path, artifact_directory: Path) -> None:
     )
 
 
-def looker_environment(secret: str) -> dict[str, str]:
-    return {
-        "DATAHUB_GMS_URL": "https://datahub.invalid",
-        "DATAHUB_MCP_URL": "https://datahub.invalid/mcp",
-        "LOOKER_BASE_URL": "https://looker.invalid",
-        "LOOKER_CLIENT_ID": "client-reference",
-        "LOOKER_CLIENT_SECRET": secret,
-        "LOOKER_PLATFORM_INSTANCE": "sandbox",
-        "LOOKER_PROJECT_ID": "retirement",
-        "LOOKER_MODEL_ID": "retirement",
-        "LOOKER_EXPLORE_ID": "orders",
-        "LOOKER_FOLDER_ID": "17",
-        "LOOKER_CONTENT_TARGET": "look:41",
-        "LOOKER_LEGACY_REFERENCE": "orders.legacy_status",
-        "LOOKER_REPLACEMENT_REFERENCE": "orders.order_status",
-        "LOOKER_DATAHUB_URN": "urn:li:dataset:(fixture)",
-        "LOOKER_GRAPH_SNAPSHOT_DIGEST": f"sha256:{'1' * 64}",
-        "LOOKER_ALLOW_APPLY": "false",
-    }
-
-
 def test_local_preflight_is_non_mutating_and_digest_bound(tmp_path: Path) -> None:
     store_path, artifact_directory = state_paths(tmp_path)
 
@@ -83,41 +61,6 @@ def test_local_preflight_is_non_mutating_and_digest_bound(tmp_path: Path) -> Non
     }
     assert not store_path.exists()
     assert not artifact_directory.exists()
-
-
-def test_looker_preflight_reports_only_references_and_keeps_apply_disabled(
-    tmp_path: Path,
-) -> None:
-    store_path, artifact_directory = state_paths(tmp_path)
-    marker = "recognizable-phase08-secret"
-    environment = looker_environment(marker)
-
-    plan = deployment_preflight(
-        profile="looker-plan",
-        store_path=store_path,
-        writer_id="writer-one",
-        artifact_directory=artifact_directory,
-        environment=environment,
-    )
-    apply = deployment_preflight(
-        profile="looker-apply",
-        store_path=store_path,
-        writer_id="writer-one",
-        artifact_directory=artifact_directory,
-        environment=environment,
-    )
-
-    assert plan["ready"] is True
-    assert apply["ready"] is False
-    assert apply["missing"] == ["LOOKER_ALLOW_APPLY=true"]
-    rendered = json.dumps({"plan": plan, "apply": apply}, sort_keys=True)
-    assert marker not in rendered
-    assert "client-reference" not in rendered
-    assert "looker.invalid" not in rendered
-    assert all(
-        set(item) == {"present", "reference", "secret"}
-        for item in plan["configuration"]
-    )
 
 
 def test_preflight_refuses_copied_store_before_modification(tmp_path: Path) -> None:

@@ -555,7 +555,6 @@ def compatibility_evidence(
                 "shared filesystem or multi-writer deployment",
                 "Retirement Conductor product container",
                 "DataHub Cloud",
-                "live Looker saved-content workflow",
             ],
             "limitations": [
                 "A package install result does not prove an unexecuted integration.",
@@ -656,7 +655,7 @@ def write_summary(
             "evidence_mode": "mixed live, fixture, and analysis",
             "captured_at": utc_now(),
             "result": "CREDENTIAL_INDEPENDENT_ACCEPTANCE_PASSED",
-            "phase_status": "access-dependent",
+            "phase_status": "credential-independent-acceptance-passed",
             "repository_commit": commit,
             "package": dict(package),
             "commands": [
@@ -735,6 +734,7 @@ def write_summary(
                 "copied_state_refusal": True,
                 "local_metrics_opt_in_and_no_remote_export": True,
                 "release_repository_documentation_agree": True,
+                "deprecated_adapter_absent_from_package": True,
                 "independent_operator": False,
                 "customer_value_observation": False,
             },
@@ -743,20 +743,6 @@ def write_summary(
                 "RC-018": "NOT_SATISFIED",
             },
             "remaining_boundaries": [
-                {
-                    "phase": "06",
-                    "evidence_packet": "EP-006",
-                    "status": "access-dependent",
-                    "boundary": "live disposable Looker saved-content workflow",
-                    "provisioning_allowed": False,
-                },
-                {
-                    "phase": "07",
-                    "evidence_packet": "EP-007",
-                    "status": "access-dependent",
-                    "boundary": "live Looker-specific security and fault behavior",
-                    "provisioning_allowed": False,
-                },
                 {
                     "phase": "08",
                     "evidence_packet": "EP-008",
@@ -769,7 +755,6 @@ def write_summary(
                 "Credential-independent Phase 08 work cannot satisfy the "
                 "independent operator acceptance row.",
                 "The live Core reference uses disposable loopback services.",
-                "Live Looker remains outside this evidence packet.",
                 "No release signing identity or automated publication exists.",
             ],
         },

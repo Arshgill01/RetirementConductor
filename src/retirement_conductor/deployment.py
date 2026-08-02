@@ -29,14 +29,10 @@ from retirement_conductor.vocabulary import RefusalCode
 DEPLOYMENT_PROFILES = (
     "local",
     "core-git-dbt",
-    "looker-plan",
-    "looker-apply",
 )
 
 _SECRET_REFERENCES = {
     "DATAHUB_GMS_TOKEN",
-    "LOOKER_CLIENT_ID",
-    "LOOKER_CLIENT_SECRET",
 }
 
 _PROFILE_REQUIREMENTS: dict[str, tuple[tuple[str, ...], ...]] = {
@@ -48,48 +44,11 @@ _PROFILE_REQUIREMENTS: dict[str, tuple[tuple[str, ...], ...]] = {
         ("GIT_DBT_DBT_EXECUTABLE",),
         ("GIT_DBT_PRINCIPAL",),
     ),
-    "looker-plan": (
-        ("DATAHUB_GMS_URL",),
-        ("DATAHUB_MCP_URL",),
-        ("LOOKER_BASE_URL", "LOOKERSDK_BASE_URL"),
-        ("LOOKER_CLIENT_ID", "LOOKERSDK_CLIENT_ID"),
-        ("LOOKER_CLIENT_SECRET", "LOOKERSDK_CLIENT_SECRET"),
-        ("LOOKER_PLATFORM_INSTANCE",),
-        ("LOOKER_PROJECT_ID",),
-        ("LOOKER_MODEL_ID",),
-        ("LOOKER_EXPLORE_ID",),
-        ("LOOKER_FOLDER_ID",),
-        ("LOOKER_CONTENT_TARGET",),
-        ("LOOKER_LEGACY_REFERENCE",),
-        ("LOOKER_REPLACEMENT_REFERENCE",),
-        ("LOOKER_DATAHUB_URN",),
-        ("LOOKER_GRAPH_SNAPSHOT_DIGEST",),
-    ),
-    "looker-apply": (
-        ("DATAHUB_GMS_URL",),
-        ("DATAHUB_MCP_URL",),
-        ("LOOKER_BASE_URL", "LOOKERSDK_BASE_URL"),
-        ("LOOKER_CLIENT_ID", "LOOKERSDK_CLIENT_ID"),
-        ("LOOKER_CLIENT_SECRET", "LOOKERSDK_CLIENT_SECRET"),
-        ("LOOKER_PLATFORM_INSTANCE",),
-        ("LOOKER_PROJECT_ID",),
-        ("LOOKER_MODEL_ID",),
-        ("LOOKER_EXPLORE_ID",),
-        ("LOOKER_FOLDER_ID",),
-        ("LOOKER_CONTENT_TARGET",),
-        ("LOOKER_LEGACY_REFERENCE",),
-        ("LOOKER_REPLACEMENT_REFERENCE",),
-        ("LOOKER_DATAHUB_URN",),
-        ("LOOKER_GRAPH_SNAPSHOT_DIGEST",),
-        ("LOOKER_ALLOW_APPLY",),
-    ),
 }
 
 _PROFILE_TOOLS = {
     "local": (),
     "core-git-dbt": ("git", "bwrap", "docker"),
-    "looker-plan": (),
-    "looker-apply": (),
 }
 
 
@@ -138,10 +97,6 @@ def deployment_preflight(
                 "secret": any(name in _SECRET_REFERENCES for name in aliases),
             }
         )
-
-    apply_setting = values.get("LOOKER_ALLOW_APPLY", "false").strip().lower()
-    if profile == "looker-apply" and apply_setting != "true":
-        missing.append("LOOKER_ALLOW_APPLY=true")
 
     tools = [
         {
@@ -216,7 +171,6 @@ def deployment_preflight(
                 "retirement-conductor campaign diagnostics",
                 "retirement-conductor datahub preflight",
                 "retirement-conductor adapter git-dbt preflight",
-                "retirement-conductor adapter looker preflight",
             ],
             "limitations": [
                 "Deployment preflight validates local configuration and tool "

@@ -1,7 +1,7 @@
 .PHONY: benchmark-workspace check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
-	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
+	phase04-evidence phase05-browser phase05-evidence \
 	phase06-benchmark phase06-data phase06-evidence phase07-evidence phase08-evidence package scan \
 	test test-install test-reference-campaign test-ui test-upgrade \
 	test-end-to-end test-faults test-recovery test-security
@@ -109,11 +109,6 @@ phase06-data:
 phase06-benchmark: benchmark-workspace
 	uv run python -m scripts.run_phase06_benchmark
 
-phase06-recipes:
-	uv run --python 3.11 \
-		--with 'acryl-datahub[looker,lookml,datahub-rest]==1.6.0' \
-		python scripts/validate_phase06_recipes.py
-
 phase06-evidence:
 	uv run python -m scripts.generate_phase06_evidence
 
@@ -158,27 +153,23 @@ test-security:
 		tests/contracts/test_specification.py \
 		tests/security \
 		tests/unit/test_git_dbt.py \
-		tests/unit/test_looker.py \
 		tests/unit/test_operator.py \
 		tests/integration/test_gate.py
 
 test-faults:
 	uv run pytest -q \
-		tests/security/test_looker_transport.py \
 		tests/unit/test_datahub_http.py \
 		tests/unit/test_mcp_http.py \
 		tests/unit/test_git_dbt.py \
 		tests/integration/test_campaign_store.py \
-		tests/integration/test_gate.py \
-		tests/integration/test_looker_workflow.py
+		tests/integration/test_gate.py
 
 test-recovery:
 	uv run pytest -q \
 		tests/reliability/test_store_operations.py \
 		tests/integration/test_campaign_store.py \
 		tests/integration/test_gate.py \
-		tests/integration/test_git_dbt_workflow.py \
-		tests/integration/test_looker_workflow.py
+		tests/integration/test_git_dbt_workflow.py
 
 test-upgrade: package
 	uv run python -m scripts.test_upgrade

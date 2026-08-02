@@ -45,10 +45,6 @@ from retirement_conductor.gate import ProducerGateWorkflow, TrustedProducerConte
 from retirement_conductor.git_dbt import GitDbtAdapter
 from retirement_conductor.git_dbt_config import GitDbtSettings
 from retirement_conductor.git_dbt_workflow import GitDbtWorkflow
-from retirement_conductor.looker import LookerAdapter
-from retirement_conductor.looker_access import write_looker_access_packet
-from retirement_conductor.looker_config import LookerSettings
-from retirement_conductor.looker_workflow import LookerWorkflow
 from retirement_conductor.mcp_http import HttpMCPClient
 from retirement_conductor.operator import (
     build_campaign_view,
@@ -351,39 +347,6 @@ def build_parser() -> argparse.ArgumentParser:
     authorize.add_argument("--authorized-at", required=True)
     authorize.add_argument("--expires-at", required=True)
 
-    looker = adapter_subparsers.add_parser(
-        "looker",
-        help="operate the bounded saved-Look adapter",
-    )
-    looker_subparsers = looker.add_subparsers(
-        dest="adapter_command",
-        required=True,
-    )
-    looker_access = looker_subparsers.add_parser(
-        "access-packet",
-        help="write a no-secret packet for the unresolved live boundary",
-    )
-    looker_access.add_argument("--campaign", dest="campaign_id", required=True)
-    looker_access.add_argument(
-        "--output",
-        type=Path,
-        default=Path(".retirement-conductor/looker-access/access-request.md"),
-    )
-    for command in ("preflight", "plan", "apply", "compensate", "validate"):
-        operation = looker_subparsers.add_parser(command)
-        _add_live_campaign_arguments(operation)
-        if command in {"apply", "compensate"}:
-            operation.add_argument("--occurred-at")
-        if command == "apply":
-            operation.add_argument("--confirm-plan-digest")
-        if command == "validate":
-            operation.add_argument("--expires-at")
-    looker_authorize = looker_subparsers.add_parser("authorize")
-    _add_live_campaign_arguments(looker_authorize)
-    looker_authorize.add_argument("--principal", required=True)
-    looker_authorize.add_argument("--authorized-at", required=True)
-    looker_authorize.add_argument("--expires-at", required=True)
-
     producer = subparsers.add_parser(
         "producer",
         help="prepare an exact short-lived producer retirement plan",
@@ -536,18 +499,6 @@ def _git_dbt_workflow(
     return GitDbtWorkflow(
         store=store,
         adapter=GitDbtAdapter(settings),
-        artifact_directory=Path(args.artifact_dir),
-        boundary=(_datahub_boundary() if args.adapter_command == "preflight" else None),
-    )
-
-
-def _looker_workflow(
-    args: argparse.Namespace,
-    store: CampaignStore,
-) -> LookerWorkflow:
-    return LookerWorkflow(
-        store=store,
-        adapter=LookerAdapter(LookerSettings.from_environment()),
         artifact_directory=Path(args.artifact_dir),
         boundary=(_datahub_boundary() if args.adapter_command == "preflight" else None),
     )
@@ -842,53 +793,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
             _render(result)
             return 0
-        if args.command == "adapter" and args.adapter_name == "looker":
-            if args.adapter_command == "access-packet":
-                _render(
-                    write_looker_access_packet(
-                        args.output,
-                        campaign_id=args.campaign_id,
-                    )
-                )
-                return 0
-            with CampaignStore(args.store, writer_id=args.writer_id) as store:
-                looker_workflow = _looker_workflow(args, store)
-                if args.adapter_command == "preflight":
-                    result = looker_workflow.preflight(args.campaign_id)
-                elif args.adapter_command == "plan":
-                    result = looker_workflow.plan(args.campaign_id)
-                elif args.adapter_command == "authorize":
-                    result = looker_workflow.authorize(
-                        args.campaign_id,
-                        principal=args.principal,
-                        authorized_at=args.authorized_at,
-                        expires_at=args.expires_at,
-                    )
-                elif args.adapter_command == "apply":
-                    if not args.confirm_plan_digest:
-                        raise Refusal(
-                            "AUTH_APPROVAL_MISSING",
-                            "Apply requires explicit confirmation of the exact "
-                            "Looker plan digest. Review the plan and pass "
-                            "--confirm-plan-digest.",
-                        )
-                    result = looker_workflow.apply(
-                        args.campaign_id,
-                        confirmed_plan_digest=args.confirm_plan_digest,
-                        occurred_at=args.occurred_at,
-                    )
-                elif args.adapter_command == "compensate":
-                    result = looker_workflow.compensate(
-                        args.campaign_id,
-                        occurred_at=args.occurred_at,
-                    )
-                else:
-                    result = looker_workflow.validate(
-                        args.campaign_id,
-                        expires_at=args.expires_at,
-                    )
-            _render(result)
-            return 0
         if args.command == "report" and args.report_command == "build":
             if args.manifest:
                 manifest = _load_manifest_artifact(
@@ -1035,23 +939,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 0
             if args.campaign_command == "reconcile":
                 with CampaignStore(args.store, writer_id=args.writer_id) as store:
-                    recorded_sources = (
-                        store.projection(args.campaign_id).evidence_envelope or {}
-                    ).get("sources", [])
-                    requires_looker = any(
-                        str(source.get("id", "")).startswith("looker:")
-                        for source in recorded_sources
-                        if isinstance(source, Mapping)
-                    )
                     reconciliation_workflow = ReconciliationWorkflow(
                         store=store,
                         boundary=_datahub_boundary(),
                         git_dbt=GitDbtAdapter(GitDbtSettings.from_environment()),
-                        looker=(
-                            LookerAdapter(LookerSettings.from_environment())
-                            if requires_looker
-                            else None
-                        ),
                         artifact_directory=Path(args.artifact_dir),
                         refresh_receipt=args.refresh_receipt,
                         indexing_timeout_seconds=args.indexing_timeout_seconds,

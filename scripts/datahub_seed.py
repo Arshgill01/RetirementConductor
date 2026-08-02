@@ -29,7 +29,7 @@ ISOLATED_MODEL_URN = (
     "retirement_conductor.analytics.consumers.orders_isolated_model,PROD)"
 )
 ISOLATED_LATE_CONSUMER_URN = (
-    "urn:li:dataset:(urn:li:dataPlatform:looker,"
+    "urn:li:dataset:(urn:li:dataPlatform:spark,"
     "retirement_conductor.analytics.consumers.orders_isolated_late,PROD)"
 )
 TARGET_URNS = {TARGET_URN, ISOLATED_TARGET_URN}
@@ -230,7 +230,7 @@ def seed(
             ingestion_run_id=run_id,
             upstream=TARGET_URN,
         )
-    platforms = ["looker", "powerbi", "tableau", "superset", "dbt", "snowflake"]
+    platforms = ["tableau", "powerbi", "spark", "superset", "dbt", "snowflake"]
     consumers: list[str] = []
     for index in range(18):
         platform = platforms[index % len(platforms)]
@@ -292,7 +292,7 @@ def seed(
         dataset_aspects(
             emitter,
             urn=ISOLATED_LATE_CONSUMER_URN,
-            platform="looker",
+            platform="spark",
             name="orders_isolated_late",
             source_updated_at=observed_at,
             ingestion_run_id=run_id,

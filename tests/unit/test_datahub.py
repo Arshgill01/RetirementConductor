@@ -32,7 +32,7 @@ DATASET_URN = (
 CONSUMER_URNS = [
     "urn:li:dataset:(urn:li:dataPlatform:dbt,"
     "retirement_conductor.analytics.commerce.order_model,PROD)",
-    "urn:li:chart:(looker,retirement-conductor-orders)",
+    "urn:li:chart:(tableau,retirement-conductor-orders)",
     "urn:li:dashboard:(powerbi,retirement-conductor-executive)",
 ]
 CAPTURED_AT = "2026-07-30T10:00:00Z"
@@ -383,7 +383,7 @@ def test_duplicate_display_names_do_not_create_identity_matches() -> None:
         "table": parsed.table,
     }
     unrelated_same_display_name = (
-        "urn:li:dataset:(urn:li:dataPlatform:looker,"
+        "urn:li:dataset:(urn:li:dataPlatform:tableau,"
         "retirement_conductor.analytics.commerce.orders,PROD)"
     )
 

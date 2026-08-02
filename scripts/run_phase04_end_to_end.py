@@ -50,7 +50,7 @@ ISOLATED_MODEL_URN = (
     "retirement_conductor.analytics.consumers.orders_isolated_model,PROD)"
 )
 ISOLATED_LATE_URN = (
-    "urn:li:dataset:(urn:li:dataPlatform:looker,"
+    "urn:li:dataset:(urn:li:dataPlatform:spark,"
     "retirement_conductor.analytics.consumers.orders_isolated_late,PROD)"
 )
 

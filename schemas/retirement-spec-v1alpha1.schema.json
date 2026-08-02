@@ -198,10 +198,7 @@
       "properties": {
         "required_receipt_types": {
           "items": {
-            "enum": [
-              "dbt",
-              "looker"
-            ]
+            "const": "dbt"
           },
           "minItems": 1,
           "type": "array",
