@@ -1098,7 +1098,7 @@ def run() -> dict[str, Any]:
                         "apply_targets": applied["apply"]["actual_targets"],
                         "dbt_commands": [
                             {
-                                "command": item["command"],
+                                "arguments": item["arguments"],
                                 "exit_code": item["exit_code"],
                             }
                             for item in validated["validation"]["commands"]
