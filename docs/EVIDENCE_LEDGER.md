@@ -101,7 +101,8 @@ active and not passed.
 
 ### Phase 06 checkpoint C — deterministic corpus and oracle
 
-Tested behavior commit: `ef02788`
+Tested behavior commits: `ef02788` with the four-component dataset-identity
+correction and regenerated receipts at `6c9d4aa`
 
 Modes: deterministic generated fixture data plus read-only probes against the
 four pinned official SQLite assets. This is not production or customer data.
@@ -138,9 +139,9 @@ expected result changes when truth facts change.
 
 Two complete generations had identical content and receipt bytes across all
 16 artifacts. Their common generation receipt digest is
-`sha256:727f9c32b25812fbbf690720b4b86c47f9e73668a5b4a39ea71e2a28046073d5`;
+`sha256:bcda2b5a4ed0b4f133b0b130ca0ffad1ef8735685e2f9521e84dcb94b811b83a`;
 the oracle, quality report, and private fault manifest digests are
-`sha256:5c12664160f0be60f027886b8b9edd2dd6ea58c7bb46716953dbda75d2d725ee`,
+`sha256:aa07af1bf4d416a7729ce0a39a8fccee9766cd23153b844b09b000b7a71c25f5`,
 `sha256:14fda1e5e15d93530f96e82145297d97c496378ad27ebd769933efa7610c4fda`,
 and
 `sha256:fda8e19b29441cb6685f4c420926eda02e299f66d39535c70ed6adb132b04229`.
@@ -155,8 +156,8 @@ to both branches. The pinned nyc-taxi stale database has a native gap from
 from its README's three-day and empty-load description, so observed bytes—not
 the prose—control benchmark expectations.
 
-Validation result: 241 tests, Ruff, formatting, strict mypy, 174 required-file
-and 144-link validation, a 307-file secret scan, the 53-file historical
+Validation result: 242 tests, Ruff, formatting, strict mypy, 182 required-file
+and 144-link validation, a 317-file secret scan, the 53-file historical
 public-artifact review, source and wheel builds, and `git diff --check` passed.
 Wheel inspection found generator/oracle code, registry, and schemas but no
 database or CSV row files.
