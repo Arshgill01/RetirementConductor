@@ -38,7 +38,18 @@ retirement-conductor benchmark data generate \
   --cache .retirement-conductor/datasets \
   --seed 20260802 \
   --scale medium \
-  --output .retirement-conductor/benchmark
+  --output .retirement-conductor/benchmark/generation-a
+
+retirement-conductor benchmark data generate \
+  --registry fixtures/data-quality/datasets.json \
+  --cache .retirement-conductor/datasets \
+  --seed 20260802 \
+  --scale medium \
+  --output .retirement-conductor/benchmark/generation-b
+
+retirement-conductor benchmark data compare \
+  --left .retirement-conductor/benchmark/generation-a \
+  --right .retirement-conductor/benchmark/generation-b
 ```
 
 The output contains clean and fault variants, a private-safe fault manifest,

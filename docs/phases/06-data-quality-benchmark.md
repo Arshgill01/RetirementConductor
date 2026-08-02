@@ -196,3 +196,4 @@ Inspect:
 - R-37 contradictory connector evidence;
 - R-38 synthetic benchmark circularity;
 - R-39 dataset provenance and reproducibility.
+- R-40 source documentation and pinned-byte divergence.

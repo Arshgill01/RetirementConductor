@@ -634,3 +634,26 @@ revision, URL, license, size, archive-member, or digest change refuses and
 must be reviewed as a new input, not normalized into the prior evidence.
 
 Status: accepted after checkpoint B acquisition and offline verification.
+
+## D-040 — observed pinned bytes override descriptive dataset prose
+
+Date: 2026-08-02
+
+Decision: derive benchmark freshness and quality expectations from read-only
+queries against checksum-verified source databases. Preserve the official
+README claims as documented expectations and report any difference, but never
+alter native observations to make those claims appear true.
+
+Why: the pinned nyc-taxi stale database ends staging and mart data on
+2016-03-01 while raw data ends on 2016-03-10, and its mart contains no
+zero-trip row. Its README describes a three-day gap and one empty load. A
+benchmark that copied that prose into its oracle would test an imagined asset
+rather than the bytes it claims to evaluate.
+
+Consequences: documentation discrepancy is evidence, not a generator failure.
+The current freshness probe expects the observed nine-day gap and absent
+zero-trip row, while continuing to demonstrate the intended distinction
+between fresh metadata ingestion and stale native data. Any future revision
+must be probed and reviewed again.
+
+Status: accepted from checkpoint C aggregate probe inspection.

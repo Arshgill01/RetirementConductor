@@ -99,6 +99,73 @@ benchmark, no DataHub ingestion or direct reread occurred, no campaign ran,
 and no public Phase 06 artifact was promoted. `EP-006` therefore remains
 active and not passed.
 
+### Phase 06 checkpoint C — deterministic corpus and oracle
+
+Tested behavior commit: `ef02788`
+
+Modes: deterministic generated fixture data plus read-only probes against the
+four pinned official SQLite assets. This is not production or customer data.
+
+Commands:
+
+```text
+make phase06-data
+make check
+jq <aggregate projections only> \
+  .retirement-conductor/benchmark/generation-a/quality-report.json
+jq <row-id-free projection> \
+  .retirement-conductor/benchmark/generation-a/fault-manifest.json
+unzip -l dist/retirement_conductor-0.2.0-py3-none-any.whl
+```
+
+Observed result: seed `20260802`, scale `medium` selected 2,500 orders and
+closed them over 2,355 customers, 5,765 order items, 3,400 products, 499
+suppliers, 7,826 inventory rows, 15 warehouses, 1,983 shipments, 203 returns,
+and 151 promotions. All primary keys, 11 foreign-key relationships, temporal
+constraints, nonnegative order totals, replacement null checks, and
+`legacy_status = order_status` semantic-control checks had zero violations.
+All nine source status categories remained represented.
+
+The exact private fault manifest planted 25 rows each (1%) for replacement
+null inflation, valid-category semantic drift, and unmapped values. Aggregate
+inspection did not expose the row IDs. The independent oracle contains 14
+scenarios: one isolated readiness case and 13 blocked or unsafe cases covering
+rich/late consumers, partial pagination, stale native data, table-only
+lineage, ambiguous identity, type and value incompatibility, null and semantic
+drift, healthcare selective impact, metadata-only closure, and disappearing
+edges. Its module does not import campaign policy, and mutation tests show the
+expected result changes when truth facts change.
+
+Two complete generations had identical content and receipt bytes across all
+16 artifacts. Their common generation receipt digest is
+`sha256:727f9c32b25812fbbf690720b4b86c47f9e73668a5b4a39ea71e2a28046073d5`;
+the oracle, quality report, and private fault manifest digests are
+`sha256:5c12664160f0be60f027886b8b9edd2dd6ea58c7bb46716953dbda75d2d725ee`,
+`sha256:14fda1e5e15d93530f96e82145297d97c496378ad27ebd769933efa7610c4fda`,
+and
+`sha256:fda8e19b29441cb6685f4c420926eda02e299f66d39535c70ed6adb132b04229`.
+
+Official read-only probes observed `PRAGMA quick_check=ok` for every asset.
+Fiction-retail had the documented 150,000 orders and zero observed foreign-key
+orphans. Healthcare had 1,215 negative billing rows, 555 null-name rows, 832
+invalid-age rows, and 277 date swaps; branch schemas isolate age from billing
+and billing amount from demographics, while null names physically propagate
+to both branches. The pinned nyc-taxi stale database has a native gap from
+2016-03-01 to 2016-03-10 (nine days) and zero zero-trip mart rows. This differs
+from its README's three-day and empty-load description, so observed bytes—not
+the prose—control benchmark expectations.
+
+Validation result: 241 tests, Ruff, formatting, strict mypy, 174 required-file
+and 144-link validation, a 307-file secret scan, the 53-file historical
+public-artifact review, source and wheel builds, and `git diff --check` passed.
+Wheel inspection found generator/oracle code, registry, and schemas but no
+database or CSV row files.
+
+Limitations: the controlled graph has not yet been ingested or read back from
+DataHub, oracle results have not yet been compared with the campaign engine,
+native dbt has not run on this corpus, and no Phase 06 public evidence has been
+promoted. `EP-006` remains active.
+
 ### Historical Phase 06 Looker observations — superseded
 
 These observations truthfully record the former credential-independent Looker
