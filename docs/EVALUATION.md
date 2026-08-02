@@ -19,7 +19,8 @@ Record a redacted baseline:
   recent comparable workflow;
 - where consumers were missed, rediscovered, or escalated;
 - the person or role that can approve adoption and budget;
-- the exact disposable DataHub, Git/dbt, and, when available, Looker scope.
+- the exact disposable DataHub and Git/dbt scope plus dataset revision and
+  synthetic scenario identifier.
 
 Prepare a reviewed wheel, hash-locked requirements, release checksums, the
 [deployment runbook](runbooks/DEPLOYMENT.md), and an ignored local

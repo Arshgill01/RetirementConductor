@@ -14,8 +14,8 @@ dependencies.
 | [03 — Git/dbt execution](03-git-dbt-execution.md) | Guarded native consumer mutation and validation |
 | [04 — Reconciliation gate](04-reconciliation-gate.md) | Complete vertical with fresh rescan and enforceable refusal |
 | [05 — Operator experience](05-operator-experience.md) | Understandable CLI and generated report backed by real state |
-| [06 — Looker adapter](06-looker-adapter.md) | Second live heterogeneous native receipt |
-| [07 — Security and reliability](07-security-reliability.md) | Adversarial safety, recovery, and least-privilege evidence |
+| [06 — DataHub evidence quality](06-data-quality-benchmark.md) | Official and synthetic truth sets exercise evidence quality without false readiness |
+| [07 — Security and reliability](07-security-reliability.md) | Adversarial safety and recovery refreshed after benchmark integration and Looker removal |
 | [08 — Deployment and adoption](08-deployment-adoption.md) | Repeatable installation, operation, evaluation, and maintenance |
 
 ## Required phase structure

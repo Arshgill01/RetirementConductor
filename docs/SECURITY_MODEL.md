@@ -1,13 +1,14 @@
 # Security model
 
 This model defines the supported security boundary for the command-line,
-single-writer deployment. It covers the current Git/dbt adapter, the
-deterministic Looker adapter contract, DataHub inventory and publication, the
-SQLite campaign store, generated artifacts, and the producer gate.
+single-writer deployment. It covers the current Git/dbt boundary, DataHub
+inventory and publication, official-dataset acquisition, deterministic
+synthetic generation, the SQLite campaign store, generated artifacts, and the
+producer gate.
 
-It does not turn fixture evidence into live acceptance. The Looker API,
-native validation, and refreshed saved-content ingestion remain unverified
-against a live disposable Looker instance.
+It does not turn official or generated fixture data into production evidence.
+Live local integration describes the running disposable systems, while the
+data and expected outcomes remain fixture truth.
 
 ## Security objectives
 
@@ -37,7 +38,9 @@ itself.
 | API tokens, client secrets, cookies, private keys | secret | deployment secret provider | never retained by the product |
 | Producer retirement credential | secret and destructive | producer workflow | never available to the campaign process |
 | Warehouse query text and result rows | restricted source data | warehouse or BI source | bounded digest, counts, and redacted summary only |
-| Private repository and Looker content | restricted source data | Git or Looker | exact fingerprints, safe identities, and redacted evidence |
+| Private repository content | restricted source data | Git | exact fingerprints, safe identities, and redacted evidence |
+| Official and generated dataset rows | public or synthetic source data | pinned upstream asset or deterministic generator | ignored cache and aggregate/digested evidence only |
+| Dataset registry and truth oracle | public-safe executable input | reviewed repository contract | tracked schema-versioned manifest |
 | Approvals, plans, events, receipts, gate attempts | confidential audit state | campaign writer plus native sources | protected SQLite store and verified backups |
 | Raw redacted adapter evidence | confidential operational evidence | source response plus adapter | ignored local artifact directory |
 | Canonical manifest | confidential operational evidence | event replay and deterministic policy | SQLite, private export, digested publication summary |
@@ -51,7 +54,7 @@ The retention and deletion schedule is in [SECURITY.md](../SECURITY.md).
   cannot change deterministic policy or native preconditions.
 - The campaign writer is trusted to operate one local state directory. It is
   not trusted with the producer's destructive credential.
-- DataHub, Git, dbt, Looker, repositories, API payloads, model output, and
+- DataHub, Git, dbt, downloaded datasets, repositories, API payloads, model output, and
   source owners can be stale, compromised, malformed, or misleading.
 - The producer workflow is trusted only inside its attested invocation and
   only for the exact short-lived plan it consumes.
@@ -95,17 +98,15 @@ content never crosses as authority.
 | Git/dbt planner | read one declared repository and produce a bounded plan | branch or file mutation |
 | Git/dbt applier | one approved branch and allowlisted file set | default-branch rewrite, hooks, unrelated paths, warehouse production access |
 | dbt validator | copied project, pinned tool, local disposable target | network, host home, source checkout, secrets, external packages |
-| Looker planner and validator | model-scoped reads using `access_data`, `explore`, `see_lookml`, `see_looks`, `see_queries`, `see_schedules`, and `see_users` | saved-content mutation |
-| Looker applier | planner permissions plus `save_content`, exact model, folder, and one saved Look | admin role, wildcard folder writes, dashboards, merged results |
-| Looker ingestion | separately scoped official connector permissions in [ACCESS.md](ACCESS.md) | adapter apply authority |
+| Dataset acquirer | registry-declared HTTPS reads and ignored content-addressed cache writes | arbitrary URLs, tracked binaries, executing downloaded code |
+| Benchmark generator | verified cached inputs and ignored generated workspace | network, secrets, production endpoints, changing the truth oracle after observation |
 | Producer gate | verify and consume one exact plan in trusted producer CI | general campaign mutation and reusable readiness tokens |
 | Backup operator | read one store and create a mode-`0600` non-overwriting backup | alternate-path authority, network-shared active state, silent overwrite |
 
 Authentication alone grants no campaign authority. Git/dbt additionally
-requires specification mode `apply`, adapter opt-in, a durable approval, and
-exact plan confirmation. Looker requires adapter opt-in, effective
-`save_content`, a durable approval, and exact plan confirmation. The producer
-credential is never shared with either adapter.
+requires specification mode `apply`, executor opt-in, a durable approval, and
+exact plan confirmation. The producer credential is never shared with the
+executor or benchmark process.
 
 ## Authorization binding
 
@@ -129,7 +130,9 @@ native write.
 
 | Abuse or failure | Deterministic control | Safe result |
 |---|---|---|
-| Specification requests another file or Look | schema, allowlist, identity, and target-set equality | scope refusal before mutation |
+| Specification requests another file or native object | schema, allowlist, identity, and target-set equality | scope refusal before mutation |
+| Dataset URL, checksum, license, size, or archive members differ from the registry | pinned registry and verify-before-use cache | acquisition refusal before parsing or execution |
+| Generator and oracle share policy code or mutable expected output | module boundary, golden independent calculations, mutation tests, and review | benchmark evidence rejected as circular |
 | Source text instructs the model or operator to bypass policy | source content remains data; policy and command scope do not parse instructions | instruction omitted or redacted; no new authority |
 | Read credential is mistaken for apply authority | separate opt-in and effective capability checks | `AUTH_APPLY_DISABLED` or permission refusal |
 | Approval is replayed for another source or target | exact campaign, plan, source, target, scope, and expiry binding | authorization refusal |
@@ -203,8 +206,8 @@ instead of reporting health.
   split-brain prevention for every possible custom filesystem.
 - Automated retention enforcement is not yet implemented; the operator
   follows the documented schedule.
-- Live Looker permission behavior, retries, recovery, and validation remain
-  pending until the approved disposable boundary exists.
+- Dataset licenses and checksums prove the acquired bytes and terms, not that
+  the scenarios represent every production distribution or connector.
 - A real producer integration must enforce the gate in the producer workflow;
   the disposable sentinel proves the binding and refusal mechanics, not
   production warehouse privilege.

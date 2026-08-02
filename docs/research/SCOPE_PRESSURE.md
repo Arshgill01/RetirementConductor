@@ -69,12 +69,12 @@ Control: one command-line process and SQLite.
 
 The wrong abstraction can force every platform into fake uniformity.
 
-Control: define lifecycle semantics now; extract reusable code after Git/dbt
-and Looker both run live.
+Control: keep the Git/dbt boundary concrete. Extract reusable native-executor
+code only after a real second requirement and disposable evidence exist.
 
 ### Rebuilding native intelligence
 
-A custom SQL transpiler, dbt compiler, Looker validator, or metadata graph
+A custom SQL transpiler, dbt compiler, BI validator, or metadata graph
 would compete with stronger domain tools.
 
 Control: orchestrate native tools and normalize evidence.
@@ -118,7 +118,7 @@ Build narrowly:
 - one asset type;
 - one replacement shape;
 - one source repository;
-- one native executor, then one heterogeneous executor;
+- one native Git/dbt executor plus one rigorous DataHub evidence benchmark;
 - one portable command-line runtime;
 - one shared DataHub summary.
 

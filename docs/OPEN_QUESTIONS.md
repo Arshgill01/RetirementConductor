@@ -39,10 +39,10 @@ the implementation before the complete supported path works.
    evidence for a replacement?
 2. How should macros, generated SQL, non-default branches, and `SELECT *` be
    represented in the coverage envelope?
-3. Can a Looker saved content object be versioned strongly enough for safe
-   compare-before-apply behavior?
-4. Which Looker schedules, filters, calculations, alerts, or merged results can
-   escape folder-scoped validation?
+3. Which external receipt format can close a non-repository consumer without
+   weakening the Git/dbt-native evidence standard?
+4. Which DataHub quality, assertion, incident, or contract aspects remain
+   portable between Core and Cloud?
 5. What compensation is possible for each native operation after partial
    failure?
 6. Which source run identifiers are safe and sufficient for receipt

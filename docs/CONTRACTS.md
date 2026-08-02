@@ -1,7 +1,7 @@
 # Core contracts
 
 These contracts define the minimum shared language between the campaign
-engine, DataHub boundary, native adapters, operator views, and producer-side
+engine, DataHub boundary, Git/dbt execution boundary, operator views, and producer-side
 gate. They are behavioral contracts first. Executable schemas are created in
 phase 00 and versioned independently.
 
@@ -208,10 +208,13 @@ matches yield `UNRESOLVED`.
 Aliases and display names may assist discovery, but they cannot authorize
 apply.
 
-## Native adapter
+## Native execution and external receipts
 
-Every adapter implements the same lifecycle without hiding source-specific
-semantics:
+The automated Git/dbt boundary implements this lifecycle without hiding
+source-specific semantics. A future native executor must satisfy the same
+safety properties before entering the supported product; DataHub-observed
+non-repository consumers remain opaque or externally receipted in the current
+scope.
 
 ### `preflight`
 
@@ -283,7 +286,7 @@ Output:
 - partial-failure state;
 - raw artifact references.
 
-The adapter rereads source and scope immediately before apply. Any mismatch
+The executor rereads source and scope immediately before apply. Any mismatch
 refuses without mutation. Missing confirmation and a confirmation for any
 other plan are separate stable authorization refusals; an approval alone does
 not imply that the operator reviewed the current native scope.
@@ -339,11 +342,11 @@ Required inputs:
 - fresh, fully paged DataHub snapshots for the legacy and replacement fields;
 - the same declared source identity, traversal scope, and effective principal.
 
-The adapter reruns its native validator and replacement-compatibility check.
-It verifies that the current saved object still has the exact post-apply
-fingerprint and native change ID. A recreated same-name object, permission
-loss, native drift, validator failure, receipt mismatch, or remaining exact
-legacy field edge invalidates only that consumer's receipt and makes it
+The executor reruns dbt-native validation and the replacement-compatibility
+check. It verifies that the current repository, commit, file, manifest node,
+and compiled source still match the exact post-apply state. Branch movement,
+path or source drift, validator failure, receipt mismatch, or a remaining
+exact legacy field edge invalidates only that consumer's receipt and makes it
 `STALE`.
 
 The graph observation distinguishes:
@@ -567,8 +570,7 @@ preflight is a secret-safe claim about local readiness, not a substitute for
 source preflight. It records only:
 
 - package and Python versions;
-- the selected `local`, `core-git-dbt`, `looker-plan`, or `looker-apply`
-  profile;
+- the selected `local`, `core-git-dbt`, or `data-quality-benchmark` profile;
 - configuration reference names and presence, never their values;
 - required local tool names and availability;
 - digested store, artifact, and writer identities;

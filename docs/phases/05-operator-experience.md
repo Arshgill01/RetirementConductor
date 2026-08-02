@@ -2,7 +2,7 @@
 
 ## Outcome
 
-An operator who does not know DataHub, dbt, or Looker can understand what is
+An operator who does not know DataHub or dbt can understand what is
 being changed, what evidence was checked, what the system did, why it refused
 or permitted retirement, and what exact action remains. Every view is rendered
 from canonical campaign state.

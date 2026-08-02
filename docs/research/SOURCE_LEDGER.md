@@ -4,7 +4,7 @@ Technical and competitive claims use primary public sources. Source
 capabilities can change; review this ledger before changing product
 positioning or integration contracts.
 
-Checked: 2026-07-30.
+Checked: 2026-08-02.
 
 ## DataHub
 
@@ -14,6 +14,8 @@ Checked: 2026-07-30.
 | [DataHub documentation](https://docs.datahub.com/docs/) | `1.6.0` site | lineage, MCP, contracts, incidents, applications, workflows |
 | [DataHub MCP Server](https://github.com/acryldata/mcp-server-datahub) | `9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9` | actual open-source tool registry and lineage behavior |
 | [DataHub Skills](https://github.com/datahub-project/datahub-skills) | `f22f93074cf265ba6f9401947404f090c2584d9d` | shipped search, lineage, and enrichment workflows |
+| [Hackathon resources](https://datahub.devpost.com/resources) | page checked 2026-08-02 | official tooling and sample-dataset inventory |
+| [DataHub static assets](https://github.com/datahub-project/static-assets) | `a6479c691dd2a40dd89563396d9c8b2b28bee83c` | `fiction-retail`, `nyc-taxi`, and `healthcare` source, license, scenario, and ingestion documentation |
 
 Key pages:
 
@@ -25,14 +27,15 @@ Key pages:
 - [DataHub applications](https://docs.datahub.com/docs/features/feature-guides/applications)
 - [Data access workflows](https://docs.datahub.com/docs/managed-datahub/workflows/access-workflows)
 - [Dataset deprecation API tutorial](https://docs.datahub.com/docs/api/tutorials/deprecation/)
+- [Hackathon resources](https://datahub.devpost.com/resources)
+- [Fiction retail dataset](https://github.com/datahub-project/static-assets/tree/main/datasets/fiction-retail)
+- [NYC taxi dataset](https://github.com/datahub-project/static-assets/tree/main/datasets/nyc-taxi)
+- [Healthcare dataset](https://github.com/datahub-project/static-assets/tree/main/datasets/healthcare)
 
 ## Native platforms and close products
 
 | Source | Checked surface | Used for |
 |---|---|---|
-| [Looker Content Validator](https://docs.cloud.google.com/looker/docs/content-validation) | page updated 2026-07-17 | native validation, replacement scope, no-undo and edge-case warnings |
-| [Looker content-validation API](https://docs.cloud.google.com/looker/docs/reference/looker-api/latest/methods/Content/content_validation) | API `4.0.26.12` | validation request and result contract |
-| [Looker API](https://docs.cloud.google.com/looker/docs/reference/looker-api/latest) | API `4.0.26.12` | supported saved-content operations |
 | [Atlan lifecycle workflow](https://docs.atlan.com/product/capabilities/atlan-ai/use-cases/mcp-use-cases-lifecycle-management) | live documentation | deprecation impact, owners, communication, and lifecycle competition |
 | [Datafold Migration Agent](https://docs.datafold.com/data-migration-automation/datafold-migration-agent) | live documentation | SQL translation, self-correction, and data-parity competition |
 | [Datafold overview](https://docs.datafold.com/welcome) | live documentation | data knowledge graph and agent positioning |

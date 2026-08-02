@@ -6,16 +6,14 @@ contract; `PLAN.md` defines proof order.
 
 ## Current state
 
-- Execution state: active
-- Active phase: none; phases 06 through 08 are access-dependent
+- Execution state: active under the DataHub-native reframe in `GOAL.md`
+- Active phase: 06 — DataHub evidence-quality benchmark
 - Baseline repository commit: `7d45b96a72222df5085f801bf35f66bcaf2496cd`
-- Current external blocker: the live disposable Looker boundary needed by
-  `EP-006`/the Looker-specific portion of `EP-007`, and one real independent
-  operator needed by `EP-008`; all safe credential-independent work is
-  complete
-- Next acceptance target: run the generated no-secret Looker preflight against
-  one user-approved pre-existing disposable instance and record one
-  independent operator using the published Core evaluation workflow
+- Current external blocker: none for the overnight engineering goal; the
+  independent-operator observation remains honest follow-on adoption evidence
+- Next acceptance target: replace the abandoned Looker phase with a pinned
+  official-dataset registry, deterministic field-retirement corpus, independent
+  truth oracle, and live local DataHub Core benchmark
 - Last repository validation: behavior commit `eb72067` passed all 228 tests,
   Ruff, formatting, strict mypy, repository validation, secret and public
   artifact scans, both package builds, and `git diff --check`; the complete
@@ -32,9 +30,9 @@ contract; `PLAN.md` defines proof order.
 | 03 | complete | `EP-003` at `3ca39a1`; exact live DataHub-to-dbt mapping, two one-file applies, native validation receipt, verified rollback, idempotent retry, and contained adversarial probes | none |
 | 04 | complete | `EP-004` at `25466a9`; equivalent live reconciliation, verified stable publication, one issued-plan sentinel, live late-consumer reopening, rich-graph refusal, and adversarial gate matrix | no production warehouse deletion was attempted |
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
-| 06 | access-dependent | `00db298`, `3435177`, `5454594`, `a57b06e`, `e6183d1`, `9380815`, `e128e20`, `813bf20`, and `eb72067`; deterministic API 4.0 lifecycle, durable intent recovery, campaign binding, exact LookML ingestion into local DataHub, official recipe validation, campaign-safe no-secret resume packet, reconciliation, and an inspected non-live evidence bundle; 228 tests pass | one pre-existing user-approved disposable Looker instance/API plus live saved-Look ingestion, exact campaign bootstrap, native query, compensation, delete/recreate, and lost-response evidence; fixture and local LookML results do not satisfy `EP-006` |
-| 07 | access-dependent | credential-independent EP-007 observations at `4fc5b2d`/`6feb1bc`; threat model, plan-only receipts, fault matrix, online backup/restore, copied-store refusal, diagnostics, dependency audit, secret scan, and five inspected public artifacts | phase 07 cannot close until EP-006 supplies live Looker permission, fault, retry, unknown-outcome, compensation, and concurrency evidence |
-| 08 | access-dependent | credential-independent EP-008 observations at `eb72067`/`4411e8b`; reproducible 0.2.0 wheel/source archive, four clean Python installs, actionable preflight, live installed-wheel Core reference, upgrade/rollback, backup, copied-state refusal, confirmed state removal, uninstall, compatibility matrix, and seven inspected public artifacts | one independent prospective operator must execute the runbook and provide redacted frequency, friction, value, willingness, and buyer evidence; `EP-008` remains not-run |
+| 06 | active | former Looker work at `00db298` through `eb72067` is historical fixture/analysis evidence and no longer an acceptance dependency; the replacement contract is `docs/phases/06-data-quality-benchmark.md` | implement the official-dataset registry, deterministic synthetic truth corpus, live local DataHub evaluation, and zero-false-readiness refusal matrix |
+| 07 | queued | credential-independent observations at `4fc5b2d`/`6feb1bc`; threat model, fault matrix, recovery, diagnostics, dependency audit, and scans | rerun and refresh security, fault, recovery, and evidence after the Looker surface is removed and the benchmark is integrated |
+| 08 | queued | prior package observations at `eb72067`/`4411e8b`; clean installs, live Core reference, upgrade/rollback, backup, removal, and compatibility | rebuild and revalidate the release after Looker removal; independent operator evidence remains follow-on and must stay `NOT_RUN` until observed |
 
 Allowed states are `queued`, `active`, `access-dependent`, `blocked`,
 `complete`, and `reframed`. At most one phase is `active`. A phase can return
@@ -46,12 +44,13 @@ to `active` if later evidence invalidates its acceptance result.
 |---|---|---|---|
 | DataHub Core | no | agent may start a disposable local instance | `docs/ACCESS.md` |
 | Git/dbt target | no | agent may create disposable local resources | `docs/ACCESS.md` |
-| Looker | yes | the generated packet requires one user-approved pre-existing disposable instance and values placed only in ignored local configuration; dedicated pretrial state still has zero instances, so no API preflight can run; `PROVISIONING_ALLOWED=false` forbids instance creation, IAM elevation, queries, quota changes, and paid resources | `docs/ACCESS.md` |
-| Independent operator | yes | install, deployment, evaluation, compatibility, and observation materials are ready; one prospective operator independent of the author must run the safe workflow and provide a redacted observation | `docs/ACCESS.md` |
+| Official hackathon datasets | no | public CC0/public-domain inputs may be downloaded to an ignored cache only after revision, license, and checksum verification | `GOAL.md` |
+| Looker | no | removed from the supported product and completion contract; do not provision, authenticate, ingest, query, or mutate it | `GOAL.md` |
+| Independent operator | not for the overnight engineering goal | one prospective operator must still provide real adoption evidence before any customer-value claim | `docs/ACCESS.md` |
 
-No safe credential-independent acceptance task remains. Keep the Codex goal
-active and resume immediately when either external boundary is supplied; do
-not substitute author operation, fixture evidence, or new provisioning.
+The current work is fully credential-independent. Do not substitute official
+or generated fixtures for customer-value evidence, and do not reintroduce a
+paid native integration merely to increase platform count.
 
 ## Update rule
 

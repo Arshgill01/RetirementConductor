@@ -19,8 +19,8 @@ schemas, Git content, BI objects, or the metadata graph.
                  evidence read │        │ authorized action
                                │        │
               ┌────────────────▼─┐   ┌──▼──────────────────┐
-              │ DataHub boundary │   │ Native adapters     │
-              │ graph + context  │   │ Git/dbt, then Looker│
+              │ DataHub boundary │   │ Git/dbt boundary    │
+              │ graph + context  │   │ guarded + validated │
               └────────┬─────────┘   └─────────┬───────────┘
                        │                       │
                        └──────────┬────────────┘
@@ -46,7 +46,7 @@ schemas, Git content, BI objects, or the metadata graph.
 | Cross-system inventory | DataHub within declared scope | Page completely, record freshness and blind spots, normalize consumers |
 | Repository content | Git commit and working tree | Hash, branch, patch only allowed files, preserve reviewability |
 | dbt validity | dbt runtime and project tests | Invoke exact commands and capture redacted results |
-| Looker content | Looker API and content model | Map native identity, mutate bounded objects, invoke native validation |
+| Non-repository consumers | Their native systems plus DataHub-ingested metadata | Retain exact observed identity and evidence; require an external receipt, verified removal, or proved non-applicability rather than pretend to mutate them |
 | Campaign transitions | Deterministic policy engine | Own the state machine and refusal decision |
 | In-progress campaign state | Local durable campaign store | Persist events, attempts, snapshots, receipts, and policy version |
 | Shared campaign context | DataHub document or supported metadata surface | Publish stable summary and verify agent-visible read-back |
@@ -163,13 +163,13 @@ Write path:
 - mutate lifecycle state only through a separately authorized action after
   readiness.
 
-The adapter must distinguish DataHub Core and DataHub Cloud capabilities at
+The boundary must distinguish DataHub Core and DataHub Cloud capabilities at
 runtime rather than assume the union of their documentation.
 
-### Native adapter
+### Git/dbt execution boundary
 
-An adapter owns one source domain. It maps a DataHub consumer to an exact
-native identity and implements:
+The sole automated executor maps a DataHub consumer to an exact Git/dbt native
+identity and implements:
 
 ```text
 preflight
@@ -182,8 +182,9 @@ preflight
   → emit receipt
 ```
 
-The adapter never decides campaign readiness. It returns evidence or a stable
-refusal.
+The executor never decides campaign readiness. It returns evidence or a stable
+refusal. Other source domains can contribute strictly validated external
+receipts, but the current product does not automate their mutation.
 
 Native execution treats repositories, project code, macros, hooks, generated
 content, and API responses as untrusted input. Validators run with disposable
@@ -219,9 +220,9 @@ The reconciler:
 
 An edge disappearing is only one signal. A consumer closes through a valid
 native receipt, verified removal, or proved non-applicability under policy.
-For Looker, an exact replacement field edge can corroborate native closure;
+An exact replacement field edge can corroborate a native Git/dbt receipt;
 table-only lineage is recorded explicitly and never upgraded into a field
-claim.
+claim. A non-repository consumer never closes from graph change alone.
 
 ### Operator views and gate
 
@@ -332,7 +333,7 @@ Only expand the architecture when evidence requires it:
 - introduce an API service when more than one operator must share active state;
 - introduce a worker when native operations cannot safely remain synchronous;
 - introduce another database when SQLite limits a demonstrated deployment;
-- introduce an adapter SDK after the Git/dbt and Looker implementations reveal
-  genuinely shared semantics;
+- introduce an adapter SDK only after a real operator supplies a second native
+  requirement and disposable evidence demonstrates genuinely shared semantics;
 - introduce event-driven rescan after the explicit reconciliation loop is
   proven correct.

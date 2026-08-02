@@ -30,8 +30,8 @@ Its central promise is deliberately bounded:
 ## Why this is a product rather than one catalog feature
 
 DataHub supplies cross-system lineage, ownership, schemas, usage context,
-queries, metadata mutation, and an agent-readable context surface. Native
-platform tools know how to change and validate their own objects. Retirement
+queries, metadata mutation, and an agent-readable context surface. Git and dbt
+know how to change and validate the supported repository consumer. Retirement
 Conductor owns the part between them:
 
 - one durable campaign across unrelated consumer systems;
@@ -42,8 +42,9 @@ Conductor owns the part between them:
 - a deterministic producer-side gate;
 - an auditable explanation of what is closed, unknown, stale, or unsafe.
 
-The system does not replace DataHub, dbt, Looker, Git, or their validators. It
-makes them participate in one completion criterion.
+The system does not replace DataHub, dbt, Git, or their validators. It makes
+them participate in one completion criterion while keeping non-repository
+DataHub consumers visibly opaque until independent evidence closes them.
 
 ## Evidence already established
 
@@ -60,12 +61,12 @@ disposable dbt project:
 - a stable refusal summary was written to DataHub and read back through its
   agent surface.
 
-A second adapter has deterministic contract coverage for one bounded Looker
-saved-content mutation, rollback, validation, recreated-identity handling,
-unknown-outcome recovery, and fresh legacy/replacement edge reconciliation.
-Its live boundary remains unverified until a disposable instance and scoped
-credentials are available. See
-[Evidence baseline](docs/EVIDENCE_BASELINE.md).
+The former deterministic Looker experiment did not receive live evidence and
+is no longer part of the supported product or completion contract. Its
+historical fixture results remain labeled in the evidence ledger; the active
+work replaces that dependency with an evidence-quality benchmark over
+official DataHub hackathon datasets and deterministic synthetic truth sets.
+See [the current goal](GOAL.md).
 
 This repository has now independently exercised its phase 02 product path
 against a fresh disposable DataHub Core v1.6.0 instance. It resolved the exact
@@ -105,16 +106,14 @@ remains visibly `BLOCKED` because fixture evidence cannot satisfy live policy.
 See
 [EP-005](docs/EVIDENCE_LEDGER.md#ep-005--phase-05-operator-experience).
 
-The credential-independent Phase 07 boundary now separates plan from apply,
-classifies ambiguous mutations without blind retry, refuses copied campaign
+The Phase 07 boundary separates plan from apply, refuses copied campaign
 stores, verifies online backup and original-path restore, exposes redacted
 operational diagnostics, and audits dependencies, licenses, secrets, and
 public artifacts. The focused security, fault, and recovery suites passed 93,
 72, and 43 tests, and the all-group audit found no known vulnerability in 18
 installed packages after upgrading the one vulnerable development dependency.
-These fixture and analysis results do not complete Phase 07: live
-Looker-specific permission and failure behavior remains coupled to `EP-006`.
-See
+These results will be refreshed after the deprecated Looker surface is
+removed and the new benchmark is integrated. See
 [the Phase 07 observations](docs/EVIDENCE_LEDGER.md#phase-07-credential-independent-observations).
 
 ## Complete supported path
@@ -129,8 +128,9 @@ The first production-shaped vertical is:
 - a durable local campaign record plus a DataHub summary;
 - a command that exits non-zero when producer retirement is not permitted.
 
-Looker is the next native adapter after this path works completely. Other asset
-types and platforms are explicitly outside the current build boundary.
+Git/dbt is the sole automated native mutation boundary. Other DataHub-observed
+asset types remain blockers or externally receipted consumers; additional
+native adapters are explicitly outside the current build boundary.
 
 ## Product rules
 
@@ -211,9 +211,11 @@ documented in
 Campaign inspection, exact plan confirmation, resume, local and public report
 generation, and operator acceptance checks are documented in
 [the operator runbook](docs/runbooks/OPERATOR.md).
-The credential-independent Looker recipes, no-secret access packet, and
-bounded live lifecycle are documented in
-[the Looker runbook](docs/runbooks/LOOKER.md).
+The official-dataset and synthetic evidence-quality benchmark is controlled by
+[the current goal](GOAL.md) and
+[Phase 06](docs/phases/06-data-quality-benchmark.md); its executable boundary
+is documented in the
+[benchmark runbook](docs/runbooks/DATA_QUALITY_BENCHMARK.md).
 Threat boundaries, least-privilege capabilities, retention, failure handling,
 verified backup and restore, diagnostics, and recovery drills are documented
 in the [security model](docs/SECURITY_MODEL.md), [security policy](SECURITY.md),

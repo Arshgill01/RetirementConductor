@@ -34,7 +34,7 @@ Excluded:
 
 - live DataHub calls;
 - live repository mutation;
-- live Looker calls;
+- live paid-platform calls;
 - network service, task queue, or distributed state;
 - web application.
 

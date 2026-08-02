@@ -79,9 +79,11 @@ The first complete supported path is deliberately narrow:
 - a producer-side command that refuses retirement unless policy passes;
 - a durable campaign summary written back to DataHub.
 
-Looker is the second native adapter. Broaden asset types or platforms only
-after the complete path above works from declaration through final refusal or
-readiness.
+Git/dbt is the sole automated native mutation boundary. The next proof target
+is evidence quality across official DataHub datasets and deterministic
+synthetic truth sets, not another paid platform integration. Broaden automated
+asset types or platforms only after a real operator need and a disposable
+native boundary exist.
 
 Do not build:
 
@@ -104,8 +106,9 @@ Do not build:
 - Keep the campaign policy pure and deterministic.
 - Keep source-specific behavior behind the minimal adapter contract in
   `docs/CONTRACTS.md`.
-- Do not create abstractions for hypothetical adapters. Extract shared code
-  only after two implementations exhibit the same requirement.
+- Do not create abstractions for hypothetical adapters. Keep the Git/dbt
+  boundary concrete until another real operator requirement demonstrates a
+  second implementation.
 - Preserve raw, redacted evidence separately from normalized claims.
 - Make receipts deterministic and schema-versioned.
 - Make retries idempotent. Never silently convert a partial apply into

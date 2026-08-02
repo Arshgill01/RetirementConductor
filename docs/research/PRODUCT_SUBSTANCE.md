@@ -116,7 +116,8 @@ represent the complete consumer boundary.
 Stop or reframe if:
 
 - live DataHub evidence does not change action after realistic ingestion;
-- the second adapter shares no useful lifecycle or receipt semantics;
+- the DataHub/Git/dbt execution and reconciliation loop does not survive
+  realistic evidence-quality stress;
 - the native systems cannot provide source versions and validators strong
   enough for safe automation;
 - the gate cannot be placed in the producer workflow;

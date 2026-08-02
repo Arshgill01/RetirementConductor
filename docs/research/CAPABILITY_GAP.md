@@ -59,15 +59,13 @@ Retirement Conductor should enforce campaign scope and consume the resulting
 evidence. It should not compete to become a dbt compiler or the most capable
 dbt coding agent.
 
-### Looker
+### Non-repository consumers
 
-Looker supplies object APIs, query execution, content validation, and a
-powerful content-reference replacement interface. Its own documentation warns
-about broad effects, missing undo, schedules, filters, and merged-result edge
-cases.
-
-Retirement Conductor should bound, version, authorize, validate, compensate,
-and reconcile a native action. It should not create a weaker validator.
+BI, notebook, pipeline, and model platforms remain authoritative for their
+objects. The current product does not automate them. DataHub evidence keeps
+them in the campaign, and closure requires a validated external receipt,
+verified removal, or proved non-applicability rather than an inferred catalog
+state.
 
 ## Missing cross-system capability
 
@@ -76,11 +74,12 @@ The reviewed public surfaces do not clearly provide one product that:
 1. declares a bounded field retirement;
 2. inventories consumers across DataHub and named non-catalog sources;
 3. maps each graph consumer to an exact native object;
-4. dispatches authorized source-native changes;
+4. dispatches the authorized Git/dbt source-native change;
 5. accepts only fresh native validation receipts;
 6. maintains one durable per-consumer closure state;
 7. reconciles the graph again and invalidates stale evidence;
-8. refuses the producer change until policy passes;
+8. refuses the producer change until every observed consumer has an acceptable
+   evidence-backed disposition;
 9. publishes the result back into DataHub for the next operator or agent.
 
 This is the gap Retirement Conductor must fill.
@@ -115,6 +114,15 @@ The initial product must:
 - name capability fallbacks in evidence;
 - never present a Cloud-only workflow as a Core feature;
 - fail explicitly when a required surface is unavailable.
+
+## Official benchmark opportunity
+
+The hackathon resource page supplies three useful truth-bearing datasets that
+the repository did not previously exercise: fiction-retail for a clean
+relational field replacement, nyc-taxi for native freshness gaps invisible in
+metadata timestamps, and healthcare for deterministic quality failures across
+a forked graph. The benchmark should combine them with an independent oracle
+rather than add another proprietary integration.
 
 ## Opportunity for upstream work
 

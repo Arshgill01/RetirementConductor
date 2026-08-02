@@ -6,9 +6,9 @@ Retirement Conductor is not entering an empty market. The strongest defensible
 claim is:
 
 > In the current primary public documentation reviewed, no single product
-> clearly owns evidence-scoped closure across heterogeneous consumers from
-> discovery through native mutation, validation, reconciliation, and final
-> producer refusal.
+> clearly combines DataHub-bounded field impact, guarded Git/dbt mutation,
+> native semantic validation, fresh graph reconciliation, and a deterministic
+> producer-side refusal gate with an explicit evidence-quality envelope.
 
 This is a qualified observation, not proof that no company or internal system
 has implemented the workflow.
@@ -58,36 +58,25 @@ project changes.
 Retirement Conductor should delegate or coexist. “An agent updates a dbt
 model” is not differentiated.
 
-### Looker Content Validator
-
-A direct competitor for the Looker executor. It finds and replaces model,
-Explore, view, and field references across saved content and validates broken
-references.
-
-Retirement Conductor's value is exact campaign scope, preconditions,
-authorization, recovery evidence, semantic checks, cross-system
-reconciliation, and joining the result to every non-Looker consumer.
-
 ## Capability matrix
 
 The matrix describes reviewed public behavior and intentionally avoids claims
 about private features.
 
-| Product | Cross-system inventory | Native consumer mutation | Native validation | Unified heterogeneous closure | Producer-side refusal |
+| Product | Cross-system inventory | Native consumer mutation | Native validation | Unified evidence closure | Producer-side refusal |
 |---|---|---|---|---|---|
 | DataHub | strong graph and context | metadata mutation, not general consumer source | assertions and connected context, not general migration proof | not visibly shipped as this loop | custom integration possible |
 | Atlan | strong graph, owners, priority | not visibly automated in reviewed lifecycle workflow | not visibly source-native across platforms | workflow and audit are close | deprecation follows communication in example |
-| Datafold | strong migration knowledge graph and BI context | strong for SQL and platform migrations | strong parity evidence | strong within its migration scope | not documented as heterogeneous field-retirement gate |
+| Datafold | strong migration knowledge graph and BI context | strong for SQL and platform migrations | strong parity evidence | strong within its migration scope | not documented as a DataHub-bounded field-retirement gate |
 | dbt Wizard | dbt scope | strong in dbt | strong in dbt | dbt-scoped | no cross-system authority |
-| Looker Content Validator | Looker scope | strong in saved content | strong reference validation | Looker-scoped | no cross-system authority |
-| Retirement Conductor target | DataHub plus declared evidence sources | delegates to exact native adapters | requires fresh native receipts | one reconciled per-consumer state | deterministic gate |
+| Retirement Conductor target | DataHub plus declared evidence sources | exact Git/dbt branch mutation | dbt-native parse, build, and semantic tests | one reconciled state; non-repository consumers stay blocking | deterministic gate |
 
 ## Strategic wedge
 
 The wedge is not superior code generation. It is:
 
 - DataHub-centered cross-platform inventory;
-- one open adapter and receipt protocol;
+- one concrete Git/dbt receipt protocol plus strict external-receipt validation;
 - native validators rather than generic confidence;
 - freshness and source-version enforcement;
 - continuous invalidation when graph or source state changes;

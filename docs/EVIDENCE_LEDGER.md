@@ -42,15 +42,16 @@ the produced artifacts have been inspected.
 | EP-003 | 03 | live | `3ca39a1` | `artifacts/public/phase03/`; Git/dbt identity, exact apply, rollback/reapply, native receipt, and adversarial containment | passed | local disposable Git repository and DuckDB; no production source |
 | EP-004 | 04 | live and fixture | `25466a9` | `artifacts/public/phase04/`; equivalent reconciliation, late reopening, verified publication, one-time gate, and refusal matrix | passed | disposable Core, Git, DuckDB, and harmless sentinel; no warehouse deletion |
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
-| EP-006 | 06 | live | not-run | Looker identity, apply, validation, compensation, and reconciliation | not-run | disposable access required |
-| EP-007 | 07 | live and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | access-dependent | credential-independent fixture and analysis checks passed; live Looker-specific checks depend on EP-006 |
-| EP-008 | 08 | live and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | access-dependent | credential-independent checks passed; independent operator result remains `NOT_RUN` |
+| EP-006 | 06 | live local and fixture | not-run | official dataset registry, deterministic corpus and oracle, live local DataHub comparison, exact Git/dbt receipt, refusal matrix, and zero false readiness | active | replacement phase introduced by D-038; no benchmark evidence exists yet |
+| EP-007 | 07 | live local and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | refresh-required | prior checks passed; rerun after benchmark integration and Looker removal |
+| EP-008 | 08 | live local and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | refresh-required | engineering checks passed before the reframe; package refresh remains, and independent operator result stays `NOT_RUN` |
 
-### Phase 06 pre-acceptance observations
+### Historical Phase 06 Looker observations — superseded
 
-These observations record credential-independent progress and one read-only
-external boundary check. They do not replace `EP-006`, whose required mode
-remains live and whose row remains `not-run`.
+These observations truthfully record the former credential-independent Looker
+work and one read-only external boundary check. D-038 removed that path from
+the product and completion contract. They do not satisfy or contribute to the
+replacement `EP-006` benchmark row.
 
 Repository commits:
 
@@ -181,12 +182,11 @@ campaign-safe deployment preflight and campaign-bootstrap prerequisite;
 recipe model output; deterministic artifact twins; full test output; secret
 and public scans; and zero-cost pretrial result.
 
-### Phase 07 credential-independent observations
+### Phase 07 pre-reframe observations
 
-These observations cover every Phase 07 check that can run without a live
-Looker instance. They do not complete `EP-007`: the required live mode still
-depends on `EP-006` and its adapter-specific permission, fault, retry,
-unknown-outcome, compensation, and concurrency probes.
+These observations cover the credential-independent Phase 07 checks at their
+recorded commit. They require refresh after the benchmark is integrated and
+the deprecated Looker release surface is removed.
 
 Evidence ID: EP-007 (credential-independent portion)
 
@@ -202,7 +202,7 @@ Captured at: `2026-07-30T16:19:15.366161Z`
 
 Mode: fixture for capability, fault, concurrency, and recovery behavior;
 analysis for dependency, license, secret-pattern, and public-artifact scans.
-No live Looker behavior is claimed.
+No external-service behavior is claimed.
 
 Source and tool versions: Python 3.11.15; SQLite 3.53.1; uv 0.11.28; pytest
 9.1.1; pip-audit 2.9.0; Retirement Conductor 0.1.0. The lock review covered
@@ -321,9 +321,9 @@ generated whitespace.
 
 ### Phase 08 credential-independent observations
 
-These observations cover every Phase 08 acceptance task that can run without
-a live Looker instance or another human. They do not complete `EP-008`: its
-required independent operator and customer-value mode remains `NOT_RUN`.
+These observations cover the Phase 08 engineering tasks at their recorded
+commit. Package and compatibility evidence must be refreshed after Looker
+removal; independent operator and customer-value mode remains `NOT_RUN`.
 
 Evidence ID: EP-008 (credential-independent portion)
 
@@ -342,7 +342,7 @@ Mode: live for the disposable loopback DataHub Core, MCP, Git, dbt, DuckDB,
 publication, and producer-sentinel path; fixture for built-in reference,
 clean-install state, upgrade, rollback, removal, and copied-state behavior;
 analysis for package inspection, compatibility, documentation, and the
-operator boundary. No independent operator result or live Looker result is
+operator boundary. No independent operator result is
 claimed.
 
 Source and tool versions: Retirement Conductor 0.2.0; Linux x86_64 with glibc

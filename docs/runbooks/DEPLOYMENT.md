@@ -110,8 +110,7 @@ Profiles have narrow meanings:
 |---|---|
 | `local` | Python, state path, writer binding, artifact path, and metrics setting |
 | `core-git-dbt` | local checks plus named DataHub/Git/dbt references and required host tools |
-| `looker-plan` | local checks plus read/plan Looker references |
-| `looker-apply` | plan checks plus the explicit `LOOKER_ALLOW_APPLY=true` opt-in |
+| `data-quality-benchmark` | Core/Git/dbt checks plus the pinned dataset registry, ignored cache, generator, and oracle references |
 
 A ready deployment preflight proves only local configuration presence, tool
 availability, and state ownership. It does not prove remote authentication,
@@ -127,10 +126,9 @@ retirement-conductor adapter git-dbt preflight \
   --artifact-dir "$RETIREMENT_CONDUCTOR_ARTIFACT_DIR"
 ```
 
-Use the Looker source preflight only for its separately documented
-[bounded workflow](LOOKER.md). DataHub Cloud is an optional integration
-boundary, not a prerequisite for the Core-supported path; never infer Cloud
-behavior from Core results.
+DataHub Cloud is an optional integration boundary, not a prerequisite for the
+Core-supported path; never infer Cloud behavior from Core results. Looker is
+not a supported deployment profile.
 
 ## Evaluate the installed package safely
 

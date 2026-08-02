@@ -2,14 +2,14 @@
 
 ## Outcome
 
-The two-adapter product withstands adversarial inputs, interrupted execution,
-least-privilege constraints, overlapping campaigns, source and graph drift,
-partial failures, and evidence tampering without producing false readiness or
-exposing sensitive material.
+The DataHub plus Git/dbt product withstands adversarial inputs, interrupted
+execution, least-privilege constraints, overlapping campaigns, source and
+graph drift, partial failures, benchmark manipulation, and evidence tampering
+without producing false readiness or exposing sensitive material.
 
 ## Dependencies
 
-- phases 04 and 06 exercised with live disposable systems;
+- phases 04 and 06 exercised with live disposable local systems;
 - representative deployment configuration;
 - stable refusal and event contracts.
 

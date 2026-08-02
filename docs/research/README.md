@@ -30,10 +30,10 @@ completes the source changes, reconciliation, and producer-side refusal loop.
 
 The market is not empty. Atlan is the closest lifecycle thesis competitor;
 Datafold is the closest migration execution and validation competitor; dbt
-Wizard and Looker Content Validator are direct native-domain competitors. The
-open opportunity is a DataHub-centered, evidence-scoped completion protocol
-across those domains.
+Wizard is the direct native-domain competitor. The open opportunity is a
+DataHub-centered, evidence-scoped completion and producer-refusal protocol.
 
-The primary unresolved proof is whether the adapter contract remains coherent
-after a second live heterogeneous implementation. The product should be
-reframed if that proof fails.
+The product has been reframed away from platform-count proof. The active
+question is whether pinned official datasets plus an independent synthetic
+truth oracle can expose evidence gaps, quality failures, and false-readiness
+risks while the real DataHub/Git/dbt/reconciliation/gate loop remains intact.

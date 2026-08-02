@@ -38,16 +38,16 @@ summary read-back can lag a successful write. Retirement Conductor bypasses
 the lineage cache for the complete consumer universe, retains that limitation,
 and polls only publication read-back within a fixed bound.
 
-## Implemented but not live-accepted
+## Planned or optional boundaries
 
-| Surface | Implemented boundary | Remaining evidence |
+| Surface | Boundary | Remaining evidence |
 |---|---|---|
-| Looker | one saved Look, bounded plan/apply/validate/compensate/reconcile contract | disposable live instance, least-privilege identity, native validation, fault behavior, and DataHub ingestion |
+| Official dataset benchmark | pinned `fiction-retail`, `nyc-taxi`, and `healthcare` inputs plus deterministic truth oracle | registry, checksums, acquisition, generator, live local ingestion, and Phase 06 evidence are not yet run |
 | DataHub Cloud | optional configuration boundary | authenticated Cloud capability, paging, freshness, publication, and source-version behavior |
 
-Deterministic Looker fixtures and preflight results test the adapter contract
-but do not satisfy live Looker acceptance. DataHub Cloud enhancements are
-optional; the supported first vertical runs on the executed Core boundary.
+Looker is not a planned or supported compatibility boundary. DataHub Cloud
+enhancements are optional; the supported vertical and benchmark run on the
+executed Core boundary.
 
 ## Version policy
 

@@ -575,3 +575,35 @@ fail on missing campaign state or encourage fabricated identity inputs.
 The regenerated no-secret packet now resumes at the `looker-plan` deployment
 profile, states the bootstrap prerequisite, contains no apply command, and
 keeps `EP-006` not-run until live evidence exists.
+
+## D-038 — replace the Looker proof with a DataHub evidence-quality benchmark
+
+Status: accepted by product-scope reframe on 2026-08-02. Supersedes D-006,
+D-026, D-028, D-029, D-031's Looker-specific clause, and D-037 for the current
+product and completion contract. Their historical observations remain true in
+their recorded fixture or analysis modes.
+
+Keep Git/dbt as the sole automated native mutation boundary. Replace the
+required second live adapter with a reproducible benchmark built from pinned
+official DataHub hackathon datasets and deterministic synthetic truth sets.
+Non-repository consumers remain exact blockers until an independently valid
+external receipt, verified removal, or proved non-applicability exists.
+
+Use `fiction-retail` as the primary relational field-replacement base,
+`nyc-taxi` for the distinction between ingestion freshness and native data
+freshness, and `healthcare` for deterministic quality faults with selective
+downstream impact. Require an independent oracle, clean/fault twins, exact
+fault provenance, causal and relational quality checks, controlled graph
+recall, zero false readiness, and direct DataHub aspect reread.
+
+Remove Looker runtime modules, CLI commands, schemas, recipes, deployment
+profiles, tests, runbooks, configuration, and package content in a focused
+compatibility checkpoint. Preserve historical evidence only when it is
+clearly labeled superseded and non-accepting.
+
+Why: the complete DataHub Core plus Git/dbt vertical already exercises real
+inventory expansion, native mutation, semantic validation, fresh
+reconciliation, publication, and producer enforcement. Requiring a paid BI
+instance added cost and access ceremony without strengthening the core
+hackathon claim. Evidence quality, reproducibility, and refusal behavior can
+be tested more deeply and honestly with the official public data resources.

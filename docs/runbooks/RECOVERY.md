@@ -208,4 +208,4 @@ Inspect the recovery evidence for:
 - gate intent consumption after an unknown producer outcome.
 
 The automated drill uses deterministic local fixtures. It proves the
-credential-independent recovery contract, not live Looker service behavior.
+local recovery contract, not production or external-service behavior.

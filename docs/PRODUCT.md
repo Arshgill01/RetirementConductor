@@ -45,7 +45,8 @@ Best-fit environment:
 
 - DataHub is already connected to more than one data system;
 - important transformations live in Git;
-- BI or other non-repository consumers exist;
+- BI or other non-repository consumers exist and must remain visible even when
+  the product cannot mutate them;
 - schema changes are frequent or costly enough to justify a repeatable control
   plane.
 
@@ -124,9 +125,10 @@ DataHub inventory
 This is one complete product outcome. It does not depend on support for every
 consumer platform.
 
-The second native path is one bounded Looker saved-content migration. It exists
-to prove that the conductor coordinates heterogeneous systems rather than
-merely editing more files.
+There is no required second native mutation path. Instead, a reproducible
+DataHub evidence-quality benchmark proves that the conductor handles rich,
+late, stale, partial, ambiguous, table-only, and quality-failing context
+without creating false readiness. Git/dbt remains the sole automated executor.
 
 ## Build, borrow, and delegate
 
@@ -145,7 +147,6 @@ Borrow:
   surfaces;
 - Git branches and review;
 - dbt parse, build, and tests;
-- Looker APIs and Content Validator;
 - source platform authentication and audit logs.
 
 Delegate:
@@ -164,7 +165,7 @@ reconciled completion criterion:
 - exact identity mapping across DataHub and native objects;
 - failure-closed transitions under graph and source drift;
 - explicit blind spots instead of false completeness;
-- an adapter contract that preserves native validators;
+- a concrete Git/dbt boundary that preserves native validation;
 - a gate that can prevent the producing change.
 
 This becomes shallow if it only inventories, reports, scores, notifies, or
@@ -180,7 +181,7 @@ Product behavior:
 - campaigns resumed deterministically after interruption;
 - false readiness events, which must remain zero in controlled tests;
 - median operator interventions per closed consumer;
-- adapter integration effort after the second implementation.
+- evidence recall and false-readiness rate against a controlled truth graph.
 
 Customer value:
 
@@ -198,7 +199,8 @@ does not prove value.
 Reframe the product if evidence shows any of the following:
 
 - DataHub does not materially expand or improve the actionable consumer set;
-- each adapter requires unrelated orchestration and receipt semantics;
+- the Git/dbt mutation and DataHub reconciliation loop cannot preserve one
+  coherent evidence and receipt contract;
 - native validation is unavailable for the systems customers care about;
 - the producer-side gate cannot be integrated into real change workflows;
 - most closures collapse into unverifiable acknowledgments;

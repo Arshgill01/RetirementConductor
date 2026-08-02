@@ -37,7 +37,10 @@ Evidence-bearing commits in the experiment repository:
 - `b5233ca` — fail-closed Looker adapter;
 - `7ef9f58` — refreshed DataHub reconciliation and Looker access boundary.
 
-## Proven only against a deterministic Looker boundary
+## Historical deterministic Looker boundary — superseded
+
+The following fixture observations remain true as implementation history, but
+Looker is no longer supported and none of them is current acceptance evidence.
 
 Implemented and tested:
 
@@ -52,18 +55,16 @@ Implemented and tested:
 
 This establishes implementation behavior, not live product proof.
 
-## Not yet proven
+## Not yet proven under the current goal
 
-- live Looker authentication and effective scoped permissions;
-- a DataHub URN mapped to the exact live Looker object;
-- a live Looker mutation and native query validation;
-- fresh post-mutation Looker ingestion and DataHub graph change;
-- durable campaign resumability outside the experiment scripts;
-- a producer workflow actually enforced by the readiness gate;
-- overlapping campaign behavior;
-- least-privilege operation under a realistic deployment;
+- official dataset acquisition pinned by revision, license, and checksum;
+- a deterministic fiction-retail retirement corpus and independent oracle;
+- nyc-taxi native freshness evidence bound to a campaign envelope;
+- healthcare quality-fault impact compared with exact oracle branches;
+- controlled graph recall and zero false readiness across the new benchmark;
+- package, upgrade, fault, and recovery behavior after Looker removal;
 - user frequency, willingness to adopt, and economic value;
-- shared adapter economics beyond Git/dbt and Looker.
+- external-receipt usefulness for non-repository consumers.
 
 ## Promotion policy
 

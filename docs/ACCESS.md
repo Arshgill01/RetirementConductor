@@ -1,44 +1,21 @@
 # Access requirements
 
-This document separates access the implementation agent can create locally
-from access only the user or another operator can supply. It is a
-least-privilege contract, not a request to collect credentials early.
+This document separates public and disposable resources the implementation can
+create locally from inputs only another operator can supply. The current
+engineering goal has no paid-service or private-data dependency.
 
-## Secret handling
+## Secret and data handling
 
-- Never paste a credential into chat, a tracked file, a command argument,
-  process listing, test fixture, screenshot, manifest, or report.
-- Store local values only in an ignored `.env.local` or another ignored
-  secret-reference mechanism created by the implementation.
-- Keep safe examples blank or obviously synthetic.
-- Record a safe principal identifier and effective capability, never a token.
-- Redact HTTP bodies, SQL, native content, and errors before retaining them.
-- Confirm `git status`, secret scans, and generated public artifacts are clean
-  before every push.
-
-The implementation must create `.env.example` and preflight diagnostics when
-the corresponding integration is built. It must not create a real secret file
-on the user's behalf.
-
-## Capability separation
-
-Use separate principals where the source supports them:
-
-| Principal | Minimum capability | Must not have |
-|---|---|---|
-| DataHub inventory | exact search, schema, ownership, lineage, paths, and permitted query reads | target lifecycle mutation |
-| DataHub publisher | update and reread one stable campaign summary | campaign transaction authority or target deprecation |
-| Git/dbt planner | read one declared repository | branch or file write |
-| Git/dbt applier | create one review branch and change approved paths | default-branch rewrite, hooks, unrelated repository paths, production warehouse access |
-| dbt validator | copied project and disposable local target | network, host home, source checkout, deployment secrets |
-| Looker planner | model-scoped reads listed below | `save_content` |
-| Looker applier | planner reads plus `save_content` for one folder and Look | administrator or wildcard content edit |
-| Looker ingestion | official connector reads listed below | adapter apply and producer authority |
-| Producer gate | exact short-lived producer invocation | reusable campaign-wide producer access |
-
-Configuration opt-in and campaign authorization remain required even when a
-credential has native write permission. The complete control mapping is in
-the [security model](SECURITY_MODEL.md).
+- Never paste credentials into chat, tracked files, command arguments,
+  process listings, screenshots, manifests, reports, or public evidence.
+- Store optional protected DataHub values only in ignored `.env.local` or an
+  equivalent ignored secret-reference mechanism.
+- Cache official datasets only under ignored local state after revision,
+  license, size, and checksum verification.
+- Never commit upstream database binaries, raw source rows, generated medium
+  or full corpora, private query text, or runtime campaign state.
+- Public evidence contains aggregates, stable synthetic labels, modes,
+  revisions, checksums, truth-oracle digests, outcomes, and limitations.
 
 ## Access available without user action
 
@@ -47,314 +24,119 @@ the [security model](SECURITY_MODEL.md).
 - Working directory:
   `/home/arshdeepsingh/work/RetirementConductor`
 - Remote: `https://github.com/Arshgill01/RetirementConductor.git`
-- The agent may use the existing Git and GitHub authentication for focused
-  commits and pushes.
-- Force-push, history rewrite, unrelated branch merge, and production release
-  mutation are excluded.
-
-### Preceding experiment
-
-- Read-only source:
-  `/home/arshdeepsingh/work/datahub-retirement-experiment`
-- Promote only reviewed behavior identified by
-  [Evidence baseline](EVIDENCE_BASELINE.md).
-- Do not modify its files, reuse its credentials, copy retained service state,
-  or treat its live run as current product acceptance.
+- Existing Git authentication may be used for focused commits and pushes.
+- Force-push, history rewrite, unrelated merge, and production release
+  mutation remain excluded.
 
 ### Disposable DataHub Core
 
-The agent may start a pinned local DataHub Core environment and load a
-public-safe sample graph. No user credential is required for that local
-boundary.
+The implementation may start the pinned project-isolated DataHub Core
+environment and load public-safe official and generated metadata. GMS is
+published only on loopback; backing services remain on the private Compose
+network.
 
-The product configuration should expose secret references equivalent to:
+The product configuration uses secret references equivalent to:
 
 ```text
 DATAHUB_GMS_URL
 DATAHUB_GMS_TOKEN
 DATAHUB_UI_URL
+DATAHUB_MCP_URL
 DATAHUB_PLATFORM_INSTANCE
 DATAHUB_GRAPH_MAX_HOPS
 DATAHUB_TARGET_URN
 DATAHUB_REPLACEMENT_URN
 ```
 
-The exact target and replacement URNs must be resolved from live search and
-schema evidence. They must never be predicted from display names.
+Loopback Core may run without a token. A protected remote endpoint would
+require a user-supplied ignored secret, but it is not required by the current
+goal.
 
-If a protected remote DataHub environment is later used, request only:
+### Disposable Git/dbt and data plane
 
-- base URL;
-- token or supported credentials stored locally by the user;
-- safe instance identifier;
-- read access for search, schemas, ownership, lineage, paths, and permitted
-  query context;
-- scoped write access for one stable campaign summary;
-- access to run or observe the disposable ingestion used by reconciliation.
+The implementation may create:
 
-### Disposable Git/dbt path
+- local disposable Git repositories and review branches;
+- dbt projects with pinned dbt-duckdb tooling;
+- SQLite and DuckDB databases derived from licensed public or generated data;
+- copied no-network validation sandboxes;
+- campaign stores, backups, reports, and raw evidence under ignored local
+  state.
 
-The agent may create:
+No production repository or warehouse credential is required.
 
-- one local disposable Git repository;
-- one real dbt project;
-- one isolated DuckDB or equally safe local target;
-- branches, commits, failure fixtures, and rollback exercises inside that
-  disposable scope.
+### Official DataHub hackathon datasets
 
-No production warehouse credential is needed. The agent must not use a
-company repository or warehouse unless the user designates it explicitly.
+The authoritative resource page is
+<https://datahub.devpost.com/resources>. The current goal adopts these public
+inputs from `datahub-project/static-assets`:
 
-## User-supplied Looker boundary
+| Dataset | Intended use | Upstream license |
+|---|---|---|
+| `fiction-retail` | primary clean relational field-retirement base | CC0 1.0 |
+| `nyc-taxi` | source-data freshness and empty-load truth | public-domain source; transformed asset terms must be recorded |
+| `healthcare` | deterministic quality faults and forked downstream impact | CC0 1.0 |
 
-Live phase 06 requires a disposable Looker scope. The user should provide
-values only by placing them in the ignored local configuration generated by
-the implementation. Generate the no-secret packet without loading credentials:
+The dataset registry must pin the upstream repository commit and each required
+file's SHA-256 before acquisition. Network access is allowed only for the
+explicit registry URLs. Acceptance must support offline verification from the
+ignored content-addressed cache and must refuse moving, mismatched, unlicensed,
+oversized, or unexpected content.
 
-```bash
-retirement-conductor adapter looker access-packet \
-  --campaign <campaign-id>
-```
+The `showcase-ecommerce` datapack remains historical baseline context. It is
+not loaded by the new acceptance path because the product no longer uses
+Looker and the official pack includes Looker metadata. The lightweight
+`bootstrap` datapack may be used for a smoke check but cannot satisfy the
+evidence-quality phase.
 
-The packet defaults to
-`.retirement-conductor/looker-access/access-request.md`, which is ignored.
+## Looker is prohibited
 
-Secret values:
+Do not provision, authenticate to, ingest from, query, mutate, or request
+access to Looker. Do not use the prior GCP pretrial boundary. Looker is absent
+from the supported product, current acceptance, and completion contract.
 
-```text
-LOOKER_CLIENT_ID
-LOOKER_CLIENT_SECRET
-```
-
-Endpoint and safe scope:
-
-```text
-LOOKER_BASE_URL
-LOOKER_PLATFORM_INSTANCE
-LOOKER_PROJECT_ID
-LOOKER_MODEL_ID
-LOOKER_EXPLORE_ID
-LOOKER_FOLDER_ID
-LOOKER_FOLDER_PATH
-LOOKER_CONTENT_TARGET
-LOOKER_CONTENT_ID_PATTERN
-LOOKER_FOLDER_PATH_PATTERN
-LOOKER_LEGACY_REFERENCE
-LOOKER_REPLACEMENT_REFERENCE
-LOOKML_BASE_FOLDER
-LOOKER_WAREHOUSE_PLATFORM
-LOOKER_WAREHOUSE_INSTANCE
-LOOKER_WAREHOUSE_DATABASE
-LOOKER_WAREHOUSE_SCHEMA
-```
-
-The official SDK aliases `LOOKERSDK_BASE_URL`, `LOOKERSDK_CLIENT_ID`, and
-`LOOKERSDK_CLIENT_SECRET` may be supported, but the implementation must
-normalize them to one configuration contract.
-
-Values derived by the agent after scoped live ingestion:
-
-```text
-LOOKER_DATAHUB_URN
-LOOKER_GRAPH_SNAPSHOT_DIGEST
-```
-
-Neither derived value is a user guess. The first is the exact saved-content
-URN returned by live DataHub search. The second is the canonical digest of the
-fresh, fully-paged graph snapshot used by the campaign.
-
-### Verified zero-cost pretrial boundary
-
-The dedicated read-only pretrial check observed this state on 2026-07-30:
-
-```text
-SAFE_PRETRIAL_STATE=verified
-LOOKER_INSTANCE_COUNT=0
-LOOKER_PAID_QUOTA=unallocated
-LOOKER_TRIAL_QUOTA=unallocated
-BIGQUERY_QUERY_QUOTA=0
-BIGQUERY_STORED_BYTES=0
-PROVISIONING_ALLOWED=false
-```
-
-This is live read-only GCP state, not live Looker adapter acceptance. It
-authorizes local implementation, deterministic fixtures, recipe validation,
-and access diagnostics only. Any future read must use the dedicated
-`rc-looker-zero-cost` gcloud configuration and the documented operator
-impersonation. Do not use the owner/default configuration.
-
-The exact remaining live boundary is a user-approved disposable Looker
-instance or zero-cost trial with the objects and permissions below. Until it
-exists, no Looker API authentication, native object mutation, native query
-validation, or refreshed Looker-to-DataHub ingestion can supply live phase 06
-evidence.
-
-Do not create an instance, grant or elevate IAM, allocate paid quota, raise
-BigQuery query quota, create a BigQuery table, run a BigQuery query, or
-provision any paid resource. `PROVISIONING_ALLOWED=false` is controlling.
-
-### Disposable Looker objects
-
-The live boundary must contain:
-
-- one sandbox instance;
-- one disposable LookML project and checkout;
-- one model and Explore with legacy and compatible replacement fields;
-- one safe warehouse connection named `retirement_fixture`;
-- one isolated folder;
-- exactly one saved Look identified as `look:<numeric-id>`;
-- no production content or users in the mutation scope.
-
-The saved Look must currently use the legacy field. The replacement must be
-queryable through the same Explore and have a predeclared compatibility
-expectation.
-
-### Looker permissions
-
-Start with a custom role scoped to the disposable model and folder. Planning,
-snapshot, and validation require:
-
-```text
-access_data
-explore
-see_lookml
-see_looks
-see_queries
-see_schedules
-see_users
-```
-
-Only an apply-enabled principal additionally requires:
-
-```text
-save_content
-```
-
-The official DataHub Looker ingestion recipe separately requires:
-
-```text
-access_data
-explore
-manage_models
-see_datagroups
-see_lookml
-see_lookml_dashboards
-see_looks
-see_pdts
-see_queries
-see_schedules
-see_sql
-see_system_activity
-see_user_dashboards
-see_users
-```
-
-These sets should belong to separate least-privileged principals. The
-apply-enabled adapter principal also needs model access and edit access only
-to the named disposable folder and saved Look. A plan-only principal does not
-need edit access. Do not request an administrator role or instance-wide edit
-permission. Live preflight records the actual effective permissions, requires
-`save_content` only when apply is enabled, and records missing ingestion
-permissions separately.
-
-### Apply authorization
-
-Live mutation stays disabled by default. The implementation must expose an
-explicit value:
-
-```text
-LOOKER_ALLOW_APPLY=false
-```
-
-The operator may set it to `true` only after reviewing the generated exact
-plan, object identity, source fingerprint, changed fields, recovery material,
-and target allowlist. Authentication alone never authorizes apply.
+Any ignored historical Looker handoff files are stale local artifacts. They
+must not be used as resume instructions and may be removed through the normal
+safe local-state cleanup process after the tracked product no longer
+references them.
 
 ## Independent operator boundary
 
-Phase 08 requires a real prospective operator because code cannot establish
-workflow frequency, organizational friction, willingness to adopt, or buyer
-value.
+An independent prospective operator is still required before claiming
+customer frequency, organizational value, willingness to adopt, or buyer
+evidence. It is not required to complete the current engineering benchmark.
 
-The repository now provides:
+Use `docs/EVALUATION.md` and
+`docs/templates/OPERATOR_OBSERVATION.md`. Store raw notes only under ignored,
+access-controlled local state and promote only an inspected, redacted
+observation. A model, synthetic persona, author-run reference, or repository
+activity cannot satisfy this boundary.
 
-- a clean install path;
-- a public-safe reference campaign;
-- an evaluation runbook;
-- local opt-in measurements;
-- a no-sensitive-data observation template.
+## Current execution protocol
 
-The remaining human input is one prospective operator independent of the
-implementation author who is willing to execute the safe workflow and answer
-the questions in `docs/OPEN_QUESTIONS.md`. Use
-`docs/EVALUATION.md` and
-`docs/templates/OPERATOR_OBSERVATION.md`; retain private notes only under an
-ignored, access-controlled local path. Synthetic personas, model critique,
-repository activity, author self-review, and the installed reference harness
-do not satisfy this boundary.
-
-## Current no-secret access request
-
-All safe credential-independent work is complete. Two inputs remain:
-
-1. one user-approved pre-existing disposable Looker instance or allocated
-   zero-cost trial containing exactly the objects and least-privilege roles
-   named above; and
-2. one independent prospective operator with a recent field-replacement or
-   retirement baseline.
-
-Do not send credentials, endpoint values, private object names, source
-content, or raw operator notes in chat. Place Looker values only in the
-ignored `.env.local` names listed by
-`.retirement-conductor/looker-access/access-request.md`. Keep
-`LOOKER_ALLOW_APPLY=false`. Store raw operator notes under
-`.retirement-conductor/operator-evaluation/` and promote only an inspected,
-redacted observation.
-
-Before resuming Looker work, the read-only safety verification is:
+No external access request is active. The exact engineering resume sequence
+is repository-local:
 
 ```bash
-.retirement-conductor/looker-access/verify_zero_cost.sh
+make datahub-core-up
+make phase06-data
+make phase06-benchmark
 ```
 
-It must still report zero-cost controls and `PROVISIONING_ALLOWED=false`.
-This command does not authorize instance creation, IAM changes, queries,
-tables, quota changes, or paid resources.
+The latter two targets do not exist until Phase 06 implements them. Missing
+commands are unfinished work, not external blockers.
 
-After the approved instance and ignored values exist, the exact resume
-command is:
+## Capability separation
 
-```bash
-retirement-conductor deployment preflight --profile looker-plan
-```
+| Principal or boundary | Minimum capability | Must not have |
+|---|---|---|
+| DataHub inventory | exact search, schema, ownership, lineage, quality, path, and permitted query reads | campaign transaction authority or producer action |
+| DataHub publisher | update and reread one stable campaign summary | source mutation or lifecycle change |
+| Git/dbt planner | read one declared repository and dbt manifest | branch or file write |
+| Git/dbt applier | create one review branch and change approved paths | default-branch rewrite, hooks, unrelated paths, production warehouse access |
+| dbt validator | copied project and disposable local target | network, host home, source checkout, deployment secrets |
+| Producer gate | exact short-lived producer invocation | reusable campaign-wide producer access |
+| Dataset acquisition | registry-declared URLs and ignored cache | arbitrary URL fetching, execution from downloads, tracked binary writes |
 
-This command does not assume a campaign already exists. Adapter preflight
-requires a campaign specification that allowlists the exact saved Look and
-requires a Looker receipt; that specification must not be created until
-ingestion resolves the exact native and DataHub identities. Authentication
-does not authorize campaign creation, plan, or apply. Ingestion, exact
-identity derivation, campaign bootstrap, plan review, and any later apply
-authorization remain separate steps in `docs/runbooks/LOOKER.md`.
-
-The independent operator may run in parallel against the already supported
-Core/Git/dbt evaluation boundary. Record frequency, prior and observed time,
-steps, handoffs, author interventions, friction, value, willingness,
-rejection reasons, and buyer role. No production mutation or secret is
-required for that observation.
-
-## Exact request protocol
-
-Do not ask the user for all values preemptively. When live preflight is the
-only remaining executable boundary:
-
-1. generate a no-secret access packet from unresolved configuration;
-2. list only missing variables and effective permissions;
-3. name the exact disposable objects;
-4. show where the user should store secrets;
-5. provide a read-only verification command;
-6. provide a separate plan command;
-7. provide the exact resume command;
-8. keep mutation disabled until plan review.
-
-If access is unavailable, record the exact remaining acceptance rows in
-`STATUS.md`; continue all other safe work.
+Configuration opt-in and campaign authorization remain required even when the
+native filesystem principal has broader access.

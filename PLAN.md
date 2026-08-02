@@ -42,12 +42,12 @@ The first supported workflow is complete only when a user can:
 11. Produce a deterministic manifest and human-readable report from the same
     state.
 12. Return a non-zero gate result unless policy yields `READY_TO_RETIRE`.
-13. Prove both sides live: an isolated all-closed disposable campaign permits
+13. Prove both sides live locally: an isolated all-closed disposable campaign permits
     a harmless producer sentinel, and a rich graph with unresolved consumers
     refuses it.
 
-No visual interface, second adapter, or broad asset support substitutes for
-this path.
+No visual interface, paid native integration, or broad asset support
+substitutes for this path.
 
 ## Dependency graph
 
@@ -58,14 +58,14 @@ this path.
             └─ 03 Git and dbt execution
                  └─ 04 Reconciliation and retirement gate
                       ├─ 05 Operator experience
-                      └─ 06 Looker native adapter
-                           └─ 07 Security and reliability
+                      └─ 06 DataHub evidence-quality benchmark
+                           └─ 07 Security and reliability refresh
                                 └─ 08 Deployment and adoption proof
 ```
 
 Phases 05 and 06 may proceed independently only after phase 04 passes. Phase
-07 continuously hardens delivered behavior but closes after both native
-adapters have been exercised.
+07 refreshes the hardening evidence after the benchmark lands and the
+deprecated Looker surface is removed.
 
 ## Phase index
 
@@ -77,7 +77,7 @@ adapters have been exercised.
 | [03](docs/phases/03-git-dbt-execution.md) | One authorized Git/dbt consumer is changed and natively validated | see `STATUS.md` |
 | [04](docs/phases/04-reconciliation-gate.md) | Fresh reconciliation and the producer-side refusal gate complete the vertical | see `STATUS.md` |
 | [05](docs/phases/05-operator-experience.md) | CLI and generated report make the same engine understandable and operable | see `STATUS.md` |
-| [06](docs/phases/06-looker-adapter.md) | A second heterogeneous consumer crosses a live native boundary | see `STATUS.md` |
+| [06](docs/phases/06-data-quality-benchmark.md) | Official and synthetic truth sets stress DataHub evidence quality without false readiness | see `STATUS.md` |
 | [07](docs/phases/07-security-reliability.md) | Least privilege, recovery, concurrency, and failure behavior withstand adversarial use | see `STATUS.md` |
 | [08](docs/phases/08-deployment-adoption.md) | The product can be installed, operated, evaluated, and maintained by another team | see `STATUS.md` |
 

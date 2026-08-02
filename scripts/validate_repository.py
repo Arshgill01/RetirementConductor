@@ -46,7 +46,7 @@ REQUIRED_FILES = {
     "docs/phases/03-git-dbt-execution.md",
     "docs/phases/04-reconciliation-gate.md",
     "docs/phases/05-operator-experience.md",
-    "docs/phases/06-looker-adapter.md",
+    "docs/phases/06-data-quality-benchmark.md",
     "docs/phases/07-security-reliability.md",
     "docs/phases/08-deployment-adoption.md",
     "docs/research/README.md",
@@ -56,7 +56,7 @@ REQUIRED_FILES = {
     "docs/research/SCOPE_PRESSURE.md",
     "docs/research/SOURCE_LEDGER.md",
     "docs/runbooks/GIT_DBT.md",
-    "docs/runbooks/LOOKER.md",
+    "docs/runbooks/DATA_QUALITY_BENCHMARK.md",
     "docs/runbooks/OPERATOR.md",
     "docs/runbooks/DEPLOYMENT.md",
     "docs/runbooks/RECOVERY.md",
@@ -206,7 +206,7 @@ PHASE_HEADINGS = {
     "## Risks changed",
 }
 
-REQUIRED_REQUIREMENT_IDS = {f"RC-{number:03d}" for number in range(1, 19)}
+REQUIRED_REQUIREMENT_IDS = {f"RC-{number:03d}" for number in range(1, 20)}
 REQUIRED_EVIDENCE_IDS = {f"EP-{number:03d}" for number in range(9)}
 ALLOWED_PHASE_STATES = {
     "queued",

@@ -112,7 +112,8 @@ Inspect:
 - If SQLite cannot recover safely from controlled interruptions, fix the
   persistence model before adding integrations.
 - If the common receipt cannot represent both the proven dbt behavior and the
-  bounded Looker behavior, revise it before either adapter is built.
+  bounded Git/dbt behavior and external-receipt validation, revise it before
+  expanding the supported source boundary.
 
 ## Risks changed
 
