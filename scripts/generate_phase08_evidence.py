@@ -612,7 +612,7 @@ def operator_boundary(*, commit: str, package: Mapping[str, str]) -> dict[str, A
             "non_claims": [
                 "Author-run reference evidence is not independent operation.",
                 "A fixture or scripted run is not customer-value evidence.",
-                "The Phase 08 acceptance contract remains access-dependent.",
+                "RC-018 adoption acceptance remains access-dependent.",
             ],
         },
         "operator_boundary_digest",
