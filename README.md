@@ -116,15 +116,24 @@ semantic-drift, late, and opaque-rich cases stayed blocked or unsafe. Three
 full runs share one time-independent semantic digest. See
 [EP-006](docs/EVIDENCE_LEDGER.md#phase-06-post-removal-confirmation).
 
-The refreshed Phase 07 boundary separates plan from apply, refuses copied campaign
-stores, verifies online backup and original-path restore, exposes redacted
+The refreshed Phase 07 boundary separates plan from apply, refuses copied
+campaign stores, verifies online backup and original-path restore, exposes redacted
 operational diagnostics, and audits dependencies, licenses, secrets, and
 public artifacts. After removal, the focused security, fault, and recovery
 suites passed 53, 47, and 40 tests. The all-group audit found no known
 vulnerability in 18 installed packages, plan-only Git/dbt remained unable to
 apply, backup/restore reproduced the manifest, and copied state refused before
 database change. See
-[the Phase 07 observations](docs/EVIDENCE_LEDGER.md#phase-07-credential-independent-observations).
+[the Phase 07 observations](docs/EVIDENCE_LEDGER.md#phase-07-post-removal-acceptance).
+
+The 0.2.0 release boundary then reproduced its wheel and source archive,
+installed cleanly under Python 3.11 through 3.14, preserved one campaign
+through upgrade and backup-based rollback, and removed only explicitly
+confirmed state. A clean installed wheel—not the source checkout—executed the
+complete live-local Core/Git/dbt reference: one ready sentinel, late-consumer
+reopening, and rich-graph refusal. The independent-operator artifact remains
+`NOT_RUN`, so this is engineering and integration evidence, not customer-value
+evidence.
 
 ## Complete supported path
 

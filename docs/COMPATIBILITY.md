@@ -42,7 +42,7 @@ and polls only publication read-back within a fixed bound.
 
 | Surface | Boundary | Remaining evidence |
 |---|---|---|
-| Official dataset benchmark | pinned `fiction-retail`, `nyc-taxi`, and `healthcare` inputs plus deterministic truth oracle | registry, checksums, acquisition, generator, live local ingestion, and Phase 06 evidence are not yet run |
+| Official dataset benchmark | pinned `fiction-retail`, `nyc-taxi`, and `healthcare` inputs plus deterministic truth oracle | four assets verified; live-local Core readback and 14-scenario oracle passed with zero false readiness |
 | DataHub Cloud | optional configuration boundary | authenticated Cloud capability, paging, freshness, publication, and source-version behavior |
 
 Looker is not a planned or supported compatibility boundary. DataHub Cloud

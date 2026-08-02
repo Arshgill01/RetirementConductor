@@ -1,17 +1,18 @@
-# Phase 08 — Deployment and adoption proof
+# Phase 08 — Deployment proof and adoption boundary
 
 ## Outcome
 
-Another team can install, configure, evaluate, operate, upgrade, and remove
-Retirement Conductor; at least one real operator workflow establishes whether
-the product saves consequential work and earns continued use.
+The release can be installed, configured, evaluated, operated, upgraded, and
+removed from clean environments. The independent-operator protocol remains a
+clearly separated follow-on boundary: until a real observation exists, the
+product makes no customer-value, adoption, or buyer claim.
 
 ## Dependencies
 
 - complete vertical and hardened runtime;
 - public-safe disposable example;
 - documented DataHub Core and optional Cloud boundaries;
-- at least one prospective operator willing to evaluate a real workflow.
+- an explicit non-claim when no prospective operator is available.
 
 ## Scope
 
@@ -46,8 +47,8 @@ Excluded:
 - compatibility matrix with executed evidence;
 - operator evaluation guide;
 - telemetry that is local and opt-in by default;
-- customer-observation notes without sensitive details;
-- measured product-behavior and customer-value outcomes;
+- a no-secret independent-operator protocol and observation template;
+- an explicit `NOT_RUN` artifact when customer-value evidence is absent;
 - maintenance, release, and contribution policy.
 
 ## Work breakdown
@@ -58,11 +59,13 @@ Excluded:
 4. Execute the public-safe campaign end to end.
 5. Verify backup, upgrade, rollback, and removal.
 6. Document exact Core behavior and optional Cloud improvements separately.
-7. Observe a real operator performing a recent retirement or replacement.
-8. Measure inventory expansion, native identities resolved, interventions,
-   validation outcomes, late consumers, and gate results.
-9. Compare the workflow with the team's previous process.
-10. Record rejection reasons and operational burden.
+7. Prepare the protocol for a real operator performing a recent retirement or
+   replacement without manufacturing an observation.
+8. If an independent operator becomes available, measure inventory expansion,
+   native identities resolved, interventions, validation outcomes, late
+   consumers, and gate results.
+9. If observed, compare the workflow with the team's previous process.
+10. Preserve `NOT_RUN` plus the exact remaining boundary otherwise.
 11. Update product scope, risks, and competitive boundary from evidence.
 12. Publish only artifacts another team can reproduce safely.
 13. Prove a second runner or copied state receives an actionable unsupported
@@ -80,8 +83,7 @@ Required behavior:
 - Cloud-only enhancements are optional and labeled;
 - upgrade preserves campaigns and rollback restores the prior working version;
 - uninstall removes product state only after explicit operator confirmation;
-- an independent operator can complete the runbook;
-- observed workflow evidence addresses frequency, value, friction, and buyer;
+- absent independent operation remains `NOT_RUN` and produces no value claim;
 - the product is reframed if real use contradicts the current thesis;
 - release artifacts, repository state, and documentation agree.
 - single-writer requirements are explicit, diagnosed by preflight, and refuse
@@ -95,6 +97,7 @@ make package
 make test-install
 make test-upgrade
 make test-reference-campaign
+make phase08-evidence
 git diff --check
 ```
 
@@ -104,7 +107,7 @@ Inspect:
 - clean-environment logs;
 - compatibility evidence;
 - backup and upgrade artifacts;
-- independent operator notes;
+- independent operator boundary or genuine observation notes;
 - updated success measures and risk register.
 
 ## Stop or reframe conditions
@@ -117,6 +120,16 @@ Inspect:
   execution, revisit the product boundary.
 - If usage frequency and willingness to adopt are insufficient, preserve the
   protocol as a focused tool or runbook rather than adding breadth.
+
+## Follow-on adoption evidence
+
+An independent operator observation remains required before satisfying
+RC-018 or claiming recurring customer value. It must address frequency,
+baseline and observed work, author intervention, friction, decision-changing
+value, willingness to adopt or reject, and buyer or approver role. Under the
+controlling `GOAL.md`, absence of that human does not block the credential-
+independent engineering completion, but it must remain visible and must never
+be simulated.
 
 ## Risks changed
 

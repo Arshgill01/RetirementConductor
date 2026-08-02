@@ -738,3 +738,27 @@ source commit change. A focused contract test now proves tag-to-commit
 binding.
 
 Status: accepted from the Phase 08 installed-reference diagnosis.
+
+## D-044 — separate release engineering from independent adoption evidence
+
+Date: 2026-08-02
+
+Decision: complete the credential-independent Phase 08 release boundary when
+package, installation, configuration refusal, live installed reference,
+upgrade, rollback, removal, compatibility, and documentation acceptance pass.
+Keep RC-018 as a distinct follow-on requirement whose artifact remains
+`NOT_RUN` until one genuinely independent operator supplies the observation.
+
+Why: `GOAL.md` explicitly says absence of an independent operator does not
+block this overnight engineering goal, while the older phase wording made the
+same human study a hard phase dependency. Pretending the author-run reference
+is independent would fabricate adoption evidence; holding verified release
+engineering open indefinitely would contradict the controlling goal. Two
+separate truth states preserve both constraints.
+
+Consequences: Phase 08 may complete for the current engineering goal without
+satisfying RC-018. No customer-value, adoption-frequency, willingness, or
+buyer claim is permitted. The public operator-boundary artifact must name the
+smallest remaining no-secret human workflow and retain `NOT_RUN`.
+
+Status: accepted from the controlling-goal reconciliation.
