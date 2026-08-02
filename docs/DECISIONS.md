@@ -713,3 +713,28 @@ passed 182 tests, and the full live-local benchmark retained the same semantic
 digest as two earlier runs.
 
 Status: accepted from post-removal package inspection and Phase 06 replay.
+
+## D-043 — preserve the release tag when provisioning pinned MCP source
+
+Date: 2026-08-02
+
+Decision: provision the DataHub MCP source through the exact `v0.6.0` tag,
+verify that the tag resolves to pinned commit
+`9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9`, and require the installed
+executable to self-report package version `0.6.0`. Repair a retained exact
+commit checkout by fetching only that tag and reinstalling the pinned package.
+
+Why: a depth-one fetch by raw commit preserved the correct source bytes but
+omitted the release tag used by `setuptools-scm`. The resulting executable
+self-reported `0.0.1.dev1`, contradicting the version expected by the release
+evidence even though the commit was correct. Accepting the hardcoded label
+would conceal an executable identity mismatch; weakening the expected version
+would lose the upstream release identity.
+
+Observed consequence: upstream tag inspection resolved `v0.6.0` to the exact
+pinned commit. After the tag was added and the same source reinstalled, the
+executable changed its self-report from `0.0.1.dev1` to `0.6.0` without a
+source commit change. A focused contract test now proves tag-to-commit
+binding.
+
+Status: accepted from the Phase 08 installed-reference diagnosis.

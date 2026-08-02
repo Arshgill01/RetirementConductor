@@ -6,12 +6,44 @@ from pathlib import Path
 
 import pytest
 
+from scripts import reference_services
 from scripts.run_phase04_end_to_end import (
     Runner,
     command_execution_mode,
     product_command,
     wait_for_publication,
 )
+
+
+def git(repository: Path, *arguments: str) -> str:
+    return subprocess.run(
+        ["git", *arguments],
+        cwd=repository,
+        text=True,
+        capture_output=True,
+        check=True,
+    ).stdout.strip()
+
+
+def test_mcp_release_tag_must_resolve_to_the_pinned_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    git(tmp_path, "init")
+    git(tmp_path, "config", "user.name", "Test")
+    git(tmp_path, "config", "user.email", "test@example.invalid")
+    source = tmp_path / "source.txt"
+    source.write_text("pinned\n", encoding="utf-8")
+    git(tmp_path, "add", source.name)
+    git(tmp_path, "commit", "-m", "pinned source")
+    commit = git(tmp_path, "rev-parse", "HEAD")
+    git(tmp_path, "tag", "v-test")
+    monkeypatch.setattr(reference_services, "MCP_COMMIT", commit)
+    monkeypatch.setattr(reference_services, "MCP_TAG", "v-test")
+
+    reference_services._ensure_mcp_release_tag(tmp_path)
+
+    assert git(tmp_path, "rev-list", "-n", "1", "v-test") == commit
 
 
 def test_phase04_runner_can_bind_every_product_call_to_installed_cli(

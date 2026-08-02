@@ -25,6 +25,8 @@ DATAHUB_MCP_URL = "http://127.0.0.1:8000/mcp"
 MCP_HEALTH_URL = "http://127.0.0.1:8000/health"
 MCP_SOURCE = "https://github.com/acryldata/mcp-server-datahub.git"
 MCP_COMMIT = "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9"
+MCP_TAG = "v0.6.0"
+MCP_PACKAGE_VERSION = "0.6.0"
 MCP_PORT = 8000
 MCP_TOOL_ROOT = (
     ROOT / ".retirement-conductor" / "tools" / f"mcp-server-datahub-{MCP_COMMIT[:12]}"
@@ -174,15 +176,35 @@ def datahub_core_identity() -> dict[str, str]:
 
 def prepare_mcp_tool() -> Path:
     executable = MCP_TOOL_ROOT / ".venv/bin/mcp-server-datahub"
-    if executable.is_file():
+    if MCP_TOOL_ROOT.exists():
         commit = checked(
             ["git", "-C", str(MCP_TOOL_ROOT), "rev-parse", "HEAD"]
         ).stdout.strip()
         if commit != MCP_COMMIT:
             raise RuntimeError("the retained MCP tool is not the pinned commit")
+        _ensure_mcp_release_tag(MCP_TOOL_ROOT)
+        if (
+            executable.is_file()
+            and _mcp_package_version(executable) == MCP_PACKAGE_VERSION
+        ):
+            return executable
+        checked(
+            [
+                "uv",
+                "sync",
+                "--frozen",
+                "--no-dev",
+                "--reinstall-package",
+                "mcp-server-datahub",
+            ],
+            cwd=MCP_TOOL_ROOT,
+            timeout=900,
+        )
+        if not executable.is_file():
+            raise RuntimeError("the retained MCP tool directory is incomplete")
+        if _mcp_package_version(executable) != MCP_PACKAGE_VERSION:
+            raise RuntimeError("the retained MCP package version is not the pin")
         return executable
-    if MCP_TOOL_ROOT.exists():
-        raise RuntimeError("the retained MCP tool directory is incomplete")
 
     MCP_TOOL_ROOT.parent.mkdir(parents=True, exist_ok=True)
     temporary = Path(
@@ -194,19 +216,8 @@ def prepare_mcp_tool() -> Path:
     try:
         checked(["git", "init", str(temporary)])
         checked(["git", "-C", str(temporary), "remote", "add", "origin", MCP_SOURCE])
-        checked(
-            [
-                "git",
-                "-C",
-                str(temporary),
-                "fetch",
-                "--depth=1",
-                "origin",
-                MCP_COMMIT,
-            ],
-            timeout=600,
-        )
-        checked(["git", "-C", str(temporary), "checkout", "--detach", "FETCH_HEAD"])
+        _ensure_mcp_release_tag(temporary)
+        checked(["git", "-C", str(temporary), "checkout", "--detach", MCP_TAG])
         commit = checked(
             ["git", "-C", str(temporary), "rev-parse", "HEAD"]
         ).stdout.strip()
@@ -227,7 +238,44 @@ def prepare_mcp_tool() -> Path:
         raise
     if not executable.is_file():
         raise RuntimeError("the pinned MCP executable was not installed")
+    if _mcp_package_version(executable) != MCP_PACKAGE_VERSION:
+        raise RuntimeError("the pinned MCP package version was not installed")
     return executable
+
+
+def _ensure_mcp_release_tag(source_root: Path) -> None:
+    result = subprocess.run(
+        ["git", "-C", str(source_root), "rev-list", "-n", "1", MCP_TAG],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0 or result.stdout.strip() != MCP_COMMIT:
+        checked(
+            [
+                "git",
+                "-C",
+                str(source_root),
+                "fetch",
+                "--depth=1",
+                "origin",
+                f"refs/tags/{MCP_TAG}:refs/tags/{MCP_TAG}",
+            ],
+            timeout=600,
+        )
+    tag_commit = checked(
+        ["git", "-C", str(source_root), "rev-list", "-n", "1", MCP_TAG]
+    ).stdout.strip()
+    if tag_commit != MCP_COMMIT:
+        raise RuntimeError("the MCP release tag does not match the pinned commit")
+
+
+def _mcp_package_version(executable: Path) -> str:
+    output = checked([str(executable), "--version"], cwd=executable.parents[2]).stdout
+    match = re.search(r"\bversion ([^\s]+)$", output.strip())
+    if match is None:
+        raise RuntimeError("the MCP package version was not observable")
+    return match.group(1)
 
 
 def listening_socket_inodes(port: int) -> set[str]:
@@ -318,18 +366,14 @@ def mcp_listener_identity(*, expected_pid: int | None = None) -> dict[str, Any]:
     ).stdout.strip()
     if tracked_changes:
         raise RuntimeError("the running MCP source checkout has tracked changes")
-    version_output = checked(
-        [str(expected_entry_point), "--version"],
-        cwd=source_root,
-    ).stdout.strip()
-    match = re.search(r"\bversion ([^\s]+)$", version_output)
-    if match is None:
-        raise RuntimeError("the running MCP package version was not observable")
+    package_version = _mcp_package_version(expected_entry_point)
+    if package_version != MCP_PACKAGE_VERSION:
+        raise RuntimeError("the running MCP package version is not the pin")
     return {
         "listener": f"127.0.0.1:{MCP_PORT}",
         "source_commit": commit,
         "source_clean": True,
-        "package_version": match.group(1),
+        "package_version": package_version,
     }
 
 
