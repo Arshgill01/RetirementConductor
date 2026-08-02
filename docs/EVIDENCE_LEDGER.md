@@ -43,7 +43,7 @@ the produced artifacts have been inspected.
 | EP-004 | 04 | live and fixture | `25466a9` | `artifacts/public/phase04/`; equivalent reconciliation, late reopening, verified publication, one-time gate, and refusal matrix | passed | disposable Core, Git, DuckDB, and harmless sentinel; no warehouse deletion |
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
 | EP-006 | 06 | live local and fixture | `8f5eb58` | `artifacts/public/phase06/`; pinned official inputs, deterministic corpus and oracle, direct DataHub readback, exact Git/dbt receipt, refusal matrix, one producer sentinel, and zero false readiness | passed | fixture inputs do not prove production coverage; readiness is bounded by one DataHub and Git/dbt envelope |
-| EP-007 | 07 | live local and fixture | `4fc5b2d` | `artifacts/public/phase07/`; threat, least-privilege, fault, recovery, concurrency, and scan evidence | refresh-required | prior checks passed; rerun after benchmark integration and Looker removal |
+| EP-007 | 07 | live local and fixture | `6e4ca87` | `artifacts/public/phase07/`; post-removal least-privilege, fault, recovery, concurrency, dependency, secret, public-artifact, and benchmark-binding evidence | passed | deterministic local fault injection does not prove production host, secret-provider, or distributed-storage controls |
 | EP-008 | 08 | live local and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | refresh-required | engineering checks passed before the reframe; package refresh remains, and independent operator result stays `NOT_RUN` |
 
 ### Phase 06 checkpoint B — pinned official inputs
@@ -547,7 +547,60 @@ Looker timeout, cancellation, rate limit, partial mutation, compensation, or
 concurrent attempt; production host or secret-provider security; distributed
 storage; arbitrary filesystem classification; binary reproducibility; signed
 package provenance; or completeness of a point-in-time advisory and static
-secret scan. Phase 07 therefore remains access-dependent.
+secret scan. This entry is historical and no longer determines current Phase
+07 acceptance.
+
+### Phase 07 post-removal acceptance
+
+Tested behavior commit: `6e4ca870106c5f65c894df0dce8024a62395c787`
+
+Mode: deterministic local fixtures for capability, fault, concurrency, and
+recovery behavior; analysis for dependency, license, secret, and public
+artifact scans; direct binding to the live-local Phase 06 evidence digest.
+
+Commands:
+
+```text
+make phase07-evidence
+generator: make test-security; make test-faults; make test-recovery
+generator: security scan; public-artifact review; secret scan
+```
+
+Observed result: security, fault, and recovery targets passed 53, 47, and 40
+tests. A plan-only Git/dbt principal refused with `AUTH_APPLY_DISABLED` while
+the branch, target digest, and artifact directory remained unchanged. The
+failure matrix retained integrity, overlap, partial DataHub, unavailable
+MCP/API, hostile repository, interrupted Git, and producer-gate cases as
+refusal or contained outcomes. The receipt binds to Phase 06 digest
+`sha256:b930045d5769c9b7d938f5079dd4a37e4621b23796a0fdf45ad2ddd34e20e4b9`,
+which records zero false readiness and one producer sentinel.
+
+The mode-`0600` backup reproduced canonical manifest
+`sha256:c86a4ea8a8989180c1abe972cbfe2670f51fb8c4f77656d30213561b8ad4e670`,
+evidence envelope, logical snapshot, and schema versions 1 through 3 after
+original-path restore. A byte-valid copied store refused with
+`RUNTIME_WRITER_MISMATCH` before database change. Diagnostics deliberately
+reported the one stuck fixture campaign rather than masking it.
+
+The scan found zero vulnerabilities in six runtime and 18 all-group packages,
+accepted all 18 reviewed package licenses, verified 20 SHA-256-bound lock
+records, scanned 302 text files for secrets, and reviewed 56 public artifacts.
+The canonical Phase 07 evidence digest is
+`sha256:38ca5631665d6b3402b8b07226c49a3531490a6e3adcb95053d4e671c432cc23`;
+the tracked summary file SHA-256 is
+`24472c78ac7cba8215c89e7dd9c4576bfb44c698c07abada719af07585b1727e`.
+
+Reviewer inspection: inspected every focused test count and output digest;
+plan-only state; benchmark binding; all six failure categories; backup,
+restore, copied-store, schema, and diagnostics fields; vulnerability, license,
+lock, secret, and public-artifact results; limitations; all five artifact
+digests; and tracked whitespace.
+
+Limitations: failure injection is deterministic and local; the advisory
+result is point-in-time; static secret patterns are not proof of universal
+absence; and production host, identity, secret-provider, storage, and signing
+controls remain deployment responsibilities. These limitations do not weaken
+the supported local product claim. `EP-007` is complete.
 
 Reviewer inspection: verified all five canonical artifact digests and file
 digests; inspected plan-only mutation counts, required permissions, retry

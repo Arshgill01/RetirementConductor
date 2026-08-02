@@ -7,12 +7,13 @@ contract; `PLAN.md` defines proof order.
 ## Current state
 
 - Execution state: active under the DataHub-native reframe in `GOAL.md`
-- Active phase: 07 — security and reliability refresh
+- Active phase: 08 — deployment and adoption engineering refresh
 - Current benchmark and narrowed-product behavior commit: `8f5eb58`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: refresh security, fault, recovery, package, install,
-  upgrade, and installed-reference evidence against the narrowed product
+- Next acceptance target: rebuild and verify package, clean installs,
+  upgrade/rollback, state removal, and the installed live-local reference
+  campaign against the narrowed product
 - Last repository validation: removal commit `8f5eb58` passed 182 tests, Ruff,
   formatting, strict mypy, 174-file repository validation, a 302-file secret
   scan, the 56-file public-artifact review, source and wheel builds, and
@@ -31,8 +32,8 @@ contract; `PLAN.md` defines proof order.
 | 04 | complete | `EP-004` at `25466a9`; equivalent live reconciliation, verified stable publication, one issued-plan sentinel, live late-consumer reopening, rich-graph refusal, and adversarial gate matrix | no production warehouse deletion was attempted |
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
 | 06 | complete | checkpoint B at `4148020` pins four official assets; C at `ef02788`/`6c9d4aa` generates deterministic quality truth; D/E at `34df09e` and post-removal confirmation at `8f5eb58` directly reread live Core aspects, matched 14/14 independent scenarios with zero false readiness, passed exact Git/dbt and three native fault probes, verified one publication and sentinel, and refused late/rich graphs across three semantically equivalent runs | none for the benchmark; production coverage remains explicitly unclaimed |
-| 07 | active | credential-independent observations at `4fc5b2d`/`6feb1bc`; threat model, fault matrix, recovery, diagnostics, dependency audit, and scans | rerun and refresh security, fault, recovery, and evidence against `8f5eb58` |
-| 08 | queued | prior package observations at `eb72067`/`4411e8b`; clean installs, live Core reference, upgrade/rollback, backup, removal, and compatibility | rebuild and revalidate the release after Looker removal; independent operator evidence remains follow-on and must stay `NOT_RUN` until observed |
+| 07 | complete | post-removal evidence at `6e4ca87`: 53 security, 47 fault, and 40 recovery tests; plan-only refusal; manifest-preserving backup/restore; copied-store refusal; zero dependency findings; secret and public scans; binding to Phase 06 zero-false-readiness evidence | production host, secret provider, and distributed storage controls remain operator-owned |
+| 08 | active | prior package observations at `eb72067`/`4411e8b`; clean installs, live Core reference, upgrade/rollback, backup, removal, and compatibility | rebuild and revalidate the narrowed release; independent operator evidence remains follow-on and must stay `NOT_RUN` until observed |
 
 Allowed states are `queued`, `active`, `access-dependent`, `blocked`,
 `complete`, and `reframed`. At most one phase is `active`. A phase can return

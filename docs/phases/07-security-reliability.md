@@ -138,6 +138,17 @@ Inspect:
 - If the final producer workflow cannot prevent bypass, narrow the claim to an
   advisory system until enforcement is real.
 
+## Observed acceptance
+
+Complete at tested commit `6e4ca87`. The post-removal security, fault, and
+recovery suites passed 53, 47, and 40 tests; plan-only Git/dbt could not apply;
+failure paths remained contained or refused; backup/restore reproduced the
+canonical manifest and schema versions; copied state refused before database
+change; and vulnerability, license, lock, secret, and public-artifact reviews
+passed. The evidence binds to Phase 06's zero-false-readiness result. Public
+evidence is in `artifacts/public/phase07/` with summary digest
+`sha256:38ca5631665d6b3402b8b07226c49a3531490a6e3adcb95053d4e671c432cc23`.
+
 ## Risks changed
 
 - R-06 partial mutation;

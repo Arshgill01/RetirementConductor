@@ -62,11 +62,13 @@ This establishes implementation behavior, not live product proof.
 - nyc-taxi native freshness and healthcare branch-selectivity truth;
 - controlled graph recall and zero false readiness across 14 scenarios;
 - a post-removal live-local DataHub, Git/dbt, publication, and gate campaign;
-- removal of the deprecated adapter from runtime and release package content.
+- removal of the deprecated adapter from runtime and release package content;
+- post-removal least-privilege, fault, recovery, copied-store, dependency,
+  license, secret, and public-artifact checks.
 
 ## Not yet proven under the current goal
 
-- refreshed package, upgrade, fault, and recovery behavior after removal;
+- refreshed package, install, upgrade, rollback, and removal behavior;
 - user frequency, willingness to adopt, and economic value;
 - external-receipt usefulness for non-repository consumers.
 

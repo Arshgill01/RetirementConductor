@@ -1,4 +1,9 @@
 {
+  "benchmark_binding": {
+    "false_readiness_count": 0,
+    "phase06_evidence_digest": "sha256:b930045d5769c9b7d938f5079dd4a37e4621b23796a0fdf45ad2ddd34e20e4b9",
+    "sentinel_count": 1
+  },
   "capability_receipts": {
     "git_dbt_plan_only": {
       "apply_refusal": {
@@ -10,40 +15,16 @@
       "branch_unchanged": true,
       "result": "PASSED",
       "target_digest_unchanged": true
-    },
-    "looker_plan_only": {
-      "apply_capability": false,
-      "apply_refusal": {
-        "refusal_code": "AUTH_APPLY_DISABLED",
-        "result": "REFUSED"
-      },
-      "approved_targets": [
-        "look:41"
-      ],
-      "patch_calls": 0,
-      "query_posts": 0,
-      "required_permissions": [
-        "access_data",
-        "explore",
-        "see_lookml",
-        "see_looks",
-        "see_queries",
-        "see_schedules",
-        "see_users"
-      ],
-      "result": "PASSED",
-      "save_content_present": false,
-      "source_instruction_retained": false
     }
   },
-  "captured_at": "2026-07-30T16:18:46.635924Z",
+  "captured_at": "2026-08-02T21:42:22.748887Z",
   "documents": {
     "access_contract": {
-      "digest": "sha256:95d9f4109c3c349ec7af44f644eccaaf1e451c00e8d06e0e11240db637d11062",
+      "digest": "sha256:9087c751cec5aea605f937bff39fff3ef51f2feaac8d181824c66cacb8c63149",
       "file": "docs/ACCESS.md"
     },
     "recovery_runbook": {
-      "digest": "sha256:27b448675a9807230de3ad5ae4c80c10fd766e0f8370cfd9040dabe275b1db97",
+      "digest": "sha256:cf627340ffbc361499cf8c441fe23e69b90ab40e5f1bef58977640646bfcd2e1",
       "file": "docs/runbooks/RECOVERY.md"
     },
     "security_policy": {
@@ -51,23 +32,22 @@
       "file": "SECURITY.md"
     },
     "threat_model": {
-      "digest": "sha256:9b0e15c87f7094d53b7cd288102c291866c2dc954d801ca6fe430681e1c210d4",
+      "digest": "sha256:9759e316772cbfb10fa1a193f759f92f4a4e043849469caa2ed0ccadd1dc80c6",
       "file": "docs/SECURITY_MODEL.md"
     }
   },
-  "evidence_mode": "fixture",
+  "evidence_mode": "fixture plus live-local benchmark binding",
   "limitations": [
-    "Capability receipts use deterministic disposable sources.",
-    "Live Looker permission enforcement remains unverified.",
-    "Host administration and secret-provider security are deployment boundaries."
+    "Capability probes use a disposable repository.",
+    "Host administration and secret providers remain deployment boundaries."
   ],
   "result": "PASSED",
   "schema_version": "1.0.0",
-  "security_evidence_digest": "sha256:41004d5cc3936cc533b7748f7bcee9641d14014805c6645dfdfefddb0fea7c16",
+  "security_evidence_digest": "sha256:6eb859855bfe645c0d35776f1346bbcadb8fcf3e2f8cc3ce9d4caa26ac1f7a6f",
   "security_tests": {
     "command": "make test-security",
-    "output_digest": "sha256:98d6f80c2fb5b2d602c988cfd71609136d869f16af0ba591707c570895b34ede",
+    "output_digest": "sha256:6b87c2a3359e8ce4770d2d35684695b5a2156616309af81f44be7792fc465322",
     "result": "PASSED",
-    "test_count": 93
+    "test_count": 53
   }
 }

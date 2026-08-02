@@ -1,22 +1,22 @@
 {
-  "captured_at": "2026-07-30T16:18:46.639611Z",
-  "evidence_mode": "fixture",
-  "failure_matrix_digest": "sha256:398041de74f971c731badec67b90696e0890ea70a4b0d2d044f662b6047d5a54",
+  "captured_at": "2026-08-02T21:42:22.753139Z",
+  "evidence_mode": "fixture plus live-local benchmark binding",
+  "failure_matrix_digest": "sha256:c81eeead907c809d6fec1faf0c2f2dea82ad56e793a3670f02a22308280848e9",
   "fault_tests": {
     "command": "make test-faults",
-    "output_digest": "sha256:a60d938bf1e4a6fe2b1bb63b86ca8406970e03890a9c53156da5c12feee27fed",
+    "output_digest": "sha256:68585e93ddc2c54bf09bbcc2e93eb49bf8df7d5536359f24b86718a8da4d2f1f",
     "result": "PASSED",
-    "test_count": 72
+    "test_count": 47
   },
   "limitations": [
-    "HTTP faults use an injected deterministic transport.",
-    "Service-side Looker retry behavior remains a live acceptance gap."
+    "Injected transport and process faults use deterministic local doubles.",
+    "Production infrastructure behavior remains deployment-specific."
   ],
   "result": "PASSED",
   "schema_version": "1.0.0",
   "state_and_boundary_cases": [
     {
-      "case": "event or cached-manifest tampering",
+      "case": "event, receipt, or cached-manifest tampering",
       "safe_result": "INTEGRITY refusal",
       "test_source": "tests/integration/test_campaign_store.py"
     },
@@ -26,14 +26,9 @@
       "test_source": "tests/integration/test_campaign_store.py"
     },
     {
-      "case": "lost Looker mutation response",
-      "safe_result": "native reread, one PATCH",
-      "test_source": "tests/integration/test_looker_workflow.py"
-    },
-    {
-      "case": "intervening edit before compensation",
-      "safe_result": "COMPENSATION_CONFLICT",
-      "test_source": "tests/unit/test_looker.py"
+      "case": "partial DataHub page or unavailable MCP/API",
+      "safe_result": "required evidence remains partial or unavailable",
+      "test_source": "tests/unit/test_datahub.py"
     },
     {
       "case": "hostile repository execution",
@@ -41,97 +36,14 @@
       "test_source": "tests/unit/test_git_dbt.py"
     },
     {
+      "case": "interrupted or drifted Git mutation",
+      "safe_result": "native reread before retry or compensation",
+      "test_source": "tests/unit/test_git_dbt.py"
+    },
+    {
       "case": "gate replay, drift, unavailable state, or untrusted run",
       "safe_result": "gate refusal without producer replay",
       "test_source": "tests/integration/test_gate.py"
     }
-  ],
-  "transport": {
-    "ambiguous_mutations": [
-      {
-        "automatic_retry": false,
-        "case": "timeout",
-        "refusal_code": "APPLY_OUTCOME_UNKNOWN",
-        "request_count": 1
-      },
-      {
-        "automatic_retry": false,
-        "case": "connection_loss",
-        "refusal_code": "APPLY_OUTCOME_UNKNOWN",
-        "request_count": 1
-      },
-      {
-        "automatic_retry": false,
-        "case": "http_408",
-        "refusal_code": "APPLY_OUTCOME_UNKNOWN",
-        "request_count": 1
-      },
-      {
-        "automatic_retry": false,
-        "case": "http_425",
-        "refusal_code": "APPLY_OUTCOME_UNKNOWN",
-        "request_count": 1
-      },
-      {
-        "automatic_retry": false,
-        "case": "http_500",
-        "refusal_code": "APPLY_OUTCOME_UNKNOWN",
-        "request_count": 1
-      },
-      {
-        "automatic_retry": false,
-        "case": "invalid_json",
-        "refusal_code": "APPLY_OUTCOME_UNKNOWN",
-        "request_count": 1
-      }
-    ],
-    "bounded_read_recovery": {
-      "automatic_retry": true,
-      "request_count": 4,
-      "result": "RECOVERED",
-      "sleep_seconds": [
-        2.0,
-        0.5,
-        1.0
-      ],
-      "statuses": [
-        429,
-        "connection_loss",
-        503,
-        200
-      ]
-    },
-    "definitive_mutation_refusals": [
-      {
-        "refusal_code": "SOURCE_LOOKER_PERMISSION_DENIED",
-        "request_count": 1,
-        "status": 401
-      },
-      {
-        "refusal_code": "SOURCE_LOOKER_PERMISSION_DENIED",
-        "request_count": 1,
-        "status": 403
-      },
-      {
-        "refusal_code": "IDENTITY_NOT_FOUND",
-        "request_count": 1,
-        "status": 404
-      },
-      {
-        "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
-        "request_count": 1,
-        "status": 409
-      },
-      {
-        "refusal_code": "VALIDATION_RECEIPT_FAILED",
-        "request_count": 1,
-        "status": 422
-      },
-      {
-        "refusal_code": "SOURCE_LOOKER_UNAVAILABLE",
-        "request_count": 1,
-        "status": 429
-      }
-    ]
-  }
+  ]
 }

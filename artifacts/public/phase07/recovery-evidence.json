@@ -9,12 +9,12 @@
         "state": "INVENTORIED"
       }
     ],
-    "database_digest": "sha256:fde6c192bd748e08fa0ea05600bf376c998bda7440c3d151f72739c5811e61da",
+    "database_digest": "sha256:c38f0a2320f023303683d2fb96392e8d741e5a60ce47ef53e2d1a32d7f3ab482",
     "file_mode": "0600",
-    "logical_snapshot_digest": "sha256:478404e11aa9b5d1ecdca05148a66247e9ba517a190f9d941e57e138123eb373",
-    "receipt_digest": "sha256:5104fd3fd58e7b513ac0044d49507cf173b216919333a983f2ff5931743d82ef",
+    "logical_snapshot_digest": "sha256:66d377f5b90f5c1a609c55dd712b87972345f22d54252dfe9fe7fa583a151e63",
+    "receipt_digest": "sha256:9fe3285a3d8d4bb3ac98616a0f287057b1508a98ca6d6b6b2c12672d026c59ea",
     "result": "BACKUP_VERIFIED",
-    "verification_digest": "sha256:8a4c32ff56a72c0770213c88616780c9127b6e040b6d778f99843de42f43cbd4"
+    "verification_digest": "sha256:2390a926446ff9d146aab2d905e28b1e0bed7ff6d1f07ae7d977f2ae1ade1739"
   },
   "captured_at": "2026-07-30T18:00:00Z",
   "copied_store": {
@@ -24,17 +24,16 @@
   },
   "diagnostics": {
     "healthy": false,
-    "metrics_digest": "sha256:ee035aa8c4e04c9140c0e8b86c6d516f7ec204d694954b3bbd368b3aaf7237c9",
+    "metrics_digest": "sha256:b4e0181afbb7f9fa0239a8cb191bc3f5ce5aa2aeca62d6c2d7fe3ca2eef50245",
     "stuck_campaign_count": 1,
     "unknown_gate_outcomes": 0
   },
   "evidence_mode": "fixture",
   "limitations": [
     "This drill uses a deterministic local fixture store.",
-    "The application does not encrypt backups or implement distributed storage.",
-    "Live Looker recovery remains outside this evidence mode."
+    "Backups are not encrypted and storage is not distributed."
   ],
-  "recovery_evidence_digest": "sha256:11799a3419a393c7b7f7d45149d668751f9c47b23d2321185252fdf69936064d",
+  "recovery_evidence_digest": "sha256:8061dd179fa8b24196e28ca281b17a522be04b881d82cd8b1590b29eccd8bb28",
   "restore": {
     "evidence_envelope_digest": "sha256:3f855256249b33383b0c4eda310ea913e8c488ee85bdcad4320270d5436feb97",
     "manifest_digest": "sha256:c86a4ea8a8989180c1abe972cbfe2670f51fb8c4f77656d30213561b8ad4e670",
