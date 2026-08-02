@@ -586,16 +586,16 @@ def native_fault_probes(
     expected_failures = {
         "null-inflated": {
             "not_null_orders_status_summary_normalized_status",
-            "orders_status_semantic_equivalence",
+            "orders_source_status_parity",
         },
-        "semantic-drift": {"orders_status_semantic_equivalence"},
+        "semantic-drift": {"orders_source_status_parity"},
         "unmapped-value": {
             (
                 "accepted_values_orders_status_summary_normalized_status__"
                 "backordered__canceled__confirmed__delivered__disputed__"
                 "fulfilling__in_transit__pending__returned"
             ),
-            "orders_status_semantic_equivalence",
+            "orders_source_status_parity",
         },
     }
     observations: list[dict[str, Any]] = []
@@ -614,6 +614,7 @@ def native_fault_probes(
         profile["retirement_conductor_benchmark"]["outputs"]["local"]["path"] = str(
             project / ".runtime" / "warehouse.duckdb"
         )
+        (project / ".runtime").mkdir()
         (project / "profiles.yml").write_text(
             yaml.safe_dump(profile, sort_keys=False), encoding="utf-8"
         )
@@ -640,7 +641,7 @@ def native_fault_probes(
             (project / "target" / "run_results.json").read_text(encoding="utf-8")
         )
         failed = {
-            str(item["unique_id"]).split(".", 2)[-1]
+            str(item["unique_id"]).split(".")[2]
             for item in run_results["results"]
             if item["status"] in {"error", "fail"}
         }
