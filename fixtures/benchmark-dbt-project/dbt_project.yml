@@ -1,0 +1,38 @@
+name: retirement_conductor_benchmark
+version: 1.0.0
+config-version: 2
+
+profile: retirement_conductor_benchmark
+
+model-paths:
+  - models
+seed-paths:
+  - seeds
+test-paths:
+  - tests
+target-path: target
+clean-targets:
+  - target
+  - logs
+  - dbt_packages
+
+models:
+  retirement_conductor_benchmark:
+    +materialized: table
+
+seeds:
+  retirement_conductor_benchmark:
+    orders:
+      +column_types:
+        order_id: varchar
+        customer_id: varchar
+        order_date: varchar
+        legacy_status: varchar
+        order_status: varchar
+        total_amount: double
+        payment_method: varchar
+        shipping_country: varchar
+        promo_id: varchar
+
+flags:
+  send_anonymous_usage_stats: false

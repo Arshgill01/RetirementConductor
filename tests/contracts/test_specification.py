@@ -23,6 +23,26 @@ def test_valid_specification_normalizes_with_digest() -> None:
     assert specification["specification_digest"].startswith("sha256:")
 
 
+def test_benchmark_specification_binds_the_generated_workspace() -> None:
+    specification = load_specification(
+        ROOT / "fixtures/specs/data-quality-benchmark-live.yaml"
+    )
+
+    assert specification["target"] == {
+        "datahub_urn": (
+            "urn:li:dataset:(urn:li:dataPlatform:sqlite,"
+            "retirement_benchmark.analytics.fiction_retail.orders,PROD)"
+        ),
+        "platform": "sqlite",
+        "instance": "retirement_benchmark",
+        "database": "analytics",
+        "schema": "fiction_retail",
+        "table": "orders",
+        "field": "legacy_status",
+    }
+    assert specification["evidence"]["repositories"][0]["id"] == "benchmark"
+
+
 @pytest.mark.parametrize(
     ("filename", "code"),
     [

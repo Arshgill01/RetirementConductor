@@ -34,6 +34,7 @@ packages = ["src/retirement_conductor"]
 "fixtures/repository" = "retirement_conductor/fixture_data/repository"
 "fixtures/scenarios" = "retirement_conductor/fixture_data/scenarios"
 "fixtures/data-quality" = "retirement_conductor/data_quality_data"
+"fixtures/benchmark-dbt-project" = "retirement_conductor/benchmark_project_data"
 "fixtures/specs/valid.yaml" = "retirement_conductor/reference_data/spec.yaml"
 "schemas" = "retirement_conductor/schemas"
 
@@ -53,6 +54,7 @@ include = [
   "/docs/templates/OPERATOR_OBSERVATION.md",
   "/fixtures/repository",
   "/fixtures/data-quality",
+  "/fixtures/benchmark-dbt-project",
   "/fixtures/scenarios",
   "/fixtures/specs/valid.yaml",
   "/schemas",

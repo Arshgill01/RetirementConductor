@@ -1,0 +1,8 @@
+retirement_conductor_benchmark:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: /workspace/.runtime/warehouse.duckdb
+      schema: analytics
+      threads: 1

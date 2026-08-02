@@ -31,11 +31,11 @@ from retirement_conductor.errors import Refusal
 from retirement_conductor.schemas import validate_schema
 from retirement_conductor.vocabulary import RefusalCode
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 SCALE_ORDER_LIMITS = {"small": 250, "medium": 2_500, "full": None}
 TARGET_DATASET_URN = (
     "urn:li:dataset:(urn:li:dataPlatform:sqlite,"
-    "retirement_benchmark.fiction_retail.orders,PROD)"
+    "retirement_benchmark.analytics.fiction_retail.orders,PROD)"
 )
 DBT_CONSUMER = "dbt:retirement_benchmark.orders_status_summary"
 
@@ -934,13 +934,16 @@ def _scenario_facts() -> list[dict[str, Any]]:
 
 def _expected_graph() -> dict[str, Any]:
     dbt_urn = (
-        "urn:li:dataset:(urn:li:dataPlatform:dbt,benchmark.orders_status_summary,PROD)"
+        "urn:li:dataset:(urn:li:dataPlatform:dbt,"
+        "retirement_benchmark.analytics.consumers.orders_status_summary,PROD)"
     )
     tableau_urn = (
-        "urn:li:dataset:(urn:li:dataPlatform:tableau,benchmark.executive_orders,PROD)"
+        "urn:li:dataset:(urn:li:dataPlatform:tableau,"
+        "retirement_benchmark.analytics.consumers.executive_orders,PROD)"
     )
     spark_urn = (
-        "urn:li:dataset:(urn:li:dataPlatform:spark,benchmark.late_order_export,PROD)"
+        "urn:li:dataset:(urn:li:dataPlatform:spark,"
+        "retirement_benchmark.analytics.consumers.late_order_export,PROD)"
     )
     return {
         "edges": [

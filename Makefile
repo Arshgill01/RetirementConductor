@@ -1,4 +1,4 @@
-.PHONY: check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
+.PHONY: benchmark-workspace check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
@@ -40,6 +40,9 @@ datahub-seed:
 	DATAHUB_GMS_URL=http://127.0.0.1:18080 \
 	uv run --python 3.11 --with 'acryl-datahub==1.6.0' \
 		python scripts/datahub_seed.py
+
+benchmark-workspace:
+	uv run python scripts/prepare_benchmark_workspace.py
 
 git-dbt-tool:
 	uv venv --python 3.11 .retirement-conductor/tools/dbt-duckdb-1.10.1

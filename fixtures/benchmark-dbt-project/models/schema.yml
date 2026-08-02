@@ -1,0 +1,45 @@
+version: 2
+
+seeds:
+  - name: orders
+    description: Relationship-closed generated fiction-retail order slice.
+    columns:
+      - name: order_id
+        data_type: varchar
+      - name: legacy_status
+        data_type: varchar
+        meta:
+          retirement_conductor_role: legacy
+      - name: order_status
+        data_type: varchar
+        meta:
+          retirement_conductor_role: replacement
+      - name: total_amount
+        data_type: double
+
+models:
+  - name: orders_status_summary
+    description: Sole automated consumer in the isolated readiness scenario.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+      - name: normalized_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - backordered
+                  - canceled
+                  - confirmed
+                  - delivered
+                  - disputed
+                  - fulfilling
+                  - in_transit
+                  - pending
+                  - returned
+      - name: total_amount
+        data_tests:
+          - not_null
