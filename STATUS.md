@@ -6,20 +6,19 @@ contract; `PLAN.md` defines proof order.
 
 ## Current state
 
-- Execution state: active under the DataHub-native reframe in `GOAL.md`
-- Active phase: 08 — deployment and adoption engineering refresh
-- Current benchmark and narrowed-product behavior commit: `8f5eb58`
+- Execution state: complete for the credential-independent engineering goal in
+  `GOAL.md`; no adoption or customer-value claim is implied
+- Active phase: none
+- Current release and installed-reference behavior commit: `c3440b2`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: rebuild and verify package, clean installs,
-  upgrade/rollback, state removal, and the installed live-local reference
-  campaign against the narrowed product
-- Last repository validation: removal commit `8f5eb58` passed 182 tests, Ruff,
-  formatting, strict mypy, 174-file repository validation, a 302-file secret
-  scan, the 56-file public-artifact review, source and wheel builds, and
-  `git diff --check`. A post-removal live run matched two earlier runs at
-  semantic digest
-  `sha256:c60c2a91bc5202f794357052833598e1bd824200ffe047f2b51d1b77f6d3ed54`
+- Next acceptance target: optional independent-operator evaluation for RC-018;
+  it remains `NOT_RUN` and does not block this engineering goal
+- Last repository validation: release commit `c3440b2` passed 183 tests, Ruff,
+  formatting, strict mypy, 174-file repository validation, the secret and
+  public-artifact reviews, reproducible source and wheel builds, four clean
+  Python installs, upgrade/rollback/removal, an installed-wheel live-local
+  reference, and `git diff --check`
 
 ## Phase ledger
 
@@ -33,7 +32,7 @@ contract; `PLAN.md` defines proof order.
 | 05 | complete | `EP-005` at `ae62486`; four-decision CLI, deterministic canonical reports, exact plan confirmation, structural public redaction, keyboard/mobile browser proof, and zero axe violations | independent nontechnical operation remains phase 08 evidence |
 | 06 | complete | checkpoint B at `4148020` pins four official assets; C at `ef02788`/`6c9d4aa` generates deterministic quality truth; D/E at `34df09e` and post-removal confirmation at `8f5eb58` directly reread live Core aspects, matched 14/14 independent scenarios with zero false readiness, passed exact Git/dbt and three native fault probes, verified one publication and sentinel, and refused late/rich graphs across three semantically equivalent runs | none for the benchmark; production coverage remains explicitly unclaimed |
 | 07 | complete | post-removal evidence at `6e4ca87`: 53 security, 47 fault, and 40 recovery tests; plan-only refusal; manifest-preserving backup/restore; copied-store refusal; zero dependency findings; secret and public scans; binding to Phase 06 zero-false-readiness evidence | production host, secret provider, and distributed storage controls remain operator-owned |
-| 08 | active | prior package observations at `eb72067`/`4411e8b`; clean installs, live Core reference, upgrade/rollback, backup, removal, and compatibility | rebuild and revalidate the narrowed release; independent operator evidence remains follow-on and must stay `NOT_RUN` until observed |
+| 08 | complete | post-removal engineering evidence at `c3440b2`: reproducible 0.2.0 package, four clean Python installs, actionable preflight, upgrade/rollback/removal, and 35 installed-wheel operations completing ready, late, and rich live-local Core paths | RC-018 independent operation and customer-value evidence remains follow-on `NOT_RUN` |
 
 Allowed states are `queued`, `active`, `access-dependent`, `blocked`,
 `complete`, and `reframed`. At most one phase is `active`. A phase can return

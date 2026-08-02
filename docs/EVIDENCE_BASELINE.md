@@ -64,11 +64,12 @@ This establishes implementation behavior, not live product proof.
 - a post-removal live-local DataHub, Git/dbt, publication, and gate campaign;
 - removal of the deprecated adapter from runtime and release package content;
 - post-removal least-privilege, fault, recovery, copied-store, dependency,
-  license, secret, and public-artifact checks.
+  license, secret, and public-artifact checks;
+- reproducible post-removal package, four clean Python installs,
+  upgrade/rollback, confirmed removal, and installed-wheel live reference.
 
 ## Not yet proven under the current goal
 
-- refreshed package, install, upgrade, rollback, and removal behavior;
 - user frequency, willingness to adopt, and economic value;
 - external-receipt usefulness for non-repository consumers.
 

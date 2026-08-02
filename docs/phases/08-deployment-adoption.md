@@ -85,7 +85,7 @@ Required behavior:
 - uninstall removes product state only after explicit operator confirmation;
 - absent independent operation remains `NOT_RUN` and produces no value claim;
 - the product is reframed if real use contradicts the current thesis;
-- release artifacts, repository state, and documentation agree.
+- release artifacts, repository state, and documentation agree;
 - single-writer requirements are explicit, diagnosed by preflight, and refuse
   unsupported multi-writer operation.
 
@@ -130,6 +130,23 @@ value, willingness to adopt or reject, and buyer or approver role. Under the
 controlling `GOAL.md`, absence of that human does not block the credential-
 independent engineering completion, but it must remain visible and must never
 be simulated.
+
+## Observed engineering acceptance
+
+Complete at tested commit `c3440b2`. The 0.2.0 wheel and source archive
+reproduced byte-for-byte, contained no deprecated adapter surface, and used a
+hash-bound runtime lock. Clean installs under Python 3.11, 3.12, 3.13, and
+3.14 reproduced the blocked fixture and actionable preflight; confirmed state
+and package removal passed. Upgrade from 0.1.0 preserved the campaign through
+schema versions 1 to 3, and backup-based rollback restored the prior pair.
+
+The clean installed wheel performed 35 product operations against loopback
+DataHub Core v1.6.0 and MCP v0.6.0 at the pinned commit. Native dbt passed; the
+isolated campaign reached `READY_TO_RETIRE` with one sentinel; a late consumer
+reopened it; and the 41-consumer rich graph remained `UNSAFE`. Public evidence
+is in `artifacts/public/phase08/` with engineering-acceptance digest
+`sha256:c7b6b754380f3c01c411db7b847959e02bea2f8bfe0f8856bb144a4db5876d05`.
+RC-018 remains explicitly `NOT_RUN`.
 
 ## Risks changed
 

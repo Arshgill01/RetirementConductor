@@ -1,7 +1,7 @@
 {
-  "captured_at": "2026-07-30T18:16:58.122602Z",
+  "captured_at": "2026-08-02T22:11:02.586337Z",
   "checksums": {
-    "digest": "sha256:07dcfd89ade6ea911c82b0124b406c0837feeefe6075a611476e47a69a9db8cc",
+    "digest": "sha256:e15869c4b72088ae9cca4693ba597c91cc069fbc20d1e08b7abd8a15cfa22ee2",
     "filename": "SHA256SUMS"
   },
   "command": "make package",
@@ -13,17 +13,17 @@
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "sdist_digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
+    "wheel_digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0"
   },
   "phase": "08",
-  "phase08_package_evidence_digest": "sha256:c292591bf67b9e5d363a0ebd53f5020771f4470d3c9be433dacd58b426abbc77",
+  "phase08_package_evidence_digest": "sha256:312406219f2dca2448200866d87414376f323fce133bf4bf6b179b58b52152d1",
   "raw_receipt": {
-    "artifact_digest": "sha256:7ae90d294996ca67b16ab84afc9e59b53cc15a0c2cbec40d3777cad587427624",
-    "file_digest": "sha256:4e80e40f19c59479e701f0b4db59512f9f9bc1cadde3c11237bde582b7520e3a"
+    "artifact_digest": "sha256:651d3130126185b6d6ea135a3384d0aafdb1a51ea4664a2493216e0ae836d3b3",
+    "file_digest": "sha256:6970f56d3b656995db09dcaf3d4f878821f360b7070289c63337e1e6321506a1"
   },
-  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
+  "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
   "reproducible_build": {
     "source_archive_byte_identical": true,
     "source_archive_rebuilt_wheel_identical": true,
@@ -36,7 +36,7 @@
     "hash_bound": true
   },
   "sbom": {
-    "digest": "sha256:f1df28d2cf83a5a54f9453b58fb4ed666f2caf46530d0d18bf5801c33555c4ba",
+    "digest": "sha256:041adfb0062f17459b72d2584d3bf752eec98429e03b759944885d78f47089fe",
     "filename": "runtime-sbom.cdx.json",
     "format": "CycloneDX 1.5"
   },
@@ -46,9 +46,9 @@
     "signed": false
   },
   "source_archive": {
-    "digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "filename": "retirement_conductor-0.2.0.tar.gz",
-    "member_count": 72,
+    "member_count": 85,
     "operational_state_excluded": true,
     "required_members_present": [
       ".env.example",
@@ -70,14 +70,14 @@
       "src/retirement_conductor/__init__.py"
     ],
     "single_root": true,
-    "size": 150262
+    "size": 140818
   },
   "version": "0.2.0",
   "wheel": {
     "console_entry_point": "retirement-conductor",
-    "digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b",
+    "digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0",
     "filename": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "member_count": 63,
+    "member_count": 76,
     "required_members_present": [
       "retirement_conductor/fixture_data/repository/models/order_summary.sql",
       "retirement_conductor/fixture_data/scenarios/valid.json",
@@ -92,6 +92,6 @@
       "jsonschema<5,>=4.23",
       "pyyaml<7,>=6.0.2"
     ],
-    "size": 169510
+    "size": 164129
   }
 }

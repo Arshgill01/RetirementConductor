@@ -1,8 +1,8 @@
 {
-  "captured_at": "2026-07-30T18:20:21.825243Z",
+  "captured_at": "2026-08-02T22:13:43.016285Z",
   "command": "make test-reference-campaign",
   "core_capability": {
-    "capability_digest": "sha256:f4151365691c7d9a757d8c6a95ce94dec0e494f6d01132a810c41b43395bdf38",
+    "capability_digest": "sha256:21874bb721663464ea4c84aa5ba53e83e3017921a805f95674452aa8c5e65049",
     "edition": "core",
     "fallbacks": {
       "complete_lineage_pagination": "gms_graphql",
@@ -28,7 +28,7 @@
       "GIT_DBT_DBT_EXECUTABLE",
       "GIT_DBT_PRINCIPAL"
     ],
-    "preflight_digest": "sha256:d39d391a860b68fe25e925b3ba62293ad1f45b713aef44643bd70081ffc98c9a",
+    "preflight_digest": "sha256:83d850dab51d3b1912c87de073e79c58d5cd73e1399dadc885662fcc24cae1de",
     "profile": "core-git-dbt",
     "ready": true,
     "single_writer": true,
@@ -59,30 +59,30 @@
     "apply_targets": [
       "models/orders_isolated_model.sql"
     ],
-    "command_output_digest": "sha256:6b5adff76403d2bd797c385d4502cd23463ec4bce019ae6bdbc10c4bd0b4e88f",
-    "evidence_digest": "sha256:21e8bd520ca3da52683c5b51832fc390395ff266b80b84f3b4991529194c55bc",
+    "command_output_digest": "sha256:e572ffc7a2695279c3efc6faf73ff248dcc4d5f207abd4c541da814b982e4d1e",
+    "evidence_digest": "sha256:5824e1d9440f01ce07d5531c3e1b586bdbfd79545a4d801b0c34b434a395762e",
     "evidence_mode": "live",
     "gate_attempt_status_counts": {
       "EXECUTED": 1,
       "REFUSED": 12
     },
-    "installed_cli_operation_count": 34,
+    "installed_cli_operation_count": 35,
     "isolated_consumer_count": 1,
     "late_consumer_count": 2,
     "late_decision": "UNSAFE",
     "late_publication_settle": {
       "attempts": 1,
-      "duration_ms": 3537
+      "duration_ms": 3414
     },
     "producer_sentinel_count": 1,
     "ready_decision": "READY_TO_RETIRE",
-    "ready_manifest_digest": "sha256:5d2c9cbac9f0673467c0c217e4b1aa00cd9b4c0dddae35da88f13dcccaa200c1",
+    "ready_manifest_digest": "sha256:51fa4fdeff971f30af55950b5b2361744d7f6526c042b04bd06dc8cc552c943e",
     "ready_publication_settle": {
-      "attempts": 1,
-      "duration_ms": 2298
+      "attempts": 2,
+      "duration_ms": 4000
     },
-    "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
-    "rich_consumer_count": 31,
+    "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
+    "rich_consumer_count": 41,
     "rich_decision": "UNSAFE",
     "rich_gate_refusal": "GATE_DECISION_NOT_READY",
     "source_cli_operation_count": 0,
@@ -93,17 +93,17 @@
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "sdist_digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
+    "wheel_digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0"
   },
   "phase": "08",
-  "phase08_reference_evidence_digest": "sha256:511cf9d61783aba343895983ab3dc06cc9e47e16ad63c46abd1f1bb95676f813",
+  "phase08_reference_evidence_digest": "sha256:1e54a738b4034601aec8d24b7ef82c0567e3b7ae1ebfdf6df29cf4dbd577cf8e",
   "raw_receipt": {
-    "artifact_digest": "sha256:7eae72bdd6dff2039fd4fe66c784b86fbcfa7d6e75b72043a3c0a5efc677a387",
-    "file_digest": "sha256:4f941099340c1eab09427d048020dc822b9c66407ecef42fcfc671221dc7cc59"
+    "artifact_digest": "sha256:512af6d2c721f530c1befc5dc56a3cefeb2ecfad05214472212646c86a72eeb9",
+    "file_digest": "sha256:b9e40bdd6e65c425dc84916791dffb65c07e1287a1b2e318d9d228e97e02d8b5"
   },
-  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
+  "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
   "result": "REFERENCE_CAMPAIGN_VERIFIED",
   "schema_version": "1.0.0",
   "services": {
@@ -130,7 +130,7 @@
       "scope": "loopback disposable Core",
       "source_clean": true,
       "source_commit": "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9",
-      "started_for_run": false
+      "started_for_run": true
     }
   }
 }

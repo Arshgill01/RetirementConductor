@@ -6,6 +6,7 @@
     "copied_state_refusal": true,
     "customer_value_observation": false,
     "datahub_cloud_optional_and_not_claimed": true,
+    "deprecated_adapter_absent_from_package": true,
     "deterministic_fixture_remains_blocked": true,
     "independent_operator": false,
     "installed_live_core_reference": true,
@@ -18,76 +19,76 @@
   },
   "artifacts": {
     "compatibility": {
-      "artifact_digest": "sha256:2897d2e4bf44fde773e3dee5a22b7e33364773ca3bfbc770d484caee2ec0370a",
+      "artifact_digest": "sha256:c8a200ea1bba4b1f46f4f8a2a49fa7e026b0620a7de325efcde62ac4a9a55936",
       "file": "artifacts/public/phase08/compatibility-evidence.json",
-      "file_digest": "sha256:92bef59564042612d3554f91bc2ab49b5a80a8f090400c6a5d12f525ccf7da09"
+      "file_digest": "sha256:aacc3ad33cf92111ec0583835699a511971def6b0af907761640fbbade9f85b1"
     },
     "install": {
-      "artifact_digest": "sha256:e0d6ba61d94185426b1c035fa25cb7a62a4af0bc1eda1ef97b9ed1013dd0c000",
+      "artifact_digest": "sha256:5c50eede93b721bf683e92cb67161ba522b3ba24f7946b34d9544a68877beb0b",
       "file": "artifacts/public/phase08/install-evidence.json",
-      "file_digest": "sha256:9463c5a4a3cf76a68a6b807045be71ec4c23692fe70e312cf1cef18f3c51cc02"
+      "file_digest": "sha256:47cf4841790292b71cfc84580476531102ee858dbb23faad33cc45400559ff21"
     },
     "operator_boundary": {
-      "artifact_digest": "sha256:4a041503d2f745b3a5a02c8c1f0b6991e34fe1789c53e6cf60b87125e34c25a5",
+      "artifact_digest": "sha256:0f41d056a3b10057cf1f2fd936fb5cec3e0936083a864d2243d40c21e7beab86",
       "file": "artifacts/public/phase08/operator-boundary.json",
-      "file_digest": "sha256:de57f07d41cee6ed21fb7947a167ad4bb5f087e207675c3de2c5c7850224e878"
+      "file_digest": "sha256:3f38685f20a4bd7372b3748b526b6de507b122ed9c114e00b022ccd954280030"
     },
     "package": {
-      "artifact_digest": "sha256:c292591bf67b9e5d363a0ebd53f5020771f4470d3c9be433dacd58b426abbc77",
+      "artifact_digest": "sha256:312406219f2dca2448200866d87414376f323fce133bf4bf6b179b58b52152d1",
       "file": "artifacts/public/phase08/package-evidence.json",
-      "file_digest": "sha256:7d3d8ef482f1b5a9fa5c35f0725f890875fadaa3814d052d59e42fe3222dedea"
+      "file_digest": "sha256:9da77d191d71532751d05c923293c800ce05c441c03bdc374037ce7eb56c2882"
     },
     "reference": {
-      "artifact_digest": "sha256:511cf9d61783aba343895983ab3dc06cc9e47e16ad63c46abd1f1bb95676f813",
+      "artifact_digest": "sha256:1e54a738b4034601aec8d24b7ef82c0567e3b7ae1ebfdf6df29cf4dbd577cf8e",
       "file": "artifacts/public/phase08/reference-evidence.json",
-      "file_digest": "sha256:8ddf5f10c11ea490d619e940013e545df1f84704bde528f6a55406d04f521866"
+      "file_digest": "sha256:9bff5f9096dbc99c2cefaff675cc3bc4e72026aead88fa8120f1b8431eb8448d"
     },
     "upgrade": {
-      "artifact_digest": "sha256:ea695fad5778aeb7990fe7d5937ca711f1984d6217e4e7c46c184fe8f0b8e610",
+      "artifact_digest": "sha256:7b34cbd462bd5b6d586d8e139910a89d70a739b75a010844a803c8dc68f92185",
       "file": "artifacts/public/phase08/upgrade-evidence.json",
-      "file_digest": "sha256:ebe127be08d1d58a3f63f3aacbf4055e4334094039817c9e4edb4188e45bc0cd"
+      "file_digest": "sha256:84fc47f3764c301f78260212606435e11d5a88f4fa24f0acbd5ce1b35f9388d6"
     }
   },
-  "captured_at": "2026-07-30T18:21:02.772304Z",
+  "captured_at": "2026-08-02T22:14:54.463223Z",
   "commands": [
     {
       "command": "make check",
       "exit_code": 0,
-      "output_digest": "sha256:5fcbbd3a92f7af18ff9dcb39289fd48d56bd8ec9496e6a412d12b99b32a44611",
+      "output_digest": "sha256:e46ddf9710e3466f257448c1dec492c13470d3c78cc77857355ab9b4857d7256",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:c292591bf67b9e5d363a0ebd53f5020771f4470d3c9be433dacd58b426abbc77",
+        "artifact_digest": "sha256:312406219f2dca2448200866d87414376f323fce133bf4bf6b179b58b52152d1",
         "file": "artifacts/public/phase08/package-evidence.json",
-        "file_digest": "sha256:7d3d8ef482f1b5a9fa5c35f0725f890875fadaa3814d052d59e42fe3222dedea"
+        "file_digest": "sha256:9da77d191d71532751d05c923293c800ce05c441c03bdc374037ce7eb56c2882"
       },
       "command": "make package",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:e0d6ba61d94185426b1c035fa25cb7a62a4af0bc1eda1ef97b9ed1013dd0c000",
+        "artifact_digest": "sha256:5c50eede93b721bf683e92cb67161ba522b3ba24f7946b34d9544a68877beb0b",
         "file": "artifacts/public/phase08/install-evidence.json",
-        "file_digest": "sha256:9463c5a4a3cf76a68a6b807045be71ec4c23692fe70e312cf1cef18f3c51cc02"
+        "file_digest": "sha256:47cf4841790292b71cfc84580476531102ee858dbb23faad33cc45400559ff21"
       },
       "command": "make test-install",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:ea695fad5778aeb7990fe7d5937ca711f1984d6217e4e7c46c184fe8f0b8e610",
+        "artifact_digest": "sha256:7b34cbd462bd5b6d586d8e139910a89d70a739b75a010844a803c8dc68f92185",
         "file": "artifacts/public/phase08/upgrade-evidence.json",
-        "file_digest": "sha256:ebe127be08d1d58a3f63f3aacbf4055e4334094039817c9e4edb4188e45bc0cd"
+        "file_digest": "sha256:84fc47f3764c301f78260212606435e11d5a88f4fa24f0acbd5ce1b35f9388d6"
       },
       "command": "make test-upgrade",
       "result": "PASSED"
     },
     {
       "artifact": {
-        "artifact_digest": "sha256:511cf9d61783aba343895983ab3dc06cc9e47e16ad63c46abd1f1bb95676f813",
+        "artifact_digest": "sha256:1e54a738b4034601aec8d24b7ef82c0567e3b7ae1ebfdf6df29cf4dbd577cf8e",
         "file": "artifacts/public/phase08/reference-evidence.json",
-        "file_digest": "sha256:8ddf5f10c11ea490d619e940013e545df1f84704bde528f6a55406d04f521866"
+        "file_digest": "sha256:9bff5f9096dbc99c2cefaff675cc3bc4e72026aead88fa8120f1b8431eb8448d"
       },
       "command": "make test-reference-campaign",
       "result": "PASSED"
@@ -103,34 +104,19 @@
   "limitations": [
     "Credential-independent Phase 08 work cannot satisfy the independent operator acceptance row.",
     "The live Core reference uses disposable loopback services.",
-    "Live Looker remains outside this evidence packet.",
     "No release signing identity or automated publication exists."
   ],
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "sdist_digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
+    "wheel_digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0"
   },
   "phase": "08",
-  "phase08_preacceptance_digest": "sha256:15b3449da0397e7dc365c69487ac9a239b9e005398ab9c5b28f28716844fa7e0",
-  "phase_status": "access-dependent",
+  "phase08_preacceptance_digest": "sha256:c7b6b754380f3c01c411db7b847959e02bea2f8bfe0f8856bb144a4db5876d05",
+  "phase_status": "credential-independent-acceptance-passed",
   "remaining_boundaries": [
-    {
-      "boundary": "live disposable Looker saved-content workflow",
-      "evidence_packet": "EP-006",
-      "phase": "06",
-      "provisioning_allowed": false,
-      "status": "access-dependent"
-    },
-    {
-      "boundary": "live Looker-specific security and fault behavior",
-      "evidence_packet": "EP-007",
-      "phase": "07",
-      "provisioning_allowed": false,
-      "status": "access-dependent"
-    },
     {
       "boundary": "independent operator and real workflow value evidence",
       "evidence_packet": "EP-008",
@@ -139,7 +125,7 @@
       "status": "not-run"
     }
   ],
-  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
+  "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
   "requirements": {
     "RC-017": "CREDENTIAL_INDEPENDENT_EVIDENCE_PRESENT",
     "RC-018": "NOT_SATISFIED"

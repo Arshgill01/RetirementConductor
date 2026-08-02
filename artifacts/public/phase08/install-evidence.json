@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-07-30T18:16:45.688774Z",
+  "captured_at": "2026-08-02T22:10:46.623169Z",
   "command": "make test-install",
   "evidence_mode": "fixture",
   "host": {
@@ -17,17 +17,17 @@
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "sdist_digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
+    "wheel_digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0"
   },
   "phase": "08",
-  "phase08_install_evidence_digest": "sha256:e0d6ba61d94185426b1c035fa25cb7a62a4af0bc1eda1ef97b9ed1013dd0c000",
+  "phase08_install_evidence_digest": "sha256:5c50eede93b721bf683e92cb67161ba522b3ba24f7946b34d9544a68877beb0b",
   "raw_receipt": {
-    "artifact_digest": "sha256:e83d0203e3d945e7a1d2300f6196eaabeca97cb16e3e371e7749bc2e00e3f97a",
-    "file_digest": "sha256:b700801c2aba10fe864906861f6d3f8413c6a2b788d7eb2e18135207a8d188dd"
+    "artifact_digest": "sha256:c27a3ede79d469574d5f06c2670b402300f3803d95beb60fb8b1d9b7ca5fa013",
+    "file_digest": "sha256:7c9a95c567a3e3ff97abbc6012680565fd05946bdc199ed1e908c337e7b83e46"
   },
-  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
+  "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
   "result": "CLEAN_INSTALL_VERIFIED",
   "runtimes": [
     {
@@ -41,7 +41,7 @@
         "GIT_DBT_REPOSITORY_ROOT"
       ],
       "package_version": "0.2.0",
-      "preflight_digest": "sha256:f6edf73a70a81a7573685b038a656e162a3c454336df0aee78a30f66fc5cbbb6",
+      "preflight_digest": "sha256:cf5cf477d4cde19265cc70b3fb028e08c8bdcc537fdbb10f1fb1a24641a2f160",
       "python_version": "3.11.15",
       "reference_byte_reproduced": true,
       "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
@@ -58,7 +58,7 @@
         "GIT_DBT_REPOSITORY_ROOT"
       ],
       "package_version": "0.2.0",
-      "preflight_digest": "sha256:c634063bcb13f776678b6b16df1609793d2e544d7922b59540565ef50b9f1285",
+      "preflight_digest": "sha256:2375574d62940e8c9b03e971a1b9150fa0db4e4790dc811880f3039e44424dc9",
       "python_version": "3.12.13",
       "reference_byte_reproduced": true,
       "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
@@ -75,7 +75,7 @@
         "GIT_DBT_REPOSITORY_ROOT"
       ],
       "package_version": "0.2.0",
-      "preflight_digest": "sha256:59970aea71c49661ab7de965ef1e967c14eb4eebde67f6d9b4096d6c62800ef5",
+      "preflight_digest": "sha256:4ced1e6a874e9a1923f78c9d0e539f9807ff6b83696ce3561c44d77f6b3b446f",
       "python_version": "3.13.14",
       "reference_byte_reproduced": true,
       "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
@@ -92,7 +92,7 @@
         "GIT_DBT_REPOSITORY_ROOT"
       ],
       "package_version": "0.2.0",
-      "preflight_digest": "sha256:e2522ab5f2d7875e8591d24e3955d1429d33013ac3dbe0798103eefee23017c7",
+      "preflight_digest": "sha256:08ed38b56c5eb1c7f9a604c4b4fc15618220e41264f4ba85841039806ad9d0b7",
       "python_version": "3.14.4",
       "reference_byte_reproduced": true,
       "reference_manifest_digest": "sha256:16fa6dce7cd313fa63a3da55701db39e89eaef3f7833c09643ea867f78cacec3",
@@ -104,8 +104,8 @@
     "copied_state_refusal": "RUNTIME_WRITER_MISMATCH",
     "copied_state_unchanged": true,
     "package_removed": true,
-    "removal_plan_digest": "sha256:83313ed48d3925c1366691d4ea7f32321e5ed83cb0b66f17f254b31d642ed8c9",
-    "removal_receipt_digest": "sha256:4cf5bc4036bd00691284c1c2c6a1f1751d7fe9ed01489859d29f344c62379465",
+    "removal_plan_digest": "sha256:7c55c6bec52a2a3dd1869f51c9fed94b6853f17346cd637c697f82294836609f",
+    "removal_receipt_digest": "sha256:cc4889d71a9506f16213c8ac0047f82ef4eb7a1eaa53b99688005af3d16a9737",
     "retained_plan": true,
     "state_removed": true,
     "unconfirmed_refusal": "AUTH_APPROVAL_MISSING"

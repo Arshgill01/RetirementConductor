@@ -1,6 +1,6 @@
 {
-  "captured_at": "2026-07-30T18:20:27.326356Z",
-  "compatibility_evidence_digest": "sha256:2897d2e4bf44fde773e3dee5a22b7e33364773ca3bfbc770d484caee2ec0370a",
+  "captured_at": "2026-08-02T22:14:24.852607Z",
+  "compatibility_evidence_digest": "sha256:c8a200ea1bba4b1f46f4f8a2a49fa7e026b0620a7de325efcde62ac4a9a55936",
   "evidence_mode": "mixed live, fixture, and analysis",
   "host": {
     "libc": [
@@ -44,15 +44,14 @@
     "musl Linux",
     "shared filesystem or multi-writer deployment",
     "Retirement Conductor product container",
-    "DataHub Cloud",
-    "live Looker saved-content workflow"
+    "DataHub Cloud"
   ],
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "sdist_digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
+    "wheel_digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0"
   },
   "phase": "08",
   "python_versions": [
@@ -61,7 +60,7 @@
     "3.13.14",
     "3.14.4"
   ],
-  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
+  "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
   "result": "EXECUTED_BOUNDARIES_RECORDED",
   "schema_version": "1.0.0",
   "tools": {

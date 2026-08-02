@@ -1,6 +1,6 @@
 {
   "acceptance_status": "NOT_SATISFIED",
-  "captured_at": "2026-07-30T18:20:27.519601Z",
+  "captured_at": "2026-08-02T22:14:24.953595Z",
   "completed_preparation": [
     "clean installation and deployment runbook",
     "executed compatibility matrix",
@@ -13,19 +13,19 @@
   "non_claims": [
     "Author-run reference evidence is not independent operation.",
     "A fixture or scripted run is not customer-value evidence.",
-    "The Phase 08 acceptance contract remains access-dependent."
+    "RC-018 adoption acceptance remains access-dependent."
   ],
-  "operator_boundary_digest": "sha256:4a041503d2f745b3a5a02c8c1f0b6991e34fe1789c53e6cf60b87125e34c25a5",
+  "operator_boundary_digest": "sha256:0f41d056a3b10057cf1f2fd936fb5cec3e0936083a864d2243d40c21e7beab86",
   "package": {
     "requirements_digest": "sha256:9b3475dd5dfec6f48eac429ddda63e0a177c3aded4df0d110a9b5207b94e9aa4",
     "sdist": "retirement_conductor-0.2.0.tar.gz",
-    "sdist_digest": "sha256:b5f3cad1aaaff2373e28505a3036da6eb94363531cdf6af92c7f889c33b90f25",
+    "sdist_digest": "sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a",
     "wheel": "retirement_conductor-0.2.0-py3-none-any.whl",
-    "wheel_digest": "sha256:415d7efb71ee0059e0831b3347fa48fcade7ffab2c835b35428cfa74e04d741b"
+    "wheel_digest": "sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0"
   },
   "phase": "08",
   "reason": "No independent prospective operator observation was provided during this autonomous repository run.",
-  "repository_commit": "eb7206708c145e4d8a50200fb6105a60207cb515",
+  "repository_commit": "c3440b2702c78de0f3b7651271ebbe5f750ec801",
   "requirement": "RC-018",
   "result": "NOT_RUN",
   "schema_version": "1.0.0",

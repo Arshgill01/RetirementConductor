@@ -44,7 +44,7 @@ the produced artifacts have been inspected.
 | EP-005 | 05 | live and fixture | `ae62486` | `artifacts/public/phase05/`; four-decision CLI, deterministic canonical reports, exact apply confirmation, structural redaction, browser, keyboard, and accessibility proof | passed | live view reuses the disposable phase 04 manifest; independent human comprehension remains phase 08 |
 | EP-006 | 06 | live local and fixture | `8f5eb58` | `artifacts/public/phase06/`; pinned official inputs, deterministic corpus and oracle, direct DataHub readback, exact Git/dbt receipt, refusal matrix, one producer sentinel, and zero false readiness | passed | fixture inputs do not prove production coverage; readiness is bounded by one DataHub and Git/dbt envelope |
 | EP-007 | 07 | live local and fixture | `6e4ca87` | `artifacts/public/phase07/`; post-removal least-privilege, fault, recovery, concurrency, dependency, secret, public-artifact, and benchmark-binding evidence | passed | deterministic local fault injection does not prove production host, secret-provider, or distributed-storage controls |
-| EP-008 | 08 | live local and operator | `eb72067` | `artifacts/public/phase08/`; package, clean install, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | refresh-required | engineering checks passed before the reframe; package refresh remains, and independent operator result stays `NOT_RUN` |
+| EP-008 | 08 | live local, fixture, and analysis | `c3440b2` | `artifacts/public/phase08/`; post-removal reproducible package, four clean installs, preflight, live installed-wheel Core reference, upgrade/rollback, removal, compatibility, and explicit operator boundary | engineering passed | RC-018 remains follow-on `NOT_RUN`; no independent-operation or customer-value claim |
 
 ### Phase 06 checkpoint B — pinned official inputs
 
@@ -610,11 +610,11 @@ package/version/license findings, vulnerability counts, scan limitations,
 live-boundary wording, tracked public content, secret-scan result, and
 generated whitespace.
 
-### Phase 08 credential-independent observations
+### Historical Phase 08 pre-removal observations
 
-These observations cover the Phase 08 engineering tasks at their recorded
-commit. Package and compatibility evidence must be refreshed after Looker
-removal; independent operator and customer-value mode remains `NOT_RUN`.
+These observations cover the earlier Phase 08 engineering tasks at their
+recorded commit. They were superseded by the post-removal acceptance below;
+independent operator and customer-value mode remains `NOT_RUN`.
 
 Evidence ID: EP-008 (credential-independent portion)
 
@@ -782,6 +782,125 @@ identity, installed/source operation counts, native validator result,
 publication settle attempts, gate counts, all decisions and refusals, local
 metrics boundary, executed/not-executed compatibility rows, operator
 `NOT_RUN` state, repository validation, and public/secret scans.
+
+### Phase 08 post-removal engineering acceptance
+
+Evidence ID: EP-008 (credential-independent engineering portion)
+
+Requirement IDs: RC-017; explicit unsatisfied follow-on boundary for RC-018
+
+Tested behavior commit: `c3440b2702c78de0f3b7651271ebbe5f750ec801`
+
+Captured at: `2026-08-02T22:14:54.463223Z`
+
+Mode: live local for loopback DataHub Core, MCP, Git, dbt, DuckDB,
+publication, and producer gate; fixture for clean-install state, reference,
+upgrade, rollback, removal, and copied-state behavior; analysis for package,
+compatibility, documentation, and the operator boundary. No independent human
+result is claimed.
+
+Source and tool versions: Retirement Conductor 0.2.0; Linux x86_64 with glibc
+2.43; CPython 3.11.15, 3.12.13, 3.13.14, and 3.14.4; uv 0.11.28; Git 2.53.0;
+bubblewrap 0.11.1; Docker 29.1.3; dbt-core 1.12.0; dbt-duckdb 1.10.1; DuckDB
+1.5.5; DataHub Core v1.6.0 image
+`sha256:672bceed7f36f751ab3302c30826c6ba124d1c0fd8d24c3724e725078b864018`;
+and MCP v0.6.0 at clean source commit
+`9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9`.
+
+Commands:
+
+```text
+make package
+make test-install
+make test-upgrade
+make test-reference-campaign
+make phase08-evidence
+```
+
+The evidence generator additionally ran `make check`, `git diff --check`, the
+secret scan, and the public-artifact review.
+
+Observed package result: the 76-member wheel digest is
+`sha256:17e63b4c714362469268659ee39809319371958c415dc6209580540dd9b1d5f0`.
+The 85-member source-archive digest is
+`sha256:9d70c9caedaa78e114875a7b06bd73f86fad172f12257ed67551246146a1576a`.
+Both rebuilt byte-for-byte, the source archive rebuilt the same wheel, the
+runtime lock was hash-bound, and operational state was absent. Listing both
+archives found no deprecated adapter module, schema, recipe, fixture, or
+modeling-language file. The package remains unsigned and says so.
+
+Observed install and lifecycle result: isolated Python 3.11 through 3.14
+environments imported only the installed wheel, reproduced the same blocked
+fixture, and named all five missing Core/Git/dbt configuration references
+without values. Copied state refused unchanged, unconfirmed removal refused,
+confirmed state and package removal passed, and the removal plan remained.
+Upgrade from 0.1.0 advanced schema versions `[1]` to `[1, 2, 3]` without
+changing manifest
+`sha256:cc3400464ed98cd6afed3a1e5e1ccd0d8cc157b5872473b4ebe06cc2cf1d02d7`;
+backup-based rollback restored that same manifest and prior pair.
+
+Observed live reference result: all 35 product operations used the clean
+installed wheel and zero used the source checkout. Preflight passed the
+`core-git-dbt` profile with one writer and local-only metrics. DataHub Core
+and the exact MCP v0.6.0 executable were healthy on loopback. Native dbt
+parse, seed, build, and test passed. The isolated campaign reached
+`READY_TO_RETIRE`, verified publication read-back after two attempts, and
+wrote one sentinel. The late two-consumer campaign reopened to `UNSAFE`; the
+41-consumer rich graph stayed `UNSAFE`; its gate refused with
+`GATE_DECISION_NOT_READY`. The ledger recorded one executed and 12 refused
+gate attempts.
+
+Validation result: `make check` passed 183 tests, Ruff, formatting, strict
+mypy, 174 required-file and 146-link validation, the 302-file secret scan,
+the 56-file public-artifact review, source and wheel builds, and
+`git diff --check`.
+
+Tracked artifact paths and file SHA-256 digests:
+
+- `artifacts/public/phase08/package-evidence.json` —
+  `9da77d191d71532751d05c923293c800ce05c441c03bdc374037ce7eb56c2882`;
+- `artifacts/public/phase08/install-evidence.json` —
+  `47cf4841790292b71cfc84580476531102ee858dbb23faad33cc45400559ff21`;
+- `artifacts/public/phase08/upgrade-evidence.json` —
+  `84fc47f3764c301f78260212606435e11d5a88f4fa24f0acbd5ce1b35f9388d6`;
+- `artifacts/public/phase08/reference-evidence.json` —
+  `9bff5f9096dbc99c2cefaff675cc3bc4e72026aead88fa8120f1b8431eb8448d`;
+- `artifacts/public/phase08/compatibility-evidence.json` —
+  `aacc3ad33cf92111ec0583835699a511971def6b0af907761640fbbade9f85b1`;
+- `artifacts/public/phase08/operator-boundary.json` —
+  `3f38685f20a4bd7372b3748b526b6de507b122ed9c114e00b022ccd954280030`;
+- `artifacts/public/phase08/phase08-preacceptance-evidence.json` —
+  `de6bd5952d45041e9dc4b79909bbaacc494b8f88143badbd652a24525f54e2c6`.
+
+The canonical engineering-acceptance digest is
+`sha256:c7b6b754380f3c01c411db7b847959e02bea2f8bfe0f8856bb144a4db5876d05`.
+Ignored raw package, install, upgrade, and reference file SHA-256 digests are,
+respectively,
+`6970f56d3b656995db09dcaf3d4f878821f360b7070289c63337e1e6321506a1`,
+`7c9a95c567a3e3ff97abbc6012680565fd05946bdc199ed1e908c337e7b83e46`,
+`dd4c96403a1328fdbe31e9d1b370d6723aec52708c7d9cc920bd2c81c58cdf2b`,
+and `b9e40bdd6e65c425dc84916791dffb65c07e1287a1b2e318d9d228e97e02d8b5`.
+
+What this proves: the narrowed post-removal release is reproducible,
+installable, migratable, recoverable, removable, and capable of executing the
+complete supported DataHub plus Git/dbt vertical entirely through its clean
+installed entry point while preserving refusal behavior.
+
+What this does not prove: independent operation, recurring customer value,
+buyer willingness, DataHub Cloud, non-Linux hosts, shared or multi-writer
+state, a product container, release signing, or production coverage. The
+operator artifact truthfully remains `NOT_RUN` and `NOT_SATISFIED`; RC-018 is
+a follow-on requirement and no adoption claim is made.
+
+Reviewer inspection: inspected every raw and public digest; archive member
+lists and absence check; one package identity across all receipts; four Python
+versions; isolated imports; actionable missing references; fixture decision;
+schema and manifest parity; backup, copied-state, removal, and uninstall
+fields; exact Core image and MCP tag/commit/version; installed/source operation
+counts; dbt result; publication attempts; ready, late, and rich decisions;
+gate counts; compatibility exclusions; operator non-claim; broad validation;
+and tracked whitespace. The credential-independent Phase 08 engineering
+boundary is complete.
 
 ## Entry completion checklist
 

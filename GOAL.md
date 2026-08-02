@@ -449,3 +449,15 @@ Report:
 - public artifact paths and digests;
 - Looker files and interfaces removed;
 - remaining limitations and adoption evidence still not observed.
+
+## Observed execution result
+
+All credential-independent completion conditions passed. Phase 06 matched 14
+of 14 truth scenarios with zero false readiness across three semantically
+equivalent live-local runs. Phase 07 passed its post-removal security, fault,
+recovery, dependency, secret, and artifact checks. Phase 08 reproduced the
+narrowed package, installed it across four Python series, preserved and rolled
+back campaign state, removed only confirmed state, and completed the live-local
+reference entirely through the installed wheel. The supported release contains
+only DataHub plus Git/dbt product boundaries. RC-018 remains a visible
+independent-operator follow-on and no adoption result is claimed.
