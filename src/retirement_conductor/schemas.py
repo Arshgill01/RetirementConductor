@@ -16,6 +16,8 @@ SCHEMA_FILENAMES = {
     "evidence-envelope": "evidence-envelope-v1.schema.json",
     "consumer-receipt": "consumer-receipt-v1.schema.json",
     "datahub-snapshot": "datahub-snapshot-v1.schema.json",
+    "dataset-registry": "dataset-registry-v1.schema.json",
+    "dataset-cache-receipt": "dataset-cache-receipt-v1.schema.json",
     "git-dbt-plan": "git-dbt-plan-v1.schema.json",
     "looker-plan": "looker-plan-v1.schema.json",
     "producer-plan": "producer-plan-v1.schema.json",

@@ -33,6 +33,7 @@ packages = ["src/retirement_conductor"]
 [tool.hatch.build.targets.wheel.force-include]
 "fixtures/repository" = "retirement_conductor/fixture_data/repository"
 "fixtures/scenarios" = "retirement_conductor/fixture_data/scenarios"
+"fixtures/data-quality" = "retirement_conductor/data_quality_data"
 "fixtures/specs/valid.yaml" = "retirement_conductor/reference_data/spec.yaml"
 "schemas" = "retirement_conductor/schemas"
 
@@ -51,6 +52,7 @@ include = [
   "/docs/runbooks/RECOVERY.md",
   "/docs/templates/OPERATOR_OBSERVATION.md",
   "/fixtures/repository",
+  "/fixtures/data-quality",
   "/fixtures/scenarios",
   "/fixtures/specs/valid.yaml",
   "/schemas",

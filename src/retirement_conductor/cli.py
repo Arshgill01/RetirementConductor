@@ -19,6 +19,10 @@ from retirement_conductor.datahub import (
 )
 from retirement_conductor.datahub_config import DataHubSettings
 from retirement_conductor.datahub_http import DataHubGraphClient
+from retirement_conductor.dataset_registry import (
+    acquire_datasets,
+    default_registry_path,
+)
 from retirement_conductor.deployment import (
     DEPLOYMENT_PROFILES,
     create_removal_plan,
@@ -134,6 +138,51 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path(".retirement-conductor/datahub/capability-fingerprint.json"),
     )
+
+    benchmark = subparsers.add_parser(
+        "benchmark",
+        help="prepare and run the evidence-quality benchmark",
+    )
+    benchmark_subparsers = benchmark.add_subparsers(
+        dest="benchmark_command",
+        required=True,
+    )
+    benchmark_data = benchmark_subparsers.add_parser(
+        "data",
+        help="acquire or offline-verify pinned benchmark inputs",
+    )
+    benchmark_data_subparsers = benchmark_data.add_subparsers(
+        dest="benchmark_data_command",
+        required=True,
+    )
+    for command in ("acquire", "verify"):
+        benchmark_data_operation = benchmark_data_subparsers.add_parser(command)
+        benchmark_data_operation.add_argument(
+            "--registry",
+            type=Path,
+            default=Path(
+                os.environ.get(
+                    "RETIREMENT_CONDUCTOR_DATASET_REGISTRY",
+                    str(default_registry_path()),
+                )
+            ),
+        )
+        benchmark_data_operation.add_argument(
+            "--cache",
+            type=Path,
+            default=Path(
+                os.environ.get(
+                    "RETIREMENT_CONDUCTOR_DATASET_CACHE",
+                    ".retirement-conductor/datasets",
+                )
+            ),
+        )
+        benchmark_data_operation.add_argument("--receipt", type=Path)
+        benchmark_data_operation.add_argument(
+            "--offline",
+            action="store_true",
+            help="forbid network access and require every cache entry",
+        )
 
     campaign = subparsers.add_parser(
         "campaign",
@@ -691,6 +740,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "output": str(args.output),
                 }
             )
+            return 0
+        if args.command == "benchmark" and args.benchmark_command == "data":
+            receipt = acquire_datasets(
+                args.registry,
+                args.cache,
+                offline=(args.benchmark_data_command == "verify" or args.offline),
+                receipt_path=args.receipt,
+            )
+            _render(receipt)
             return 0
         if args.command == "adapter" and args.adapter_name == "git-dbt":
             with CampaignStore(args.store, writer_id=args.writer_id) as store:

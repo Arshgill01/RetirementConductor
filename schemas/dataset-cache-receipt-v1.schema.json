@@ -1,0 +1,95 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/dataset-cache-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "all_verified": {
+      "const": true
+    },
+    "assets": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "archive_members": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "asset_id": {
+            "type": "string"
+          },
+          "cache_key": {
+            "pattern": "^sha256/[0-9a-f]{64}/[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "dataset_id": {
+            "type": "string"
+          },
+          "license_id": {
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "variant": {
+            "type": "string"
+          },
+          "verified": {
+            "const": true
+          }
+        },
+        "required": [
+          "asset_id",
+          "dataset_id",
+          "variant",
+          "cache_key",
+          "license_id",
+          "size_bytes",
+          "sha256",
+          "archive_members",
+          "verified"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "mode": {
+      "enum": [
+        "acquire",
+        "offline-verify"
+      ]
+    },
+    "receipt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "registry_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "dataset-cache-receipt/v1"
+    },
+    "upstream_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "mode",
+    "upstream_revision",
+    "registry_digest",
+    "assets",
+    "all_verified",
+    "receipt_digest"
+  ],
+  "title": "Dataset cache verification receipt v1",
+  "type": "object"
+}

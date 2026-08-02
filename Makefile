@@ -2,7 +2,7 @@
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence phase06-recipes \
-	phase06-evidence phase07-evidence phase08-evidence package scan \
+	phase06-data phase06-evidence phase07-evidence phase08-evidence package scan \
 	test test-install test-reference-campaign test-ui test-upgrade \
 	test-end-to-end test-faults test-recovery test-security
 
@@ -76,6 +76,17 @@ phase05-browser:
 
 phase05-evidence:
 	uv run python scripts/generate_phase05_evidence.py
+
+phase06-data:
+	uv run retirement-conductor benchmark data acquire \
+		--registry fixtures/data-quality/datasets.json \
+		--cache .retirement-conductor/datasets \
+		--receipt .retirement-conductor/benchmark/data-acquire-receipt.json
+	uv run retirement-conductor benchmark data verify \
+		--registry fixtures/data-quality/datasets.json \
+		--cache .retirement-conductor/datasets \
+		--offline \
+		--receipt .retirement-conductor/benchmark/data-verify-receipt.json
 
 phase06-recipes:
 	uv run --python 3.11 \

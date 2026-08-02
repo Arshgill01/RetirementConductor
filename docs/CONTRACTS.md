@@ -610,6 +610,8 @@ Initial refusal codes use these prefixes:
 - `EVIDENCE_`: unavailable, partial, stale, or unverifiable evidence;
 - `IDENTITY_`: missing, ambiguous, or inconsistent identity;
 - `SOURCE_`: changed source or native precondition;
+- `DATASET_`: unpinned, unlicensed, missing, corrupt, or structurally
+  unexpected benchmark input;
 - `SCOPE_`: actual targets exceed the plan or allowlist;
 - `APPLY_`: failed or partial mutation;
 - `VALIDATION_`: failed or inconclusive native validation;

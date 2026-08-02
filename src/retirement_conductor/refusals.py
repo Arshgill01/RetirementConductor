@@ -8,6 +8,7 @@ ALLOWED_FAMILIES = {
     "APPLY",
     "AUTH",
     "COMPENSATION",
+    "DATASET",
     "EVIDENCE",
     "GATE",
     "IDENTITY",

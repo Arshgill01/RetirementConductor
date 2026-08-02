@@ -1,0 +1,126 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/dataset-registry-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assets": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "allowed_archive_members": {
+            "items": {
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$",
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "asset_id": {
+            "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+            "type": "string"
+          },
+          "dataset_id": {
+            "enum": [
+              "fiction-retail",
+              "healthcare",
+              "nyc-taxi"
+            ]
+          },
+          "format": {
+            "enum": [
+              "sqlite",
+              "zip"
+            ]
+          },
+          "license_evidence_url": {
+            "format": "uri",
+            "type": "string"
+          },
+          "license_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "quality_role": {
+            "enum": [
+              "branch-selective-quality",
+              "freshness-control",
+              "freshness-fault",
+              "relational-control"
+            ]
+          },
+          "sha256": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "source_path": {
+            "minLength": 1,
+            "pattern": "^datasets/[A-Za-z0-9._/-]+$",
+            "type": "string"
+          },
+          "source_url": {
+            "format": "uri",
+            "type": "string"
+          },
+          "variant": {
+            "minLength": 1,
+            "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset_id",
+          "dataset_id",
+          "variant",
+          "quality_role",
+          "source_path",
+          "source_url",
+          "license_id",
+          "license_evidence_url",
+          "size_bytes",
+          "sha256",
+          "format",
+          "allowed_archive_members"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "resources_page": {
+      "const": "https://datahub.devpost.com/resources"
+    },
+    "schema_version": {
+      "const": "dataset-registry/v1"
+    },
+    "upstream": {
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "const": "https://github.com/datahub-project/static-assets"
+        },
+        "revision": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "revision"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "resources_page",
+    "upstream",
+    "assets"
+  ],
+  "title": "DataHub hackathon dataset registry v1",
+  "type": "object"
+}

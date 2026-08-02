@@ -16,4 +16,6 @@ def test_schema_set_covers_every_phase_zero_contract() -> None:
         "evidence-envelope",
         "consumer-receipt",
         "campaign-manifest",
+        "dataset-registry",
+        "dataset-cache-receipt",
     }
