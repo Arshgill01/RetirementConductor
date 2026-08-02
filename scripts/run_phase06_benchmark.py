@@ -619,24 +619,38 @@ def native_fault_probes(
             yaml.safe_dump(profile, sort_keys=False), encoding="utf-8"
         )
         started = time.monotonic()
-        result = subprocess.run(
-            [
-                str(DBT_EXECUTABLE),
-                "build",
-                "--project-dir",
-                str(project),
-                "--profiles-dir",
-                str(project),
-                "--no-use-colors",
-            ],
-            cwd=project,
-            env=runner.environment,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=300,
+        commands: list[dict[str, Any]] = []
+        combined_output = ""
+        test_result: subprocess.CompletedProcess[str] | None = None
+        for operation in ("seed", "run", "test"):
+            result = subprocess.run(
+                [
+                    str(DBT_EXECUTABLE),
+                    operation,
+                    "--project-dir",
+                    str(project),
+                    "--profiles-dir",
+                    str(project),
+                    "--no-use-colors",
+                ],
+                cwd=project,
+                env=runner.environment,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=300,
+            )
+            combined_output += result.stdout
+            commands.append({"arguments": [operation], "exit_code": result.returncode})
+            if operation in {"seed", "run"}:
+                require(result.returncode == 0, f"{variant} {operation} failed")
+            else:
+                test_result = result
+        require(test_result is not None, "native fault test did not run")
+        require(
+            test_result.returncode != 0,
+            f"{variant} unexpectedly passed dbt test",
         )
-        require(result.returncode != 0, f"{variant} unexpectedly passed dbt build")
         run_results = json.loads(
             (project / "target" / "run_results.json").read_text(encoding="utf-8")
         )
@@ -651,8 +665,8 @@ def native_fault_probes(
         )
         runner._record(
             f"dbt-fault-{variant}",
-            result.returncode,
-            result.stdout,
+            test_result.returncode,
+            combined_output,
             {
                 "result": "EXPECTED_NATIVE_FAILURE",
                 "refusal_code": "VALIDATION_RECEIPT_FAILED",
@@ -661,7 +675,8 @@ def native_fault_probes(
         )
         observations.append(
             {
-                "dbt_exit_code": result.returncode,
+                "dbt_exit_code": test_result.returncode,
+                "commands": commands,
                 "expected_failed_tests": sorted(expected),
                 "failed_tests": sorted(failed),
                 "result": "VALIDATION_RECEIPT_FAILED",
