@@ -5,6 +5,11 @@ known consumers across systems, changing the consumers it is authorized to
 change, validating each change with the consumer's own tools, and refusing the
 producer-side retirement action until the evidence closes.
 
+The public [technical dossier](https://retirement-conductor.arshgill01.chatgpt.site)
+explains the complete product, evidence, safety boundary, official and
+synthetic data benchmark, limitations, and copyable end-to-end verification
+commands. Its standalone source is tracked under [`site/`](site/).
+
 ## The problem in plain language
 
 An old warehouse column can look unused in its repository while still feeding

@@ -158,6 +158,10 @@ REQUIRED_FILES = {
     "scripts/run_security_scan.py",
     "scripts/test_install.py",
     "scripts/test_upgrade.py",
+    "site/.openai/hosting.json",
+    "site/app/page.tsx",
+    "site/package.json",
+    "site/public/retirement-conductor.html",
     "src/retirement_conductor/cli.py",
     "src/retirement_conductor/benchmark_data.py",
     "src/retirement_conductor/benchmark_oracle.py",
@@ -236,7 +240,13 @@ EXCLUDED_PARTS = {
     ".retirement-conductor",
     ".ruff_cache",
     ".venv",
+    ".vinext",
+    ".next",
+    ".wrangler",
     "__pycache__",
+    "dist",
+    "node_modules",
+    "outputs",
 }
 
 

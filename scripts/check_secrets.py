@@ -15,7 +15,13 @@ EXCLUDED_PARTS = {
     ".retirement-conductor",
     ".ruff_cache",
     ".venv",
+    ".vinext",
+    ".next",
+    ".wrangler",
     "__pycache__",
+    "dist",
+    "node_modules",
+    "outputs",
     "private",
     "raw",
 }
