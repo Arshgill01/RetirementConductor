@@ -10,6 +10,36 @@ explains the complete product, evidence, safety boundary, official and
 synthetic data benchmark, limitations, and copyable end-to-end verification
 commands. Its standalone source is tracked under [`site/`](site/).
 
+## The agent demo
+
+Retirement Conductor now exposes the same campaign engine as a project-scoped
+MCP server with a Codex skill. The model can discover context, inspect state,
+plan the exact Git/dbt change, invoke native validation, reconcile fresh
+evidence, and explain a decision. It cannot authorize its own plan, and it
+cannot override the deterministic producer gate.
+
+The highest-signal demo starts with a campaign that was ready after one dbt
+consumer was migrated and validated. Fresh DataHub reconciliation then finds a
+late Spark consumer. Codex calls the MCP inspection tools, explains why the
+same campaign is now `UNSAFE`, and refuses to invoke retirement. Run the
+model-driven retained-state acceptance trace with:
+
+```bash
+make agent-acceptance
+```
+
+See [the agent demo runbook](docs/runbooks/AGENT_DEMO.md) for the complete live
+path, exact human-authorization pause, adversarial prompts, and judge script.
+The latest public-safe
+[agent acceptance evidence](artifacts/public/agent/agent-acceptance.json)
+records the exact prompt, tool order, canonical blockers, model response, and
+raw-trace digest while keeping the private JSONL trace out of Git.
+The audit behind this path also produced upstream DataHub MCP
+[PR #195](https://github.com/acryldata/mcp-server-datahub/pull/195) for correct
+lineage pagination and
+[PR #196](https://github.com/acryldata/mcp-server-datahub/pull/196) for accurate
+deployment-gate diagnostics.
+
 ## The problem in plain language
 
 An old warehouse column can look unused in its repository while still feeding
