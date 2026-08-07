@@ -11,6 +11,10 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = {
+    ".agents/skills/retirement-conductor-agent/SKILL.md",
+    ".agents/skills/retirement-conductor-agent/agents/openai.yaml",
+    ".agents/skills/retirement-conductor-agent/references/tool-sequence.md",
+    ".codex/config.toml",
     ".env.example",
     ".editorconfig",
     ".gitignore",
@@ -21,6 +25,7 @@ REQUIRED_FILES = {
     "LICENSE",
     "Makefile",
     "PLAN.md",
+    "PROJECT_CONTEXT.md",
     "README.md",
     "SECURITY.md",
     "STATUS.md",
@@ -56,6 +61,7 @@ REQUIRED_FILES = {
     "docs/research/SCOPE_PRESSURE.md",
     "docs/research/SOURCE_LEDGER.md",
     "docs/runbooks/GIT_DBT.md",
+    "docs/runbooks/AGENT_DEMO.md",
     "docs/runbooks/DATA_QUALITY_BENCHMARK.md",
     "docs/runbooks/OPERATOR.md",
     "docs/runbooks/DEPLOYMENT.md",
@@ -155,6 +161,7 @@ REQUIRED_FILES = {
     "scripts/run_phase05_browser_acceptance.py",
     "scripts/run_phase06_benchmark.py",
     "scripts/run_phase08_reference_campaign.py",
+    "scripts/run_agent_acceptance.py",
     "scripts/run_security_scan.py",
     "scripts/test_install.py",
     "scripts/test_upgrade.py",
@@ -163,6 +170,8 @@ REQUIRED_FILES = {
     "site/package.json",
     "site/public/retirement-conductor.html",
     "src/retirement_conductor/cli.py",
+    "src/retirement_conductor/agent.py",
+    "src/retirement_conductor/agent_mcp.py",
     "src/retirement_conductor/benchmark_data.py",
     "src/retirement_conductor/benchmark_oracle.py",
     "src/retirement_conductor/dataset_registry.py",
@@ -187,6 +196,9 @@ REQUIRED_FILES = {
     "tests/integration/test_operator_cli.py",
     "tests/reliability/test_store_operations.py",
     "tests/unit/test_deployment.py",
+    "tests/unit/test_agent.py",
+    "tests/unit/test_agent_acceptance.py",
+    "tests/unit/test_agent_mcp.py",
     "tests/unit/test_operator.py",
     "tests/unit/test_phase08_reference.py",
 }
@@ -273,7 +285,14 @@ def validate_markdown_shape(path: Path, errors: list[str]) -> None:
     name = relative(path)
     if not content.endswith("\n"):
         errors.append(f"{name}: missing final newline")
-    if not content.startswith("# "):
+    body = content
+    if path.name == "SKILL.md" and content.startswith("---\n"):
+        frontmatter_end = content.find("\n---\n", 4)
+        if frontmatter_end == -1:
+            errors.append(f"{name}: unclosed skill frontmatter")
+            return
+        body = content[frontmatter_end + len("\n---\n") :].lstrip("\n")
+    if not body.startswith("# "):
         errors.append(f"{name}: first line must be one level-one heading")
     level_one = [line for line in content.splitlines() if line.startswith("# ")]
     if len(level_one) != 1:

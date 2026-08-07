@@ -1,0 +1,48 @@
+[mcp_servers.retirement_conductor]
+command = "uv"
+args = ["run", "--extra", "agent", "retirement-conductor-mcp"]
+cwd = "."
+env_vars = [
+  "DATAHUB_GMS_URL",
+  "DATAHUB_GMS_TOKEN",
+  "DATAHUB_MCP_URL",
+  "DATAHUB_PLATFORM_INSTANCE",
+  "DATAHUB_GRAPH_MAX_HOPS",
+  "DATAHUB_TARGET_URN",
+  "DATAHUB_REPLACEMENT_URN",
+  "GIT_DBT_REPOSITORY_ROOT",
+  "GIT_DBT_REPOSITORY_ID",
+  "GIT_DBT_DEFAULT_BRANCH",
+  "GIT_DBT_DBT_EXECUTABLE",
+  "GIT_DBT_PRINCIPAL",
+  "GIT_DBT_ALLOW_APPLY",
+  "RETIREMENT_CONDUCTOR_STORE",
+  "RETIREMENT_CONDUCTOR_WRITER_ID",
+  "RETIREMENT_CONDUCTOR_ARTIFACT_DIR",
+  "RETIREMENT_CONDUCTOR_AGENT_SPEC_ROOT",
+  "RETIREMENT_CONDUCTOR_REFRESH_RECEIPT",
+  "RETIREMENT_CONDUCTOR_INDEXING_TIMEOUT_SECONDS",
+  "RETIREMENT_CONDUCTOR_PRODUCER_REPOSITORY",
+  "RETIREMENT_CONDUCTOR_PRODUCER_SOURCE_MARKER",
+  "RETIREMENT_CONDUCTOR_SENTINEL_ROOT",
+  "RETIREMENT_CONDUCTOR_TRUSTED_RUN_ID",
+  "RETIREMENT_CONDUCTOR_TRUST_PROVIDER",
+]
+required = true
+default_tools_approval_mode = "writes"
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.retirement_conductor.tools.apply_git_dbt_migration]
+approval_mode = "prompt"
+
+[mcp_servers.retirement_conductor.tools.execute_retirement_gate]
+approval_mode = "prompt"
+
+[mcp_servers.datahub]
+url = "http://127.0.0.1:8000/mcp"
+enabled = true
+required = false
+default_tools_approval_mode = "writes"
+startup_timeout_sec = 10
+tool_timeout_sec = 60
