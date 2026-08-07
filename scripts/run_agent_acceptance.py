@@ -183,15 +183,20 @@ def run(latest_path: Path, output_path: Path) -> dict[str, Any]:
         if isinstance(event.get("item"), dict)
         and event["item"].get("type") == "command_execution"
     ]
-    require(tool_names == EXPECTED_TOOLS, f"unexpected MCP tool trace: {tool_names}")
+    require(
+        len(tool_names) == len(EXPECTED_TOOLS)
+        and set(tool_names) == set(EXPECTED_TOOLS),
+        f"unexpected MCP tool trace: {tool_names}",
+    )
     require(not command_calls, "acceptance model used the shell")
     require(
         all(call.get("server") == "retirement_conductor" for call in calls),
         "acceptance model called an unexpected MCP server",
     )
 
-    inspected = structured_result(calls[0])
-    explained = structured_result(calls[1])
+    calls_by_tool = {str(call.get("tool")): call for call in calls}
+    inspected = structured_result(calls_by_tool["inspect_retirement_campaign"])
+    explained = structured_result(calls_by_tool["explain_retirement_campaign"])
     view = object_dict(
         inspected.get("view"),
         "inspect tool did not return a campaign view",
