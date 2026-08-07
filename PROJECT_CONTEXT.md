@@ -64,9 +64,14 @@ removal, or proved non-applicability closes them.
 - The repository is public and reports an Apache-2.0 license.
 - Before the 2026-08-07 agent work began, local `main` was clean and exactly
   matched `origin/main` at
-  `e12249145d088b1b6ef39fa4240d72fbe6aa51bf`. The current worktree adds the
-  MCP agent, Codex skill, acceptance runner, judge runbook, and this context
-  document; final current-HEAD validation is still required.
+  `e12249145d088b1b6ef39fa4240d72fbe6aa51bf`. Branch
+  `codex/agent-demo-and-datahub-contributions` now contains the MCP agent,
+  Codex skill, acceptance runner, judge runbook, public agent evidence, and
+  this context document in three focused commits. Its clean HEAD passed 190
+  tests, Ruff, formatting, strict mypy, 191-file repository validation,
+  secret and public-artifact scans, reproducible package builds, a 14-tool
+  STDIO MCP handshake, skill validation, site build/tests/lint, and
+  `git diff --check`.
 - The deployed public dossier returned HTTP 200 on 2026-08-07.
 - No demo-video URL or Devpost project/submission URL is tracked in the
   repository. Those assets may exist elsewhere, but they are **not verified**

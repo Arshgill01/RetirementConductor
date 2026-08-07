@@ -10,6 +10,7 @@ contract; `PLAN.md` defines proof order.
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
 - Current release and installed-reference behavior commit: `c3440b2`
+- Current MCP agent behavior and accepted model-trace commit: `0d70db9`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
 - Next acceptance target: optional independent-operator evaluation for RC-018;
@@ -19,6 +20,14 @@ contract; `PLAN.md` defines proof order.
   public-artifact reviews, reproducible source and wheel builds, four clean
   Python installs, upgrade/rollback/removal, an installed-wheel live-local
   reference, and `git diff --check`
+- Agent-path validation: behavior commit `0d70db9` produced an ephemeral Codex
+  MCP trace with exactly the two declared tools, no shell calls, the retained
+  live late-consumer decision `UNSAFE`, and no producer-action attempt. The
+  preceding implementation commit passed 189 tests plus Ruff, formatting,
+  strict mypy, repository validation, scans, package builds, and
+  `git diff --check`. The evidence-promotion worktree then passed 190 tests,
+  191-file repository validation, 332-file secret and 57-file public-artifact
+  scans, reproducible package builds, and `git diff --check`.
 
 ## Phase ledger
 

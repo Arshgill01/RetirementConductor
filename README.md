@@ -30,6 +30,10 @@ make agent-acceptance
 
 See [the agent demo runbook](docs/runbooks/AGENT_DEMO.md) for the complete live
 path, exact human-authorization pause, adversarial prompts, and judge script.
+The latest public-safe
+[agent acceptance evidence](artifacts/public/agent/agent-acceptance.json)
+records the exact prompt, tool order, canonical blockers, model response, and
+raw-trace digest while keeping the private JSONL trace out of Git.
 The audit behind this path also produced upstream DataHub MCP
 [PR #195](https://github.com/acryldata/mcp-server-datahub/pull/195) for correct
 lineage pagination and

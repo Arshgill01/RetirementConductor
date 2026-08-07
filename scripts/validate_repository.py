@@ -115,6 +115,7 @@ REQUIRED_FILES = {
     "artifacts/public/phase08/phase08-preacceptance-evidence.json",
     "artifacts/public/phase08/reference-evidence.json",
     "artifacts/public/phase08/upgrade-evidence.json",
+    "artifacts/public/agent/agent-acceptance.json",
     "docs/assets/phase05/all-closed-mobile.png",
     "docs/assets/phase05/live-refusal-desktop.png",
     "fixtures/campaigns/blocked/events.json",

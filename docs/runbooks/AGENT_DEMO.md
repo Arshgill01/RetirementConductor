@@ -61,8 +61,10 @@ make agent-acceptance
 The command requires a clean worktree and retained Phase 04 live-local state.
 It launches a real ephemeral Codex turn, requires exactly the two declared MCP
 calls, rejects any shell call, checks the canonical campaign result, and writes
-a public-safe evidence summary. The raw JSONL model trace remains ignored local
-evidence because it can contain private runtime details.
+a public-safe
+[evidence summary](../../artifacts/public/agent/agent-acceptance.json). The raw
+JSONL model trace remains ignored local evidence because it can contain private
+runtime details.
 
 This acceptance command is intentionally a model-orchestration check over a
 retained live campaign. It does not claim to rerun DataHub. Use the complete
