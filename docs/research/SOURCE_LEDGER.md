@@ -4,7 +4,7 @@ Technical and competitive claims use primary public sources. Source
 capabilities can change; review this ledger before changing product
 positioning or integration contracts.
 
-Checked: 2026-08-02.
+Checked: 2026-08-09.
 
 ## DataHub
 
@@ -21,6 +21,11 @@ Key pages:
 
 - [DataHub MCP Server](https://docs.datahub.com/docs/features/feature-guides/mcp/)
 - [DataHub lineage](https://docs.datahub.com/docs/features/feature-guides/lineage/)
+- [DataHub lineage API tutorial](https://docs.datahub.com/docs/api/tutorials/lineage)
+- [DataHub document API tutorial](https://docs.datahub.com/docs/api/tutorials/documents)
+- [DataHub Superset source](https://docs.datahub.com/docs/generated/ingestion/sources/superset)
+- [MCP lineage offset issue 194](https://github.com/acryldata/mcp-server-datahub/issues/194)
+- [MCP lineage offset fix PR 195](https://github.com/acryldata/mcp-server-datahub/pull/195)
 - [Data contracts](https://docs.datahub.com/docs/managed-datahub/observe/data-contract)
 - [Incidents](https://docs.datahub.com/docs/incidents/incidents)
 - [Change proposals](https://docs.datahub.com/docs/managed-datahub/change-proposals)
