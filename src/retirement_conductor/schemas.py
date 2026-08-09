@@ -25,6 +25,7 @@ SCHEMA_FILENAMES = {
     "git-dbt-plan": "git-dbt-plan-v1.schema.json",
     "producer-plan": "producer-plan-v1.schema.json",
     "gate-receipt": "gate-receipt-v1.schema.json",
+    "watch-receipt": "watch-receipt-v1.schema.json",
     "campaign-manifest": "campaign-manifest-v1.schema.json",
     "campaign-event": "campaign-event-v1.schema.json",
     "fixture-scenario": "fixture-scenario-v1.schema.json",

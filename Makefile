@@ -1,4 +1,4 @@
-.PHONY: agent-acceptance benchmark-workspace check datahub-core-env datahub-core-up datahub-core-down datahub-seed \
+.PHONY: agent-acceptance benchmark-workspace check continuous-reconciliation-acceptance continuous-reconciliation-evidence datahub-core-env datahub-core-up datahub-core-down datahub-seed \
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence \
@@ -19,6 +19,12 @@ check:
 
 agent-acceptance:
 	uv run python scripts/run_agent_acceptance.py
+
+continuous-reconciliation-acceptance:
+	uv run python scripts/run_continuous_reconciliation_acceptance.py
+
+continuous-reconciliation-evidence:
+	uv run python scripts/generate_continuous_reconciliation_evidence.py
 
 format:
 	uv run ruff check --fix src tests scripts

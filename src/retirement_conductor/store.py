@@ -7,6 +7,7 @@ import json
 import os
 import sqlite3
 import tempfile
+import threading
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from datetime import datetime
@@ -414,6 +415,8 @@ class CampaignStore:
         _preflight_existing_store(self.path, writer_id)
         self.writer_id = writer_id
         self.lock_path = self.path.with_name(f"{self.path.name}.lock")
+        self._write_lock_owner: int | None = None
+        self._write_lock_depth = 0
         self.connection = sqlite3.connect(self.path, timeout=0)
         try:
             self.path.chmod(0o600)
@@ -438,6 +441,14 @@ class CampaignStore:
 
     @contextmanager
     def _write_lock(self) -> Iterator[None]:
+        owner = threading.get_ident()
+        if self._write_lock_owner == owner:
+            self._write_lock_depth += 1
+            try:
+                yield
+            finally:
+                self._write_lock_depth -= 1
+            return
         with self.lock_path.open("a+", encoding="utf-8") as lock_file:
             os.fchmod(lock_file.fileno(), 0o600)
             try:
@@ -448,9 +459,20 @@ class CampaignStore:
                     "Another local writer currently owns the campaign store.",
                 ) from exc
             try:
+                self._write_lock_owner = owner
+                self._write_lock_depth = 1
                 yield
             finally:
+                self._write_lock_depth = 0
+                self._write_lock_owner = None
                 fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+    @contextmanager
+    def operation_lock(self) -> Iterator[None]:
+        """Hold the existing single-writer boundary across one operation."""
+
+        with self._write_lock():
+            yield
 
     def _migrate(self) -> None:
         self.connection.execute(
@@ -870,6 +892,20 @@ class CampaignStore:
             (campaign_id, manifest_digest),
         ).fetchone()
         return self._validated_gate_plan(row) if row is not None else None
+
+    def gate_plans(self, campaign_id: str) -> list[dict[str, Any]]:
+        """Return every integrity-checked producer plan issued for a campaign."""
+
+        rows = self.connection.execute(
+            """
+            SELECT *
+            FROM gate_plans
+            WHERE campaign_id = ?
+            ORDER BY prepared_at, plan_digest
+            """,
+            (campaign_id,),
+        ).fetchall()
+        return [self._validated_gate_plan(row) for row in rows]
 
     def require_issued_gate_plan(
         self,
@@ -1686,6 +1722,24 @@ class CampaignStore:
                 "comparison": dict(comparison or {}),
                 "snapshot_digest": snapshot_digest,
             },
+            occurred_at=occurred_at,
+            idempotency_key=idempotency_key,
+        )
+
+    def record_watch_observation(
+        self,
+        campaign_id: str,
+        observation: Mapping[str, Any],
+        *,
+        occurred_at: str,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Record that fresh observation began without granting authority."""
+
+        return self.append_event(
+            campaign_id,
+            "WATCH_OBSERVATION_RECORDED",
+            dict(observation),
             occurred_at=occurred_at,
             idempotency_key=idempotency_key,
         )

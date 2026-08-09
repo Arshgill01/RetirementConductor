@@ -368,6 +368,30 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
         projection.snapshot_digests.append(str(payload["snapshot_digest"]))
         projection.reconciliations.append(dict(payload.get("comparison") or {}))
         projection.reconciled = True
+    elif event_type == "WATCH_OBSERVATION_RECORDED":
+        required = {
+            "schema_version",
+            "operation_id",
+            "producer_plan_digest",
+            "before_manifest_digest",
+        }
+        if set(payload) != required or payload["schema_version"] != "1.0.0":
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "A watch observation must contain the exact immutable binding.",
+            )
+        before_manifest = manifest_from_projection(projection)
+        if payload["before_manifest_digest"] != before_manifest["manifest_digest"]:
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "A watch observation is not bound to the current manifest.",
+            )
+        if projection.state != CampaignState.READY:
+            raise Refusal(
+                RefusalCode.POLICY_ILLEGAL_CAMPAIGN_TRANSITION,
+                "Only a ready campaign can begin Retirement Lease observation.",
+                {"state": projection.state},
+            )
     elif event_type == "PUBLICATION_RECORDED":
         publication = dict(payload["publication"])
         required = {
