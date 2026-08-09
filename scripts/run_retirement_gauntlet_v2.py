@@ -173,16 +173,31 @@ class GauntletServices:
     compose_file: Path
     compose_env: Path
     mcp_process: subprocess.Popen[str]
-    gms_container_id: str
 
     def evidence(self) -> dict[str, Any]:
+        compose = [
+            "docker",
+            "compose",
+            "--env-file",
+            str(self.compose_env),
+            "-f",
+            str(self.compose_file),
+        ]
+        container_ids = run_command(
+            [*compose, "ps", "-q", "datahub-gms"]
+        ).splitlines()
+        require(
+            len(container_ids) == 1,
+            "isolated DataHub GMS container identity was ambiguous",
+        )
+        container_id = container_ids[0]
         image = run_command(
             [
                 "docker",
                 "inspect",
                 "--format",
                 "{{json .Config.Image}}",
-                self.gms_container_id,
+                container_id,
             ]
         ).strip()
         health = run_command(
@@ -191,7 +206,7 @@ class GauntletServices:
                 "inspect",
                 "--format",
                 "{{json .State.Health.Status}}",
-                self.gms_container_id,
+                container_id,
             ]
         ).strip()
         return {
@@ -286,7 +301,6 @@ def isolated_reference_services(run_root: Path) -> Iterator[GauntletServices]:
             compose_file=compose_file,
             compose_env=compose_env,
             mcp_process=process,
-            gms_container_id=container_id,
         )
     finally:
         if process is not None and process.poll() is None:
@@ -1509,6 +1523,7 @@ def execute(
     matched_consumers = sum(item["controlled_consumer_count"] for item in case_results)
     require(controlled_consumers > 100, "controlled consumer corpus is too small")
     require(matched_consumers == controlled_consumers, "controlled recall regressed")
+    service_evidence = services.evidence()
     summary = with_digest(
         {
             "schema_version": "retirement-gauntlet-evidence/v2",
@@ -1537,8 +1552,8 @@ def execute(
             if corruption_rejected
             else "ACCEPTED",
             "datahub": {
-                "core": services.evidence()["datahub_core"],
-                "mcp": services.evidence()["mcp_server"],
+                "core": service_evidence["datahub_core"],
+                "mcp": service_evidence["mcp_server"],
                 "page_size": 2,
                 "actual_multi_page_retrieval": True,
                 "live_twin_semantically_equivalent": True,
