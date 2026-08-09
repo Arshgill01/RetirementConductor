@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import subprocess
@@ -462,11 +463,29 @@ def inventory_with_retry(
 
     last: dict[str, Any] | None = None
     for attempt in range(1, attempts + 1):
-        last = boundary.inventory(
-            specification,
-            artifact_root=artifact_root / f"attempt-{attempt:02d}",
-            forced_failure_offset=forced_failure_offset,
-        )
+        try:
+            last = boundary.inventory(
+                specification,
+                artifact_root=artifact_root / f"attempt-{attempt:02d}",
+                forced_failure_offset=forced_failure_offset,
+            )
+        except (http.client.IncompleteRead, OSError, TimeoutError):
+            if attempt == attempts:
+                raise
+            time.sleep(0.5)
+            continue
+        except Refusal as exc:
+            if (
+                str(exc.code)
+                not in {
+                    "SOURCE_DATAHUB_UNAVAILABLE",
+                    "SOURCE_MCP_UNAVAILABLE",
+                }
+                or attempt == attempts
+            ):
+                raise
+            time.sleep(0.5)
+            continue
         status = str(last["pagination"]["status"])
         errors = list(last["pagination"]["errors"])
         if forced_failure_offset is None and status == "COMPLETE":
