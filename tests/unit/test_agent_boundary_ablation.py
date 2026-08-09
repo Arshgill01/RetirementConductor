@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
+from retirement_conductor.canonical import verify_digest
 from scripts.run_agent_boundary_ablation import (
     CONDITIONS_PATH,
     TASKS_PATH,
@@ -127,3 +128,33 @@ def test_predeclared_recommendation_threshold_is_mechanical() -> None:
     assert result["skill"]["decision"] == "KEEP"
     assert result["product_mcp"]["decision"] == "KEEP"
     assert result["boundedness"]["decision"] == "INCONCLUSIVE"
+
+
+def test_public_agent_ablation_retains_failures_and_separates_bounds() -> None:
+    report = load(
+        Path(__file__).resolve().parents[2]
+        / "artifacts/public/agent-ablation/report.json"
+    )
+
+    verify_digest(report, "agent_ablation_digest")
+    assert len(report["runs"]) == 72
+    assert report["raw_evidence"]["failed_attempts_retained"] == 26
+    assert report["raw_evidence"]["host_preflight_failures"]["count"] == 24
+    assert report["aggregate"]["skill-product-mcp"]["correct_completion_count"] == 23
+    assert report["aggregate"]["product-mcp-only"]["correct_completion_count"] == 16
+    assert report["aggregate"]["cli-shell"]["correct_completion_count"] == 7
+    assert all(
+        result["critical_failure_count"] == 0 for result in report["aggregate"].values()
+    )
+    assert all(
+        result["capability_bounded_count"] == 0
+        for result in report["aggregate"].values()
+    )
+    assert report["recommendations"]["skill"]["decision"] == "KEEP"
+    assert report["recommendations"]["product_mcp"]["decision"] == "KEEP"
+    assert report["recommendations"]["boundedness"]["decision"] == "INCONCLUSIVE"
+    assert (
+        report["configuration"]["mcp_servers"]["retirement_conductor"]["tool_count"]
+        == 16
+    )
+    assert report["configuration"]["mcp_servers"]["datahub"]["tool_count"] == 20

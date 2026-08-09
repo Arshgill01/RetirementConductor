@@ -1355,6 +1355,11 @@ def aggregate(
             "generated_at": timestamp(),
             "branch": git("branch", "--show-current"),
             "tested_commit": git("rev-parse", "HEAD"),
+            "execution_commits": {
+                "skill-product-mcp": "af82d88ca2c23ab6bd4f7e0e1d92c7f3dff9b55b",
+                "product-mcp-only": "af82d88ca2c23ab6bd4f7e0e1d92c7f3dff9b55b",
+                "cli-shell": "a4517582951da176e693913e2ae6c1bfb646b412",
+            },
             "freeze": {
                 "corpus_digest": tasks_value["corpus_digest"],
                 "condition_digest": conditions_value["condition_digest"],
