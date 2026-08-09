@@ -37,7 +37,6 @@ REQUIRED_WHEEL_MEMBERS = {
     "retirement_conductor/schemas/campaign-manifest-v1.schema.json",
     "retirement_conductor/schemas/semantic-validation-plan-v1.schema.json",
     "retirement_conductor/schemas/watch-receipt-v1.schema.json",
-    "retirement_conductor/semantic_model_planner.py",
     "retirement_conductor/superset.py",
     "retirement_conductor/watch.py",
 }

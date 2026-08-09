@@ -1,13 +1,14 @@
-# Semantic validation planner and GitHub PR boundary
+# Historical semantic planner and retained GitHub PR boundary
 
-This runbook covers the optional WS-02 model proposal boundary and the
-deterministic GitHub pull-request workflow. The model is advisory. It cannot
-authorize a write, accept validation, merge or approve a pull request, or
-decide retirement readiness.
+This runbook records the removed WS-02 model proposal experiment and the
+deterministic GitHub pull-request workflow that remains reusable without a
+nested model. TE-01 found that bounded DataHub context adds value but that the
+Vertex/Gemini selection layer failed its predeclared product threshold. Live
+model execution is no longer shipped or supported.
 
 ## Boundary
 
-The supported sequence is:
+The historical sequence was:
 
 ```text
 fresh DataHub + dbt evidence
@@ -38,35 +39,22 @@ The only model tools are read-only and campaign-bounded:
 Metadata descriptions are untrusted data. Missing quality, glossary, or query
 evidence remains missing; the planner may not infer it.
 
-## Optional Google model
+## Retained model evidence
 
-WS-02 uses Google Vertex AI `generateContent`, not the OpenAI API. The default
-is `gemini-3-flash-preview` because the bounded proposal task does not require
-the more expensive Gemini 3.6 Flash tier. Model and pricing availability can
-change; verify the current official
-[Vertex AI function-calling documentation](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/function-calling)
-and [Google pricing](https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing)
-before changing the default.
-
-Live calls are disabled unless all configuration is explicit:
+The redacted historical evidence records only native response identifiers,
+the resolved model, prompt/evidence/proposal digests, aggregate token counts,
+digest-only tool traces, kernel acceptance or refusal, and non-authority
+flags. Model content, thought signatures, and hidden reasoning are not
+published. Verify the frozen corpus and public bundle offline with:
 
 ```bash
-export SEMANTIC_MODEL_PROJECT=my-disposable-project
-export SEMANTIC_MODEL_LOCATION=global
-export SEMANTIC_MODEL_ID=gemini-3-flash-preview
-export SEMANTIC_MODEL_ALLOW_LIVE=true
+uv run python scripts/run_semantic_value_ablation.py verify-freeze
+uv run python scripts/run_semantic_value_ablation.py verify
 ```
 
-Authentication uses `gcloud auth print-access-token` in memory. The access
-token is never placed in arguments, logs, artifacts, campaign state, or the
-model evidence. Snap-dispatched `gcloud` paths are preserved rather than
-resolving the multiplexer symlink.
-
-The redacted model evidence records only native response identifiers, the
-resolved model, prompt/evidence/proposal digests, aggregate token counts,
-digest-only tool trace, kernel acceptance or refusal, and the non-authority
-flags. Model content, thought signatures, and hidden reasoning are not
-published.
+These commands require no credential, project, live opt-in, or network call.
+The former live runner and Vertex transport are intentionally absent from the
+package.
 
 ## GitHub configuration
 
@@ -103,11 +91,10 @@ The inspected live acceptance bundle is under
 redacted model evidence, frozen semantic plan, exact diff, native receipt, CI
 binding, pre-authorization refusal, head-drift refusal, and recovery record.
 
-Publish an inspected private run with:
+Verify the retained inspected run with:
 
 ```bash
-uv run python scripts/publish_semantic_pr_evidence.py \
-  --repository /absolute/path/to/disposable-repository
+uv run python scripts/run_semantic_value_ablation.py verify
 uv run python scripts/check_public_artifacts.py
 uv run python scripts/check_secrets.py
 ```

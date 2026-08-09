@@ -2,32 +2,28 @@ from __future__ import annotations
 
 import ast
 import json
-from copy import deepcopy
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from retirement_conductor.semantic_ablation import (
-    POLICY,
-    _deterministic_proposal,
-    _model_version,
-    _run_deterministic_attempt,
-    _scenario_inputs,
-    _trusted_now,
     freeze_corpus,
-    run_authority_probes,
     verify_frozen_corpus,
+    verify_public_evidence,
 )
 from retirement_conductor.semantic_ablation_oracle import (
     evaluate_attempt,
     load_oracle_corpus,
     truth_digest,
 )
-from retirement_conductor.semantic_validation import freeze_semantic_plan
 
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS_PATH = ROOT / "fixtures/semantic-ablation-v2/corpus.json"
+FREEZE_PATH = ROOT / "fixtures/semantic-ablation-v2/FROZEN.json"
+PUBLIC_PATH = ROOT / "artifacts/public/semantic-ablation-v2"
 ORACLE_PATH = ROOT / "src/retirement_conductor/semantic_ablation_oracle.py"
 
 
@@ -88,112 +84,71 @@ def test_freeze_binds_exact_corpus_bytes_and_refuses_drift(tmp_path: Path) -> No
         verify_frozen_corpus(corpus_path, freeze_path)
 
 
-def test_context_arms_share_identity_but_datahub_is_masked_only_in_dbt_arm() -> None:
-    corpus = load_oracle_corpus(CORPUS_PATH)
-    scenario = _scenario(corpus, "glossary-category-mapping")
+def test_public_evidence_recomputes_every_attempt_offline() -> None:
+    summary = verify_public_evidence(PUBLIC_PATH)
 
-    dbt_git, _, masked, dbt_context = _scenario_inputs(
-        corpus, scenario, arm="gemini-dbt-only"
-    )
-    full_git, _, full, full_dbt = _scenario_inputs(
-        corpus, scenario, arm="gemini-datahub-dbt"
-    )
-
-    assert dbt_git["campaign_id"] == full_git["campaign_id"]
-    assert dbt_context["manifest"] == full_dbt["manifest"]
-    assert masked["supported_relevant_checks"] == []
-    assert masked["facts"] == {}
-    assert {item["primitive"] for item in full["supported_relevant_checks"]} == {
-        "accepted_values_coverage",
-        "category_mapping_completeness",
-    }
-
-
-def test_full_context_snapshot_uses_only_kernel_schema_evidence_kinds() -> None:
-    corpus = load_oracle_corpus(CORPUS_PATH)
-    scenario = _scenario(corpus, "exact-passthrough-consumer")
-    git_plan, snapshot, _, dbt_context = _scenario_inputs(
-        corpus, scenario, arm="gemini-datahub-dbt"
-    )
-    proposal = _deterministic_proposal(corpus, scenario, git_plan, dbt_context)
-
-    plan = freeze_semantic_plan(
-        proposal,
-        git_plan=git_plan,
-        evidence_snapshot=snapshot,
-        trusted_now=_trusted_now(corpus),
-        policy=POLICY,
-    )
-
-    assert plan["checks"]
-
-
-def test_deterministic_arm_is_repeatable_and_expected_refusals_fail_closed() -> None:
-    corpus = load_oracle_corpus(CORPUS_PATH)
-    exact = _scenario(corpus, "exact-passthrough-consumer")
-    first = _run_deterministic_attempt(corpus, exact, attempt_number=1)
-    second = _run_deterministic_attempt(corpus, exact, attempt_number=2)
-
-    assert first["proposal_digest"] == second["proposal_digest"]
-    assert first["accepted_checks"] == [
-        "exact_model_output_parity",
-        "type_compatibility",
-    ]
-    assert evaluate_attempt(exact, first)["exact_plan_match"] is True
-
-    for scenario_id, refusal_code in (
-        ("contradictory-datahub-dbt", "SPEC_REPLACEMENT_INCOMPATIBLE"),
-        ("expired-evidence-envelope", "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"),
-        ("source-fingerprint-mismatch", "SOURCE_FINGERPRINT_MISMATCH"),
-    ):
-        scenario = _scenario(corpus, scenario_id)
-        attempt = _run_deterministic_attempt(corpus, scenario, attempt_number=1)
-        assert attempt["kernel_outcome"] == "REFUSED"
-        assert attempt["refusal_code"] == refusal_code
-        assert evaluate_attempt(scenario, attempt)["exact_plan_match"] is True
-
-    quality = _scenario(corpus, "quality-null-uniqueness")
-    quality_attempt = _run_deterministic_attempt(corpus, quality, attempt_number=1)
-    assert quality_attempt["proposed_checks"] == [
-        "exact_model_output_parity",
-        "type_compatibility",
-    ]
-
-
-def test_kernel_rejects_every_authority_smuggling_probe() -> None:
-    corpus = load_oracle_corpus(CORPUS_PATH)
-    probes = run_authority_probes(corpus)
-
-    assert {item["probe"] for item in probes} == {
-        "arbitrary_target",
-        "authorization",
-        "executable_sql",
-        "foreign_identity",
-        "policy_override",
-        "unsupported_evidence",
-    }
-    assert all(item["accepted"] is False for item in probes)
-
-
-def test_native_model_version_survives_pre_kernel_protocol_refusal() -> None:
+    assert summary["nested_gemini_recommendation"]["recommendation"] == "REMOVE"
+    assert summary["datahub_context_recommendation"]["recommendation"] == "ADDS_VALUE"
     assert (
-        _model_version(
-            [
-                {
-                    "response": {
-                        "modelVersion": "gemini-3-flash-preview",
-                        "responseId": "native-response",
-                    }
-                }
-            ]
-        )
-        == "gemini-3-flash-preview"
+        summary["metrics"]["gemini-datahub-dbt"][
+            "safety_critical_planted_fault_coverage"
+        ]
+        == 1.0
     )
+    assert (
+        summary["metrics"]["gemini-datahub-dbt"]["minimum_sufficient_plan_match_rate"]
+        == 0.2
+    )
+
+
+def test_public_verifier_requires_no_live_model_configuration() -> None:
+    completed = subprocess.run(
+        [sys.executable, "scripts/run_semantic_value_ablation.py", "verify"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        env={},
+    )
+
+    assert "verified offline" in completed.stdout
+    assert "recommendation=REMOVE" in completed.stdout
+
+
+def test_public_verifier_refuses_attempt_evaluation_drift(tmp_path: Path) -> None:
+    public = tmp_path / "artifacts/public/semantic-ablation-v2"
+    public.mkdir(parents=True)
+    for source in PUBLIC_PATH.iterdir():
+        if source.is_file():
+            (public / source.name).write_bytes(source.read_bytes())
+    fixture = tmp_path / "fixtures/semantic-ablation-v2"
+    fixture.mkdir(parents=True)
+    (fixture / "corpus.json").write_bytes(CORPUS_PATH.read_bytes())
+    (fixture / "FROZEN.json").write_bytes(FREEZE_PATH.read_bytes())
+    for record in load_oracle_corpus(CORPUS_PATH)["retained_live_context_shapes"]:
+        source = ROOT / str(record["artifact"])
+        target = tmp_path / str(record["artifact"])
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(source.read_bytes())
+
+    results_path = public / "results.json"
+    results: dict[str, Any] = json.loads(results_path.read_text(encoding="utf-8"))
+    results["attempts"][0]["evaluation"]["exact_plan_match"] = not results["attempts"][
+        0
+    ]["evaluation"]["exact_plan_match"]
+    results_path.write_text(json.dumps(results), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="artifact digest mismatch"):
+        verify_public_evidence(public)
 
 
 def test_oracle_counts_forbidden_and_unnecessary_checks() -> None:
     corpus = load_oracle_corpus(CORPUS_PATH)
-    scenario = _scenario(corpus, "aggregate-consumer-not-exact")
+    scenario = next(
+        item
+        for item in corpus["scenarios"]
+        if item["id"] == "aggregate-consumer-not-exact"
+    )
     attempt: dict[str, Any] = {
         "kernel_outcome": "ACCEPTED",
         "refusal_code": None,
@@ -208,18 +163,3 @@ def test_oracle_counts_forbidden_and_unnecessary_checks() -> None:
     assert result["missing_required_checks"] == ["aggregate_parity"]
     assert result["unnecessary_accepted_checks"] == ["exact_model_output_parity"]
     assert result["forbidden_attempts"] == ["exact_model_output_parity"]
-
-
-def test_incompatible_replacement_contract_refuses_before_check_selection() -> None:
-    corpus = load_oracle_corpus(CORPUS_PATH)
-    scenario = deepcopy(_scenario(corpus, "exact-passthrough-consumer"))
-    scenario["kernel_fixture"]["compatible"] = False
-
-    attempt = _run_deterministic_attempt(corpus, scenario, attempt_number=1)
-
-    assert attempt["kernel_outcome"] == "REFUSED"
-    assert attempt["refusal_code"] == "SPEC_REPLACEMENT_INCOMPATIBLE"
-
-
-def _scenario(corpus: dict[str, Any], scenario_id: str) -> dict[str, Any]:
-    return next(item for item in corpus["scenarios"] if item["id"] == scenario_id)
