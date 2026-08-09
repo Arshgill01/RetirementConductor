@@ -288,7 +288,7 @@ def seed(
         )
         emit(emitter, urn, models.StatusClass(removed=False))
     late_count = 0
-    if mode == "late":
+    if mode in {"late", "late-field"}:
         dataset_aspects(
             emitter,
             urn=ISOLATED_LATE_CONSUMER_URN,
@@ -296,7 +296,9 @@ def seed(
             name="orders_isolated_late",
             source_updated_at=observed_at,
             ingestion_run_id=run_id,
-            upstream=ISOLATED_MODEL_URN,
+            upstream=(
+                ISOLATED_TARGET_URN if mode == "late-field" else ISOLATED_MODEL_URN
+            ),
         )
         late_count = 1
     else:
@@ -353,7 +355,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--mode",
-        choices=["base", "late", "replacement-drift"],
+        choices=["base", "late", "late-field", "replacement-drift"],
         default="base",
     )
     parser.add_argument(

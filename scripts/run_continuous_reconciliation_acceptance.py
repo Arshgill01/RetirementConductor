@@ -285,8 +285,8 @@ def run() -> dict[str, Any]:
         )
         require(issued["lease"]["status"] == "ISSUED", "the lease was not issued")
 
-        seed(runner, "late", environment)
-        current_seed_mode = "late"
+        seed(runner, "late-field", environment)
+        current_seed_mode = "late-field"
         late_write_receipt = run_root / "late-datahub-write-receipt.json"
         shutil.copyfile(SEED_RECEIPT, late_write_receipt)
         late_write_value = json.loads(late_write_receipt.read_text(encoding="utf-8"))
@@ -304,6 +304,16 @@ def run() -> dict[str, Any]:
                 for consumer in late_snapshot["consumers"]
             ),
             "the late DataHub field consumer was not independently readable",
+        )
+        late_claims = [
+            claim
+            for claim in late_snapshot["claims"]
+            if claim.get("subject") == ISOLATED_LATE_URN
+        ]
+        require(
+            len(late_claims) == 1
+            and late_claims[0].get("confidence_basis") == "column_lineage_edge",
+            "the late consumer was not independently proven by exact field lineage",
         )
         watch = runner.json(
             "watch-once-late-consumer",
@@ -454,6 +464,8 @@ def run() -> dict[str, Any]:
                     "datahub_write_receipt_digest": digest_file(late_write_receipt),
                     "independent_snapshot_digest": late_snapshot["snapshot_digest"],
                     "independent_consumer_count": len(late_snapshot["consumers"]),
+                    "exact_field_claim_id": late_claims[0]["claim_id"],
+                    "confidence_basis": late_claims[0]["confidence_basis"],
                     "reread_attempts": late_reread["attempts"],
                 },
                 "watch": {
