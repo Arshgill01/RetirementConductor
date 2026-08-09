@@ -83,7 +83,7 @@ judges before the deadline?”
 
 ### 2026-08-07 agent and upstream update
 
-- `retirement-conductor-mcp` exposes 14 focused tools over STDIO while calling
+- `retirement-conductor-mcp` exposes 16 focused tools over STDIO while calling
   the existing CLI dispatcher and deterministic policy in-process.
 - The server intentionally exposes no authorization-recording tool. A human
   must review the exact plan and run the returned CLI authorization command

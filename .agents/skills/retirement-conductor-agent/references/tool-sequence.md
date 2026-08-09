@@ -25,10 +25,15 @@
 | Publish | `publish_retirement_summary` | write one stable DataHub summary |
 | Verify | `verify_retirement_summary` | read exact summary back |
 | Retirement Lease | `prepare_producer_retirement_plan` | issue one exact lease valid for at most 15 minutes |
+| Lease status | `inspect_retirement_lease` | project `ISSUED`, `EXPIRED`, `CONSUMED`, or `INVALIDATED` without changing state |
+| Watch | `reconcile_retirement_lease_now` | optionally reread, reconcile, publish, and invalidate the observed lease |
 | Gate | `execute_retirement_gate` | consume the current lease and execute only if ready |
 
 Use direct DataHub MCP search, entity, schema, lineage, path, query, and
 document tools before and around this sequence for agent-visible context.
+Do not call Watch between a final lease issue and its gate unless the intent is
+to invalidate that lease. After any watch result, issue a fresh lease only if
+the canonical campaign is still ready.
 
 ## Authority boundary
 

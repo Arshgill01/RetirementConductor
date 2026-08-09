@@ -478,6 +478,30 @@ consistent, but every transient refusal remains evidence and the write is not
 repeated merely to obtain visibility. A successful write response is never a
 substitute for exact read-back.
 
+## Retirement Lease observation
+
+The latest producer plan projects to exactly one of:
+
+- `ISSUED`: unexpired, unconsumed, and still bound to the current manifest;
+- `EXPIRED`: its trusted expiry has passed;
+- `CONSUMED`: a gate intent, execution, or outcome-unknown attempt exists;
+- `INVALIDATED`: the canonical manifest no longer matches the issued binding.
+
+`campaign watch --once` requires `ISSUED`, records
+`WATCH_OBSERVATION_RECORDED`, performs or resumes reconciliation and
+publication, verifies read-back, and writes a `watch-receipt-v1` artifact. The
+receipt binds the producer plan, before and after manifest and evidence
+digests, source versions, publication result, lease transition, failure phase,
+limitations, and its own digest. Its stable results are `UNCHANGED`,
+`REVERSED`, `PARTIAL`, `UNAVAILABLE`, or `FAILED` with exit codes 0, 3, 4, 5,
+and 6 respectively.
+
+The observation event grants no authority. Because it changes canonical
+campaign history, the watched lease becomes `INVALIDATED` even for
+`UNCHANGED`; a later gate requires a fresh plan. Publication and verification
+failures resume from retained events and artifacts rather than repeating an
+already accepted write.
+
 ## Final decision
 
 The policy produces exactly one:

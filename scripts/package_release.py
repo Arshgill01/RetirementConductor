@@ -24,6 +24,9 @@ from scripts.phase08_support import (
 )
 
 REQUIRED_WHEEL_MEMBERS = {
+    "retirement_conductor/agent.py",
+    "retirement_conductor/agent_mcp.py",
+    "retirement_conductor/agent_skill/SKILL.md",
     "retirement_conductor/reference_data/spec.yaml",
     "retirement_conductor/fixture_data/repository/models/order_summary.sql",
     "retirement_conductor/fixture_data/scenarios/valid.json",
@@ -32,6 +35,11 @@ REQUIRED_WHEEL_MEMBERS = {
     "retirement_conductor/migrations/003_initial.sql",
     "retirement_conductor/schemas/retirement-spec-v1alpha1.schema.json",
     "retirement_conductor/schemas/campaign-manifest-v1.schema.json",
+    "retirement_conductor/schemas/semantic-validation-plan-v1.schema.json",
+    "retirement_conductor/schemas/watch-receipt-v1.schema.json",
+    "retirement_conductor/semantic_model_planner.py",
+    "retirement_conductor/superset.py",
+    "retirement_conductor/watch.py",
 }
 
 REQUIRED_SDIST_MEMBERS = {
@@ -112,10 +120,25 @@ def inspect_wheel(path: Path) -> dict[str, Any]:
     require(metadata["Version"] == __version__, "wheel version drifted")
     require(metadata["Requires-Python"] == ">=3.11", "Python contract drifted")
     dependencies = sorted(metadata.get_all("Requires-Dist", []))
-    require(len(dependencies) == 2, "runtime dependency count changed")
+    runtime_dependencies = [
+        dependency for dependency in dependencies if "extra ==" not in dependency
+    ]
+    optional_dependencies = [
+        dependency for dependency in dependencies if "extra ==" in dependency
+    ]
+    require(len(runtime_dependencies) == 2, "runtime dependency count changed")
+    require(
+        optional_dependencies == ["mcp<3,>=2.0.0; extra == 'agent'"],
+        "agent optional dependency contract changed",
+    )
     require(
         "retirement-conductor = retirement_conductor.cli:main" in entry_points,
         "console entry point is missing",
+    )
+    require(
+        "retirement-conductor-mcp = retirement_conductor.agent_mcp:main"
+        in entry_points,
+        "MCP console entry point is missing",
     )
     return {
         "filename": path.name,
@@ -123,8 +146,13 @@ def inspect_wheel(path: Path) -> dict[str, Any]:
         "size": path.stat().st_size,
         "member_count": len(names),
         "required_members_present": sorted(REQUIRED_WHEEL_MEMBERS),
-        "runtime_dependencies": dependencies,
+        "runtime_dependencies": runtime_dependencies,
+        "optional_dependencies": optional_dependencies,
         "console_entry_point": "retirement-conductor",
+        "console_entry_points": [
+            "retirement-conductor",
+            "retirement-conductor-mcp",
+        ],
     }
 
 

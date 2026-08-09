@@ -204,6 +204,23 @@ Model assistance is optional and constrained to:
 Every proposal is data, not authority. Deterministic boundaries verify file
 scope, content versions, target identity, and validator results.
 
+The implemented optional semantic planner further constrains one model call to
+two campaign-bounded read tools and one typed proposal tool. Forced function
+calling, strict schemas, a safe primitive vocabulary, evidence expiry, and a
+deterministic kernel prevent the model from supplying SQL, shell, arbitrary
+paths, authorization, or final validation. Approved templates may then be
+committed to a disposable branch and bound to a GitHub pull request plus the
+named CI check on its exact head.
+
+### Agent interface
+
+The project-scoped STDIO MCP server is an adapter over the existing CLI
+dispatcher, not another campaign engine. Codex and the repository skill can
+inspect context, choose operations, and explain refusals. The server has no
+authorization-recording tool. Human approval remains an out-of-agent durable
+record, and every mutation or gate call still passes through deterministic
+preconditions.
+
 ### Reconciler
 
 The reconciler:
@@ -223,6 +240,19 @@ native receipt, verified removal, or proved non-applicability under policy.
 An exact replacement field edge can corroborate a native Git/dbt receipt;
 table-only lineage is recorded explicitly and never upgraded into a field
 claim. A non-repository consumer never closes from graph change alone.
+
+### Retirement Lease watcher
+
+The one-shot watcher operates only on an issued producer plan. Under the
+campaign store's existing operation lock it records a no-authority observation
+event, resumes or performs fresh reconciliation, republishes the canonical
+summary, verifies read-back, and emits a digest-bound watch receipt with a
+stable result and exit code. Any observation changes the canonical manifest
+and therefore invalidates the observed lease, even if the campaign remains
+ready. A later gate requires a newly issued lease.
+
+The watcher is cron-safe and interruption-resumable for one local writer. It
+does not create a scheduler, distributed service, or durable authorization.
 
 ### Operator views and gate
 

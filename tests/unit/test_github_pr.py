@@ -311,6 +311,40 @@ def test_duplicate_pr_retry_reuses_one_campaign_pr(tmp_path: Path) -> None:
     assert first["pull_request"]["number"] == second["pull_request"]["number"]
 
 
+def test_campaign_pr_listing_binds_exact_head_argument(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+
+    class ListingBoundary(GitHubPrBoundary):
+        arguments: tuple[str, ...] = ()
+
+        def _gh_json(self, *arguments: str) -> Any:
+            self.arguments = arguments
+            return [{"number": 17, "body": "campaign-marker"}]
+
+    boundary = ListingBoundary(_settings(repository))
+
+    result = boundary._campaign_pull_requests(
+        "codex/semantic-pr-campaign", "campaign-marker"
+    )
+
+    assert result == [{"number": 17, "body": "campaign-marker"}]
+    assert boundary.arguments == (
+        "pr",
+        "list",
+        "--repo",
+        "example/disposable",
+        "--state",
+        "all",
+        "--head",
+        "codex/semantic-pr-campaign",
+        "--limit",
+        "100",
+        "--json",
+        "number,body",
+    )
+
+
 def test_ci_wrong_sha_and_later_head_drift_invalidate_receipt(tmp_path: Path) -> None:
     repository, source_version = _repository(tmp_path)
     plan = _plan(source_version)

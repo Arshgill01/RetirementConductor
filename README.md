@@ -49,6 +49,28 @@ lineage pagination and
 [PR #196](https://github.com/acryldata/mcp-server-datahub/pull/196) for accurate
 deployment-gate diagnostics.
 
+Three additional inspected workstreams deepen that path without moving safety
+authority into a model:
+
+- an optional live Vertex AI planner used forced read-only function calls to
+  propose typed semantic checks; deterministic code rejected foreign authority,
+  generated reviewed dbt templates, and bound a real public GitHub PR plus its
+  successful CI run to the exact head;
+- a one-shot watcher now projects `ISSUED`, `EXPIRED`, `CONSUMED`, and
+  `INVALIDATED` Retirement Leases. Live Core evidence discovered an exact late
+  field consumer, reversed the campaign, invalidated the preserved lease, and
+  refused that exact old plan without another sentinel;
+- a disposable Superset 6.0.0 experiment proved one allowlisted native API
+  mutation, forced chart execution with semantic parity, fresh DataHub
+  reingestion, and safe compensation. It remains a standalone feasibility
+  proof and cannot change campaign readiness; Git/dbt is still the sole
+  supported automated executor.
+
+See the [semantic PR runbook](docs/runbooks/SEMANTIC_PR.md),
+[continuous reconciliation runbook](docs/runbooks/CONTINUOUS_RECONCILIATION.md),
+and [Superset feasibility runbook](docs/runbooks/SUPERSET.md) for exact evidence
+and limitations.
+
 ## The problem in plain language
 
 An old warehouse column can look unused in its repository while still feeding

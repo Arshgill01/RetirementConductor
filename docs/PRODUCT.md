@@ -130,6 +130,27 @@ DataHub evidence-quality benchmark proves that the conductor handles rich,
 late, stale, partial, ambiguous, table-only, and quality-failing context
 without creating false readiness. Git/dbt remains the sole automated executor.
 
+## Agent and advisory surfaces
+
+Codex can operate the same campaign engine through a project-scoped MCP server
+and repository skill. The model selects bounded operations and explains
+results; it cannot record approval, accept native validation, alter policy, or
+override the producer gate. Sixteen MCP tools cover campaign inspection,
+Git/dbt planning and execution, publication, Retirement Lease status, one-shot
+fresh observation, and the final separately confirmed gate.
+
+An optional Vertex AI semantic planner may propose two to four checks through
+forced read-only function calls. Its output is accepted only after exact
+identity, evidence, policy, schema, and digest validation. The model cannot
+emit SQL or arbitrary paths; deterministic templates create any approved dbt
+tests. This is an advisory quality layer, not another decision engine.
+
+A bounded Superset executor has passed a disposable feasibility experiment,
+including native identity, one allowlisted mutation, forced chart validation,
+fresh DataHub reread, and compensation. It is not registered with campaign
+state or the producer gate and therefore is not a supported second executor.
+Promotion requires a real operator need plus end-to-end campaign integration.
+
 ## Build, borrow, and delegate
 
 Build:

@@ -15,8 +15,9 @@ SERVER_INSTRUCTIONS = (
     "campaign. Never treat empty evidence as absence. Never apply until the user "
     "reviews the exact plan and a human records authorization outside this server; "
     "pass the exact plan digest. After validation, reconcile, publish, and verify "
-    "read-back. Never call the producer gate for a non-ready campaign. A refusal is "
-    "a successful safety result and must not be bypassed."
+    "read-back. Inspect or freshly reconcile an issued Retirement Lease before "
+    "execution. Never call the producer gate for a non-ready campaign. A refusal "
+    "or readiness reversal is a successful safety result and must not be bypassed."
 )
 
 
@@ -364,6 +365,49 @@ def create_server(runtime: AgentCommandRuntime | None = None) -> Any:
             "publication": result.get("publication"),
             "campaign": _manifest_summary(result.get("manifest")),
         }
+
+    @server.tool(
+        name="inspect_retirement_lease",
+        title="Inspect Retirement Lease",
+        description=(
+            "Project the latest issued Retirement Lease from canonical records as "
+            "ISSUED, EXPIRED, CONSUMED, or INVALIDATED. This performs no source "
+            "reread and changes no state."
+        ),
+        annotations=ToolAnnotations(
+            read_only_hint=True,
+            destructive_hint=False,
+            idempotent_hint=True,
+            open_world_hint=False,
+        ),
+    )
+    def inspect_retirement_lease(
+        campaign_id: str,
+        observed_at: str | None = None,
+    ) -> dict[str, Any]:
+        return tool_runtime.inspect_retirement_lease(
+            campaign_id,
+            observed_at=observed_at,
+        )
+
+    @server.tool(
+        name="reconcile_retirement_lease_now",
+        title="Reconcile Retirement Lease now",
+        description=(
+            "Run one bounded fresh reconciliation, policy evaluation, DataHub "
+            "publication, and read-back for the latest issued Retirement Lease. "
+            "The result can reverse readiness and invalidate the lease; it cannot "
+            "grant authorization or make an unsafe campaign ready by itself."
+        ),
+        annotations=ToolAnnotations(
+            read_only_hint=False,
+            destructive_hint=False,
+            idempotent_hint=True,
+            open_world_hint=True,
+        ),
+    )
+    def reconcile_retirement_lease_now(campaign_id: str) -> dict[str, Any]:
+        return tool_runtime.reconcile_retirement_lease_now(campaign_id)
 
     @server.tool(
         name="prepare_producer_retirement_plan",

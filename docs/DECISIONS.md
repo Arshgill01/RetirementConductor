@@ -762,3 +762,70 @@ buyer claim is permitted. The public operator-boundary artifact must name the
 smallest remaining no-secret human workflow and retain `NOT_RUN`.
 
 Status: accepted from the controlling-goal reconciliation.
+
+## D-045 — keep semantic model output advisory and template-bound
+
+Date: 2026-08-09
+
+Decision: allow an explicitly enabled Vertex AI model to read bounded DataHub
+and dbt context and submit a typed semantic-check proposal. Deterministic code
+must bind exact identities and evidence, enforce a safe primitive vocabulary,
+materialize only reviewed templates after external approval, and retain final
+validation and readiness authority.
+
+Why: a model can select migration-specific checks from rich context, but
+model-authored SQL, paths, authorization, or acceptance would turn persuasive
+output into unsafe authority.
+
+Observed consequence: a live Gemini proposal called the two read-only tools
+before submission, passed the deterministic kernel, and produced a real public
+PR whose named CI check succeeded on the exact head. A foreign-authority probe
+was refused. Live model use remains optional and disabled by default.
+
+Status: accepted from inspected WS-02 evidence at `88ade90`.
+
+## D-046 — every fresh watch invalidates the observed Retirement Lease
+
+Date: 2026-08-09
+
+Decision: project leases from canonical gate records and make one-shot
+observation append a no-authority campaign event. The watcher must reconcile,
+publish, verify, and invalidate the observed lease even when the decision stays
+ready. Any later gate requires a new lease.
+
+Why: retaining a green lease across a fresh observation would falsely imply
+that the old manifest still authorizes action. The extra reissue is a small
+cost for explicit evidence and replay safety.
+
+Observed consequence: live Core field lineage introduced a late Spark
+consumer, changed `READY_TO_RETIRE` to `UNSAFE`, invalidated the preserved
+lease, and refused the exact old plan without executing another sentinel.
+Interruption tests resumed observation and publication without duplicate
+authority or write acceptance.
+
+Status: accepted from inspected WS-03 evidence at `80ae381`.
+
+## D-047 — retain Superset as a standalone feasibility proof
+
+Date: 2026-08-09
+
+Decision: merge the loopback-only Superset executor, tests, deployment, and
+evidence as a bounded experimental boundary, but do not register its receipt
+with campaign state or the producer gate. Git/dbt remains the sole supported
+automated executor until a real operator need justifies integration.
+
+Why: the disposable experiment proves native identity, mutation, validation,
+reingestion, drift refusal, and compensation are feasible. Treating that as a
+supported product path without campaign projection, gate binding, capability
+separation, and closure tests would convert a strong experiment into a false
+claim.
+
+Observed consequence: Superset 6.0.0 executed and semantically compared six
+rows around one allowlisted dataset update, DataHub 1.6.0 reread the changed
+lineage, exact compensation restored the source, and an intervening owner edit
+was preserved. Integration additionally restricts replacement to one
+executable unquoted identifier so comments, literals, and quoted identifiers
+cannot be mutated accidentally.
+
+Status: accepted as an experimental proof from inspected WS-04 evidence at
+`84e6707`; not accepted as a second supported executor.

@@ -26,7 +26,10 @@ not recompute policy or treat model judgment as authorization.
    write merely to obtain visibility.
 10. Call the producer gate only for a currently ready campaign and only after
     the user explicitly requests the producer action.
-11. Treat refusal as a successful safety result. Explain it and stop until the
+11. Treat an observed Retirement Lease as single-use evidence. A watch run
+    invalidates that lease even when the campaign remains ready; issue a fresh
+    lease before any later gate attempt.
+12. Treat refusal as a successful safety result. Explain it and stop until the
     named evidence or authorization changes.
 
 ## Workflow
@@ -111,16 +114,22 @@ Proceed only if the exact decision is `READY_TO_RETIRE`, publication read-back
 is verified, and the user explicitly requests execution.
 
 Call `prepare_producer_retirement_plan`, show the exact plan binding and
-expiry, and obtain the MCP client's destructive-action confirmation before
-calling `execute_retirement_gate`.
+expiry, then call `inspect_retirement_lease`. Proceed only while the exact
+lease is `ISSUED`. Obtain the MCP client's destructive-action confirmation
+before calling `execute_retirement_gate`.
 
 Never reuse a previous green result or producer plan. A refusal does not
 authorize a different plan.
 
 ### 9. Recheck after any graph or source change
 
-If the user says a consumer, branch, schema, policy, validator, or source may
-have changed, reconcile again. Report a reversed decision plainly:
+If an issued lease exists and the user says a consumer, branch, schema,
+policy, validator, or source may have changed, call
+`reconcile_retirement_lease_now`. It performs one fresh reconciliation,
+publication, and read-back and invalidates the observed lease. If no lease
+exists, call `reconcile_retirement_campaign` instead. Issue another lease only
+after the campaign is still ready and its publication is verified. Report a
+reversed decision plainly:
 
 > Fresh evidence invalidated the earlier readiness result. The producer action
 > is now refused.

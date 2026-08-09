@@ -9,7 +9,7 @@ import pytest
 
 from retirement_conductor.canonical import digest_json, with_digest
 from retirement_conductor.errors import Refusal
-from retirement_conductor.superset import SupersetAdapter
+from retirement_conductor.superset import SupersetAdapter, replace_identifier_once
 from retirement_conductor.superset_config import SupersetSettings
 from retirement_conductor.superset_workflow import SupersetWorkflow
 from retirement_conductor.vocabulary import RefusalCode
@@ -179,6 +179,34 @@ def test_preflight_binds_exact_datahub_and_native_identity(tmp_path: Path) -> No
     assert plan["target"]["before_sql"].count("legacy_status") == 1
     assert plan["target"]["after_sql"].count("order_status") == 1
     assert plan["proposed_targets"] == [f"superset:dataset:1:{client.dataset['uuid']}"]
+
+
+def test_sql_replacement_ignores_comments_and_literals() -> None:
+    sql = """-- legacy_status is historical
+select legacy_status, 'legacy_status', $$legacy_status$$ from orders
+/* legacy_status is not executable */
+"""
+
+    replaced = replace_identifier_once(sql, "legacy_status", "order_status")
+
+    assert "select order_status" in replaced
+    assert replaced.count("legacy_status") == 4
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "select 'legacy_status' from orders",
+        'select "legacy_status" from orders',
+        "select `legacy_status` from orders",
+        "select [legacy_status] from orders",
+    ],
+)
+def test_sql_replacement_refuses_non_executable_or_quoted_tokens(sql: str) -> None:
+    with pytest.raises(Refusal) as exc_info:
+        replace_identifier_once(sql, "legacy_status", "order_status")
+
+    assert exc_info.value.code == RefusalCode.IDENTITY_FIELD_AMBIGUOUS
 
 
 def test_workflow_refuses_apply_without_external_approval(tmp_path: Path) -> None:

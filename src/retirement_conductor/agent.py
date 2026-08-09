@@ -275,6 +275,39 @@ class AgentCommandRuntime:
     def verify_publication(self, campaign_id: str) -> dict[str, Any]:
         return self._campaign_publication(campaign_id, "verify-publication")
 
+    def inspect_retirement_lease(
+        self,
+        campaign_id: str,
+        *,
+        observed_at: str | None = None,
+    ) -> dict[str, Any]:
+        arguments = [
+            "campaign",
+            "lease-status",
+            "--campaign",
+            self._campaign_id(campaign_id),
+            *self._runtime_arguments(),
+        ]
+        if observed_at is not None:
+            arguments.extend(["--observed-at", observed_at])
+        return self._run_json(arguments)
+
+    def reconcile_retirement_lease_now(self, campaign_id: str) -> dict[str, Any]:
+        return self._run_json(
+            [
+                "campaign",
+                "watch",
+                "--once",
+                "--campaign",
+                self._campaign_id(campaign_id),
+                "--refresh-receipt",
+                str(self.settings.refresh_receipt),
+                "--indexing-timeout-seconds",
+                str(self.settings.indexing_timeout_seconds),
+                *self._runtime_arguments(),
+            ]
+        )
+
     def prepare_producer_plan(
         self,
         campaign_id: str,

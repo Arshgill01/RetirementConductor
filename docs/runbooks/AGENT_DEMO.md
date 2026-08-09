@@ -8,7 +8,7 @@ and deterministic gate still decide what is allowed.
 ## What was added
 
 - project-scoped MCP configuration in `.codex/config.toml`;
-- 14 focused Retirement Conductor MCP tools;
+- 16 focused Retirement Conductor MCP tools;
 - a repository skill in `.agents/skills/retirement-conductor-agent/`;
 - an out-of-agent human authorization boundary;
 - a model-driven acceptance command that refuses a late-consumer retirement;
@@ -166,8 +166,14 @@ DataHub search/schema/lineage context
   → publish_retirement_summary
   → verify_retirement_summary
   → prepare_producer_retirement_plan
+  → inspect_retirement_lease
   → execute_retirement_gate
 ```
+
+For the late-consumer path, call `reconcile_retirement_lease_now` against an
+issued lease. The watch records fresh evidence, republishes the decision, and
+invalidates that lease even when readiness is unchanged. A still-ready
+campaign therefore needs a new lease before a later gate attempt.
 
 Stop after `get_human_authorization_instructions`. A chat response such as
 “approved” does not create durable authorization. Continue only after the

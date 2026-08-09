@@ -28,6 +28,7 @@ from retirement_conductor.vocabulary import RefusalCode
 
 ADAPTER_VERSION = "0.1.0"
 IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+DOLLAR_QUOTE = re.compile(r"\$[A-Za-z_][A-Za-z0-9_]*\$|\$\$")
 
 
 class SupersetClientProtocol(Protocol):
@@ -980,23 +981,131 @@ def execution_semantically_equal(
 
 
 def identifier_occurrences(sql: str, identifier: str) -> int:
-    return len(
-        re.findall(rf"(?<![A-Za-z0-9_]){re.escape(identifier)}(?![A-Za-z0-9_])", sql)
-    )
+    return len(_unquoted_identifier_spans(sql, identifier))
 
 
 def replace_identifier_once(sql: str, before: str, after: str) -> str:
-    if identifier_occurrences(sql, before) != 1:
+    spans = _unquoted_identifier_spans(sql, before)
+    if len(spans) != 1:
         raise Refusal(
             RefusalCode.IDENTITY_FIELD_AMBIGUOUS,
-            "The exact legacy field token was not unique in native SQL.",
+            (
+                "The exact unquoted legacy field token was not unique in "
+                "executable native SQL."
+            ),
         )
-    return re.sub(
-        rf"(?<![A-Za-z0-9_]){re.escape(before)}(?![A-Za-z0-9_])",
-        after,
-        sql,
-        count=1,
-    )
+    start, end = spans[0]
+    return f"{sql[:start]}{after}{sql[end:]}"
+
+
+def _unquoted_identifier_spans(sql: str, identifier: str) -> list[tuple[int, int]]:
+    """Find executable unquoted identifier tokens without parsing arbitrary SQL."""
+
+    spans: list[tuple[int, int]] = []
+    index = 0
+    state = "code"
+    dollar_delimiter = ""
+    while index < len(sql):
+        if state == "line-comment":
+            if sql[index] in "\r\n":
+                state = "code"
+            index += 1
+            continue
+        if state == "block-comment":
+            if sql.startswith("*/", index):
+                state = "code"
+                index += 2
+            else:
+                index += 1
+            continue
+        if state == "single-quote":
+            if sql.startswith("''", index):
+                index += 2
+            elif sql[index] == "'":
+                state = "code"
+                index += 1
+            else:
+                index += 1
+            continue
+        if state in {"double-quote", "backtick"}:
+            quote = '"' if state == "double-quote" else "`"
+            if sql.startswith(quote * 2, index):
+                index += 2
+            elif sql[index] == quote:
+                state = "code"
+                index += 1
+            else:
+                index += 1
+            continue
+        if state == "bracket":
+            if sql.startswith("]]", index):
+                index += 2
+            elif sql[index] == "]":
+                state = "code"
+                index += 1
+            else:
+                index += 1
+            continue
+        if state == "dollar-quote":
+            if sql.startswith(dollar_delimiter, index):
+                state = "code"
+                index += len(dollar_delimiter)
+            else:
+                index += 1
+            continue
+
+        if sql.startswith("--", index):
+            state = "line-comment"
+            index += 2
+            continue
+        if sql.startswith("/*", index):
+            state = "block-comment"
+            index += 2
+            continue
+        if sql[index] == "'":
+            state = "single-quote"
+            index += 1
+            continue
+        if sql[index] == '"':
+            state = "double-quote"
+            index += 1
+            continue
+        if sql[index] == "`":
+            state = "backtick"
+            index += 1
+            continue
+        if sql[index] == "[":
+            state = "bracket"
+            index += 1
+            continue
+        if sql[index] == "$":
+            match = DOLLAR_QUOTE.match(sql, index)
+            if match is not None:
+                dollar_delimiter = match.group(0)
+                state = "dollar-quote"
+                index = match.end()
+                continue
+        end = index + len(identifier)
+        if (
+            sql.startswith(identifier, index)
+            and (index == 0 or not _identifier_character(sql[index - 1]))
+            and (end == len(sql) or not _identifier_character(sql[end]))
+        ):
+            spans.append((index, end))
+            index = end
+            continue
+        index += 1
+
+    if state not in {"code", "line-comment"}:
+        raise Refusal(
+            RefusalCode.SPEC_UNSUPPORTED_REPLACEMENT,
+            "Superset refused SQL with an unterminated quote or comment.",
+        )
+    return spans
+
+
+def _identifier_character(value: str) -> bool:
+    return value.isalnum() or value == "_"
 
 
 def dataset_id_from_datahub(entity: Mapping[str, Any]) -> int | None:

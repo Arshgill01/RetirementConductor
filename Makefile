@@ -3,7 +3,7 @@
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence \
 	phase06-benchmark phase06-data phase06-evidence phase07-evidence phase08-evidence package scan \
-	test test-install test-reference-campaign test-ui test-upgrade \
+	test test-install test-reference-campaign test-ui test-upgrade test-winning-workstreams \
 	test-end-to-end test-faults test-recovery test-security
 
 check:
@@ -28,6 +28,17 @@ continuous-reconciliation-acceptance:
 
 continuous-reconciliation-evidence:
 	uv run python -m scripts.generate_continuous_reconciliation_evidence
+
+test-winning-workstreams:
+	uv run pytest -q \
+		tests/unit/test_agent.py \
+		tests/unit/test_agent_mcp.py \
+		tests/unit/test_github_pr.py \
+		tests/unit/test_semantic_model_planner.py \
+		tests/unit/test_semantic_validation.py \
+		tests/unit/test_superset.py \
+		tests/unit/test_superset_config.py \
+		tests/integration/test_watch.py
 
 format:
 	uv run ruff check --fix src tests scripts

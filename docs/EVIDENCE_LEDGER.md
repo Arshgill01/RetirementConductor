@@ -1729,3 +1729,103 @@ manifest-bound gate, and revokes readiness when fresh evidence changes.
 What this does not prove: independent adoption, production warehouse deletion,
 universal discovery, a second automated native adapter, or safety beyond the
 recorded evidence envelope.
+
+## Post-goal semantic planner and GitHub PR evidence
+
+Tested workstream commit: `88ade9052a5684113e017094951c8ed4737466ff`
+
+Mode: live Vertex AI model proposal over bounded real DataHub and dbt context,
+followed by deterministic plan freezing and a disposable public GitHub PR.
+
+Observed result: `gemini-3-flash-preview` called
+`read_datahub_context`, then `read_dbt_context`, then submitted one typed
+proposal. Deterministic validation accepted `type_compatibility` and
+`exact_model_output_parity`; a foreign-authority probe refused. The model
+authorized nothing, accepted no validator result, and decided no readiness.
+
+After external approval, the boundary changed exactly
+`models/orders_model_00.sql` and one deterministic generated dbt test. Public
+[acceptance PR #1](https://github.com/Arshgill01/retirement-conductor-semantic-pr-acceptance/pull/1)
+remains open at head `6c26af7c11d36a6d1cc55cba38701982c1e546e3`.
+The `semantic-dbt` check succeeded on that exact head with dbt Core 1.12.0 and
+dbt-duckdb 1.10.1. A later owner commit invalidated the first receipt and was
+preserved; recovery used a new bound receipt rather than overwrite.
+
+The public aggregate is
+`artifacts/public/semantic-pr/acceptance-summary.json`, with acceptance digest
+`sha256:8610d08f8e928248870d490576e0bf1c9ea96428c683ba934e52873385f72ace`.
+Its model evidence digest is
+`sha256:037381ff857590c73d24849ed45953fdc45e942e285652962505703f5ce3367d`
+and CI binding digest is
+`sha256:78cd088f80fd1ee3725418392448a813a6605ae0a46872c6e7efc0db890fcbb0`.
+
+What this proves: an actual LLM can select migration-specific safe validation
+primitives and hand a typed proposal to deterministic authority; the resulting
+reviewable diff, native dbt validation, PR, and CI head form one exact chain.
+
+What this does not prove: model determinism, production GitHub policy,
+independent adoption, glossary or field-quality coverage, or model authority.
+Empty query history remained explicitly non-authoritative.
+
+## Post-goal continuous Retirement Lease evidence
+
+Tested workstream commit: `80ae38154026025aaf562d396e09a549111f3006`
+
+Mode: live-local disposable DataHub Core v1.6.0 and Git/dbt campaign with an
+issued producer plan, plus deterministic interruption and fault tests.
+
+Observed result: the watcher started from `READY_TO_RETIRE` and an `ISSUED`
+lease, performed cache-bypassed reconciliation, and independently reread the
+exact DataHub `upstreamLineage` field edge for a newly introduced Spark
+consumer. The campaign became `UNSAFE`, the DataHub summary was published and
+read back, and the lease became `INVALIDATED`. The exact preserved old plan
+then refused as `GATE_DECISION_NOT_READY`; no second producer sentinel was
+written. Removing the late graph edge did not validate or close that consumer.
+
+The public index is `artifacts/public/ws03/index.json`, with aggregate digest
+`sha256:09b66f9c715d7867ffdadf75c54936a5eb844e42fdc71355d51329ef37a3a5bb`.
+The watch receipt is `artifacts/public/ws03/watch-receipt.json`, digest
+`sha256:56db58f8c08c547558e0bb032da7ee76b5a03c22bd4ecc41202ab30b254039e7`.
+
+What this proves: readiness is observable and revocable after lease issue; the
+late consumer is not merely a prearranged policy input, and the exact stale
+authorization is demonstrably unusable. Observation, publication, and
+verification resume from retained local authority after interruption.
+
+What this does not prove: a distributed scheduler, production ingestion
+latency, a real warehouse deletion, or safety beyond the recorded envelope.
+
+## Post-goal Superset native-executor feasibility evidence
+
+Tested workstream commit: `84e67079d6dd9d9e4ab79ffd274103a044495ba6`
+
+Mode: live-local disposable Apache Superset 6.0.0, PostgreSQL, and DataHub Core
+with the official DataHub 1.6.0 Superset connector.
+
+Observed result: the executor bound exact dataset, database, and chart UUIDs,
+required dataset ID 1 in the explicit allowlist, changed one virtual-dataset
+SQL target through the native API, forced six-row chart execution, and matched
+the safe semantic output digest. Fresh reingestion and direct reread observed
+the replacement field edge without a legacy edge. Exact compensation restored
+the before fingerprint and revalidated the chart. Missing approval, source
+drift, connector failure, and an intervening owner change refused without
+overwriting source state.
+
+The inspected public summary is
+`artifacts/public/superset/ws04-evidence.json`. It binds plan
+`sha256:ccac87ec817d055160cb15fe74dcc452f33db522f193addaded7bf2f87eae208`,
+validation
+`sha256:df537c96111e3f954abc38be475d594ce818ca48dc49af9014c1954e3d443624`,
+reconciliation
+`sha256:311441d0f95b6e53ff0f61c2a58a24e63969ee424812a8fa8cc4e5f991a44917`,
+and compensation
+`sha256:c31b9ce1d7f93c2647f085248e7b04f1865e0ed7271a6fae5896601210873878`.
+
+What this proves: a second native system can satisfy bounded identity,
+authorization, mutation, validation, fresh metadata, and compensation
+properties in a disposable environment.
+
+What this does not prove: a supported second campaign adapter. The official
+connector contract remains table-level; parser-derived field lineage is only
+corroboration, and Superset receipts cannot affect canonical readiness or the
+producer gate.
