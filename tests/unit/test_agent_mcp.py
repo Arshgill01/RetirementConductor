@@ -106,6 +106,9 @@ def test_mcp_server_advertises_focused_annotated_tools() -> None:
                     "properties"
                 ]
             ) == {"campaign_id"}
+            assert set(
+                by_name["prepare_producer_retirement_plan"].input_schema["properties"]
+            ) == {"campaign_id"}
             assert by_name["inspect_retirement_lease"].annotations is not None
             assert (
                 by_name["inspect_retirement_lease"].annotations.read_only_hint is True

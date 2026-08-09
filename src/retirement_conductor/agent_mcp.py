@@ -428,8 +428,12 @@ def create_server(runtime: AgentCommandRuntime | None = None) -> Any:
     )
     def prepare_producer_retirement_plan(
         campaign_id: str,
-        expires_at: str,
     ) -> dict[str, Any]:
+        expires_at = (
+            (datetime.now(UTC) + timedelta(minutes=10))
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
         result = tool_runtime.prepare_producer_plan(campaign_id, expires_at=expires_at)
         if _refused(result):
             return result
