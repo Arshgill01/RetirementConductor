@@ -1,4 +1,4 @@
-.PHONY: agent-acceptance agent-full-evidence benchmark-workspace check continuous-reconciliation-acceptance continuous-reconciliation-evidence datahub-core-env datahub-core-up datahub-core-down datahub-seed \
+.PHONY: agent-acceptance agent-full-evidence benchmark-workspace check continuous-reconciliation-acceptance continuous-reconciliation-evidence datahub-core-env datahub-core-up datahub-core-down datahub-seed definitive-unified-verify \
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence \
@@ -22,6 +22,9 @@ agent-acceptance:
 
 agent-full-evidence:
 	uv run python scripts/generate_agent_full_run_evidence.py
+
+definitive-unified-verify:
+	uv run python scripts/generate_definitive_unified_evidence.py verify
 
 continuous-reconciliation-acceptance:
 	uv run python -m scripts.run_continuous_reconciliation_acceptance
