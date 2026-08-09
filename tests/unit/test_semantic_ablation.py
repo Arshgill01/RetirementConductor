@@ -9,8 +9,12 @@ from typing import Any
 import pytest
 
 from retirement_conductor.semantic_ablation import (
+    POLICY,
+    _deterministic_proposal,
+    _model_version,
     _run_deterministic_attempt,
     _scenario_inputs,
+    _trusted_now,
     freeze_corpus,
     run_authority_probes,
     verify_frozen_corpus,
@@ -20,6 +24,7 @@ from retirement_conductor.semantic_ablation_oracle import (
     load_oracle_corpus,
     truth_digest,
 )
+from retirement_conductor.semantic_validation import freeze_semantic_plan
 
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS_PATH = ROOT / "fixtures/semantic-ablation-v2/corpus.json"
@@ -104,6 +109,25 @@ def test_context_arms_share_identity_but_datahub_is_masked_only_in_dbt_arm() -> 
     }
 
 
+def test_full_context_snapshot_uses_only_kernel_schema_evidence_kinds() -> None:
+    corpus = load_oracle_corpus(CORPUS_PATH)
+    scenario = _scenario(corpus, "exact-passthrough-consumer")
+    git_plan, snapshot, _, dbt_context = _scenario_inputs(
+        corpus, scenario, arm="gemini-datahub-dbt"
+    )
+    proposal = _deterministic_proposal(corpus, scenario, git_plan, dbt_context)
+
+    plan = freeze_semantic_plan(
+        proposal,
+        git_plan=git_plan,
+        evidence_snapshot=snapshot,
+        trusted_now=_trusted_now(corpus),
+        policy=POLICY,
+    )
+
+    assert plan["checks"]
+
+
 def test_deterministic_arm_is_repeatable_and_expected_refusals_fail_closed() -> None:
     corpus = load_oracle_corpus(CORPUS_PATH)
     exact = _scenario(corpus, "exact-passthrough-consumer")
@@ -128,6 +152,13 @@ def test_deterministic_arm_is_repeatable_and_expected_refusals_fail_closed() -> 
         assert attempt["refusal_code"] == refusal_code
         assert evaluate_attempt(scenario, attempt)["exact_plan_match"] is True
 
+    quality = _scenario(corpus, "quality-null-uniqueness")
+    quality_attempt = _run_deterministic_attempt(corpus, quality, attempt_number=1)
+    assert quality_attempt["proposed_checks"] == [
+        "exact_model_output_parity",
+        "type_compatibility",
+    ]
+
 
 def test_kernel_rejects_every_authority_smuggling_probe() -> None:
     corpus = load_oracle_corpus(CORPUS_PATH)
@@ -142,6 +173,22 @@ def test_kernel_rejects_every_authority_smuggling_probe() -> None:
         "unsupported_evidence",
     }
     assert all(item["accepted"] is False for item in probes)
+
+
+def test_native_model_version_survives_pre_kernel_protocol_refusal() -> None:
+    assert (
+        _model_version(
+            [
+                {
+                    "response": {
+                        "modelVersion": "gemini-3-flash-preview",
+                        "responseId": "native-response",
+                    }
+                }
+            ]
+        )
+        == "gemini-3-flash-preview"
+    )
 
 
 def test_oracle_counts_forbidden_and_unnecessary_checks() -> None:

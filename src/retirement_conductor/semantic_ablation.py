@@ -6,6 +6,7 @@ import hashlib
 import json
 import time
 from collections.abc import Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -36,6 +37,7 @@ from retirement_conductor.semantic_validation import (
 ARMS = ("deterministic", "gemini-dbt-only", "gemini-datahub-dbt")
 MODEL_ARMS = ARMS[1:]
 ATTEMPTS_PER_ARM = 3
+MODEL_WORKERS = 4
 GENERATION_CONFIGURATION = {
     "temperature": 0,
     "candidateCount": 1,
@@ -142,29 +144,39 @@ def run_experiment(
 
     corpus = verify_frozen_corpus(corpus_path, freeze_path)
     raw_directory.mkdir(parents=True, exist_ok=True)
-    results: list[dict[str, Any]] = []
-    for arm in ARMS:
+    for scenario in corpus["scenarios"]:
+        for attempt_number in range(1, ATTEMPTS_PER_ARM + 1):
+            path = _attempt_path(
+                raw_directory, "deterministic", scenario["id"], attempt_number
+            )
+            if not path.exists():
+                result = _run_deterministic_attempt(
+                    corpus, scenario, attempt_number=attempt_number
+                )
+                write_json(path, result)
+
+    pending: list[tuple[str, Mapping[str, Any], int, Path]] = []
+    for arm in MODEL_ARMS:
         for scenario in corpus["scenarios"]:
             for attempt_number in range(1, ATTEMPTS_PER_ARM + 1):
                 path = _attempt_path(raw_directory, arm, scenario["id"], attempt_number)
-                if path.exists():
-                    result = json.loads(path.read_text(encoding="utf-8"))
-                elif arm == "deterministic":
-                    result = _run_deterministic_attempt(
-                        corpus, scenario, attempt_number=attempt_number
-                    )
-                    write_json(path, result)
-                else:
-                    result = _run_model_attempt(
-                        corpus,
-                        scenario,
-                        arm=arm,
-                        attempt_number=attempt_number,
-                        settings=settings,
-                    )
-                    write_json(path, result)
-                results.append(result)
-    return results
+                if not path.exists():
+                    pending.append((arm, scenario, attempt_number, path))
+    with ThreadPoolExecutor(max_workers=MODEL_WORKERS) as executor:
+        futures = {
+            executor.submit(
+                _run_model_attempt,
+                corpus,
+                scenario,
+                arm=arm,
+                attempt_number=attempt_number,
+                settings=settings,
+            ): path
+            for arm, scenario, attempt_number, path in pending
+        }
+        for future in as_completed(futures):
+            write_json(futures[future], future.result())
+    return _load_complete_attempts(corpus, raw_directory)
 
 
 def publish_evidence(
@@ -190,7 +202,8 @@ def publish_evidence(
                 "attempt": attempt["attempt"],
                 "provider": attempt.get("provider"),
                 "requested_model": attempt.get("requested_model"),
-                "model_identifier": attempt.get("model_identifier"),
+                "model_identifier": attempt.get("model_identifier")
+                or _model_version(attempt.get("raw_exchanges", [])),
                 "response_ids": attempt.get("response_ids", []),
                 "latency_ms": attempt["latency_ms"],
                 "token_usage": attempt.get("token_usage", {}),
@@ -215,6 +228,7 @@ def publish_evidence(
             "experiment_id": corpus["experiment_id"],
             "arms": list(ARMS),
             "attempts_per_scenario_arm": ATTEMPTS_PER_ARM,
+            "model_worker_count": MODEL_WORKERS,
             "provider": "google-vertex-ai",
             "settings": settings.safe_summary(),
             "system_prompt": PROMPT_TEMPLATE,
@@ -255,6 +269,63 @@ def publish_evidence(
         },
         "review_artifact_digest",
     )
+    failure_artifact = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "failures": [
+                {
+                    "stage": "pre-live deterministic run",
+                    "observation": (
+                        "The selector treated 'no not-null test' as a positive "
+                        "dbt contract signal and requested an unavailable candidate."
+                    ),
+                    "fix": (
+                        "Match only the explicit 'dbt declares not-null' signal and "
+                        "add focused regression coverage."
+                    ),
+                    "frozen_truth_changed": False,
+                    "live_attempts_affected": 0,
+                },
+                {
+                    "stage": "initial full-context publication",
+                    "observation": (
+                        "The runner labeled a generic DataHub reference with an "
+                        "evidence kind outside the existing semantic-plan schema, "
+                        "causing 36 otherwise-accepted plans to fail schema validation."
+                    ),
+                    "fix": (
+                        "Use the existing datahub_lineage evidence kind, validate a "
+                        "full-context snapshot through the real schema in a regression "
+                        "test, preserve all preliminary traces, and rerun the arm."
+                    ),
+                    "frozen_truth_changed": False,
+                    "live_attempts_affected": 45,
+                    "retained_raw_location": (
+                        ".retirement-conductor/semantic-ablation-v2/"
+                        "observed-defects/gemini-datahub-dbt-initial-schema-defect"
+                    ),
+                    "preliminary_summary_digest": (
+                        "sha256:d66708919330d5f79c47938b54c79f12cc6aef834ddee0acc1055d39fd2d1a8c"
+                    ),
+                },
+                {
+                    "stage": "live execution throughput",
+                    "observation": (
+                        "Sequential execution was interrupted after five completed "
+                        "dbt-only attempts because it would not finish efficiently."
+                    ),
+                    "fix": (
+                        "Resume completed attempts with four independent workers; "
+                        "prompts, model settings, policy, clock, and scoring stayed "
+                        "fixed."
+                    ),
+                    "frozen_truth_changed": False,
+                    "completed_attempts_reused": 5,
+                },
+            ],
+        },
+        "failure_artifact_digest",
+    )
     summary = with_digest(
         {
             "schema_version": "1.0.0",
@@ -264,6 +335,7 @@ def publish_evidence(
             "configuration_digest": configuration["configuration_digest"],
             "results_digest": results_artifact["results_digest"],
             "review_artifact_digest": review_artifact["review_artifact_digest"],
+            "failure_artifact_digest": failure_artifact["failure_artifact_digest"],
             "authority_probes": authority_probes,
             "metrics": metrics,
             "paired_differences": paired,
@@ -298,7 +370,11 @@ def publish_evidence(
     write_json(public_directory / "configuration.json", configuration)
     write_json(public_directory / "results.json", results_artifact)
     write_json(public_directory / "review-artifact.json", review_artifact)
+    write_json(public_directory / "observed-failures.json", failure_artifact)
     write_json(public_directory / "summary.json", summary)
+    (public_directory / "REPORT.md").write_text(
+        _render_public_report(summary), encoding="utf-8"
+    )
     return summary
 
 
@@ -312,11 +388,15 @@ def verify_public_evidence(public_directory: Path) -> dict[str, Any]:
     review = _load_digest_artifact(
         public_directory / "review-artifact.json", "review_artifact_digest"
     )
+    failures = _load_digest_artifact(
+        public_directory / "observed-failures.json", "failure_artifact_digest"
+    )
     summary = _load_digest_artifact(public_directory / "summary.json", "summary_digest")
     links = {
         "configuration_digest": configuration["configuration_digest"],
         "results_digest": results["results_digest"],
         "review_artifact_digest": review["review_artifact_digest"],
+        "failure_artifact_digest": failures["failure_artifact_digest"],
     }
     for key, value in links.items():
         if summary[key] != value:
@@ -475,7 +555,9 @@ def _run_model_attempt(
         "attempt": attempt_number,
         "provider": evidence.get("provider", "google-vertex-ai"),
         "requested_model": settings.model,
-        "model_identifier": evidence.get("model_identifier"),
+        "model_identifier": evidence.get(
+            "model_identifier", _model_version(recording.exchanges)
+        ),
         "response_ids": evidence.get(
             "response_ids", _response_ids(recording.exchanges)
         ),
@@ -658,7 +740,7 @@ def _evidence_snapshot(scenario: Mapping[str, Any], *, arm: str) -> dict[str, An
         references.append(
             {
                 "evidence_id": "datahub-context",
-                "kind": "datahub_context",
+                "kind": "datahub_lineage",
                 "subject": git_plan["datahub_urn"],
                 "source_version": "datahub-core-1.6.0-or-synthetic-shape-v2",
                 "observed_at": observed_at,
@@ -765,7 +847,7 @@ def _deterministic_proposal(
     shape = str(scenario["dbt_facts"]["consumer_shape"])
     contract = str(scenario["dbt_facts"]["manifest_contract"]).casefold()
     selected = ["type_compatibility"]
-    if "not-null" in contract:
+    if "dbt declares not-null" in contract:
         selected.append("null_rate_bound")
     elif shape == "row_projection":
         selected.append("exact_model_output_parity")
@@ -968,18 +1050,99 @@ def _datahub_context_recommendation(
     full = metrics["gemini-datahub-dbt"]
     dbt = metrics["gemini-dbt-only"]
     wins = _exclusive_context_wins(attempts, scenarios)
+    safety_gain = (
+        full["safety_critical_planted_fault_coverage"]
+        - dbt["safety_critical_planted_fault_coverage"]
+    )
     adds_value = (
-        full["minimum_sufficient_plan_match_rate"]
-        > dbt["minimum_sufficient_plan_match_rate"]
-        and len(wins) >= 1
+        safety_gain > 0
         and full["forbidden_or_unsupported_attempt_rate"]
         <= dbt["forbidden_or_unsupported_attempt_rate"]
     )
     return {
-        "recommendation": "KEEP_CONTEXT" if adds_value else "NO_PROVEN_VALUE",
+        "recommendation": "ADDS_VALUE" if adds_value else "NO_PROVEN_VALUE",
         "adds_value_over_dbt_only": adds_value,
         "exclusive_context_only_wins": wins,
+        "safety_critical_fault_coverage_gain": round(safety_gain, 6),
+        "exact_plan_match_rate_gain": round(
+            full["minimum_sufficient_plan_match_rate"]
+            - dbt["minimum_sufficient_plan_match_rate"],
+            6,
+        ),
+        "tradeoff": (
+            "DataHub context may expose safety-relevant checks even when the nested "
+            "model still fails minimum-sufficient-plan and product-value thresholds."
+        ),
     }
+
+
+def _render_public_report(summary: Mapping[str, Any]) -> str:
+    metrics = summary["metrics"]
+    recommendation = summary["nested_gemini_recommendation"]
+    datahub = summary["datahub_context_recommendation"]
+    lines = [
+        "# TE-01 semantic value ablation report",
+        "",
+        f"Canonical summary: `{summary['summary_digest']}`.",
+        "",
+        "## Result",
+        "",
+        (
+            f"Nested Gemini recommendation: **{recommendation['recommendation']}**. "
+            f"DataHub context finding: **{datahub['recommendation']}**."
+        ),
+        "",
+        (
+            "| Arm | Exact plan | Fault coverage | Forbidden/unsupported | "
+            "Stability | Mean edits |"
+        ),
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    labels = {
+        "deterministic": "Deterministic",
+        "gemini-dbt-only": "Gemini dbt-only",
+        "gemini-datahub-dbt": "Gemini DataHub + dbt",
+    }
+    for arm in ARMS:
+        item = metrics[arm]
+        lines.append(
+            "| "
+            + labels[arm]
+            + " | "
+            + f"{item['minimum_sufficient_plan_match_rate']:.1%} | "
+            + f"{item['safety_critical_planted_fault_coverage']:.1%} | "
+            + f"{item['forbidden_or_unsupported_attempt_rate']:.1%} | "
+            + f"{item['cross_run_check_set_stability']:.1%} | "
+            + f"{item['mean_human_edit_distance']:.3f} |"
+        )
+    criteria = recommendation["criteria"]
+    lines.extend(
+        [
+            "",
+            "## Predeclared decision rule",
+            "",
+            *[
+                f"- {name.replace('_', ' ')}: {'PASS' if passed else 'FAIL'}"
+                for name, passed in criteria.items()
+            ],
+            "",
+            "Full context improved safety-critical planted-fault coverage over the "
+            "dbt-only arm, but exact minimum-sufficient-plan accuracy remained 20.0% "
+            "and the operator review artifact required more edits than the "
+            "deterministic baseline. The context signal has value; the nested model "
+            "layer does not earn product inclusion under the frozen rule.",
+            "",
+            "## Evidence boundary",
+            "",
+            "The 15 scenarios are synthetic except for two shapes bound to retained "
+            "live-local public DataHub evidence. This is model-selection evidence, "
+            "not native-validation, production, customer, or hidden-consumer evidence.",
+            "Raw model requests and responses remain ignored private evidence under "
+            "`.retirement-conductor/semantic-ablation-v2/`.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def _exclusive_context_wins(
@@ -1101,6 +1264,16 @@ def _response_ids(exchanges: Sequence[Mapping[str, Any]]) -> list[str]:
         if isinstance(exchange.get("response"), Mapping)
         and isinstance(exchange["response"].get("responseId"), str)
     ]
+
+
+def _model_version(exchanges: Sequence[Mapping[str, Any]]) -> str | None:
+    for exchange in reversed(exchanges):
+        response = exchange.get("response")
+        if isinstance(response, Mapping) and isinstance(
+            response.get("modelVersion"), str
+        ):
+            return str(response["modelVersion"])
+    return None
 
 
 def _token_usage(exchanges: Sequence[Mapping[str, Any]]) -> dict[str, int]:

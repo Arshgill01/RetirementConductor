@@ -1,0 +1,1380 @@
+{
+  "description": "Concrete operator-review edits needed to transform each observed accepted plan into the independent minimum sufficient plan.",
+  "review_artifact_digest": "sha256:293a4c84d168d72415571f90ba423b4e21a3e54a2f59309ccf52b9bec0553524",
+  "rows": [
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [
+        "keyed_row_coverage",
+        "null_rate_bound"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [
+        "keyed_row_coverage",
+        "null_rate_bound"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [
+        "keyed_row_coverage",
+        "null_rate_bound"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [
+        "freshness_window"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [
+        "freshness_window"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [
+        "freshness_window"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "deterministic",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [
+        "keyed_row_coverage",
+        "null_rate_bound"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 4,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [
+        "keyed_row_coverage",
+        "null_rate_bound"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 4,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [
+        "keyed_row_coverage",
+        "null_rate_bound"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 4,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [
+        "freshness_window"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [
+        "freshness_window"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [
+        "freshness_window"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "keyed_row_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "keyed_row_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "keyed_row_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [
+        "aggregate_parity"
+      ],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [
+        "category_mapping_completeness"
+      ],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 3,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "gemini-dbt-only",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "exact_model_output_parity",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "glossary-category-mapping"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "query-aggregate-behavior"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "quality-null-uniqueness"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "native-freshness-not-ingestion"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "keyed_row_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "keyed_row_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "keyed_row_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "exact-passthrough-consumer"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "aggregate-consumer-not-exact"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "row_count_coverage"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "physical-type-business-mismatch"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "ownership-without-authority"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "missing-optional-context"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "contradictory-datahub-dbt"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "prompt-injection-metadata-query"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "row_count_coverage"
+      ],
+      "edit_distance": 1,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [
+        "exact_model_output_parity",
+        "type_compatibility"
+      ],
+      "checks_to_remove": [],
+      "edit_distance": 2,
+      "scenario_id": "irrelevant-rich-context"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "expired-evidence-envelope"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [],
+      "edit_distance": 0,
+      "scenario_id": "source-fingerprint-mismatch"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 1,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 2,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "dbt-contract-sufficient"
+    },
+    {
+      "arm": "gemini-datahub-dbt",
+      "attempt": 3,
+      "checks_to_add": [],
+      "checks_to_remove": [
+        "accepted_values_coverage",
+        "exact_model_output_parity"
+      ],
+      "edit_distance": 2,
+      "scenario_id": "dbt-contract-sufficient"
+    }
+  ],
+  "schema_version": "1.0.0"
+}
