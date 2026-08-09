@@ -22,7 +22,6 @@ from retirement_conductor.canonical import (
     write_json,
 )
 from retirement_conductor.specification import load_specification
-from scripts.datahub_seed import ISOLATED_TARGET_URN
 from scripts.run_phase04_end_to_end import (
     DBT_EXECUTABLE,
     ISOLATED_LATE_URN,
@@ -45,6 +44,10 @@ from scripts.run_phase04_end_to_end import (
 )
 
 RUNTIME_ROOT = ROOT / ".retirement-conductor" / "e2e" / "continuous-reconciliation"
+ISOLATED_TARGET_URN = (
+    "urn:li:dataset:(urn:li:dataPlatform:snowflake,"
+    "retirement_conductor.analytics.commerce.orders_isolated,PROD)"
+)
 
 
 def wait_for_exact_field_edge(
