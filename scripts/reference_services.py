@@ -128,23 +128,17 @@ def ensure_datahub_core() -> bool:
 
 
 def datahub_core_identity() -> dict[str, str]:
-    compose = [
-        "docker",
-        "compose",
-        "--env-file",
-        str(COMPOSE_ENV),
-        "-f",
-        str(COMPOSE_FILE),
-    ]
     identifiers = [
         value
         for value in checked(
-            [*compose, "ps", "--quiet", "datahub-gms"]
+            ["docker", "ps", "--quiet", "--filter", "publish=18080"]
         ).stdout.splitlines()
         if value
     ]
     if len(identifiers) != 1:
-        raise RuntimeError("expected one disposable DataHub Core container")
+        raise RuntimeError(
+            "expected one container publishing the disposable DataHub Core port"
+        )
     identifier = identifiers[0]
 
     def inspect_value(template: str) -> str:
