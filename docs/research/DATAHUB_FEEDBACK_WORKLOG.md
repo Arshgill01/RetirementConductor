@@ -84,35 +84,19 @@ On 2026-08-09, `make test-end-to-end` ran against disposable DataHub Core
   ignored run `run-e303bb5eb7bb`; the aggregate evidence digest is
   `sha256:6fde29c7227578e8eae99e3b24a4182be1484c4accdb9b7677c4fd965cc45a1b`.
 
-## Pass 3 — focused API and MCP probes
+## Pass 3 — provisional focused probes
 
-`scripts/run_datahub_feedback_experiments.py` ran against DataHub Core 1.6.0
-and MCP server 0.6.0, then restored the base graph. The tracked artifact is
-`artifacts/public/datahub-feedback/live-evidence.json`, with evidence digest
-`sha256:22e883aed2c35f78e9d49df177f64bcd649d9732407ef33405a287a210ac6905`.
+The first focused API/MCP probe reused the existing reference-service volumes.
+It reproduced the MCP offset failure, but also suggested a stale default read
+and a missing second field-lineage hop. Because those two observations could
+have been influenced by retained synthetic state, they remained provisional.
+The combined-degree omission from an older run did not reproduce at all and was
+excluded immediately.
 
-- The live MCP server exposed 20 typed tools. `get_lineage` documented and
-  accepted `offset`, but exposed no cache-bypass parameter.
-- MCP offset defect reproduced: a retained synthetic graph reported `total=41`.
-  With `max_results=1`, offset 0 returned one result and `hasMore=false`;
-  offset 1 returned zero and `hasMore=false`. A direct GMS control with
-  `start=1,count=1` returned one result. No error was raised.
-- Cache behavior reproduced: after warming a degree-two zero, the late edge
-  became visible through a cache-bypassed direct check. The default root query
-  still returned zero, while the same cache-bypassed root query returned one.
-  Both responses exposed `isPartial=null` and `freshness=null`.
-- Multi-hop column discrepancy reproduced: direct `upstreamLineage` aspects
-  contained the exact two-edge field chain, but
-  `get_lineage(column="legacy_status", max_hops=3)` returned only the
-  degree-one model, `total=1`, and `hasMore=false`.
-- The older combined-degree omission did not reproduce. One combined
-  cache-bypassed query returned both degree-one and degree-two consumers, equal
-  to the union of individual degree queries. It is excluded from the current
-  bug answer.
-- An intermediate rerun did not observe the late edge inside the original
-  10-second bound. The run failed without promoting evidence and restored the
-  base graph. The successful final run observed it on attempt two after 9.4
-  seconds under a widened 60-second bound.
+This pass was useful mainly as an adversarial checkpoint: it showed that a
+live-local reproduction is not automatically a clean reproduction. No cache or
+column-lineage claim from this pass survives into the submission without the
+new-volume rerun below.
 
 ## Pass 4 — primary-source and adversarial verification
 
@@ -138,8 +122,63 @@ The adversarial edit removed or demoted four weak claims:
 - production, Cloud, or universal-completeness implications, because all new
   evidence is live-local Core over a synthetic graph.
 
+## Pass 5 — clean-stack reproduction and patch control
+
+A new Docker Compose project named `retirement-conductor-feedback-clean` was
+started with brand-new project-scoped MySQL, OpenSearch, and Kafka volumes. The
+same experiment was then run against two MCP revisions while keeping DataHub
+Core 1.6.0 and the synthetic 31-neighbor graph constant.
+
+Released MCP 0.6.0 at `9a6946d`:
+
+- page one: one result, `total=31`, `hasMore=false`;
+- page two (`offset=1`): zero results;
+- direct GMS control (`start=1,count=1`): one result;
+- defect predicate: true;
+- digest:
+  `sha256:3c9dbe4e507f3a2d146daa46f26618189b77905261688e2c5bbcd021dc90acf5`.
+
+PR 195 head at `4f2a712` on the identical Core stack and graph:
+
+- page one: one result, `total=31`, `hasMore=true`;
+- page two (`offset=1`): one result;
+- direct GMS control (`start=1,count=1`): one result;
+- defect predicate: false;
+- digest:
+  `sha256:86729d9e86867728a92358a1a74bcef0fa463364564c28568e355fbde9b4f240`.
+
+The PR's own focused regression test passed (`1 passed`). This is a controlled
+failing-before/passing-after result, but the submission still calls it a
+proposed fix because the PR has not been released.
+
+The clean run also rejected two provisional claims:
+
+- the default lineage read saw the late edge, matching the cache-bypassed read;
+- MCP column lineage returned both degree-one and degree-two results and matched
+  the exact two-edge field chain in the direct aspects.
+
+Those behaviors were consistent under both MCP revisions. They are recorded as
+non-reproductions, not bugs.
+
+Tracked artifacts:
+
+- `artifacts/public/datahub-feedback/live-evidence.json` — released MCP;
+- `artifacts/public/datahub-feedback/pr195-evidence.json` — PR 195 head.
+
+## Pass 6 — live submission-form verification
+
+The authenticated Devpost submission schema was read on 2026-08-09. It exposes
+four separate `SubmissionFieldTextArea` fields matching the questions in the
+prompt. The fields are optional at the schema level, but the prize opt-in says
+that answering yes and filling them out makes the entrant eligible for one of
+ten $50 awards. The connector returned no character limit, so the final file
+keeps each answer compact while the worklog and JSON artifacts retain the full
+audit trail.
+
 ## Final critique result
 
-The form-ready draft now makes one main point per question, distinguishes
-observed bugs from the requested evidence-grade contract, and provides exact
-steps, expectations, actual results, versions, limitations, and upstream links.
+The form-ready draft now makes one main point per question, uses only the one
+bug that survived clean isolation, and includes exact steps, expectations,
+actual results, versions, a direct control, a patched control, limitations, and
+upstream links. The clean verification loop materially changed the submission
+by removing two plausible but unsupported bug claims.

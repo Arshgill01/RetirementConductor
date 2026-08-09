@@ -20,6 +20,8 @@ open risk.
 6. [DataHub feedback worklog](DATAHUB_FEEDBACK_WORKLOG.md) and the associated
    [submission draft](DATAHUB_FEEDBACK_SUBMISSION.md) preserve the iterative,
    evidence-backed hackathon feedback pass without changing product claims.
+   Public-safe released-versus-patched experiment artifacts live under
+   `artifacts/public/datahub-feedback/`.
 
 ## Current synthesis
 

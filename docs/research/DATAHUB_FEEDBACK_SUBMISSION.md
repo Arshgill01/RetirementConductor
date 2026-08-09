@@ -1,122 +1,115 @@
 # DataHub feedback submission
 
+These four answers are sized for the four separate Devpost textarea fields.
+The linked worklog and public-safe artifacts retain the longer evidence trail.
+
 ## 1. Which parts of DataHub felt polished or useful during your build?
 
 The most useful part was cross-platform lineage as an operational input, not
 just a visualization. Our repository scan found one consumer of
 `orders.legacy_status`; the same bounded inventory in DataHub Core 1.6.0 found
-31 downstream consumers—21 datasets, 6 charts, and 4 dashboards—over seven
-pages. Even after conservatively assuming the repository match overlapped one
-graph entity, DataHub added at least 30 known consumers.
+31 downstream consumers over seven pages: 21 datasets, 6 charts, and 4
+dashboards. Even if the repository match overlapped one graph entity, DataHub
+added at least 30 known consumers.
 
-The important result was consequential: after we migrated and natively
-validated the one dbt consumer, adding a late Spark consumer changed the same
-campaign from `READY_TO_RETIRE` to `UNSAFE` and our producer gate refused the
-breaking change. That was the moment DataHub stopped being catalog decoration
-and became the reason we avoided a bad operation.
+That context changed a real decision. After we migrated and natively validated
+the one dbt consumer, the campaign was `READY_TO_RETIRE`. Adding a late Spark
+consumer and reconciling against DataHub changed it to `UNSAFE`, and our
+producer-side gate refused the breaking change. DataHub was the reason the
+automation stopped rather than deleting a still-used field.
 
-The official
+Two smaller paths also felt polished. The official
 [Superset connector](https://docs.datahub.com/docs/generated/ingestion/sources/superset)
-was another “just worked” path in an isolated worktree. DataHub 1.6.0 ingested
-our selected virtual dataset, chart, dashboard, owner, and lineage without
-warnings. The docs clearly label its authority as table-level lineage, which
-matched what we observed and helped us know when to reread native Superset SQL
-for exact field evidence. We also updated one stable DataHub document four
-times and read back the exact content without changing the dataset's
-deprecation state; that was a clean shared-memory primitive for another agent.
+ingested our selected virtual dataset, chart, dashboard, owner, and table
+lineage on DataHub 1.6.0 with no warnings. Its docs explicitly say the lineage
+authority is table-level, which helped us know when native Superset SQL was
+still required for exact field evidence. Also, MCP `save_document` let us
+update one stable campaign document four times and read back the exact content
+without touching the dataset's deprecation state. That worked well as durable
+shared memory between agents.
 
 ## 2. Where did you get stuck or lose time?
 
-We lost the most time proving that lineage was complete and current. The MCP
-surface was pleasant for agent search and context, but our safety-sensitive
-path needed three different surfaces: MCP for discovery, GMS GraphQL for
-counted paging and `skipCache`, and direct `upstreamLineage` aspect reads for
-exact field evidence.
+We lost the most time establishing whether a lineage result was complete
+enough to authorize a destructive change. The agent-friendly MCP surface was
+excellent for discovery, but our safety path ended up using MCP for context,
+GMS GraphQL for counted paging and a cache-bypassed read, and direct
+`upstreamLineage` aspects for exact field evidence.
 
-The reason was observable, not theoretical. We warmed a degree-two downstream
-query at zero, wrote a late consumer, and waited until a cache-bypassed direct
-query saw the new edge. The default root query still returned `total=0`; the
-same query with `SearchFlags.skipCache=true` immediately returned `total=1`.
-Core returned `isPartial: null` and `freshness: null` in both responses, while
-MCP `get_lineage` exposed no cache-bypass argument. In another rerun the new
-edge was still not visible inside our original 10-second observation bound, so
-we had to retain bounded polling and source timestamps rather than trust a
-successful write response.
+The biggest time sink was that MCP's documented pagination looked successful
+while silently stopping after page one. On a clean 31-neighbor graph,
+`get_lineage(max_results=1, offset=0)` returned one row with `total=31` but
+`hasMore=false`; `offset=1` returned zero. We had to trace the request through
+the MCP implementation and compare it with direct GMS
+`searchAcrossLineage(start=1,count=1)`, which did return the second row. There
+was no error to lead us there.
 
-We hit the same parity problem at field level: direct aspects contained an
-exact two-hop field chain, but MCP column lineage returned only hop one. Our
-workaround was conservative—MCP can add evidence, but it cannot exclude a
-consumer found by cache-bypassed GMS paging. That is safe, but it is a lot of
-integration code for every team that wants to automate a destructive schema
-change.
+The docs explain individual APIs and connector capabilities, but I could not
+find one end-to-end guide for “enumerate every downstream consumer safely.” A
+useful guide would cover paging, cache/index freshness, permission-filtered or
+partial results, field-versus-table granularity, and which read surface is
+authoritative for each claim. Without that, every team building migration or
+governance automation has to rediscover the same boundaries.
 
 ## 3. If you had unlimited engineering time on DataHub, what would you build or fix first?
 
-I would make **evidence-grade lineage enumeration** one identical contract
-across MCP, GraphQL, and the SDK. Every response would include a stable snapshot
-cursor, `returned`, `total`, `hasMore` or `nextCursor`, an explicit partial or
-truncation reason, effective permission scope, cache-used/cache-bypassed state,
-an index watermark, a connector/source watermark, and edge granularity such as
-`FIELD_EXACT`, `TABLE_ONLY`, or `UNKNOWN`. MCP would expose a documented fresh
-read mode instead of forcing agents to fall through to GraphQL.
+I would build an **evidence-grade lineage read contract** shared by MCP,
+GraphQL, and the SDK. A lineage enumeration would use a stable snapshot cursor
+and always return `returned`, `total`, `nextCursor`/`hasMore`, an explicit
+partial or truncation reason, effective permission scope, cache-used or
+cache-bypassed state, index and connector/source watermarks, and edge
+granularity such as `FIELD_EXACT`, `TABLE_ONLY`, or `UNKNOWN`. MCP would expose
+a documented fresh-read mode instead of requiring agents to fall through to
+GraphQL.
 
-I would ship that contract with a conformance suite built around the cases that
-hurt us: more results than one page, a new edge after page one is cached, a
-two-hop renamed-column chain, connector-level table lineage, a permission-
-filtered branch, and an intentionally partial page. The same truth graph should
-produce equivalent membership and completeness metadata through all three
-clients.
+I would ship it with a conformance suite using the cases that matter in
+practice: more results than one page, a new edge after page one was cached, a
+two-hop renamed-column chain, connector-provided table-only lineage, a
+permission-filtered branch, and an intentionally partial response. The same
+truth graph should produce equivalent membership and completeness metadata
+through every supported client.
 
-Why it matters: ordinary impact analysis can tolerate “best effort.” An agent
-that opens migration PRs or a CI gate that permits a column deletion cannot.
-It must distinguish “there are no consumers” from “none were returned because
-pagination, caching, permissions, indexing, or lineage granularity hid them.”
-Making that distinction a DataHub primitive would let teams build trustworthy
-automation on the graph instead of rebuilding a second evidence layer beside
-it.
+This matters because ordinary exploration can tolerate “best effort,” but an
+agent that opens migration PRs or a CI gate that permits a column deletion
+cannot. It must distinguish “no consumers exist inside this declared evidence
+scope” from “none were returned because paging, caching, permissions, indexing,
+or granularity hid them.” Making that distinction a DataHub primitive would
+let teams automate high-consequence changes without rebuilding a second
+evidence system beside the graph.
 
 ## 4. Any bugs, errors, or unexpected behavior?
 
-### MCP offset pagination can silently hide consumers
+**Bug: MCP `get_lineage` offset pagination can silently hide consumers.**
 
-On MCP server 0.6.0, `get_lineage` documents pagination and accepts `offset`.
-Against a synthetic graph where DataHub reported 41 downstream entities, we
-called `get_lineage(upstream=false, max_hops=3, max_results=1, offset=0)`.
+Environment: brand-new project-scoped Docker volumes, DataHub Core 1.6.0, and
+MCP server 0.6.0 at commit `9a6946d`; all metadata was synthetic and loopback.
 
-- Expected: one result, `hasMore=true`, then a different result at `offset=1`.
-- Actual: offset 0 returned one result with `total=41` but `hasMore=false`;
-  offset 1 returned zero results and `hasMore=false`.
-- Control: direct GMS `searchAcrossLineage(start=1,count=1)` returned one
-  result, so the second server-side row existed.
-- Error: none. The incorrect page looked complete, which is more dangerous
-  than a visible failure.
+1. Seed a graph with 31 downstream entities.
+2. Call `get_lineage(upstream=false,max_hops=3,max_results=1,offset=0)`.
+3. Call the same tool with `offset=1`.
 
-We traced this to the MCP implementation requesting `start:0`, then applying
-the offset locally after fetching only `max_results` rows. We opened
-[issue 194](https://github.com/acryldata/mcp-server-datahub/issues/194) and a
-[regression-tested fix in PR 195](https://github.com/acryldata/mcp-server-datahub/pull/195).
-As of 2026-08-09, both were still open and the PR was review-required.
+Expected: page one returns one row with `hasMore=true`; page two returns a
+different row.
 
-### Default lineage reads can remain stale after a successful edge write
+Actual: page one returned one row with `total=31` and `hasMore=false`; page two
+returned zero rows and `hasMore=false`. There was no error. As a control,
+direct GMS `searchAcrossLineage(start=1,count=1)` returned one row, proving the
+second server-side result existed.
 
-We first cached a zero-result degree-two query, wrote a late edge, and verified
-the edge was visible from its intermediate node. The default root query still
-returned zero; the identical query with `skipCache=true` returned the late
-consumer. We expected either the new edge or metadata saying the response was
-cached/stale. Instead, `freshness` and `isPartial` were null. MCP had no
-equivalent bypass input.
+The implementation sent `start:0` to GraphQL and then applied `offset` locally
+after fetching only `max_results` rows. This is tracked in
+[issue 194](https://github.com/acryldata/mcp-server-datahub/issues/194) and
+[PR 195](https://github.com/acryldata/mcp-server-datahub/pull/195). We checked
+out the PR head (`4f2a712`) and repeated the identical experiment: page one
+changed to `hasMore=true`, page two returned one row, and the defect predicate
+changed from true to false. The PR's focused regression test also passed
+(`1 passed`). As of 2026-08-09 the issue and PR were still open, so this is a
+verified proposed fix, not a released fix.
 
-### MCP multi-hop column lineage stopped at hop one
-
-We wrote and directly reread two exact field edges:
-`legacy_status → model.order_status → late.order_status`. Calling
-`get_lineage(column="legacy_status", upstream=false, max_hops=3)` returned
-only the degree-one model with `total=1` and `hasMore=false`; the degree-two
-consumer was absent. We expected the documented multi-hop column path, or an
-explicit limitation saying only the first field hop was supported. No error or
-limitation was returned.
-
-All new reproductions used disposable loopback DataHub Core 1.6.0 and MCP
-0.6.0 over synthetic metadata; no production system or lifecycle state was
-mutated. The tracked evidence digest is
-`sha256:22e883aed2c35f78e9d49df177f64bcd649d9732407ef33405a287a210ac6905`.
+The released and patched run digests are respectively
+`sha256:3c9dbe4e507f3a2d146daa46f26618189b77905261688e2c5bbcd021dc90acf5`
+and
+`sha256:86729d9e86867728a92358a1a74bcef0fa463364564c28568e355fbde9b4f240`.
+Two earlier retained-state suspicions—stale default reads and truncated
+multi-hop column lineage—did not reproduce on the clean stack and are excluded
+from this bug report.

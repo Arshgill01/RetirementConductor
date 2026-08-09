@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 import time
@@ -229,7 +230,7 @@ def wait_for_late_edge(graph: DataHubGraphClient) -> dict[str, Any]:
     )
 
 
-def run() -> dict[str, Any]:
+def run(*, mcp_revision: str, environment_label: str) -> dict[str, Any]:
     graph = DataHubGraphClient(GMS_URL, token=None, timeout_seconds=10)
     mcp = HttpMCPClient(MCP_URL, timeout_seconds=20)
     config = graph.server_config()
@@ -244,13 +245,11 @@ def run() -> dict[str, Any]:
         "versions": {
             "datahub_core": versions.get("acryldata/datahub", {}).get("version"),
             "managed_ingestion_cli": managed_ingestion.get("defaultCliVersion"),
-            "mcp_server": "0.6.0",
+            "mcp_server": mcp_revision,
         },
         "scope": {
-            "gms": "loopback disposable Core",
-            "mcp": (
-                "loopback pinned source commit 9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9"
-            ),
+            "gms": f"loopback disposable Core ({environment_label})",
+            "mcp": f"loopback {mcp_revision}",
             "production_systems_mutated": False,
         },
         "mcp_capability": {
@@ -364,8 +363,6 @@ def run() -> dict[str, Any]:
                 "limitations": [
                     "The graph is synthetic and disposable; it does not prove "
                     "production coverage.",
-                    "Retained DataHub volumes can contain prior synthetic consumers, "
-                    "so absolute rich-graph totals are not a clean benchmark.",
                     "Core returned null isPartial and freshness fields during these "
                     "lineage queries.",
                     "The experiment diagnoses read behavior and does not mutate "
@@ -379,8 +376,22 @@ def run() -> dict[str, Any]:
 
 
 def main() -> int:
-    result = run()
-    write_json(OUTPUT, result)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--mcp-revision",
+        default="0.6.0@9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9",
+    )
+    parser.add_argument(
+        "--environment-label",
+        default="caller-managed disposable environment",
+    )
+    args = parser.parse_args()
+    result = run(
+        mcp_revision=args.mcp_revision,
+        environment_label=args.environment_label,
+    )
+    write_json(args.output, result)
     field_gap = result["field_lineage_probe"]["unexpected_multihop_gap_observed"]
     print(
         "DataHub feedback experiment passed: "
