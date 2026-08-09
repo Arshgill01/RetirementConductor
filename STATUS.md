@@ -10,16 +10,17 @@ contract; `PLAN.md` defines proof order.
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
 - Current release and installed-reference behavior commit: `c3440b2`
-- Current MCP agent behavior and accepted model-trace commit: `0d70db9`
+- Current MCP agent behavior and complete full-run commit: `de5f895`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
 - Next acceptance target: optional independent-operator evaluation for RC-018;
   it remains `NOT_RUN` and does not block this engineering goal
-- Last repository validation: release commit `c3440b2` passed 183 tests, Ruff,
-  formatting, strict mypy, 174-file repository validation, the secret and
-  public-artifact reviews, reproducible source and wheel builds, four clean
-  Python installs, upgrade/rollback/removal, an installed-wheel live-local
-  reference, and `git diff --check`
+- Last repository validation: the complete-agent evidence worktree passed 193
+  tests, Ruff, formatting, strict mypy, 200-file repository validation, the
+  341-file secret and 58-file public-artifact reviews, reproducible source and
+  wheel builds, and `git diff --check`. Release commit `c3440b2` separately
+  passed four clean Python installs, upgrade/rollback/removal, and an
+  installed-wheel live-local reference.
 - Agent-path validation: behavior commit `0d70db9` produced an ephemeral Codex
   MCP trace with exactly the two declared tools, no shell calls, the retained
   live late-consumer decision `UNSAFE`, and no producer-action attempt. The
@@ -28,6 +29,15 @@ contract; `PLAN.md` defines proof order.
   `git diff --check`. The evidence-promotion worktree then passed 190 tests,
   191-file repository validation, 332-file secret and 57-file public-artifact
   scans, reproducible package builds, and `git diff --check`.
+- Complete agent-path evidence: behavior commit `de5f895` produced a real
+  five-stage Codex run over disposable live-local DataHub and Git/dbt. The
+  product agent inspected DataHub, planned one exact target, stopped for
+  external authorization, applied and natively validated the dbt change,
+  reconciled, published and verified the summary, issued a short-lived
+  Retirement Lease, and executed a harmless sentinel. Fresh reconciliation
+  after a late Spark consumer then reversed `READY_TO_RETIRE` to `UNSAFE`; no
+  second lease or gate call occurred. This was a user-directed author/operator
+  run, so RC-018 remains honestly `NOT_RUN`.
 
 ## Phase ledger
 

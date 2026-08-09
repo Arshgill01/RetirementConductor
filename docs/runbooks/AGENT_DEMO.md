@@ -44,20 +44,30 @@ same skill automatically from `.agents/skills/`.
 
 ## The three-minute judge path
 
-1. Start with the promise: a catalog can find consumers, but it cannot safely
-   change them or prove they still work.
-2. Show the already validated dbt consumer and the prior
-   `READY_TO_RETIRE` decision in `artifacts/public/phase04/ready-manifest.json`.
-3. Ask Codex: “This field was ready. Can I retire it now?”
-4. Let Codex call `inspect_retirement_campaign` and
-   `explain_retirement_campaign` over MCP.
-5. Reveal the late Spark consumer. The same campaign is now `UNSAFE` with
-   `RECONCILIATION_NEW_CONSUMER` and `POLICY_CONSUMER_OPAQUE`.
-6. Emphasize that the agent does not call the gate. The safe refusal is the wow
-   moment: fresh evidence reverses a previously green result.
-7. Close with the exact recovery: migrate or verify the Spark consumer in its
-   native system, reconcile equivalent fresh scope, publish and verify the new
-   summary, then issue a new short-lived producer plan.
+Use Codex as the product interface and keep the evidence bundle open beside it:
+
+1. **0:00–0:20 — Promise.** A catalog can find consumers; Retirement
+   Conductor changes an authorized consumer, proves it still works, and revokes
+   permission when fresh evidence changes.
+2. **0:20–0:55 — DataHub to exact plan.** Show the agent inspecting the exact
+   field and producing the one-file `migration.patch` plus plan digest.
+3. **0:55–1:15 — Human boundary.** Show
+   `HUMAN_AUTHORIZATION_REQUIRED`. Explain that the product agent exposes no
+   authorization-recording tool; the operator authorizes the exact digest and
+   target outside the agent.
+4. **1:15–1:45 — Real work.** Show apply, dbt parse/seed/build/test, and the
+   digest-bound Change Receipt.
+5. **1:45–2:10 — Bounded green path.** Show fresh reconciliation, DataHub
+   publication/read-back, the short-lived Retirement Lease, and the harmless
+   sentinel gate result.
+6. **2:10–2:40 — Wow moment.** Add the late Spark consumer and ask the agent to
+   reconcile again. The same campaign reverses from `READY_TO_RETIRE` to
+   `UNSAFE` with `RECONCILIATION_NEW_CONSUMER` and
+   `POLICY_CONSUMER_OPAQUE`. No second lease is prepared and the gate is not
+   called.
+7. **2:40–3:00 — Close.** Show the Evidence & Trust Center and state the exact
+   recovery: migrate or verify the new consumer, obtain native evidence,
+   reconcile equivalent fresh scope, then issue a new lease.
 
 Presentation names used in the three-minute demo map directly to existing
 artifacts: a native consumer receipt is a **Change Receipt**, the short-lived
@@ -82,6 +92,27 @@ runtime details.
 This acceptance command is intentionally a model-orchestration check over a
 retained live campaign. It does not claim to rerun DataHub. Use the complete
 live workflow below when source freshness itself is under test.
+
+## Recorded complete agent run
+
+One real full-agent run is promoted under
+[`examples/agent-run/`](../../examples/agent-run/README.md). It contains the
+exact migration patch, Change Receipt, Retirement Lease, readiness-reversal
+artifact, and public-safe stage responses. The aggregate
+[`full-run.json`](../../artifacts/public/agent/full-run.json) binds every raw
+trace by digest, asserts the exact MCP tool order, and records zero product-agent
+shell calls.
+
+Regenerate the public bundle from retained ignored runtime evidence with:
+
+```bash
+make agent-full-evidence
+```
+
+The authorization was explicitly directed by the user and executed by the
+outer operator, which is a separate entity from the product agent. It is
+therefore valid human-boundary evidence, but it is not independent operator or
+customer-value evidence; RC-018 remains `NOT_RUN`.
 
 ## Complete live workflow
 

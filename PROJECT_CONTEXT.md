@@ -1,13 +1,13 @@
 # Retirement Conductor: complete project and hackathon context
 
-**Status snapshot:** 2026-08-07 (UTC)  
+**Status snapshot:** 2026-08-09 (UTC)
 **Repository:** <https://github.com/Arshgill01/RetirementConductor>  
 **Public technical dossier:** <https://retirement-conductor.arshgill01.chatgpt.site>  
 **Hackathon:** [Build with DataHub: The Agent Hackathon](https://datahub.devpost.com/)  
 **Submission deadline:** 2026-08-10 at 5:00 p.m. EDT / 21:00 UTC  
-**Current conclusion:** the credential-independent engineering goal and a
-judge-visible MCP agent path are implemented; the hackathon submission package
-is not yet verifiably complete.
+**Current conclusion:** the credential-independent engineering goal and a real
+end-to-end MCP agent run are implemented and publicly evidenced; the required
+demo video and Devpost submission are not yet verifiably complete.
 
 This document is the consolidated handoff for the project: product thesis,
 hackathon context, current repository state, implementation, architecture,
@@ -67,11 +67,11 @@ removal, or proved non-applicability closes them.
   `e12249145d088b1b6ef39fa4240d72fbe6aa51bf`. Branch
   `codex/agent-demo-and-datahub-contributions` now contains the MCP agent,
   Codex skill, acceptance runner, judge runbook, public agent evidence, and
-  this context document in three focused commits. Its clean HEAD passed 190
-  tests, Ruff, formatting, strict mypy, 191-file repository validation,
-  secret and public-artifact scans, reproducible package builds, a 14-tool
-  STDIO MCP handshake, skill validation, site build/tests/lint, and
-  `git diff --check`.
+  this context document. The complete-agent evidence worktree passed 193 tests,
+  Ruff, formatting, strict mypy, 200-file repository validation, 341-file
+  secret and 58-file public-artifact scans, reproducible package builds, and
+  `git diff --check`. Earlier agent acceptance also passed the STDIO MCP
+  handshake, skill validation, and site build/tests/lint.
 - The deployed public dossier returned HTTP 200 on 2026-08-07.
 - No demo-video URL or Devpost project/submission URL is tracked in the
   repository. Those assets may exist elsewhere, but they are **not verified**
@@ -104,6 +104,28 @@ judges before the deadline?”
   [PR #196](https://github.com/acryldata/mcp-server-datahub/pull/196) for the
   existing deployment-gate logging issue #192. Both PRs are open; maintainer
   acceptance and CI remain external.
+
+### 2026-08-09 complete agent-run update
+
+- Behavior commit `de5f895` completed a real five-stage product-agent run over
+  disposable live-local DataHub and Git/dbt.
+- The product agent used DataHub context, created the campaign, planned one
+  exact dbt file, and returned `HUMAN_AUTHORIZATION_REQUIRED`. It exposed no
+  authorization-recording tool.
+- The user explicitly directed the separate outer operator to execute the
+  returned authorization. This is valid human-boundary evidence but is not an
+  independent operator observation; RC-018 remains `NOT_RUN`.
+- After authorization, the product agent applied the one-file migration, ran
+  dbt parse/seed/build/test successfully, reconciled fresh evidence, published
+  and read back the DataHub campaign summary, issued a short-lived Retirement
+  Lease, and executed only a harmless local sentinel.
+- A newly injected Spark consumer then caused a fresh complete reconciliation
+  to reverse the same campaign from `READY_TO_RETIRE` to `UNSAFE` with
+  `POLICY_CONSUMER_OPAQUE` and `RECONCILIATION_NEW_CONSUMER`. No second lease
+  was issued and the gate was not called again.
+- Public inspection starts at `examples/agent-run/README.md`; the aggregate
+  digest-bound evidence is `artifacts/public/agent/full-run.json`. Raw JSONL
+  traces remain ignored because they contain private runtime details.
 
 ## 2. Source-of-truth order
 
@@ -1571,6 +1593,8 @@ engineering claim.
 - `.agents/skills/retirement-conductor-agent/SKILL.md`
 - `.codex/config.toml`
 - `artifacts/public/agent/agent-acceptance.json` (after acceptance promotion)
+- `artifacts/public/agent/full-run.json`
+- `examples/agent-run/README.md`
 - `site/public/retirement-conductor.html`
 - `site/README.md`
 
@@ -1602,6 +1626,6 @@ The project must not claim what it has not proved:
 - DataHub Cloud or broad platform portability;
 - independent adoption, recurring value, or buyer willingness.
 
-As of 2026-08-07, engineering is not the deadline risk. The remaining critical
+As of 2026-08-09, engineering is not the deadline risk. The remaining critical
 path is the public video, Devpost entry, compact judge narrative, and final
 current-HEAD validation.

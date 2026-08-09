@@ -73,9 +73,9 @@ def test_mcp_server_advertises_focused_annotated_tools() -> None:
                 "plan"
                 not in by_name["execute_retirement_gate"].input_schema["properties"]
             )
-            assert (
-                "15 minutes" in by_name["prepare_producer_retirement_plan"].description
-            )
+            description = by_name["prepare_producer_retirement_plan"].description
+            assert description is not None
+            assert "15 minutes" in description
 
     asyncio.run(exercise())
 

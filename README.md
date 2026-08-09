@@ -5,7 +5,7 @@ known consumers across systems, changing the consumers it is authorized to
 change, validating each change with the consumer's own tools, and refusing the
 producer-side retirement action until the evidence closes.
 
-The public [technical dossier](https://retirement-conductor.arshgill01.chatgpt.site)
+The public [Evidence & Trust Center](https://retirement-conductor.arshgill01.chatgpt.site)
 explains the complete product, evidence, safety boundary, official and
 synthetic data benchmark, limitations, and copyable end-to-end verification
 commands. Its standalone source is tracked under [`site/`](site/).
@@ -18,11 +18,18 @@ plan the exact Git/dbt change, invoke native validation, reconcile fresh
 evidence, and explain a decision. It cannot authorize its own plan, and it
 cannot override the deterministic producer gate.
 
-The highest-signal demo starts with a campaign that was ready after one dbt
-consumer was migrated and validated. Fresh DataHub reconciliation then finds a
-late Spark consumer. Codex calls the MCP inspection tools, explains why the
-same campaign is now `UNSAFE`, and refuses to invoke retirement. Run the
-model-driven retained-state acceptance trace with:
+The strongest recorded demo is a complete model-driven run. The product agent
+inspects DataHub, creates a campaign, plans one exact dbt change, stops for
+external human authorization, applies and validates the change, reconciles
+fresh evidence, publishes and reads back the campaign summary, issues a
+short-lived Retirement Lease, and executes a harmless local sentinel. A newly
+injected Spark consumer then makes the same campaign `UNSAFE`; no second lease
+is issued and the gate is not called again.
+
+Inspect the concrete [full-run evidence bundle](examples/agent-run/README.md)
+or its digest-bound
+[orchestration summary](artifacts/public/agent/full-run.json). The smaller
+retained-state refusal trace remains reproducible with:
 
 ```bash
 make agent-acceptance
@@ -30,11 +37,13 @@ make agent-acceptance
 
 See [the agent demo runbook](docs/runbooks/AGENT_DEMO.md) for the complete live
 path, exact human-authorization pause, adversarial prompts, and judge script.
-The latest public-safe
+The public-safe
 [agent acceptance evidence](artifacts/public/agent/agent-acceptance.json)
 records the exact prompt, tool order, canonical blockers, model response, and
 raw-trace digest while keeping the private JSONL trace out of Git.
-The audit behind this path also produced upstream DataHub MCP
+The complete run is explicitly a user-directed author/operator run, not the
+independent operator observation required by RC-018. The audit behind this path
+also produced upstream DataHub MCP
 [PR #195](https://github.com/acryldata/mcp-server-datahub/pull/195) for correct
 lineage pagination and
 [PR #196](https://github.com/acryldata/mcp-server-datahub/pull/196) for accurate
