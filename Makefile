@@ -21,10 +21,10 @@ agent-acceptance:
 	uv run python scripts/run_agent_acceptance.py
 
 continuous-reconciliation-acceptance:
-	uv run python scripts/run_continuous_reconciliation_acceptance.py
+	uv run python -m scripts.run_continuous_reconciliation_acceptance
 
 continuous-reconciliation-evidence:
-	uv run python scripts/generate_continuous_reconciliation_evidence.py
+	uv run python -m scripts.generate_continuous_reconciliation_evidence
 
 format:
 	uv run ruff check --fix src tests scripts
