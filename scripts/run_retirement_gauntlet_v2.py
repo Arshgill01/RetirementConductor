@@ -173,49 +173,11 @@ class GauntletServices:
     compose_file: Path
     compose_env: Path
     mcp_process: subprocess.Popen[str]
+    datahub_core_evidence: dict[str, Any]
 
     def evidence(self) -> dict[str, Any]:
-        compose = [
-            "docker",
-            "compose",
-            "--env-file",
-            str(self.compose_env),
-            "-f",
-            str(self.compose_file),
-        ]
-        container_ids = run_command(
-            [*compose, "ps", "-q", "datahub-gms"]
-        ).splitlines()
-        require(
-            len(container_ids) == 1,
-            "isolated DataHub GMS container identity was ambiguous",
-        )
-        container_id = container_ids[0]
-        image = run_command(
-            [
-                "docker",
-                "inspect",
-                "--format",
-                "{{json .Config.Image}}",
-                container_id,
-            ]
-        ).strip()
-        health = run_command(
-            [
-                "docker",
-                "inspect",
-                "--format",
-                "{{json .State.Health.Status}}",
-                container_id,
-            ]
-        ).strip()
         return {
-            "datahub_core": {
-                "configured_image": json.loads(image),
-                "container_health": json.loads(health),
-                "published_port": "127.0.0.1:18081",
-                "scope": "isolated loopback disposable Core",
-            },
+            "datahub_core": dict(self.datahub_core_evidence),
             "mcp_server": {
                 "health": healthy_json(GAUNTLET_MCP_HEALTH_URL),
                 "listener": "127.0.0.1:8001",
@@ -266,6 +228,31 @@ def isolated_reference_services(run_root: Path) -> Iterator[GauntletServices]:
         run_command([*compose, "up", "-d", "--wait", "datahub-gms"], timeout=600)
         container_id = run_command([*compose, "ps", "-q", "datahub-gms"]).strip()
         require(bool(container_id), "isolated DataHub GMS container was absent")
+        image = run_command(
+            [
+                "docker",
+                "inspect",
+                "--format",
+                "{{json .Config.Image}}",
+                container_id,
+            ]
+        ).strip()
+        health = run_command(
+            [
+                "docker",
+                "inspect",
+                "--format",
+                "{{json .State.Health.Status}}",
+                container_id,
+            ]
+        ).strip()
+        require(json.loads(health) == "healthy", "isolated DataHub was not healthy")
+        core_evidence = {
+            "configured_image": json.loads(image),
+            "startup_container_health": json.loads(health),
+            "published_port": "127.0.0.1:18081",
+            "scope": "isolated loopback disposable Core",
+        }
         executable = prepare_mcp_tool()
         environment = {
             **os.environ,
@@ -301,6 +288,7 @@ def isolated_reference_services(run_root: Path) -> Iterator[GauntletServices]:
             compose_file=compose_file,
             compose_env=compose_env,
             mcp_process=process,
+            datahub_core_evidence=core_evidence,
         )
     finally:
         if process is not None and process.poll() is None:
