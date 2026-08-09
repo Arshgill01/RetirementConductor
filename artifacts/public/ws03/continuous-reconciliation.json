@@ -1,0 +1,294 @@
+{
+  "baseline": {
+    "consumer_count": 1,
+    "ready_manifest_digest": "sha256:9894caaabc9af95dbcdd6bf105bc794eda96958b8c9f1d17efba1c91fd3b3f07",
+    "ready_publication_content_digest": "sha256:91e662c8e1431d4188af1496c0b46ea37278d24cddc31d6713ae6175fc365a89",
+    "ready_publication_settle": {
+      "attempts": 2,
+      "duration_ms": 3502
+    }
+  },
+  "campaign_id_digest": "sha256:f8c856750bfaf48eddaded730253a73bc0251162ded591a35e5c8e50773e2ac3",
+  "commands": [
+    {
+      "duration_ms": 140,
+      "execution_mode": "orchestration",
+      "exit_code": 0,
+      "name": "prepare-isolated-repository",
+      "output_digest": "sha256:42f8e77b4d033daef038aade4189c80002392edfab94ed5329cf6ce393ba96ce",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 8158,
+      "execution_mode": "orchestration",
+      "exit_code": 0,
+      "name": "datahub-seed-base",
+      "output_digest": "sha256:22f1dec3df91332f768efa4c002c591f908df45c84d123c15b1ed0e2ec9f2359",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 435,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-create",
+      "output_digest": "sha256:2ebad1298421f577573b81ed98e90e6c86e3b9ce2aa991ed36c4c558cd2d26dd",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 18664,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "git-dbt-preflight",
+      "output_digest": "sha256:2a06988904d8ce2fb40566d469ef5a69d36cd5d583298c718bf3290282e4f0f7",
+      "refusal_code": null,
+      "result": "PREFLIGHT_OK"
+    },
+    {
+      "duration_ms": 534,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "git-dbt-plan",
+      "output_digest": "sha256:5bdb91326ba39685292fa05b614d934cf04977f42a1ad5fc5d4132375eba1e94",
+      "refusal_code": null,
+      "result": "PLANNED"
+    },
+    {
+      "duration_ms": 422,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "git-dbt-authorize",
+      "output_digest": "sha256:6cee0fb5c82c4d767ccf72f2cadf66e689d10adc5ff1b8cfc5297a660b6fd542",
+      "refusal_code": null,
+      "result": "AUTHORIZED"
+    },
+    {
+      "duration_ms": 665,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "git-dbt-apply",
+      "output_digest": "sha256:ce45a371b9efbbe7ceae38a281c18e311aa66817545749b84cadd82ab84e863a",
+      "refusal_code": null,
+      "result": "APPLIED"
+    },
+    {
+      "duration_ms": 27939,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "git-dbt-validate",
+      "output_digest": "sha256:b7c66c478178190610dc746159acae952a8d4368cdcd1d6a8408905bedfedd2a",
+      "refusal_code": null,
+      "result": "VALIDATED"
+    },
+    {
+      "duration_ms": 8307,
+      "execution_mode": "orchestration",
+      "exit_code": 0,
+      "name": "datahub-seed-base",
+      "output_digest": "sha256:22f1dec3df91332f768efa4c002c591f908df45c84d123c15b1ed0e2ec9f2359",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 1768,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-reconcile-ready",
+      "output_digest": "sha256:1b1abeb25594f746e6b91517d4a941a0a9b645e029f1e93fcbaef82cf2e82020",
+      "refusal_code": null,
+      "result": "RECONCILED"
+    },
+    {
+      "duration_ms": 896,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-publish-ready",
+      "output_digest": "sha256:9e576d38c858b4e63d3d156b6fa8a530c8745e420d201c4a56fbf44ac1729c98",
+      "refusal_code": null,
+      "result": "PUBLISHED"
+    },
+    {
+      "duration_ms": 796,
+      "execution_mode": "source-product-cli",
+      "exit_code": 2,
+      "name": "campaign-verify-ready-publication-pending-01",
+      "output_digest": "sha256:62db6f5e3ef3a6d24366cf9ec5c4d647be31ac6bd2c6461aaf1f0e1cdea4bbdb",
+      "refusal_code": "EVIDENCE_PUBLICATION_MISMATCH",
+      "result": "REFUSED"
+    },
+    {
+      "duration_ms": 2197,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-verify-ready-publication",
+      "output_digest": "sha256:1330b084dedfcaca3fe8caea6bcad2798b530261ed60d7b6bc7fbc9f63d9ddcf",
+      "refusal_code": null,
+      "result": "VERIFIED"
+    },
+    {
+      "duration_ms": 810,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "producer-plan",
+      "output_digest": "sha256:574338c4ee206f60dc63ee4948e2aa282f9778278021a200d52ab397b345d646",
+      "refusal_code": null,
+      "result": "PRODUCER_PLAN_PREPARED"
+    },
+    {
+      "duration_ms": 410,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "lease-status-issued",
+      "output_digest": "sha256:3fb08da25807fa0a6682fbb4b28ba02ab15be799ceed64f0ff8a1d93cfb62e3b",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 9032,
+      "execution_mode": "orchestration",
+      "exit_code": 0,
+      "name": "datahub-seed-late-field",
+      "output_digest": "sha256:22846735fb0950baddc0c8dfb2bcc944bbbc97321d9cac5551096543e31b967c",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 4792,
+      "execution_mode": "source-product-cli",
+      "exit_code": 3,
+      "name": "watch-once-late-consumer",
+      "output_digest": "sha256:11287f24ff3e915fc8e1b394d921508f69059978f696870833e0128b44c1e039",
+      "refusal_code": null,
+      "result": "REVERSED"
+    },
+    {
+      "duration_ms": 398,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "lease-status-invalidated",
+      "output_digest": "sha256:78f3a1132643037d528d57811b9000c26a782b4e5241e4721bb9e8f22e3ebd2b",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 570,
+      "execution_mode": "source-product-cli",
+      "exit_code": 2,
+      "name": "gate-preserved-invalidated-lease",
+      "output_digest": "sha256:da054521d0a2a7b333bad54a19bad18e78af940e93defa9309c43eb0ab6e65bf",
+      "refusal_code": "GATE_DECISION_NOT_READY",
+      "result": "REFUSED"
+    },
+    {
+      "duration_ms": 8390,
+      "execution_mode": "orchestration",
+      "exit_code": 0,
+      "name": "datahub-seed-base",
+      "output_digest": "sha256:22f1dec3df91332f768efa4c002c591f908df45c84d123c15b1ed0e2ec9f2359",
+      "refusal_code": null,
+      "result": "OK"
+    },
+    {
+      "duration_ms": 1903,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-reconcile-after-edge-removal",
+      "output_digest": "sha256:08328a5babf6dde8e08112aca6077d3699863318fb8f17e8996150b8de79a91c",
+      "refusal_code": null,
+      "result": "RECONCILED"
+    },
+    {
+      "duration_ms": 1037,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-publish-recovery",
+      "output_digest": "sha256:b8522fece8d656437f4f3ced28edba514c610b04347160a3ffe0a88ab20af13e",
+      "refusal_code": null,
+      "result": "PUBLISHED"
+    },
+    {
+      "duration_ms": 2924,
+      "execution_mode": "source-product-cli",
+      "exit_code": 0,
+      "name": "campaign-verify-recovery-publication",
+      "output_digest": "sha256:a43c2782b6c604e69bfeb514c9f748bcd08c1c961494a83c138e780f44a73961",
+      "refusal_code": null,
+      "result": "VERIFIED"
+    }
+  ],
+  "evidence_digest": "sha256:09b66f9c715d7867ffdadf75c54936a5eb844e42fdc71355d51329ef37a3a5bb",
+  "evidence_mode": "live local",
+  "gate": {
+    "refusal_code": "GATE_DECISION_NOT_READY",
+    "sentinel_count_after": 0,
+    "sentinel_count_before": 0
+  },
+  "generated_at": "2026-08-09T12:03:15.740487Z",
+  "late_consumer": {
+    "confidence_basis": "datahub_upstream_lineage_aspect",
+    "datahub_write_receipt_digest": "sha256:88a8f96dce0151dbf5e991c5b2cb6e372322fea9684296bbb09a34eb77d105d4",
+    "exact_field_reread_attempts": 1,
+    "exact_field_reread_digest": "sha256:a28e09a0e3905749c41c9bfa5b85b925d4d817d0c33ee389a0692937807c2440",
+    "independent_consumer_count": 2,
+    "independent_snapshot_digest": "sha256:968aea806fc80da47ed0e9bcd94ee904ef3396bff718ac82bd6f879499cec2d5",
+    "reread_attempts": 1
+  },
+  "lease": {
+    "after_watch_status": "INVALIDATED",
+    "issued_status": "ISSUED",
+    "plan_digest": "sha256:6071a449f0da94f8cbc6488709ecb9ea4fbb727e5df933637b2b66f3d955ce25",
+    "preserved_bytes_digest": "sha256:d67b0cb24a469b9f248b43c1d326bcfd2910fbe5cf15634e6150ee3d88afdacb"
+  },
+  "limitations": [
+    "Evidence is live-local against disposable DataHub Core and Git/dbt.",
+    "Readiness remains bounded by the declared evidence envelope.",
+    "The producer action is a harmless local sentinel, not a warehouse mutation.",
+    "Removing the late graph edge did not validate or close that consumer."
+  ],
+  "native_git_dbt": {
+    "actual_targets": [
+      "models/orders_isolated_model.sql"
+    ],
+    "validation_digest": "sha256:71af01161f2b58c1141fa0a281cdacd5fcbab5caf58508301766031a531c3ef3",
+    "validation_result": "PASSED",
+    "validator": "dbt parse + seed + build + test on DuckDB"
+  },
+  "recovery": {
+    "consumer_count": 1,
+    "decision_after_edge_removal": "UNSAFE",
+    "independent_snapshot_digest": "sha256:b820d9edd2ccda595fecd301bb693dcb4ea5c79fc1f378f4d2b1370021f32223",
+    "publication_content_digest": "sha256:5fa798fea54d4a7cd37c0066b5f903576daf6bb476a96543157280416a55d709",
+    "publication_settle": {
+      "attempts": 1,
+      "duration_ms": 2928
+    }
+  },
+  "repository_commit": "734529dfaeb5550c0d94e0d45822b6eaceec3757",
+  "runtime_run_id": "run-fe51b9f8ae44",
+  "schema_version": "1.0.0",
+  "source_versions": [
+    {
+      "id": "datahub",
+      "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "git:analytics",
+      "source_version": "473961065d0cb305fde65532793ad69928dc9c16",
+      "status": "COMPLETE"
+    }
+  ],
+  "watch": {
+    "after_decision": "UNSAFE",
+    "after_manifest_digest": "sha256:980eb286f17ede5e042c2c01311a3ff750c8b43a50e517f02c3104caa05169c6",
+    "before_decision": "READY_TO_RETIRE",
+    "before_manifest_digest": "sha256:9894caaabc9af95dbcdd6bf105bc794eda96958b8c9f1d17efba1c91fd3b3f07",
+    "comparison_digest": "sha256:343eddbb247d502e1c3e6dedf77421c9ad80a04ab79c33e0235a78658ddd09ba",
+    "publication_content_digest": "sha256:7a4a48528cd67ccd74e27f22f32306e6a985c127ba5303d72e9ef344050ae933",
+    "publication_verified": true,
+    "receipt_digest": "sha256:56db58f8c08c547558e0bb032da7ee76b5a03c22bd4ecc41202ab30b254039e7",
+    "result": "REVERSED"
+  }
+}

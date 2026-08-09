@@ -1,0 +1,54 @@
+{
+  "after": {
+    "decision": "UNSAFE",
+    "evidence_envelope_digest": "sha256:fd558621a37ccc9c2e04c5576d07bfb4475033cee56876678a1f48a7555e2dfe",
+    "manifest_digest": "sha256:980eb286f17ede5e042c2c01311a3ff750c8b43a50e517f02c3104caa05169c6"
+  },
+  "before": {
+    "decision": "READY_TO_RETIRE",
+    "evidence_envelope_digest": "sha256:89ed41a4a4f986fbd2b2f79341497134ad38962089845dd70fe2795db46a62b2",
+    "manifest_digest": "sha256:9894caaabc9af95dbcdd6bf105bc794eda96958b8c9f1d17efba1c91fd3b3f07"
+  },
+  "campaign_id": "ret-orders-watch-fe51b9f8ae44",
+  "comparison_digest": "sha256:343eddbb247d502e1c3e6dedf77421c9ad80a04ab79c33e0235a78658ddd09ba",
+  "completed_at": "2026-08-09T12:02:50.020415Z",
+  "failure": null,
+  "lease": {
+    "plan_digest": "sha256:6071a449f0da94f8cbc6488709ecb9ea4fbb727e5df933637b2b66f3d955ce25",
+    "status_after": "INVALIDATED",
+    "status_before": "ISSUED"
+  },
+  "limitations": [
+    "DataHub Core did not expose isPartial",
+    "DataHub did not expose lineage cache freshness",
+    "External dbt packages are refused in the initial adapter",
+    "MCP field-lineage lookup does not expose a cache bypass; complete GMS consumer paging is cache-bypassed",
+    "Only the declared source branch was searched",
+    "Ownership is routing context only",
+    "Query-history absence is not closure evidence",
+    "Table-only lineage cannot authorize field mutation or closure",
+    "Text discovery is high-recall evidence, not completeness proof",
+    "The result is bounded by the recorded evidence envelope and is not universal safety."
+  ],
+  "observed_at": "2026-08-09T12:02:45.574618Z",
+  "operation_id": "watch-94b2b69bd19bada1906b2c81",
+  "publication": {
+    "content_digest": "sha256:7a4a48528cd67ccd74e27f22f32306e6a985c127ba5303d72e9ef344050ae933",
+    "readback_verified": true
+  },
+  "receipt_digest": "sha256:56db58f8c08c547558e0bb032da7ee76b5a03c22bd4ecc41202ab30b254039e7",
+  "result": "REVERSED",
+  "schema_version": "1.0.0",
+  "source_versions": [
+    {
+      "id": "datahub",
+      "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "git:analytics",
+      "source_version": "473961065d0cb305fde65532793ad69928dc9c16",
+      "status": "COMPLETE"
+    }
+  ]
+}

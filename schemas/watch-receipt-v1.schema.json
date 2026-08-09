@@ -1,0 +1,237 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/watch-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "after": {
+      "$ref": "#/$defs/campaignState"
+    },
+    "before": {
+      "$ref": "#/$defs/campaignState"
+    },
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "comparison_digest": {
+      "oneOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "failure": {
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "ELIGIBILITY",
+            "OBSERVATION",
+            "RECONCILIATION",
+            "PUBLICATION",
+            "VERIFICATION"
+          ]
+        },
+        "refusal_code": {
+          "minLength": 1,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "phase",
+        "refusal_code",
+        "message"
+      ],
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "lease": {
+      "additionalProperties": false,
+      "properties": {
+        "plan_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "status_after": {
+          "$ref": "#/$defs/leaseStatus"
+        },
+        "status_before": {
+          "$ref": "#/$defs/leaseStatus"
+        }
+      },
+      "required": [
+        "plan_digest",
+        "status_before",
+        "status_after"
+      ],
+      "type": "object"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "observed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "operation_id": {
+      "pattern": "^watch-[0-9a-f]{24}$",
+      "type": "string"
+    },
+    "publication": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "oneOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "readback_verified": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "content_digest",
+        "readback_verified"
+      ],
+      "type": "object"
+    },
+    "receipt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "UNCHANGED",
+        "REVERSED",
+        "PARTIAL",
+        "UNAVAILABLE",
+        "FAILED"
+      ]
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_versions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "source_version": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNKNOWN",
+              "UNAVAILABLE",
+              "STALE"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "source_version"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "operation_id",
+    "observed_at",
+    "completed_at",
+    "result",
+    "before",
+    "after",
+    "comparison_digest",
+    "source_versions",
+    "publication",
+    "lease",
+    "failure",
+    "limitations",
+    "receipt_digest"
+  ],
+  "$defs": {
+    "campaignState": {
+      "additionalProperties": false,
+      "properties": {
+        "decision": {
+          "enum": [
+            "READY_TO_RETIRE",
+            "REVIEW_REQUIRED",
+            "BLOCKED",
+            "UNSAFE"
+          ]
+        },
+        "evidence_envelope_digest": {
+          "oneOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "manifest_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "manifest_digest",
+        "decision",
+        "evidence_envelope_digest"
+      ],
+      "type": "object"
+    },
+    "leaseStatus": {
+      "enum": [
+        "ISSUED",
+        "EXPIRED",
+        "CONSUMED",
+        "INVALIDATED"
+      ]
+    }
+  },
+  "title": "Continuous reconciliation watch receipt v1",
+  "type": "object"
+}

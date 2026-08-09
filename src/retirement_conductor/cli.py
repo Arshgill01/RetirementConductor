@@ -15,12 +15,8 @@ from retirement_conductor.benchmark_data import (
     compare_generation_outputs,
     generate_benchmark_corpus,
 )
-from retirement_conductor.canonical import digest_json, write_json
-from retirement_conductor.datahub import (
-    DataHubBoundary,
-    render_campaign_summary,
-    utc_now,
-)
+from retirement_conductor.canonical import write_json
+from retirement_conductor.datahub import DataHubBoundary, utc_now
 from retirement_conductor.datahub_config import DataHubSettings
 from retirement_conductor.datahub_http import DataHubGraphClient
 from retirement_conductor.dataset_registry import (
@@ -53,12 +49,18 @@ from retirement_conductor.operator import (
     safe_report_filename,
     write_campaign_report,
 )
-from retirement_conductor.publication import publication_source_manifest
+from retirement_conductor.publication import CampaignPublicationWorkflow
 from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.reference import run_reference_fixture
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.vocabulary import CampaignState, Decision
+from retirement_conductor.watch import (
+    WATCH_EXIT_CODES,
+    WatchResult,
+    WatchWorkflow,
+    retirement_lease_status,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -315,6 +317,27 @@ def build_parser() -> argparse.ArgumentParser:
 
     verify_publication = campaign_subparsers.add_parser("verify-publication")
     _add_live_campaign_arguments(verify_publication)
+
+    lease_status = campaign_subparsers.add_parser(
+        "lease-status",
+        help="project the current Retirement Lease from canonical records",
+    )
+    _add_live_campaign_arguments(lease_status)
+    lease_status.add_argument("--observed-at")
+
+    watch = campaign_subparsers.add_parser(
+        "watch",
+        help="reread and reconcile one issued Retirement Lease",
+    )
+    _add_live_campaign_arguments(watch)
+    watch.add_argument("--once", action="store_true", required=True)
+    watch.add_argument(
+        "--refresh-receipt",
+        type=Path,
+        default=Path(".retirement-conductor/datahub/seed-receipt.json"),
+    )
+    watch.add_argument("--indexing-timeout-seconds", type=float, default=30)
+    watch.add_argument("--publication-timeout-seconds", type=float, default=30)
 
     adapter = subparsers.add_parser(
         "adapter",
@@ -950,6 +973,41 @@ def main(argv: Sequence[str] | None = None) -> int:
                     result = reconciliation_workflow.reconcile(args.campaign_id)
                 _render(result)
                 return 0
+            if args.campaign_command == "lease-status":
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    result = retirement_lease_status(
+                        store,
+                        args.campaign_id,
+                        observed_at=args.observed_at,
+                    )
+                _render({"result": "OK", "lease": result})
+                return 0
+            if args.campaign_command == "watch":
+                boundary = _datahub_boundary()
+                with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                    watcher = WatchWorkflow(
+                        store=store,
+                        reconciliation=ReconciliationWorkflow(
+                            store=store,
+                            boundary=boundary,
+                            git_dbt=_git_dbt_adapter_for_campaign(
+                                store, args.campaign_id
+                            ),
+                            artifact_directory=Path(args.artifact_dir),
+                            refresh_receipt=args.refresh_receipt,
+                            indexing_timeout_seconds=args.indexing_timeout_seconds,
+                        ),
+                        publication=CampaignPublicationWorkflow(
+                            store=store,
+                            boundary=boundary,
+                            artifact_directory=Path(args.artifact_dir),
+                        ),
+                        artifact_directory=Path(args.artifact_dir),
+                        publication_timeout_seconds=args.publication_timeout_seconds,
+                    )
+                    result = watcher.run_once(args.campaign_id)
+                _render(result)
+                return WATCH_EXIT_CODES[WatchResult(str(result["result"]))]
             if args.campaign_command in {
                 "inventory",
                 "publish",
@@ -991,118 +1049,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                             }
                         )
                         return 0
-                    resolved = boundary.resolve_field_pair(
-                        specification["target"],
-                        specification["replacement"],
+                    publication_workflow = CampaignPublicationWorkflow(
+                        store=store,
+                        boundary=boundary,
+                        artifact_directory=Path(args.artifact_dir),
                     )
-                    target_urn = str(resolved["dataset"]["urn"])
-                    manifest = store.materialize(args.campaign_id)
-                    if args.campaign_command == "publish":
-                        content = render_campaign_summary(manifest)
-                        existing = manifest.get("publication")
-                        existing_urn = (
-                            str(existing["urn"])
-                            if isinstance(existing, dict)
-                            and isinstance(existing.get("urn"), str)
-                            else None
-                        )
-                        lifecycle_digest = digest_json(boundary.lifecycle(target_urn))
-                        receipt = boundary.save_summary(
-                            campaign_id=args.campaign_id,
-                            target_urn=target_urn,
-                            content=content,
-                            existing_urn=existing_urn,
-                            artifact_root=_campaign_artifact_root(
-                                args,
-                                "publication",
-                            ),
-                        )
-                        publication_record = {
-                            "logical_key": f"campaign/{args.campaign_id}",
-                            "urn": receipt["urn"],
-                            "content_digest": receipt["content_digest"],
-                            "published_manifest_digest": manifest["manifest_digest"],
-                            "lifecycle_digest_before": lifecycle_digest,
-                            "readback_verified": False,
-                        }
-                        updated = store.record_publication(
-                            args.campaign_id,
-                            publication_record,
-                            occurred_at=utc_now(),
-                            idempotency_key=(
-                                f"publication-{receipt['content_digest'][-16:]}"
-                            ),
-                        )
-                        _render(
-                            {
-                                "result": "PUBLISHED",
-                                "publication": updated["publication"],
-                                "write_artifact_ids": receipt["artifact_ids"],
-                                "manifest": updated,
-                            }
-                        )
-                        return 0
-                    publication_value = manifest.get("publication")
-                    if not isinstance(publication_value, dict):
-                        raise Refusal(
-                            "EVIDENCE_PUBLICATION_MISMATCH",
-                            "The campaign has no DataHub publication to verify.",
-                        )
-                    source_manifest = publication_source_manifest(
-                        store,
-                        args.campaign_id,
-                        str(publication_value["content_digest"]),
+                    result = (
+                        publication_workflow.publish(args.campaign_id)
+                        if args.campaign_command == "publish"
+                        else publication_workflow.verify(args.campaign_id)
                     )
-                    expected_content = render_campaign_summary(source_manifest)
-                    verification = boundary.verify_summary(
-                        campaign_id=args.campaign_id,
-                        urn=str(publication_value["urn"]),
-                        expected_content=expected_content,
-                        target_urn=target_urn,
-                        expected_lifecycle_digest=str(
-                            publication_value["lifecycle_digest_before"]
-                        ),
-                        artifact_root=_campaign_artifact_root(
-                            args,
-                            "publication",
-                        ),
-                    )
-                    if publication_value.get("readback_verified") is True:
-                        _render(
-                            {
-                                "result": "VERIFIED",
-                                "publication": publication_value,
-                                "manifest": manifest,
-                            }
-                        )
-                        return 0
-                    verified_at = utc_now()
-                    updated = store.verify_publication(
-                        args.campaign_id,
-                        {
-                            "urn": publication_value["urn"],
-                            "content_digest": publication_value["content_digest"],
-                            "lifecycle_digest_after": verification[
-                                "lifecycle_digest_after"
-                            ],
-                            "readback_artifact_id": verification[
-                                "readback_artifact_id"
-                            ],
-                            "verified_at": verified_at,
-                        },
-                        occurred_at=verified_at,
-                        idempotency_key=(
-                            f"publication-verify-"
-                            f"{str(publication_value['content_digest'])[-16:]}"
-                        ),
-                    )
-                    _render(
-                        {
-                            "result": "VERIFIED",
-                            "publication": updated["publication"],
-                            "manifest": updated,
-                        }
-                    )
+                    _render(result)
                     return 0
             with CampaignStore(args.store, writer_id=args.writer_id) as store:
                 if args.campaign_command == "create":
