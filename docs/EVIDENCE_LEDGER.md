@@ -1829,3 +1829,57 @@ What this does not prove: a supported second campaign adapter. The official
 connector contract remains table-level; parser-derived field lineage is only
 corroboration, and Superset receipts cannot affect canonical readiness or the
 producer gate.
+
+## Post-goal integrated workstream and packaged-agent acceptance
+
+Integrated behavior commits: `b027c583fb3e55638e79eedab5ac350adcb58d20` and
+`0db89e2260c0d1881a015cd18b18a09612185ea0`; packaged-agent acceptance commit:
+`4c1d3976d1efffb99c4c0ae92f979351e3dd2599`.
+
+Commands:
+
+```text
+make test-winning-workstreams
+make check
+make test-install
+make test-upgrade
+make test-reference-campaign
+uv run python .agents/skills/retirement-conductor-agent/scripts/quick_validate.py .agents/skills/retirement-conductor-agent
+```
+
+Observed result: the integrated tree passed 55 focused winning-workstream
+tests and 242 total tests, Ruff, formatting, strict mypy over 88 source files,
+repository/link validation, secret and public-artifact review, reproducible
+wheel/source builds, and whitespace validation. Four clean base installs,
+upgrade/rollback, copied-state refusal, confirmed removal, and the installed
+live-local reference passed. The installed reference executed 34 product CLI
+operations from release 0.2.0, reached `READY_TO_RETIRE`, wrote one harmless
+sentinel, then produced late and rich `UNSAFE` decisions with no source-checkout
+CLI operation. Its evidence digest is
+`sha256:26a675e9558840b946863eaa3c63ab3079c2b298660b1e61420b29c3c07563ca`.
+
+The install test also installed `retirement-conductor[agent]` into a separate
+clean Python 3.13 environment, opened an MCP client against the installed
+server object, and listed exactly 16 tools including lease inspection and
+fresh one-shot lease reconciliation. The install evidence digest is
+`sha256:ec9136807e20521b03295e0188b27d51241824eabb9c7fd0fea5e98bff2e9e53`.
+The project skill validator passed against the packaged 16-tool workflow.
+
+Integration inspection found and corrected two issues before acceptance. The
+Superset SQL replacement boundary now ignores comments, literals, and quoted
+identifiers instead of rewriting token-shaped text outside executable
+unquoted SQL. The installed-reference harness now identifies a reused healthy
+DataHub Core container by its exact loopback published port before validating
+image, state, and health, rather than depending on another worktree's Compose
+environment file.
+
+What this proves: the four workstreams coexist in one releasable tree; the
+headline MCP interface survives packaging; continuous revocation is callable
+through that interface; and the canonical installed reference still exercises
+the full safe readiness/reversal loop after integration.
+
+What this does not prove: that the semantic model proposal has been invoked in
+the same recorded Codex run as the canonical 16-tool campaign, independent
+operator adoption, production infrastructure, or a supported Superset
+campaign adapter. The public narrated submission video and Devpost packaging
+remain presentation work, not engineering evidence.

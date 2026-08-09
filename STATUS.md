@@ -9,18 +9,21 @@ contract; `PLAN.md` defines proof order.
 - Execution state: complete for the credential-independent engineering goal in
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
-- Current release and installed-reference behavior commit: `c3440b2`
-- Current MCP agent behavior and complete full-run commit: `de5f895`
+- Current integrated behavior commit: `b027c58`; installed-reference lifecycle
+  fix: `0db89e2`; packaged-agent acceptance: `4c1d397`
+- Current complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: optional independent-operator evaluation for RC-018;
-  it remains `NOT_RUN` and does not block this engineering goal
-- Last repository validation: the complete-agent evidence worktree passed 193
-  tests, Ruff, formatting, strict mypy, 200-file repository validation, the
-  341-file secret and 58-file public-artifact reviews, reproducible source and
-  wheel builds, and `git diff --check`. Release commit `c3440b2` separately
-  passed four clean Python installs, upgrade/rollback/removal, and an
-  installed-wheel live-local reference.
+- Next acceptance target: record the public three-minute product run and finish
+  the Devpost entry. Optional independent-operator evaluation for RC-018
+  remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
+- Last integrated repository validation: 242 tests, Ruff, formatting, strict
+  mypy over 88 source files, 200-file repository validation, 369-file secret
+  review, 73-file public-artifact review, reproducible source and wheel builds,
+  and `git diff --check` passed. Four clean Python installs, upgrade/rollback,
+  removal, and the installed-wheel live-local reference passed. A separate
+  clean Python 3.13 install of the `agent` extra completed a real MCP handshake
+  and exposed exactly 16 tools from the packaged wheel.
 - Agent-path validation: behavior commit `0d70db9` produced an ephemeral Codex
   MCP trace with exactly the two declared tools, no shell calls, the retained
   live late-consumer decision `UNSAFE`, and no producer-action attempt. The
@@ -38,6 +41,14 @@ contract; `PLAN.md` defines proof order.
   after a late Spark consumer then reversed `READY_TO_RETIRE` to `UNSAFE`; no
   second lease or gate call occurred. This was a user-directed author/operator
   run, so RC-018 remains honestly `NOT_RUN`.
+- Integrated post-goal workstreams: a live Vertex Gemini advisory planner
+  produced a typed proposal that deterministic code bound to an exact public
+  GitHub PR and passing CI; continuous reconciliation invalidated an already
+  issued Retirement Lease from a fresh late DataHub field edge; and a bounded
+  Superset 6.0.0 experiment proved one native mutation, validation,
+  reingestion, compensation, and owner-drift refusal. The first two are
+  integrated product capabilities. Superset remains explicitly experimental
+  and cannot affect canonical campaign readiness or the producer gate.
 
 ## Phase ledger
 
