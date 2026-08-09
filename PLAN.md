@@ -119,6 +119,8 @@ deprecated adapter surface has been removed.
   canonical run.
 - Record exact tool exposure and deterministic authority controls without
   claiming the host is capability bounded.
+- Keep definitive public evidence reproducible through offline digest and
+  invariant verification; raw model traces remain restricted local evidence.
 
 ### Safety
 

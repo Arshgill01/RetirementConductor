@@ -78,6 +78,14 @@ in the supported path. Every tested host still exposed shell and file editing,
 and DataHub advertised mutation tools; the project therefore makes no
 capability-bounded claim.
 
+The [definitive unified run](artifacts/public/definitive-unified-run/README.md)
+then exercised that selected architecture in one resumed Codex task. It bound
+one exact migration to [public PR #1](https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1)
+and a named passing CI job, published and reread the DataHub decision, proved
+fresh-agent discovery, issued a Retirement Lease, and invalidated it after a
+new consumer appeared. The preserved gate refused with zero producer
+sentinels.
+
 ## The problem in plain language
 
 An old warehouse column can look unused in its repository while still feeding

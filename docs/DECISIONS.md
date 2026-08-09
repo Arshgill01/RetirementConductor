@@ -863,3 +863,25 @@ GitHub PR/CI bindings may remain where they add value without a nested model.
 
 Status: accepted from TE-01 through TE-03 evidence spot-checked on integrated
 base `90872dc`.
+
+## D-049 — keep agent time windows inside the trusted runtime
+
+Date: 2026-08-09
+
+Decision: keep explicit timestamp arguments in the operator CLI, but remove
+them from the agent-facing authorization-instruction and Retirement Lease
+tools. The MCP runtime records the current authorization time, returns a
+15-minute external authorization window, and issues a 10-minute lease window.
+
+Why: retained TE-04 precursor traces showed that asking the model to invent
+wall-clock values could put a valid event ahead of the runtime clock and cause
+a subsequent native operation to refuse with `RUNTIME_CLOCK_ROLLBACK`. Time is
+deterministic authority input, not model judgment.
+
+Observed consequence: focused MCP tests prove those tool schemas now accept
+only `campaign_id`. The definitive run used runtime-generated microsecond
+timestamps, accepted the exact external authorization once, and issued then
+invalidated its Retirement Lease without clock retries.
+
+Status: accepted in `80322be` and `2635240`; exercised by TE-04 evidence at
+`6eeea35`.

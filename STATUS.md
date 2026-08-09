@@ -9,18 +9,17 @@ contract; `PLAN.md` defines proof order.
 - Execution state: complete for the credential-independent engineering goal in
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
-- Current integrated behavior commit: `b027c58`; installed-reference lifecycle
-  fix: `0db89e2`; packaged-agent acceptance: `4c1d397`
-- Current complete full-run evidence commit: `ea021ff`
+- Current definitive behavior commit: `2635240`; public TE-04 evidence commit:
+  `6eeea35`
+- Earlier complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: record the public three-minute product run and finish
-  the definitive minimally prompted TE-04 run, then finish the public video
-  and Devpost entry. Optional independent-operator evaluation for RC-018
+- Next acceptance target: finish the public video and Devpost entry. Optional
+  independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
-- Last integrated repository validation: 242 tests, Ruff, formatting, strict
-  mypy over 88 source files, 200-file repository validation, 369-file secret
-  review, 73-file public-artifact review, reproducible source and wheel builds,
+- Last integrated repository validation: 256 tests, Ruff, formatting, strict
+  mypy over 92 source files, 204-file repository validation, 407-file secret
+  review, 83-file public-artifact review, reproducible source and wheel builds,
   and `git diff --check` passed. Four clean Python installs, upgrade/rollback,
   removal, and the installed-wheel live-local reference passed. A separate
   clean Python 3.13 install of the `agent` extra completed a real MCP handshake
@@ -51,6 +50,17 @@ contract; `PLAN.md` defines proof order.
   reingestion, compensation, and owner-drift refusal. The first two are
   integrated product capabilities. Superset remains explicitly experimental
   and cannot affect canonical campaign readiness or the producer gate.
+- Definitive TE-04 acceptance: one persistent Codex task using the retained
+  skill, DataHub MCP, and Retirement Conductor MCP planned one exact target,
+  stopped for external authorization, applied and natively validated it, then
+  bound commit `3298400` to a public one-file PR and passing `semantic-dbt`
+  check. Fresh reconciliation became `READY_TO_RETIRE`, publication read-back
+  and fresh-agent discovery passed, and an issued lease then became
+  `INVALIDATED` after one new exact-field consumer. The preserved gate refused
+  with `GATE_DECISION_NOT_READY` and zero sentinels. Shell/file-edit capability
+  and DataHub mutation tools remained exposed, so no capability-bounded claim
+  is made. Public evidence digest:
+  `sha256:e1a0889fc7296a480779789b4d461e61685b224d982df186a0f3ac5257092b4b`.
 
 ## Phase ledger
 

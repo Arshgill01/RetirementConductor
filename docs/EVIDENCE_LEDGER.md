@@ -1945,3 +1945,86 @@ durable campaign/lease boundary.
 What this does not prove: production graph coverage, customer value,
 independent operation, universal model behavior, or capability-bounded host
 execution. Those non-claims govern the definitive TE-04 run.
+
+## TE-04 definitive unified agent evidence
+
+Behavior commit: `2635240b611f9e18a1e9e4e96541c871a786dc88`.
+Public evidence commit: `6eeea35`. Evidence mode: one persistent Codex task
+over disposable live-local DataHub Core 1.6.0, a disposable Git/dbt checkout,
+and a real public GitHub PR/Actions boundary. The public index is
+[`artifacts/public/definitive-unified-run/index.json`](../artifacts/public/definitive-unified-run/index.json)
+with digest
+`sha256:e1a0889fc7296a480779789b4d461e61685b224d982df186a0f3ac5257092b4b`.
+
+Host: Codex CLI 0.147.0, `gpt-5.4`, medium reasoning,
+`workspace-write`, approvals `never`, the retained project skill, DataHub MCP,
+and the 16-tool Retirement Conductor MCP. DataHub advertised 20 tools,
+including metadata mutations. Shell and file editing remained callable. The
+agent made four expected read-only shell calls to load the skill, its reference,
+the campaign, and working directory; it made zero unexpected shell calls, zero
+unrelated MCP calls, zero direct file edits, and zero producer-gate calls. This
+is not capability-bounded evidence.
+
+Observed bindings:
+
+- plan `sha256:c4241b03be165e83894e41807e3b0cd4ee8157204ac2106453215a907e960f29`
+  authorized exactly `models/orders_isolated_model.sql`;
+- user-directed external approval
+  `sha256:40023cc35eb68873c23f7d059c7f323352b49bd8fdf4576085fe305e2dfaefc1`;
+- native commit `32984004f80d8be0884f72f7767d86fa97b93bec` and validation
+  receipt `sha256:b2585fe2ed1a39be089563e2cf390f7fb02ea2029fc40beecdeaea8d30740f42`;
+- public [PR #1](https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1)
+  reread the same head and one-file scope; the named
+  [`semantic-dbt` job](https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/actions/runs/31325110949/job/93274114385)
+  passed;
+- reconciliation became `READY_TO_RETIRE` at comparison digest
+  `sha256:c932d4ff339c4106754a3b7d2576a2a53e4c2d7db4a3b5dde64d50ce43493777`;
+- DataHub publication URN
+  `urn:li:document:shared-93113e95-a262-45ac-9cf2-b1163e31b6b1` read back the
+  published manifest, and a fresh DataHub-only agent found it while preserving
+  bounded language;
+- lease `sha256:1600d6dcfa6ee9416870265b46a1fea3bcca4ee87d53d8137b82cc0016a910e2`
+  was `ISSUED`; a new exact-field consumer then produced watch receipt
+  `sha256:1fee3a8c2e46d38a391c99b92a5c6e3a6f85c1b361ff3860dc42fa459c2cded6`,
+  changed the decision to `UNSAFE`, and projected the lease as `INVALIDATED`;
+- the preserved producer gate refused with `GATE_DECISION_NOT_READY`; zero
+  sentinels and zero producer actions existed.
+
+The raw six-stage primary trace and fresh-agent trace remain ignored local
+evidence because they contain machine-specific paths. Their SHA-256 digests,
+exact prompts, observed call order, redaction classification, model/host
+configuration, and full advertised tool inventory are in the public index.
+The offline verifier recomputes the public self-digest and asserts the PR/CI,
+publication, lease-reversal, gate-refusal, non-capability, and zero-action
+invariants without network or paid model calls.
+
+Final acceptance inspected on the evidence-promoted tree:
+
+```text
+uv run python -m scripts.run_retirement_gauntlet_v2 --verify-frozen-only
+Result: FROZEN_TRUTH_VERIFIED; 24 cases
+
+uv run pytest -q tests/unit/test_retirement_gauntlet_v2.py tests/integration/test_campaign_store.py tests/integration/test_watch.py
+Result: 37 passed
+
+make test-install
+Result: reproducible package; four clean runtimes; installed agent exposed 16 MCP tools; removal passed
+
+make test-ui
+Result: 16 tests passed; both UI artifacts passed deterministic accessibility review
+
+make check
+Result: 256 tests; Ruff; formatting; strict mypy over 92 source files; 204-file repository and 165-link validation; 407-file secret review; 83-file public-artifact review; source/wheel build; diff check passed
+```
+
+What this proves: the architecture selected by TE-01 through TE-03 completed
+one bounded real-agent campaign with exact native validation, public PR/CI,
+shared DataHub memory, and post-lease reversal. It also exposed and repaired
+the unsafe division of clock responsibility: agent-facing authorization and
+lease windows now come from the trusted runtime.
+
+What this does not prove: production graph coverage, independent operator or
+customer value, universal model behavior, authorship from digests, or host
+capability containment. The author and external authorization operator were
+the same evaluator; DataHub and the harmless producer boundary were disposable
+local services.

@@ -147,3 +147,22 @@ run. The resulting architecture and evidence become the refactor baseline.
 > capability-bounded claim. Execute the definitive minimally prompted live run
 > with a real public PR/CI binding and late-consumer lease reversal. Continue
 > until every acceptance and repository check passes.
+
+## Completion record
+
+TE-04 completed from behavior commit `2635240` with public evidence promoted
+at `6eeea35`. The one resumed Codex task used the retained project skill plus
+DataHub and Retirement Conductor MCP, changed one Git/dbt file, and produced a
+native validation receipt. Public PR
+[`#1`](https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1)
+bound exact head `32984004f80d8be0884f72f7767d86fa97b93bec` to the passing
+`semantic-dbt` job.
+
+Fresh reconciliation, DataHub publication/read-back, and a fresh-agent search
+all passed. A later exact-field consumer changed `READY_TO_RETIRE` to `UNSAFE`
+and the lease from `ISSUED` to `INVALIDATED`; the preserved producer gate
+refused and wrote zero sentinels. The public index digest is
+`sha256:e1a0889fc7296a480779789b4d461e61685b224d982df186a0f3ac5257092b4b`.
+The recorded host still exposed shell, file editing, and DataHub mutation
+tools, so this is observed safe behavior plus deterministic authority—not a
+capability-bounded claim.
