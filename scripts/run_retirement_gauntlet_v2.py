@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from retirement_conductor.canonical import digest_json, with_digest, write_json
-from retirement_conductor.datahub import ArtifactWriter, DataHubBoundary
+from retirement_conductor.datahub import ArtifactWriter, DataHubBoundary, PageResult
 from retirement_conductor.datahub_config import DataHubSettings
 from retirement_conductor.datahub_http import DataHubGraphClient
 from retirement_conductor.errors import Refusal
@@ -657,6 +657,31 @@ def inventory_with_retry(
     return last
 
 
+def paged_twin_with_retry(
+    boundary: DataHubBoundary,
+    target_urn: str,
+    *,
+    artifact_root: Path,
+    attempts: int = 6,
+) -> PageResult:
+    """Require one complete multi-page cache-bypassed membership twin."""
+
+    last: PageResult | None = None
+    for attempt in range(1, attempts + 1):
+        last = boundary.page_downstream(
+            target_urn,
+            max_hops=5,
+            writer=ArtifactWriter(artifact_root / f"attempt-{attempt:02d}"),
+        )
+        if str(last.status) == "COMPLETE":
+            return last
+        if attempt < attempts:
+            time.sleep(0.5)
+    require(last is not None, "paged twin did not run")
+    assert last is not None
+    return last
+
+
 def seed_datahub(run_root: Path, *, add_late: str | None = None) -> dict[str, Any]:
     receipt = run_root / (
         "datahub-seed.json" if add_late is None else f"datahub-seed-{add_late}.json"
@@ -1040,12 +1065,13 @@ def execute(
                         ),
                     }
                     if case_id == "enum-clean-isolated":
-                        twin = boundary.page_downstream(
+                        twin = paged_twin_with_retry(
+                            boundary,
                             str(snapshot["resolution"]["dataset"]["urn"]),
-                            max_hops=5,
-                            writer=ArtifactWriter(
-                                artifact_root / campaign_id / "datahub" / "paged-twin"
-                            ),
+                            artifact_root=artifact_root
+                            / campaign_id
+                            / "datahub"
+                            / "paged-twin",
                         )
                         twin_urns = {str(item["urn"]) for item in twin.consumers}
                         require(
