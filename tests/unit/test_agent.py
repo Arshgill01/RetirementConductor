@@ -24,6 +24,29 @@ def _runtime(tmp_path: Path) -> AgentCommandRuntime:
     )
 
 
+def test_agent_settings_resolve_checkout_when_launcher_cwd_is_elsewhere(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    for name in (
+        "RETIREMENT_CONDUCTOR_STORE",
+        "RETIREMENT_CONDUCTOR_ARTIFACT_DIR",
+        "RETIREMENT_CONDUCTOR_AGENT_SPEC_ROOT",
+        "RETIREMENT_CONDUCTOR_REFRESH_RECEIPT",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    settings = AgentSettings.from_environment()
+
+    assert settings.store == ROOT / ".retirement-conductor/campaigns.sqlite"
+    assert settings.artifact_directory == ROOT / ".retirement-conductor/artifacts"
+    assert settings.specification_root == ROOT / "fixtures/specs"
+    assert settings.refresh_receipt == (
+        ROOT / ".retirement-conductor/datahub/seed-receipt.json"
+    )
+
+
 def test_agent_runtime_creates_and_inspects_campaign(tmp_path: Path) -> None:
     runtime = _runtime(tmp_path)
 

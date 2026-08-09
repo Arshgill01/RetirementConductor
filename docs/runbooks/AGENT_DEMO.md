@@ -23,12 +23,18 @@ arguments; it does not shell out or implement a second policy engine.
 
 ```bash
 uv sync --all-groups --extra agent
+uv tool install --editable '.[agent]'
 codex mcp list
-uv run --extra agent retirement-conductor-mcp
+retirement-conductor-mcp
 ```
 
-`codex mcp list` should show `retirement_conductor` as a required project STDIO
-server. The optional DataHub HTTP MCP server is expected at
+The editable tool install gives desktop Codex a stable launcher that does not
+depend on the app-server working directory. Repeat it after changing agent
+dependencies or entry points. `codex mcp list` should show
+`retirement_conductor` as an enabled project STDIO server. It is deliberately
+non-required so a missing local launcher cannot prevent every Codex task in the
+repository from opening; campaign tools remain failure-closed. The optional
+DataHub HTTP MCP server is expected at
 `http://127.0.0.1:8000/mcp` when the disposable live stack is running.
 
 The installed wheel contains the skill at

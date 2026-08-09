@@ -1,7 +1,5 @@
 [mcp_servers.retirement_conductor]
-command = "uv"
-args = ["run", "--extra", "agent", "retirement-conductor-mcp"]
-cwd = "."
+command = "retirement-conductor-mcp"
 env_vars = [
   "DATAHUB_GMS_URL",
   "DATAHUB_GMS_TOKEN",
@@ -28,7 +26,7 @@ env_vars = [
   "RETIREMENT_CONDUCTOR_TRUSTED_RUN_ID",
   "RETIREMENT_CONDUCTOR_TRUST_PROVIDER",
 ]
-required = true
+required = false
 default_tools_approval_mode = "writes"
 startup_timeout_sec = 20
 tool_timeout_sec = 120

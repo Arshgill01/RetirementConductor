@@ -32,11 +32,12 @@ class AgentSettings:
 
     @classmethod
     def from_environment(cls) -> AgentSettings:
+        project_root = _default_project_root()
         return cls(
             store=Path(
                 os.environ.get(
                     "RETIREMENT_CONDUCTOR_STORE",
-                    ".retirement-conductor/campaigns.sqlite",
+                    str(project_root / ".retirement-conductor/campaigns.sqlite"),
                 )
             ),
             writer_id=os.environ.get(
@@ -46,19 +47,21 @@ class AgentSettings:
             artifact_directory=Path(
                 os.environ.get(
                     "RETIREMENT_CONDUCTOR_ARTIFACT_DIR",
-                    ".retirement-conductor/artifacts",
+                    str(project_root / ".retirement-conductor/artifacts"),
                 )
             ),
             specification_root=Path(
                 os.environ.get(
                     "RETIREMENT_CONDUCTOR_AGENT_SPEC_ROOT",
-                    "fixtures/specs",
+                    str(project_root / "fixtures/specs"),
                 )
             ),
             refresh_receipt=Path(
                 os.environ.get(
                     "RETIREMENT_CONDUCTOR_REFRESH_RECEIPT",
-                    ".retirement-conductor/datahub/seed-receipt.json",
+                    str(
+                        project_root / ".retirement-conductor/datahub/seed-receipt.json"
+                    ),
                 )
             ),
             indexing_timeout_seconds=float(
@@ -68,6 +71,19 @@ class AgentSettings:
                 )
             ),
         )
+
+
+def _default_project_root() -> Path:
+    """Resolve source-checkout defaults without trusting the launcher cwd."""
+
+    current = Path.cwd().resolve()
+    source_checkout = Path(__file__).resolve().parents[2]
+    for candidate in (current, source_checkout):
+        if (candidate / "pyproject.toml").is_file() and (
+            candidate / "fixtures/specs"
+        ).is_dir():
+            return candidate
+    return current
 
 
 class AgentCommandRuntime:
