@@ -1,15 +1,15 @@
 "use client";
 
-// Prototype question: which operational model makes a retirement decision easiest to understand and trust?
+// Prototype question: which genuinely different product metaphor makes a retirement decision easiest to operate and trust?
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import type { Consumer, Stage, WorkbenchView } from "./workbench-client";
+import type { Consumer, WorkbenchView } from "./workbench-client";
 
 const prototypeVariants = [
-  { key: "cartographer", label: "Dependency Cartographer" },
-  { key: "film", label: "Campaign Film" },
-  { key: "control-room", label: "Change Control Room" },
+  { key: "operator", label: "The Operator" },
+  { key: "radar", label: "Evidence Radar" },
+  { key: "native-review", label: "Native Review" },
 ] as const;
 
 export type PrototypeVariant = (typeof prototypeVariants)[number]["key"];
@@ -22,12 +22,12 @@ function fieldName(value: string) {
   return value.split(".").at(-1) ?? value;
 }
 
-function shortId(value: string) {
-  return value.length > 20 ? `${value.slice(0, 9)}…${value.slice(-6)}` : value;
+function shortId(value: string, visible = 18) {
+  return value.length > visible ? `${value.slice(0, visible - 8)}…${value.slice(-6)}` : value;
 }
 
 function formatTime(value: string | null) {
-  if (!value) return "—";
+  if (!value) return "Not recorded";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("en-GB", {
@@ -72,8 +72,8 @@ function PrototypeSwitcher({ variant }: { variant: PrototypeVariant }) {
         ←
       </button>
       <span>
-        <small>{currentIndex + 1} / {prototypeVariants.length}</small>
-        {prototypeVariants[currentIndex].label}
+        <b>{prototypeVariants[currentIndex].label}</b>
+        <small>{currentIndex + 1} of {prototypeVariants.length}</small>
       </span>
       <button type="button" onClick={() => select(currentIndex + 1)} aria-label="Next design">
         →
@@ -83,278 +83,312 @@ function PrototypeSwitcher({ variant }: { variant: PrototypeVariant }) {
   );
 }
 
-function Cartographer({ data }: { data: WorkbenchView }) {
-  const known = data.consumers.filter((consumer) => !consumer.newly_observed);
-  const newlyObserved = data.consumers.filter((consumer) => consumer.newly_observed);
-  const [selected, setSelected] = useState<Consumer | null>(newlyObserved[0] ?? known[0] ?? null);
+type OperatorMoment = {
+  verb: string;
+  statement: string;
+  answer: string;
+  source: string;
+};
+
+function operatorMoments(data: WorkbenchView): OperatorMoment[] {
+  const knownCount = data.consumers.filter((consumer) => !consumer.newly_observed).length;
+  return [
+    {
+      verb: "Inspect",
+      statement: `Can I retire ${fieldName(data.target)}?`,
+      answer: `${knownCount} known consumer was found inside the declared DataHub and Git scope.`,
+      source: data.evidence.coverage.label,
+    },
+    {
+      verb: "Propose",
+      statement: "What must change first?",
+      answer: `Change only ${data.change.paths[0] ?? "the authorized dbt path"}. No producer action is included.`,
+      source: "Deterministic plan bound to the source fingerprint",
+    },
+    {
+      verb: "Validate",
+      statement: "Did the authorized migration work?",
+      answer: data.change.receipt
+        ? `Yes. Native ${data.change.receipt.adapter} validation returned ${data.change.receipt.result}.`
+        : "No accepted native validation receipt is recorded.",
+      source: data.change.receipt ? `Receipt ${shortId(data.change.receipt.digest, 28)}` : "Receipt missing",
+    },
+    {
+      verb: "Reconcile",
+      statement: "Can the producer field be retired now?",
+      answer: `No. ${data.summary.cause}`,
+      source: `Fresh evidence at ${formatTime(data.evidence.captured_at)} UTC`,
+    },
+  ];
+}
+
+function TheOperator({ data }: { data: WorkbenchView }) {
+  const moments = operatorMoments(data);
+  const [momentIndex, setMomentIndex] = useState(moments.length - 1);
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const moment = moments[momentIndex];
+  const newConsumer = data.consumers.find((consumer) => consumer.newly_observed);
 
   return (
-    <main className="rcp-root rcp-map">
-      <header className="rcp-map-header">
+    <main className="rcp-root rcp-operator">
+      <nav className="rcp-operator-nav" aria-label="Workbench navigation">
         <a href="/workbench">Retirement Conductor</a>
-        <p>{data.campaign.id}</p>
-        <strong>{data.decision}</strong>
-      </header>
+        <span>{data.mode === "recorded-evidence" ? "Recorded campaign" : "Live campaign"}</span>
+      </nav>
 
-      <section className="rcp-map-canvas" aria-labelledby="map-title">
-        <div className="rcp-map-intro">
-          <span>Dependency map · fresh reconciliation</span>
-          <h1 id="map-title">One new edge changed the decision.</h1>
-          <p>{data.summary.cause}</p>
-        </div>
-
-        <div className="rcp-map-graph" aria-label="Focused field dependency graph">
-          <div className="rcp-map-source">
-            <small>Field proposed for retirement</small>
-            <strong>{fieldName(data.target)}</strong>
-            <span>{data.target.split(".").slice(0, -1).join(".")}</span>
-          </div>
-
-          <div className="rcp-map-known">
-            <small>Known at inventory</small>
-            {known.map((consumer) => (
-              <button
-                type="button"
-                key={consumer.id}
-                data-selected={selected?.id === consumer.id}
-                onClick={() => setSelected(consumer)}
-              >
-                <i aria-hidden="true" />
-                <span>{shortId(consumer.id)}</span>
-                <small>{consumer.disposition}</small>
-              </button>
-            ))}
-          </div>
-
-          <div className="rcp-map-target">
-            <small>Replacement</small>
-            <strong>{fieldName(data.replacement)}</strong>
-          </div>
-
-          <div className="rcp-map-new">
-            <small>Discovered at reconciliation</small>
-            {newlyObserved.map((consumer) => (
-              <button
-                type="button"
-                key={consumer.id}
-                data-selected={selected?.id === consumer.id}
-                onClick={() => setSelected(consumer)}
-              >
-                <i aria-hidden="true" />
-                <span>{shortId(consumer.id)}</span>
-                <small>{consumer.disposition} · no receipt</small>
-              </button>
-            ))}
-          </div>
-
-          <div className="rcp-map-break">
-            <span>Unresolved edge</span>
-          </div>
+      <section className="rcp-operator-dialogue" aria-live="polite">
+        <p className="rcp-operator-question">{moment.statement}</p>
+        <div className="rcp-operator-answer" key={moment.verb}>
+          <span>{moment.verb}</span>
+          <h1>{moment.answer}</h1>
+          <p>{moment.source}</p>
         </div>
       </section>
 
-      <aside className="rcp-map-inspector" aria-live="polite">
-        <div>
-          <small>Selected consumer</small>
-          <strong>{selected ? selected.id : "No consumer selected"}</strong>
+      <footer className="rcp-operator-controls">
+        <div className="rcp-operator-sequence" aria-label="Investigation sequence">
+          {moments.map((item, index) => (
+            <button
+              type="button"
+              key={item.verb}
+              aria-current={index === momentIndex ? "step" : undefined}
+              onClick={() => {
+                setMomentIndex(index);
+                setEvidenceOpen(false);
+              }}
+            >
+              <span>{index + 1}</span>
+              {item.verb}
+            </button>
+          ))}
         </div>
-        <dl>
-          <div><dt>Disposition</dt><dd>{selected?.disposition ?? "—"}</dd></div>
-          <div><dt>Native evidence</dt><dd>{selected?.receipt_digest ? "Receipt accepted" : "Missing"}</dd></div>
-          <div><dt>Evidence scope</dt><dd>{data.evidence.coverage.state.replaceAll("_", " ")}</dd></div>
-          <div><dt>Observed</dt><dd>{formatTime(data.evidence.captured_at)} UTC</dd></div>
-        </dl>
-        <p>{data.primary_action.description}</p>
+        <button
+          className="rcp-operator-evidence-button"
+          type="button"
+          aria-expanded={evidenceOpen}
+          onClick={() => setEvidenceOpen((open) => !open)}
+        >
+          {evidenceOpen ? "Hide evidence" : "Show exact evidence"}
+        </button>
+      </footer>
+
+      {evidenceOpen && (
+        <section className="rcp-operator-evidence" aria-label="Exact evidence">
+          <button type="button" onClick={() => setEvidenceOpen(false)} aria-label="Close evidence">Close</button>
+          <dl>
+            <div><dt>Decision</dt><dd>{data.decision}</dd></div>
+            <div><dt>New consumer</dt><dd>{newConsumer?.id ?? "None"}</dd></div>
+            <div><dt>Consumer state</dt><dd>{newConsumer?.receipt_state ?? "No receipt"}</dd></div>
+            <div><dt>Producer lease</dt><dd>Invalidated</dd></div>
+          </dl>
+          <p>{data.primary_action.description}</p>
+        </section>
+      )}
+    </main>
+  );
+}
+
+type RadarSelection = {
+  title: string;
+  role: string;
+  fact: string;
+  tone: "datahub" | "git" | "validation" | "known" | "late" | "field";
+};
+
+function EvidenceRadar({ data }: { data: WorkbenchView }) {
+  const known = data.consumers.find((consumer) => !consumer.newly_observed);
+  const late = data.consumers.find((consumer) => consumer.newly_observed);
+  const selections: Record<string, RadarSelection> = {
+    field: {
+      title: fieldName(data.target),
+      role: "Field proposed for retirement",
+      fact: `Replacement: ${fieldName(data.replacement)}`,
+      tone: "field",
+    },
+    datahub: {
+      title: "DataHub",
+      role: "Context graph and reconciliation",
+      fact: `${data.evidence.sources[0]?.scope.returned_total ?? 0} of ${data.evidence.sources[0]?.scope.reported_total ?? 0} consumers returned across ${data.evidence.sources[0]?.scope.pages ?? 0} pages`,
+      tone: "datahub",
+    },
+    git: {
+      title: "Git / dbt",
+      role: "Native mutation boundary",
+      fact: data.change.paths[0] ?? "No changed path recorded",
+      tone: "git",
+    },
+    validation: {
+      title: "Native receipt",
+      role: "Validation evidence",
+      fact: data.change.receipt ? `${data.change.receipt.adapter}: ${data.change.receipt.result}` : "Missing",
+      tone: "validation",
+    },
+    known: {
+      title: shortId(known?.id ?? "Known consumer", 24),
+      role: "Inside frozen inventory",
+      fact: known?.receipt_state ?? "No native receipt",
+      tone: "known",
+    },
+    late: {
+      title: shortId(late?.id ?? "New consumer", 24),
+      role: "Outside frozen inventory",
+      fact: late?.receipt_state ?? "No native receipt",
+      tone: "late",
+    },
+  };
+  const [selectedKey, setSelectedKey] = useState("late");
+  const selected = selections[selectedKey];
+
+  return (
+    <main className="rcp-root rcp-radar">
+      <a className="rcp-radar-brand" href="/workbench">Retirement Conductor</a>
+      <div className="rcp-radar-summary">
+        <span>{data.evidence.sources.length} required sources complete</span>
+        <strong>{data.decision}</strong>
+      </div>
+
+      <section className="rcp-radar-field" aria-label="Evidence envelope">
+        <svg className="rcp-radar-lines" viewBox="0 0 1000 700" role="img" aria-label="Evidence connections around the target field">
+          <ellipse className="rcp-radar-envelope" cx="500" cy="345" rx="315" ry="250" />
+          <path className="rcp-radar-line rcp-radar-line-datahub" d="M500 345 C390 270 285 210 175 165" />
+          <path className="rcp-radar-line rcp-radar-line-git" d="M500 345 C590 260 675 190 785 140" />
+          <path className="rcp-radar-line rcp-radar-line-validation" d="M500 345 C620 430 700 500 800 565" />
+          <path className="rcp-radar-line rcp-radar-line-known" d="M500 345 C410 430 330 500 240 540" />
+          <path className="rcp-radar-line rcp-radar-line-late" d="M500 345 C665 350 820 350 950 345" />
+          <path className="rcp-radar-lease" d="M350 112 C470 52 625 60 735 128" />
+          <text x="500" y="65" textAnchor="middle">frozen evidence envelope</text>
+          <text x="540" y="100">lease invalidated</text>
+        </svg>
+
+        <button className="rcp-radar-node rcp-radar-node-field" data-selected={selectedKey === "field"} type="button" onClick={() => setSelectedKey("field")}>
+          <span>{fieldName(data.target)}</span>
+          <small>target field</small>
+        </button>
+        <button className="rcp-radar-node rcp-radar-node-datahub" data-selected={selectedKey === "datahub"} type="button" onClick={() => setSelectedKey("datahub")}>
+          <span>DataHub</span><small>graph</small>
+        </button>
+        <button className="rcp-radar-node rcp-radar-node-git" data-selected={selectedKey === "git"} type="button" onClick={() => setSelectedKey("git")}>
+          <span>Git / dbt</span><small>change</small>
+        </button>
+        <button className="rcp-radar-node rcp-radar-node-validation" data-selected={selectedKey === "validation"} type="button" onClick={() => setSelectedKey("validation")}>
+          <span>Receipt</span><small>accepted</small>
+        </button>
+        <button className="rcp-radar-node rcp-radar-node-known" data-selected={selectedKey === "known"} type="button" onClick={() => setSelectedKey("known")}>
+          <span>Known consumer</span><small>validated</small>
+        </button>
+        <button className="rcp-radar-node rcp-radar-node-late" data-selected={selectedKey === "late"} type="button" onClick={() => setSelectedKey("late")}>
+          <span>New consumer</span><small>no receipt</small>
+        </button>
+      </section>
+
+      <aside className="rcp-radar-dock" data-tone={selected.tone} aria-live="polite">
+        <div><span>{selected.role}</span><strong>{selected.title}</strong></div>
+        <p>{selected.fact}</p>
+        <button type="button" onClick={() => setSelectedKey("late")}>Show blocking evidence</button>
       </aside>
     </main>
   );
 }
 
-type FilmScene = {
-  stage: Stage;
-  title: string;
-  copy: string;
-};
+type ReviewMode = "inspect" | "propose" | "authorize" | "validate" | "reconcile";
 
-function filmScene(stage: Stage, data: WorkbenchView): FilmScene {
-  const scenes: Record<string, [string, string]> = {
-    inventory: ["Establish the known world.", `${data.consumers.length - data.new_consumer_ids.length} consumer was captured inside the declared evidence envelope.`],
-    plan: ["Change one exact path.", data.change.paths[0] ?? "No authorized path was recorded."],
-    authorize: ["A human crosses the boundary.", "The agent can propose. The trusted runtime records authorization and owns the transition."],
-    apply: ["The migration becomes real.", data.change.receipt ? `${data.change.receipt.adapter} applied the bounded change.` : "No applied change is recorded."],
-    validate: ["Native proof, not an API success.", data.change.receipt?.result ?? "No native receipt was accepted."],
-    reconcile: ["The graph changed underneath us.", data.summary.cause],
-    lease: ["The permission disappears.", "No retirement action can proceed against an invalidated lease."],
-  };
-  const [title, copy] = scenes[stage.key] ?? [stage.label, data.summary.cause];
-  return { stage, title, copy };
-}
-
-function SceneProof({ scene, data }: { scene: FilmScene; data: WorkbenchView }) {
-  switch (scene.stage.key) {
-    case "inventory":
-      return (
-        <div className="rcp-film-proof rcp-film-count">
-          <strong>{data.consumers.length - data.new_consumer_ids.length}</strong>
-          <span>known consumer</span>
-          <small>{data.evidence.sources.length} required sources</small>
-        </div>
-      );
-    case "plan":
-    case "apply":
-      return (
-        <div className="rcp-film-proof rcp-film-path">
-          <small>Authorized surface</small>
-          <code>{data.change.paths[0] ?? "No path"}</code>
-          <span>{data.change.receipt?.result ?? "PENDING"}</span>
-        </div>
-      );
+function reviewDetail(mode: ReviewMode, data: WorkbenchView, late: Consumer | undefined) {
+  switch (mode) {
+    case "inspect":
+      return {
+        title: "Evidence scope",
+        copy: data.evidence.coverage.label,
+        facts: data.evidence.sources.map((source) => [source.id, `${source.status}, ${source.scope.pages ?? 0} page(s)`]),
+      };
+    case "propose":
+      return {
+        title: "Bounded change",
+        copy: "Only the recorded dbt path and field substitution are in scope.",
+        facts: [["Path", data.change.paths[0] ?? "Missing"], ["Mutation", `${fieldName(data.target)} to ${fieldName(data.replacement)}`]],
+      };
     case "authorize":
-      return (
-        <div className="rcp-film-proof rcp-film-boundary">
-          <span>Agent</span><i aria-hidden="true" /><strong>Human authorization</strong><i aria-hidden="true" /><span>Trusted runtime</span>
-        </div>
-      );
+      return {
+        title: "Authorization boundary",
+        copy: "A human authorization was recorded before the source mutation. The agent did not own this transition.",
+        facts: [["State", "Recorded"], ["Mutation boundary", "Git branch and reviewable patch"]],
+      };
     case "validate":
-      return (
-        <div className="rcp-film-proof rcp-film-receipt">
-          <span>Native validation receipt</span>
-          <strong>{data.change.receipt?.result ?? "MISSING"}</strong>
-          <code>{data.change.receipt ? shortId(data.change.receipt.digest) : "—"}</code>
-        </div>
-      );
-    case "reconcile":
-      return (
-        <div className="rcp-film-proof rcp-film-reversal">
-          <span>READY TO RETIRE</span>
-          <i aria-hidden="true">→</i>
-          <strong>{data.decision}</strong>
-          <small>{shortId(data.new_consumer_ids[0] ?? "new consumer")}</small>
-        </div>
-      );
+      return {
+        title: "Native validation",
+        copy: data.change.receipt ? "The accepted receipt is bound to the changed consumer and manifest." : "No accepted receipt exists.",
+        facts: [["Adapter", data.change.receipt?.adapter ?? "Missing"], ["Result", data.change.receipt?.result ?? "Missing"], ["Receipt", data.change.receipt ? shortId(data.change.receipt.digest, 26) : "Missing"]],
+      };
     default:
-      return (
-        <div className="rcp-film-proof rcp-film-lease">
-          <small>Retirement lease</small>
-          <strong>INVALIDATED</strong>
-          <span>Producer action refused</span>
-        </div>
-      );
+      return {
+        title: "Fresh reconciliation",
+        copy: data.summary.cause,
+        facts: [["New consumer", late?.id ?? "Missing"], ["Disposition", late?.disposition ?? "Unknown"], ["Decision", data.decision], ["Lease", "Invalidated"]],
+      };
   }
 }
 
-function CampaignFilm({ data }: { data: WorkbenchView }) {
-  const scenes = useMemo(() => data.stages.map((stage) => filmScene(stage, data)), [data]);
-  const defaultIndex = Math.max(0, data.stages.findIndex((stage) => stage.status === "current"));
-  const [sceneIndex, setSceneIndex] = useState(defaultIndex);
-  const scene = scenes[sceneIndex];
+function NativeReview({ data }: { data: WorkbenchView }) {
+  const [mode, setMode] = useState<ReviewMode>("reconcile");
+  const late = data.consumers.find((consumer) => consumer.newly_observed);
+  const detail = reviewDetail(mode, data, late);
+  const modes: Array<{ key: ReviewMode; label: string }> = [
+    { key: "inspect", label: "Inspect" },
+    { key: "propose", label: "Propose" },
+    { key: "authorize", label: "Authorize" },
+    { key: "validate", label: "Validate" },
+    { key: "reconcile", label: "Reconcile" },
+  ];
 
   return (
-    <main className="rcp-root rcp-film">
-      <header className="rcp-film-header">
+    <main className="rcp-root rcp-review">
+      <header className="rcp-review-toolbar">
         <a href="/workbench">Retirement Conductor</a>
-        <span>A campaign in seven acts</span>
-        <strong>{data.mode.replaceAll("-", " ")}</strong>
+        <span>{data.campaign.id}</span>
+        <strong>{data.decision}</strong>
       </header>
 
-      <section className="rcp-film-stage" aria-live="polite">
-        <div className="rcp-film-narrative" key={scene.stage.key}>
-          <span>{scene.stage.number} / 07 · {scene.stage.label}</span>
-          <h1>{scene.title}</h1>
-          <p>{scene.copy}</p>
-          <time dateTime={scene.stage.occurred_at ?? undefined}>{formatTime(scene.stage.occurred_at)} UTC</time>
-        </div>
-        <SceneProof scene={scene} data={data} />
-      </section>
-
-      <nav className="rcp-film-strip" aria-label="Campaign scenes">
-        {scenes.map((item, index) => (
-          <button
-            type="button"
-            key={item.stage.key}
-            data-status={item.stage.status}
-            aria-current={index === sceneIndex ? "step" : undefined}
-            onClick={() => setSceneIndex(index)}
-          >
-            <span>{item.stage.number}</span>
-            <strong>{item.stage.label}</strong>
-            <small>{formatTime(item.stage.occurred_at)}</small>
+      <nav className="rcp-review-modes" aria-label="Campaign tasks">
+        {modes.map((item) => (
+          <button type="button" key={item.key} aria-current={mode === item.key ? "page" : undefined} onClick={() => setMode(item.key)}>
+            {item.label}
           </button>
         ))}
       </nav>
-    </main>
-  );
-}
 
-function ControlRoom({ data }: { data: WorkbenchView }) {
-  const known = data.consumers.filter((consumer) => !consumer.newly_observed);
-  const newlyObserved = data.consumers.filter((consumer) => consumer.newly_observed);
+      <section className="rcp-review-editor" aria-labelledby="review-file">
+        <header>
+          <h1 id="review-file">{data.change.paths[0] ?? "No changed file"}</h1>
+          <span>Actual retained migration patch</span>
+        </header>
+        <div className="rcp-review-code" role="table" aria-label="Migration diff">
+          <div role="row"><span role="cell">11</span><code role="cell">select</code></div>
+          <div role="row"><span role="cell">12</span><code role="cell">    order_id,</code></div>
+          <div className="rcp-review-removed" role="row"><span role="cell">13</span><code role="cell">-   legacy_status as normalized_status,</code></div>
+          <div className="rcp-review-added" role="row"><span role="cell">13</span><code role="cell">+   order_status as normalized_status,</code></div>
+          <div role="row"><span role="cell">14</span><code role="cell">    order_total</code></div>
+        </div>
+        <footer>
+          <div><span>Native adapter</span><strong>{data.change.receipt?.adapter ?? "Missing"}</strong></div>
+          <div><span>Validation</span><strong>{data.change.receipt?.result ?? "Missing"}</strong></div>
+          <div><span>Publication</span><strong>{data.publication.readback_verified ? "Read-back verified" : "Not verified"}</strong></div>
+        </footer>
+      </section>
 
-  return (
-    <main className="rcp-root rcp-control">
-      <header className="rcp-control-header">
-        <a href="/workbench">RC / Change Control</a>
+      <aside className="rcp-review-context" aria-live="polite">
+        <header><span>{mode}</span><h2>{detail.title}</h2></header>
+        <p>{detail.copy}</p>
         <dl>
-          <div><dt>Campaign</dt><dd>{data.campaign.id}</dd></div>
-          <div><dt>Evidence captured</dt><dd>{formatTime(data.evidence.captured_at)} UTC</dd></div>
-          <div><dt>Sources</dt><dd>{data.evidence.sources.length} / {data.evidence.sources.length} complete</dd></div>
-          <div><dt>Decision</dt><dd data-decision={data.decision}>{data.decision}</dd></div>
+          {detail.facts.map(([label, value]) => (
+            <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+          ))}
         </dl>
-      </header>
-
-      <section className="rcp-control-command">
-        <div>
-          <span>Change order</span>
-          <strong>{fieldName(data.target)}</strong>
-          <i aria-hidden="true">→</i>
-          <strong>{fieldName(data.replacement)}</strong>
-        </div>
-        <p>{data.summary.headline}</p>
-      </section>
-
-      <ol className="rcp-control-track" aria-label="Campaign stages">
-        {data.stages.map((stage) => (
-          <li key={stage.key} data-status={stage.status}>
-            <span>{stage.number}</span>
-            <i aria-hidden="true" />
-            <strong>{stage.label}</strong>
-            <time dateTime={stage.occurred_at ?? undefined}>{formatTime(stage.occurred_at)}</time>
-          </li>
-        ))}
-      </ol>
-
-      <section className="rcp-control-ledger">
-        <div className="rcp-control-consumers">
-          <header><h1>Consumer register</h1><span>{data.consumers.length} observed</span></header>
-          <div className="rcp-control-table" role="table" aria-label="Observed consumers">
-            <div role="row" className="rcp-control-table-head">
-              <span role="columnheader">Identity</span><span role="columnheader">Observed</span><span role="columnheader">Disposition</span><span role="columnheader">Receipt</span>
-            </div>
-            {[...known, ...newlyObserved].map((consumer) => (
-              <div role="row" key={consumer.id} data-new={consumer.newly_observed}>
-                <strong role="cell">{consumer.id}</strong>
-                <span role="cell">{consumer.newly_observed ? "Reconciliation" : "Inventory"}</span>
-                <span role="cell">{consumer.disposition}</span>
-                <span role="cell">{consumer.receipt_digest ? "Accepted" : "Missing"}</span>
-              </div>
-            ))}
+        {mode === "reconcile" && (
+          <div className="rcp-review-refusal">
+            <strong>Producer action refused</strong>
+            <span>{data.primary_action.description}</span>
           </div>
-        </div>
-
-        <aside className="rcp-control-orders">
-          <div className="rcp-control-stamp">
-            <small>Retirement lease</small>
-            <strong>INVALIDATED</strong>
-            <span>Producer gate held</span>
-          </div>
-          <dl>
-            <div><dt>Exact cause</dt><dd>{data.summary.cause}</dd></div>
-            <div><dt>Recovery order</dt><dd>{data.primary_action.description}</dd></div>
-            <div><dt>Publication</dt><dd>{data.publication.readback_verified ? "DataHub read-back verified" : "Not verified"}</dd></div>
-            <div><dt>Manifest</dt><dd>{shortId(data.manifest_digest)}</dd></div>
-          </dl>
-        </aside>
-      </section>
+        )}
+      </aside>
     </main>
   );
 }
@@ -362,9 +396,9 @@ function ControlRoom({ data }: { data: WorkbenchView }) {
 export function PrototypeWorkbench({ data, variant }: { data: WorkbenchView; variant: PrototypeVariant }) {
   return (
     <>
-      {variant === "cartographer" && <Cartographer data={data} />}
-      {variant === "film" && <CampaignFilm data={data} />}
-      {variant === "control-room" && <ControlRoom data={data} />}
+      {variant === "operator" && <TheOperator data={data} />}
+      {variant === "radar" && <EvidenceRadar data={data} />}
+      {variant === "native-review" && <NativeReview data={data} />}
       <PrototypeSwitcher variant={variant} />
     </>
   );
