@@ -1,10 +1,18 @@
 # TE-04 — evidence-driven integration and definitive unified run
 
+**Audited integration base:** `codex/truth-experiments-integrated`
+
 ## Launch gate
 
 Do not launch this task until TE-01, TE-02, and TE-03 have completed with
 clean worktrees, public-safe reports, canonical digests, and explicit
 recommendations. This task owns shared product changes and resolves conflicts.
+
+The integration owner completed the first audit and merged the three accepted
+histories into the audited base above. Read
+`docs/plans/15-truth-experiment-integration-audit.md` before making changes.
+Spot-check its calculations and preserve each original evidence digest; do not
+repeat paid model calls merely to recreate already accepted evidence.
 
 ## Objective
 
@@ -15,7 +23,8 @@ decision.
 
 ## Phase 1 — inspect before merging
 
-For every workstream:
+The first integration audit completed the checks below. TE-04 must spot-check
+them against the merged histories and stop if the integrated evidence differs:
 
 1. inspect commits and diffs;
 2. rerun focused acceptance;
@@ -128,9 +137,13 @@ run. The resulting architecture and evidence become the refactor baseline.
 ## Task prompt
 
 > TE-01, TE-02, and TE-03 are complete. Implement TE-04 from a new isolated
-> worktree based on `codex/winning-truth-experiments-plan`. Read `AGENTS.md`,
+> worktree and branch `codex/definitive-unified-run` based on
+> `codex/truth-experiments-integrated`. Read `AGENTS.md`,
 > `docs/plans/10-winning-truth-experiments.md`, this brief, all three public
-> reports, and their integration notes. Audit and reproduce them before
-> merging. Make evidence-driven keep/simplify/remove decisions, integrate the
-> simplest winning product, execute the definitive minimally prompted live
-> run, and continue until all acceptance and repository checks pass.
+> reports, their integration notes, and
+> `docs/plans/15-truth-experiment-integration-audit.md`. Spot-check the merged
+> evidence, then implement its decisions: remove nested Gemini, keep bounded
+> DataHub context, keep the project skill and product MCP, and make no
+> capability-bounded claim. Execute the definitive minimally prompted live run
+> with a real public PR/CI binding and late-consumer lease reversal. Continue
+> until every acceptance and repository check passes.
