@@ -1,0 +1,18 @@
+{
+  "acceptance_evidence_digest": "sha256:09b66f9c715d7867ffdadf75c54936a5eb844e42fdc71355d51329ef37a3a5bb",
+  "evidence_mode": "live local",
+  "files": [
+    "continuous-reconciliation.json",
+    "late-consumer-reread.json",
+    "late-datahub-write-receipt.json",
+    "watch-receipt.json"
+  ],
+  "limitations": [
+    "Evidence is live-local against disposable DataHub Core and Git/dbt.",
+    "Readiness remains bounded by the declared evidence envelope.",
+    "The producer action is a harmless local sentinel, not a warehouse mutation.",
+    "Removing the late graph edge did not validate or close that consumer."
+  ],
+  "schema_version": "1.0.0",
+  "watch_receipt_digest": "sha256:56db58f8c08c547558e0bb032da7ee76b5a03c22bd4ecc41202ab30b254039e7"
+}

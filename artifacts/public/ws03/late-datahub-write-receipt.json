@@ -1,0 +1,20 @@
+{
+  "chart_count": 6,
+  "dashboard_count": 4,
+  "dataset_count": 25,
+  "entity_urn_digest": "sha256:47e5dc7c6b843256fd5dc4e5a6f079437d05249646b83df66588c690032b43ea",
+  "gms_url": "http://127.0.0.1:18080",
+  "ingestion_run_id": "phase04-late-field-cfa0ee376772",
+  "isolated_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_isolated_model,PROD)",
+  "late_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:spark,retirement_conductor.analytics.consumers.orders_isolated_late,PROD)",
+  "mode": "live",
+  "refresh_digest": "sha256:1559b08fa538424260778a8f6a1606af582f5ff7984bc2f53bd30d4e24d5c428",
+  "refresh_mode": "late-field",
+  "schema_version": "1.0.0",
+  "source_updated_at": "2026-08-09T12:02:26.585844Z",
+  "target_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)",
+  "target_urns": [
+    "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)",
+    "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders_isolated,PROD)"
+  ]
+}

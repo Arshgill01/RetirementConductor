@@ -50,6 +50,33 @@ Do not resolve these files by taking either branch wholesale. Reapply the
 minimal hunks to the post-WS-01/WS-02 files, then run focused tests and
 `make check`.
 
+## Live-local acceptance evidence
+
+The acceptance run at repository commit
+`734529dfaeb5550c0d94e0d45822b6eaceec3757` produced public-safe evidence in
+`artifacts/public/ws03/`:
+
+- acceptance digest:
+  `sha256:09b66f9c715d7867ffdadf75c54936a5eb844e42fdc71355d51329ef37a3a5bb`;
+- watch receipt digest:
+  `sha256:56db58f8c08c547558e0bb032da7ee76b5a03c22bd4ecc41202ab30b254039e7`;
+- live DataHub Core v1.6.0 changed the observed decision from
+  `READY_TO_RETIRE` to `UNSAFE`, and publication readback verified the changed
+  summary;
+- the independent `upstreamLineage` aspect reread proved exactly one
+  `legacy_status` to late-consumer `order_status` field edge;
+- the real Git patch touched only `models/orders_isolated_model.sql`, and
+  native `dbt parse + seed + build + test on DuckDB` passed;
+- the preserved lease projected from `ISSUED` to `INVALIDATED`; the old plan
+  was refused with `GATE_DECISION_NOT_READY` and no producer sentinel;
+- removing the late graph edge did not close or validate the observed
+  consumer, and the campaign remained `UNSAFE`.
+
+The DataHub MCP field-lineage helper conservatively reports the late asset as
+table-only even though the authoritative DataHub aspect exposes the exact
+fine-grained edge. The public evidence preserves both observations; readiness
+does not depend on upgrading the weaker helper result.
+
 ## Controlling-document updates after live acceptance
 
 The integration owner should add RC-020 or the next unused requirement for
@@ -57,4 +84,3 @@ continuous fresh observation and lease invalidation, record the watch event
 and receipt contracts, add the observed late-consumer evidence to the evidence
 ledger, and update R-04, R-12, R-23, R-27, R-34, and R-35 only to the scope
 proved by the live-local run.
-

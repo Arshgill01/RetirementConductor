@@ -1,0 +1,59 @@
+{
+  "captured_at": "2026-08-09T12:02:34.987527Z",
+  "consumer": {
+    "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:spark,retirement_conductor.analytics.consumers.orders_isolated_late,PROD)",
+    "degree": 1,
+    "disposition": "OPAQUE",
+    "entity_type": "DATASET",
+    "evidence_claim_ids": [
+      "sha256:cfaabed2473a21f14d6614a4d92444749dc8895d2ed323c32980cf9db01ee261"
+    ],
+    "id": "dh-c474f47154490fd18206",
+    "limitations": [
+      "table-only lineage; field dependency remains unproven"
+    ],
+    "native_identity": null,
+    "source_domain": "datahub",
+    "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}"
+  },
+  "evidence_mode": "live local",
+  "exact_field_reread": {
+    "attempts": 1,
+    "captured_at": "2026-08-09T12:02:45.331521Z",
+    "consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:spark,retirement_conductor.analytics.consumers.orders_isolated_late,PROD)",
+    "evidence_mode": "live local",
+    "limitations": [
+      "This is an independent read of the disposable DataHub upstreamLineage aspect, not a claim of visibility beyond the recorded evidence envelope."
+    ],
+    "lineage": {
+      "downstreamType": "FIELD",
+      "downstreams": [
+        "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:spark,retirement_conductor.analytics.consumers.orders_isolated_late,PROD),order_status)"
+      ],
+      "upstreamType": "FIELD_SET",
+      "upstreams": [
+        "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders_isolated,PROD),legacy_status)"
+      ]
+    },
+    "matched_edge_count": 1,
+    "schema_version": "1.0.0",
+    "target_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders_isolated,PROD)"
+  },
+  "limitations": [
+    "This proves the exact disposable DataHub field edge inside the declared scope.",
+    "It does not prove visibility outside the recorded evidence envelope."
+  ],
+  "pagination": {
+    "cache_observations": [
+      "NOT_EXPOSED"
+    ],
+    "cache_policy": "BYPASS_REQUESTED",
+    "errors": [],
+    "pages": 3,
+    "reported_total": 2,
+    "returned_total": 2,
+    "status": "COMPLETE"
+  },
+  "schema_version": "1.0.0",
+  "snapshot_digest": "sha256:968aea806fc80da47ed0e9bcd94ee904ef3396bff718ac82bd6f879499cec2d5"
+}
