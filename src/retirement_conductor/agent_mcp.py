@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Mapping
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from retirement_conductor import __version__
@@ -207,13 +208,14 @@ def create_server(runtime: AgentCommandRuntime | None = None) -> Any:
     )
     def get_human_authorization_instructions(
         campaign_id: str,
-        authorized_at: str,
-        expires_at: str,
     ) -> dict[str, Any]:
+        authorized = datetime.now(UTC)
         return tool_runtime.approval_instructions(
             campaign_id,
-            authorized_at=authorized_at,
-            expires_at=expires_at,
+            authorized_at=authorized.isoformat().replace("+00:00", "Z"),
+            expires_at=(authorized + timedelta(minutes=15))
+            .isoformat()
+            .replace("+00:00", "Z"),
         )
 
     @server.tool(
