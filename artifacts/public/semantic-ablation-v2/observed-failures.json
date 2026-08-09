@@ -1,0 +1,29 @@
+{
+  "failure_artifact_digest": "sha256:f77ac3bbb45502b87bfa6da9a95f8102888a022b8b67f2c73a571918a26e7185",
+  "failures": [
+    {
+      "fix": "Match only the explicit 'dbt declares not-null' signal and add focused regression coverage.",
+      "frozen_truth_changed": false,
+      "live_attempts_affected": 0,
+      "observation": "The selector treated 'no not-null test' as a positive dbt contract signal and requested an unavailable candidate.",
+      "stage": "pre-live deterministic run"
+    },
+    {
+      "fix": "Use the existing datahub_lineage evidence kind, validate a full-context snapshot through the real schema in a regression test, preserve all preliminary traces, and rerun the arm.",
+      "frozen_truth_changed": false,
+      "live_attempts_affected": 45,
+      "observation": "The runner labeled a generic DataHub reference with an evidence kind outside the existing semantic-plan schema, causing 36 otherwise-accepted plans to fail schema validation.",
+      "preliminary_summary_digest": "sha256:d66708919330d5f79c47938b54c79f12cc6aef834ddee0acc1055d39fd2d1a8c",
+      "retained_raw_location": ".retirement-conductor/semantic-ablation-v2/observed-defects/gemini-datahub-dbt-initial-schema-defect",
+      "stage": "initial full-context publication"
+    },
+    {
+      "completed_attempts_reused": 5,
+      "fix": "Resume completed attempts with four independent workers; prompts, model settings, policy, clock, and scoring stayed fixed.",
+      "frozen_truth_changed": false,
+      "observation": "Sequential execution was interrupted after five completed dbt-only attempts because it would not finish efficiently.",
+      "stage": "live execution throughput"
+    }
+  ],
+  "schema_version": "1.0.0"
+}

@@ -37,8 +37,9 @@ checks that are supported by the observed evidence. Never emit SQL, shell,
 paths beyond the exact native target, URLs, code, macros, packages, environment
 variables, credentials, or additional repository targets. The deterministic kernel
 will independently validate or reject your proposal.
-Choose only checks explicitly listed by read_dbt_context as supported_relevant_checks;
-an unobserved quality, query, or glossary signal cannot support another check.
+Choose only checks explicitly listed by either bounded context as
+supported_relevant_checks; an unobserved quality, query, or glossary signal cannot
+support another check.
 """
 USER_TEMPLATE = (
     "Plan migration-specific semantic validation for campaign {campaign_id}. "

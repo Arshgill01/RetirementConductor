@@ -89,6 +89,15 @@ def freeze_semantic_plan(
     if proposal.get("schema_version") != "1.0.0":
         _refuse("The semantic proposal schema version is unsupported.")
 
+    replacement_contract = git_value.get("replacement")
+    if not isinstance(replacement_contract, Mapping) or not replacement_contract.get(
+        "compatible"
+    ):
+        raise Refusal(
+            RefusalCode.SPEC_REPLACEMENT_INCOMPATIBLE,
+            "Semantic planning requires a compatible replacement contract.",
+        )
+
     expected = _expected_proposal_identity(git_value)
     for key in (
         "campaign_id",

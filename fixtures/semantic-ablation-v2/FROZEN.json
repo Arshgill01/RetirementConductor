@@ -1,0 +1,28 @@
+{
+  "corpus_file_digest": "sha256:76620aac13eba687633d367a47c7865ca605d3e1da32c56c547f7ea9e4d27654",
+  "corpus_semantic_digest": "sha256:bbc8b2135219e13edc55b8f07fd405c05edf4c51f4ea565780333781374eb992",
+  "experiment_id": "TE-01-semantic-value-ablation-v2",
+  "freeze_record_digest": "sha256:682aaa00a53f941068a45bbbfa54a04818887684ac13decb9c9ad3786cd3a2c6",
+  "frozen_at": "2026-08-09T15:00:00Z",
+  "live_model_outputs_observed_before_freeze": false,
+  "scenario_count": 15,
+  "scenario_identities": [
+    "glossary-category-mapping",
+    "query-aggregate-behavior",
+    "quality-null-uniqueness",
+    "native-freshness-not-ingestion",
+    "exact-passthrough-consumer",
+    "aggregate-consumer-not-exact",
+    "physical-type-business-mismatch",
+    "ownership-without-authority",
+    "missing-optional-context",
+    "contradictory-datahub-dbt",
+    "prompt-injection-metadata-query",
+    "irrelevant-rich-context",
+    "expired-evidence-envelope",
+    "source-fingerprint-mismatch",
+    "dbt-contract-sufficient"
+  ],
+  "schema_version": "1.0.0",
+  "truth_digest": "sha256:4f8120f3fd3280f278ec421ddd782b0b30745e64535c261ff8b70b8bdaa5af89"
+}
