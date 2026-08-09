@@ -450,6 +450,39 @@ def aspect_digest(urn: str, aspect_name: str) -> str:
     return digest_json(value)
 
 
+def inventory_with_retry(
+    boundary: DataHubBoundary,
+    specification: dict[str, Any],
+    *,
+    artifact_root: Path,
+    forced_failure_offset: int | None,
+    attempts: int = 6,
+) -> dict[str, Any]:
+    """Poll transient live paging failures without weakening partial refusals."""
+
+    last: dict[str, Any] | None = None
+    for attempt in range(1, attempts + 1):
+        last = boundary.inventory(
+            specification,
+            artifact_root=artifact_root / f"attempt-{attempt:02d}",
+            forced_failure_offset=forced_failure_offset,
+        )
+        status = str(last["pagination"]["status"])
+        errors = list(last["pagination"]["errors"])
+        if forced_failure_offset is None and status == "COMPLETE":
+            return last
+        if forced_failure_offset is not None and any(
+            str(item.get("refusal_code")) == "EVIDENCE_PAGINATION_FAILED"
+            for item in errors
+        ):
+            return last
+        if attempt < attempts:
+            time.sleep(0.5)
+    require(last is not None, "DataHub inventory did not run")
+    assert last is not None
+    return last
+
+
 def seed_datahub(run_root: Path, *, add_late: str | None = None) -> dict[str, Any]:
     receipt = run_root / (
         "datahub-seed.json" if add_late is None else f"datahub-seed-{add_late}.json"
@@ -798,7 +831,8 @@ def execute(
                         & {"incomplete_pagination", "permission_partial"}
                         else None
                     )
-                    snapshot = boundary.inventory(
+                    snapshot = inventory_with_retry(
+                        boundary,
                         specification,
                         artifact_root=artifact_root
                         / campaign_id
@@ -831,13 +865,23 @@ def execute(
                             entry["target_urn"], "ownership"
                         ),
                     }
-                    twin = boundary.inventory(
+                    twin = inventory_with_retry(
+                        boundary,
                         specification,
                         artifact_root=artifact_root / campaign_id / "datahub" / "twin",
                         forced_failure_offset=forced,
                     )
                     twin_urns = {str(item["datahub_urn"]) for item in twin["consumers"]}
-                    require(twin_urns == actual_urns, f"live twin differed: {case_id}")
+                    if forced is None:
+                        require(
+                            twin_urns == actual_urns,
+                            f"live twin differed: {case_id}",
+                        )
+                    else:
+                        require(
+                            twin["pagination"]["status"] == "PARTIAL",
+                            f"intentional partial twin passed: {case_id}",
+                        )
                     consumers = [dict(item) for item in snapshot["consumers"]]
                     envelope = dict(snapshot["evidence_envelope"])
                     snapshot_digest = str(snapshot["snapshot_digest"])
