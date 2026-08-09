@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "te03-agent-boundary-v1",
+  "attempts_per_task": 2,
+  "model": {
+    "identifier": "gpt-5.4",
+    "reasoning_effort": "medium"
+  },
+  "host": {
+    "codex_cli_version": "0.147.0",
+    "sandbox": "workspace-write",
+    "approval_policy": "never",
+    "network_access": "enabled through declared MCP servers; shell network follows Codex sandbox policy",
+    "filesystem": "one disposable task workspace and one fresh path-bound campaign store per attempt",
+    "session_persistence": "ephemeral",
+    "unrelated_plugins": "disabled",
+    "shell_available": true,
+    "apply_patch_available": true
+  },
+  "conditions": [
+    {
+      "id": "skill-product-mcp",
+      "skill_available": true,
+      "skill_activation": "explicit",
+      "product_mcp_enabled": true,
+      "datahub_mcp_enabled": true,
+      "product_operation_surface": "packaged 16-tool Retirement Conductor MCP server"
+    },
+    {
+      "id": "product-mcp-only",
+      "skill_available": false,
+      "skill_activation": "unavailable",
+      "product_mcp_enabled": true,
+      "datahub_mcp_enabled": true,
+      "product_operation_surface": "packaged 16-tool Retirement Conductor MCP server"
+    },
+    {
+      "id": "cli-shell",
+      "skill_available": false,
+      "skill_activation": "unavailable",
+      "product_mcp_enabled": false,
+      "datahub_mcp_enabled": true,
+      "product_operation_surface": "installed retirement-conductor 0.2.0 CLI through shell"
+    }
+  ],
+  "condition_digest": "sha256:d53830306bccda6bc5ed76859c0236e901e90a6e121df2aab5a27783cf881454"
+}
