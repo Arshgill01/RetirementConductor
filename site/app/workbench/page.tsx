@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { WorkbenchClient } from "./workbench-client";
 import "./workbench.css";
+import "./workbench-prototypes.css";
 
 export const metadata: Metadata = {
   title: "Retirement Workbench — Retirement Conductor",
@@ -9,5 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function WorkbenchPage() {
-  return <WorkbenchClient />;
+  return (
+    <Suspense>
+      <WorkbenchClient />
+    </Suspense>
+  );
 }

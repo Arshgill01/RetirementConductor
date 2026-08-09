@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { PrototypeWorkbench, isPrototypeVariant } from "./workbench-prototypes";
 
-type Stage = {
+export type Stage = {
   key: string;
   label: string;
   number: string;
@@ -10,7 +12,7 @@ type Stage = {
   occurred_at: string | null;
 };
 
-type Consumer = {
+export type Consumer = {
   id: string;
   disposition: string;
   closed: boolean;
@@ -19,7 +21,7 @@ type Consumer = {
   newly_observed: boolean;
 };
 
-type EvidenceSource = {
+export type EvidenceSource = {
   id: string;
   required: boolean;
   status: string;
@@ -40,7 +42,7 @@ type EvidenceSource = {
   limitations: string[];
 };
 
-type WorkbenchView = {
+export type WorkbenchView = {
   mode: "live-local" | "read-only" | "recorded-evidence";
   campaign: { id: string; name: string; state: string };
   target: string;
@@ -335,6 +337,7 @@ function DetailView({ name, data }: { name: ViewName; data: WorkbenchView }) {
 }
 
 export function WorkbenchClient() {
+  const searchParams = useSearchParams();
   const [data, setData] = useState<WorkbenchView | null>(null);
   const [view, setView] = useState<ViewName>("overview");
   const [error, setError] = useState<string | null>(null);
@@ -413,6 +416,11 @@ export function WorkbenchClient() {
         )}
       </main>
     );
+  }
+
+  const prototypeVariant = searchParams.get("variant");
+  if (isPrototypeVariant(prototypeVariant)) {
+    return <PrototypeWorkbench data={data} variant={prototypeVariant} />;
   }
 
   return (
