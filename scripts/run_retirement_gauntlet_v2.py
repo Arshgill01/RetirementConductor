@@ -488,42 +488,75 @@ def make_specification(
     return value
 
 
-def fixture_envelope(case_id: str, status: str = "COMPLETE") -> dict[str, Any]:
+def fixture_envelope(
+    case_id: str,
+    status: str = "COMPLETE",
+    *,
+    stale_native_data: bool = False,
+) -> dict[str, Any]:
+    sources: list[dict[str, Any]] = [
+        {
+            "id": "datahub",
+            "required": True,
+            "status": status,
+            "source_version": "gauntlet-controlled-replay/v2",
+            "identity": f"controlled:{case_id}",
+            "scope": {
+                "direction": "downstream",
+                "max_hops": 5,
+                "filters": [],
+                "pages": 3,
+                "reported_total": 5,
+                "returned_total": 5,
+            },
+            "freshness": {
+                "observed_at": utc_now(),
+                "source_updated_at": utc_now(),
+                "maximum_age_seconds": 900,
+            },
+            "permissions": {
+                "principal": "gauntlet-controlled-replay",
+                "effective_scope": "read",
+            },
+            "limitations": ["Deterministic controlled replay, not live DataHub"],
+            "artifact_ids": [digest_json(case_id)],
+        }
+    ]
+    if stale_native_data:
+        sources.append(
+            {
+                "id": "native-data",
+                "required": True,
+                "status": "STALE",
+                "source_version": "gauntlet-controlled-native-data/v2",
+                "identity": f"controlled-native-data:{case_id}",
+                "scope": {
+                    "direction": "downstream",
+                    "max_hops": 1,
+                    "filters": ["native-validation-input"],
+                    "pages": 1,
+                    "reported_total": 1,
+                    "returned_total": 1,
+                },
+                "freshness": {
+                    "observed_at": utc_now(),
+                    "source_updated_at": "2020-01-01T00:00:00Z",
+                    "maximum_age_seconds": 900,
+                },
+                "permissions": {
+                    "principal": "gauntlet-controlled-replay",
+                    "effective_scope": "read",
+                },
+                "limitations": ["Native validation input is intentionally stale"],
+                "artifact_ids": [digest_json([case_id, "stale-native-data"])],
+            }
+        )
     return with_digest(
         {
             "schema_version": "1.0.0",
             "captured_at": utc_now(),
             "mode": "live",
-            "sources": [
-                {
-                    "id": "datahub",
-                    "required": True,
-                    "status": status,
-                    "source_version": "gauntlet-controlled-replay/v2",
-                    "identity": f"controlled:{case_id}",
-                    "scope": {
-                        "direction": "downstream",
-                        "max_hops": 5,
-                        "filters": [],
-                        "pages": 3,
-                        "reported_total": 5,
-                        "returned_total": 5,
-                    },
-                    "freshness": {
-                        "observed_at": utc_now(),
-                        "source_updated_at": utc_now(),
-                        "maximum_age_seconds": 900,
-                    },
-                    "permissions": {
-                        "principal": "gauntlet-controlled-replay",
-                        "effective_scope": "read",
-                    },
-                    "limitations": [
-                        "Deterministic controlled replay, not live DataHub"
-                    ],
-                    "artifact_ids": [digest_json(case_id)],
-                }
-            ],
+            "sources": sources,
         },
         "envelope_digest",
     )
@@ -1107,7 +1140,12 @@ def execute(
                         }
                         for logical_id in case["consumer_ids"]
                     ]
-                    envelope = fixture_envelope(case_id)
+                    envelope = fixture_envelope(
+                        case_id,
+                        stale_native_data=(
+                            "fresh_metadata_stale_native_data" in case["faults"]
+                        ),
+                    )
                     snapshot_digest = digest_json([case_id, "baseline"])
                 resolution = (
                     dict(snapshot["resolution"])

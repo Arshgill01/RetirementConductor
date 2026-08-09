@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from collections import Counter
 
+from retirement_conductor.schemas import validate_schema
 from scripts.run_retirement_gauntlet_v2 import (
     comparison_matches,
+    fixture_envelope,
     verify_frozen_truth,
 )
 
@@ -43,3 +45,12 @@ def test_comparator_rejects_an_intentionally_corrupt_oracle_result() -> None:
         observed_decision="READY_TO_RETIRE",
         observed_codes_value=[],
     )
+
+
+def test_replay_envelope_keeps_metadata_fresh_when_native_data_is_stale() -> None:
+    envelope = fixture_envelope("temporal-stale", stale_native_data=True)
+
+    validate_schema("evidence-envelope", envelope)
+    sources = {source["id"]: source for source in envelope["sources"]}
+    assert sources["datahub"]["status"] == "COMPLETE"
+    assert sources["native-data"]["status"] == "STALE"
