@@ -1083,6 +1083,15 @@ def execute(
                             "live paged twin was not complete and multi-page",
                         )
                     consumers = [dict(item) for item in snapshot["consumers"]]
+                    if not consumers:
+                        consumers = [
+                            {
+                                "id": logical_id,
+                                "disposition": "OPAQUE",
+                                "source_version": "gauntlet-controlled-truth/v2",
+                            }
+                            for logical_id in case["consumer_ids"]
+                        ]
                     envelope = dict(snapshot["evidence_envelope"])
                     snapshot_digest = str(snapshot["snapshot_digest"])
                 else:
