@@ -33,6 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TASKS_PATH = ROOT / "fixtures/agent-ablation/tasks-v1.json"
 CONDITIONS_PATH = ROOT / "fixtures/agent-ablation/conditions-v1.json"
 RAW_ROOT = ROOT / ".retirement-conductor/agent-ablation"
+HOST_FAILURE_ROOT = RAW_ROOT / "host-failures"
 PUBLIC_OUTPUT = ROOT / "artifacts/public/agent-ablation/report.json"
 PRODUCT_MCP = Path.home() / ".local/bin/retirement-conductor-mcp"
 PRODUCT_CLI = Path.home() / ".local/bin/retirement-conductor"
@@ -546,8 +547,6 @@ def codex_command(
                 "mcp_servers.retirement_conductor.env_vars=['RETIREMENT_CONDUCTOR_STORE','RETIREMENT_CONDUCTOR_WRITER_ID','RETIREMENT_CONDUCTOR_ARTIFACT_DIR','RETIREMENT_CONDUCTOR_AGENT_SPEC_ROOT','RETIREMENT_CONDUCTOR_REFRESH_RECEIPT']",
             ]
         )
-    else:
-        command.extend(["-c", "mcp_servers.retirement_conductor.enabled=false"])
     command.extend(["-C", str(workspace), "-o", str(final_path), prompt])
     return command
 
@@ -1343,6 +1342,8 @@ def aggregate(
     cli_version = subprocess.run(
         [str(PRODUCT_CLI), "--version"], check=True, capture_output=True, text=True
     ).stdout.strip()
+    service_preflight = load_object(RAW_ROOT / "service-preflight.json")
+    host_failures = sorted(HOST_FAILURE_ROOT.glob("*/run.json"))
     report = with_digest(
         {
             "schema_version": "1.0.0",
@@ -1387,7 +1388,8 @@ def aggregate(
                         "package_version": "0.6.0",
                         "source_commit": "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9",
                         "transport": "loopback HTTP MCP",
-                        "tool_inventory_retention": "recorded in raw service preflight",
+                        "tool_count": service_preflight["datahub_tool_count"],
+                        "tools": service_preflight["datahub_tool_names"],
                     },
                 },
                 "conditions": conditions,
@@ -1416,6 +1418,16 @@ def aggregate(
                     for run in runs
                 ),
                 "overwrite_policy": "runner refuses an existing attempt directory",
+                "host_preflight_failures": {
+                    "count": len(host_failures),
+                    "classification": (
+                        "retained launcher failures before model execution; excluded "
+                        "from the two-attempt model aggregate"
+                    ),
+                    "digests": [
+                        digest_bytes(path.read_bytes()) for path in host_failures
+                    ],
+                },
             },
             "limitations": [
                 (
