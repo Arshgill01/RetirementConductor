@@ -1,0 +1,30 @@
+{
+  "schema_version": "retirement-gauntlet-oracle/v2",
+  "oracle_version": "2.0.0",
+  "cases": [
+    {"id": "enum-clean-isolated", "decision": "READY_TO_RETIRE", "codes": []},
+    {"id": "enum-alias-macro-ready", "decision": "READY_TO_RETIRE", "codes": []},
+    {"id": "enum-incomplete-page", "decision": "BLOCKED", "codes": ["EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"]},
+    {"id": "enum-ambiguous-identity", "decision": "BLOCKED", "codes": ["IDENTITY_NOT_FOUND"]},
+    {"id": "enum-unmapped-category", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_FAILED"]},
+    {"id": "enum-null-inflation", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_FAILED"]},
+    {"id": "enum-owner-drift", "decision": "BLOCKED", "codes": ["POLICY_INPUT_DRIFT"]},
+    {"id": "enum-owner-review", "decision": "REVIEW_REQUIRED", "codes": ["REVIEW_OWNER_CONFIRMATION"]},
+    {"id": "measure-gross-net-clean", "decision": "READY_TO_RETIRE", "codes": []},
+    {"id": "measure-aggregate-drift", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_FAILED"]},
+    {"id": "measure-duplicate-key", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_FAILED"]},
+    {"id": "measure-stale-evidence", "decision": "BLOCKED", "codes": ["EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"]},
+    {"id": "measure-permission-partial", "decision": "BLOCKED", "codes": ["EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"]},
+    {"id": "measure-grain-review", "decision": "REVIEW_REQUIRED", "codes": ["REVIEW_AGGREGATE_GRAIN"]},
+    {"id": "measure-disappearing-edge", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_STALE"]},
+    {"id": "measure-generated-review", "decision": "REVIEW_REQUIRED", "codes": ["REVIEW_GENERATED_SQL"]},
+    {"id": "temporal-clean-utc", "decision": "READY_TO_RETIRE", "codes": []},
+    {"id": "temporal-timezone-drift", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_FAILED"]},
+    {"id": "temporal-stale-native-data", "decision": "BLOCKED", "codes": ["EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"]},
+    {"id": "temporal-late-consumer", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_OPAQUE", "RECONCILIATION_NEW_CONSUMER"]},
+    {"id": "temporal-semantics-review", "decision": "REVIEW_REQUIRED", "codes": ["REVIEW_TEMPORAL_SEMANTICS"]},
+    {"id": "temporal-source-drift", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_STALE"]},
+    {"id": "temporal-recreated-identity", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_STALE"]},
+    {"id": "temporal-cycle-table-only", "decision": "UNSAFE", "codes": ["POLICY_CONSUMER_OPAQUE"]}
+  ]
+}

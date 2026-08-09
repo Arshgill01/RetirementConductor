@@ -1,0 +1,6 @@
+{
+  "schema_version": "retirement-gauntlet-freeze/v1",
+  "frozen_before_product_execution": true,
+  "corpus_sha256": "b0e9c23f0d206e4a8925da578ce6e4fdf315a47b057198b2cc1c4e1fcf9ff03c",
+  "oracle_sha256": "ff67034d1b4b6eff85c80dcb94f499dd8e293a5f353f39fbb1ea2ec2a9facdb0"
+}

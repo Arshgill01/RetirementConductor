@@ -1,0 +1,248 @@
+{
+  "schema_version": "retirement-gauntlet-corpus/v2",
+  "generator_version": "2.0.0",
+  "seed": 20260809,
+  "scale_profiles": {"small": 1, "medium": 10},
+  "cases": [
+    {
+      "id": "enum-clean-isolated",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": [],
+      "repository_shape": "nested_cte",
+      "tiers": ["durable", "datahub", "git_dbt", "sequence"],
+      "consumer_ids": ["dbt:enum-clean-isolated:primary", "spark:enum-clean-isolated:1", "tableau:enum-clean-isolated:2", "sql:enum-clean-isolated:3", "airflow:enum-clean-isolated:4"]
+    },
+    {
+      "id": "enum-alias-macro-ready",
+      "family": "enum",
+      "legacy_field": "legacy_state",
+      "replacement_field": "normalized_state",
+      "faults": [],
+      "repository_shape": "alias_and_macro",
+      "tiers": ["durable", "datahub", "git_dbt", "sequence"],
+      "consumer_ids": ["dbt:enum-alias-macro-ready:primary", "spark:enum-alias-macro-ready:1", "tableau:enum-alias-macro-ready:2", "sql:enum-alias-macro-ready:3", "airflow:enum-alias-macro-ready:4"]
+    },
+    {
+      "id": "enum-incomplete-page",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": ["incomplete_pagination"],
+      "repository_shape": "quoted_identifier",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:enum-incomplete-page:primary", "spark:enum-incomplete-page:1", "tableau:enum-incomplete-page:2", "sql:enum-incomplete-page:3", "airflow:enum-incomplete-page:4"]
+    },
+    {
+      "id": "enum-ambiguous-identity",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": ["duplicate_display_name", "distinct_platform_instance"],
+      "repository_shape": "duplicate_native_identity",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:enum-ambiguous-identity:primary", "spark:enum-ambiguous-identity:1", "tableau:enum-ambiguous-identity:2", "sql:enum-ambiguous-identity:3", "airflow:enum-ambiguous-identity:4"]
+    },
+    {
+      "id": "enum-unmapped-category",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": ["unmapped_category"],
+      "repository_shape": "literal_and_comment_decoys",
+      "tiers": ["durable", "datahub", "git_dbt"],
+      "consumer_ids": ["dbt:enum-unmapped-category:primary", "spark:enum-unmapped-category:1", "tableau:enum-unmapped-category:2", "sql:enum-unmapped-category:3", "airflow:enum-unmapped-category:4"]
+    },
+    {
+      "id": "enum-null-inflation",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": ["null_inflation"],
+      "repository_shape": "select_star_uncertainty",
+      "tiers": ["durable", "datahub", "git_dbt"],
+      "consumer_ids": ["dbt:enum-null-inflation:primary", "spark:enum-null-inflation:1", "tableau:enum-null-inflation:2", "sql:enum-null-inflation:3", "airflow:enum-null-inflation:4"]
+    },
+    {
+      "id": "enum-owner-drift",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": ["owner_drift_after_validation"],
+      "repository_shape": "ephemeral_model",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:enum-owner-drift:primary", "spark:enum-owner-drift:1", "tableau:enum-owner-drift:2", "sql:enum-owner-drift:3", "airflow:enum-owner-drift:4"]
+    },
+    {
+      "id": "enum-owner-review",
+      "family": "enum",
+      "legacy_field": "legacy_status",
+      "replacement_field": "order_status",
+      "faults": ["bounded_owner_review"],
+      "repository_shape": "quoted_identifier",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:enum-owner-review:primary", "spark:enum-owner-review:1", "tableau:enum-owner-review:2", "sql:enum-owner-review:3", "airflow:enum-owner-review:4"]
+    },
+    {
+      "id": "measure-gross-net-clean",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": [],
+      "repository_shape": "aggregate_cte",
+      "tiers": ["durable", "datahub", "git_dbt", "sequence"],
+      "consumer_ids": ["dbt:measure-gross-net-clean:primary", "spark:measure-gross-net-clean:1", "tableau:measure-gross-net-clean:2", "sql:measure-gross-net-clean:3", "airflow:measure-gross-net-clean:4"]
+    },
+    {
+      "id": "measure-aggregate-drift",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["aggregate_drift"],
+      "repository_shape": "nested_cte",
+      "tiers": ["durable", "datahub", "git_dbt"],
+      "consumer_ids": ["dbt:measure-aggregate-drift:primary", "spark:measure-aggregate-drift:1", "tableau:measure-aggregate-drift:2", "sql:measure-aggregate-drift:3", "airflow:measure-aggregate-drift:4"]
+    },
+    {
+      "id": "measure-duplicate-key",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["duplicate_key"],
+      "repository_shape": "generated_sql",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:measure-duplicate-key:primary", "spark:measure-duplicate-key:1", "tableau:measure-duplicate-key:2", "sql:measure-duplicate-key:3", "airflow:measure-duplicate-key:4"]
+    },
+    {
+      "id": "measure-stale-evidence",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["stale_evidence"],
+      "repository_shape": "macro",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:measure-stale-evidence:primary", "spark:measure-stale-evidence:1", "tableau:measure-stale-evidence:2", "sql:measure-stale-evidence:3", "airflow:measure-stale-evidence:4"]
+    },
+    {
+      "id": "measure-permission-partial",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["permission_partial"],
+      "repository_shape": "alias",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:measure-permission-partial:primary", "spark:measure-permission-partial:1", "tableau:measure-permission-partial:2", "sql:measure-permission-partial:3", "airflow:measure-permission-partial:4"]
+    },
+    {
+      "id": "measure-grain-review",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["aggregate_grain_review"],
+      "repository_shape": "aggregate_cte",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:measure-grain-review:primary", "spark:measure-grain-review:1", "tableau:measure-grain-review:2", "sql:measure-grain-review:3", "airflow:measure-grain-review:4"]
+    },
+    {
+      "id": "measure-disappearing-edge",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["disappearing_lineage_without_receipt"],
+      "repository_shape": "select_star_uncertainty",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:measure-disappearing-edge:primary", "spark:measure-disappearing-edge:1", "tableau:measure-disappearing-edge:2", "sql:measure-disappearing-edge:3", "airflow:measure-disappearing-edge:4"]
+    },
+    {
+      "id": "measure-generated-review",
+      "family": "measure",
+      "legacy_field": "gross_amount",
+      "replacement_field": "net_amount",
+      "faults": ["generated_sql_review"],
+      "repository_shape": "generated_sql",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:measure-generated-review:primary", "spark:measure-generated-review:1", "tableau:measure-generated-review:2", "sql:measure-generated-review:3", "airflow:measure-generated-review:4"]
+    },
+    {
+      "id": "temporal-clean-utc",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": [],
+      "repository_shape": "timezone_macro",
+      "tiers": ["durable", "datahub", "git_dbt", "sequence"],
+      "consumer_ids": ["dbt:temporal-clean-utc:primary", "spark:temporal-clean-utc:1", "tableau:temporal-clean-utc:2", "sql:temporal-clean-utc:3", "airflow:temporal-clean-utc:4"]
+    },
+    {
+      "id": "temporal-timezone-drift",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": ["timezone_boundary_drift"],
+      "repository_shape": "timezone_macro",
+      "tiers": ["durable", "git_dbt"],
+      "consumer_ids": ["dbt:temporal-timezone-drift:primary", "spark:temporal-timezone-drift:1", "tableau:temporal-timezone-drift:2", "sql:temporal-timezone-drift:3", "airflow:temporal-timezone-drift:4"]
+    },
+    {
+      "id": "temporal-stale-native-data",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": ["fresh_metadata_stale_native_data"],
+      "repository_shape": "nested_cte",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:temporal-stale-native-data:primary", "spark:temporal-stale-native-data:1", "tableau:temporal-stale-native-data:2", "sql:temporal-stale-native-data:3", "airflow:temporal-stale-native-data:4"]
+    },
+    {
+      "id": "temporal-late-consumer",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": ["late_consumer_after_lease"],
+      "repository_shape": "ephemeral_model",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:temporal-late-consumer:primary", "spark:temporal-late-consumer:1", "tableau:temporal-late-consumer:2", "sql:temporal-late-consumer:3", "airflow:temporal-late-consumer:4", "spark:temporal-late-consumer:late"]
+    },
+    {
+      "id": "temporal-semantics-review",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "processing_time_utc",
+      "faults": ["event_vs_processing_time_review"],
+      "repository_shape": "quoted_identifier",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:temporal-semantics-review:primary", "spark:temporal-semantics-review:1", "tableau:temporal-semantics-review:2", "sql:temporal-semantics-review:3", "airflow:temporal-semantics-review:4"]
+    },
+    {
+      "id": "temporal-source-drift",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": ["source_drift_after_plan"],
+      "repository_shape": "literal_and_comment_decoys",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:temporal-source-drift:primary", "spark:temporal-source-drift:1", "tableau:temporal-source-drift:2", "sql:temporal-source-drift:3", "airflow:temporal-source-drift:4"]
+    },
+    {
+      "id": "temporal-recreated-identity",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": ["deleted_recreated_native_identity"],
+      "repository_shape": "alias",
+      "tiers": ["durable"],
+      "consumer_ids": ["dbt:temporal-recreated-identity:primary", "spark:temporal-recreated-identity:1", "tableau:temporal-recreated-identity:2", "sql:temporal-recreated-identity:3", "airflow:temporal-recreated-identity:4"]
+    },
+    {
+      "id": "temporal-cycle-table-only",
+      "family": "temporal",
+      "legacy_field": "event_time_utc",
+      "replacement_field": "canonical_event_time",
+      "faults": ["harmless_cycle", "table_only_lineage", "malicious_metadata_text"],
+      "repository_shape": "prompt_injection_comment",
+      "tiers": ["durable", "datahub"],
+      "consumer_ids": ["dbt:temporal-cycle-table-only:primary", "spark:temporal-cycle-table-only:1", "tableau:temporal-cycle-table-only:2", "sql:temporal-cycle-table-only:3", "airflow:temporal-cycle-table-only:4"]
+    }
+  ]
+}
