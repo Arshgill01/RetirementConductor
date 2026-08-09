@@ -1443,6 +1443,15 @@ def resolve_replacement_evidence(
             RefusalCode.SPEC_REPLACEMENT_INCOMPATIBLE,
             "dbt source metadata did not expose both field identities.",
         )
+    dataset = datahub_resolution.get("dataset")
+    if dataset is not None and (
+        not isinstance(dataset, Mapping) or not isinstance(dataset.get("urn"), str)
+    ):
+        raise Refusal(
+            RefusalCode.EVIDENCE_REQUIRED_SOURCE_INCOMPLETE,
+            "Fresh DataHub replacement evidence omitted the source dataset identity.",
+        )
+    dataset_urn = str(dataset["urn"]) if isinstance(dataset, Mapping) else None
     target_datahub = datahub_resolution["target_field"]
     replacement_datahub = datahub_resolution["replacement_field"]
     datahub_types = {
@@ -1471,11 +1480,13 @@ def resolve_replacement_evidence(
         )
     return {
         "target": {
+            **({"datahub_urn": dataset_urn} if dataset_urn is not None else {}),
             "field": target_field,
             "datahub_native_type": target_datahub["nativeDataType"],
             "dbt_data_type": column_evidence[target_field]["data_type"],
         },
         "replacement": {
+            **({"datahub_urn": dataset_urn} if dataset_urn is not None else {}),
             "field": replacement_field,
             "datahub_native_type": replacement_datahub["nativeDataType"],
             "dbt_data_type": column_evidence[replacement_field]["data_type"],

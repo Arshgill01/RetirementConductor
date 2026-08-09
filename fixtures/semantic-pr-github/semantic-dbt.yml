@@ -1,0 +1,38 @@
+name: semantic-dbt
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-dbt:
+    name: semantic-dbt
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78
+        with:
+          version: "0.11.28"
+      - name: Install pinned dbt validator
+        run: uv tool install --python 3.11 dbt-core==1.12.0 --with dbt-duckdb==1.10.1
+      - name: Record validator versions
+        run: |
+          dbt --version
+          printf '%s\n' 'retirement-conductor-validator-versions: {"dbt-core":"1.12.0","dbt-duckdb":"1.10.1"}' | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Create disposable DuckDB directory
+        run: |
+          sudo mkdir -p /workspace/.runtime
+          sudo chown "$USER" /workspace/.runtime
+      - name: Parse
+        run: dbt parse --no-partial-parse
+      - name: Seed
+        run: dbt seed --full-refresh
+      - name: Build
+        run: dbt build
+      - name: Test
+        run: dbt test

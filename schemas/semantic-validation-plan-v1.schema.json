@@ -1,0 +1,468 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/semantic-validation-plan-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/digest"
+        },
+        "evidence_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "datahub_schema",
+            "datahub_lineage",
+            "datahub_quality",
+            "datahub_query",
+            "datahub_glossary",
+            "repository_manifest"
+          ]
+        },
+        "observed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "source_version": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "subject": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "kind",
+        "subject",
+        "source_version",
+        "observed_at",
+        "artifact_id"
+      ],
+      "type": "object"
+    },
+    "fieldIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "datahub_urn": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "field": {
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "type": "string"
+        },
+        "native_type": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_ ()]{0,63}$",
+          "type": "string"
+        }
+      },
+      "required": ["datahub_urn", "field", "native_type"],
+      "type": "object"
+    },
+    "parameters": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {},
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "max_increase_fraction": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "max_replacement_null_rate": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": ["max_increase_fraction", "max_replacement_null_rate"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "accepted_values": {
+              "items": {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 64,
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "minimum_coverage": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": ["accepted_values", "minimum_coverage"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "mapping": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "replacement_value": {
+                    "maxLength": 128,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "target_value": {
+                    "maxLength": 128,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": ["target_value", "replacement_value"],
+                "type": "object"
+              },
+              "maxItems": 64,
+              "minItems": 1,
+              "type": "array"
+            },
+            "required_coverage": {
+              "const": 1,
+              "type": "number"
+            }
+          },
+          "required": ["mapping", "required_coverage"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "minimum_coverage": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": ["minimum_coverage"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "key_columns": {
+              "items": {
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$",
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "minimum_coverage": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": ["key_columns", "minimum_coverage"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "group_by": {
+              "items": {
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$",
+                "type": "string"
+              },
+              "maxItems": 8,
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "measure": {
+              "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$",
+              "type": "string"
+            },
+            "time_grain": {
+              "enum": ["day", "week", "month"]
+            },
+            "tolerance_fraction": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          },
+          "required": ["measure", "group_by", "time_grain", "tolerance_fraction"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "maximum_age_seconds": {
+              "maximum": 86400,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": ["maximum_age_seconds"],
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          "evidence_references": {
+            "items": {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          },
+          "expected_validator": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "const": "dbt-core"
+              },
+              "version_family": {
+                "const": "1.x"
+              }
+            },
+            "required": ["name", "version_family"],
+            "type": "object"
+          },
+          "limitations": {
+            "items": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 16,
+            "type": "array"
+          },
+          "parameters": {
+            "$ref": "#/$defs/parameters"
+          },
+          "primitive": {
+            "enum": [
+              "type_compatibility",
+              "null_rate_bound",
+              "accepted_values_coverage",
+              "category_mapping_completeness",
+              "row_count_coverage",
+              "keyed_row_coverage",
+              "aggregate_parity",
+              "exact_model_output_parity",
+              "freshness_window"
+            ]
+          },
+          "rationale": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "check_id",
+          "primitive",
+          "parameters",
+          "evidence_references",
+          "rationale",
+          "expected_validator",
+          "limitations"
+        ],
+        "type": "object"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "type": "array"
+    },
+    "consumer": {
+      "additionalProperties": false,
+      "properties": {
+        "datahub_urn": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "dbt_unique_id": {
+          "pattern": "^(?:model|seed|snapshot)\\.[A-Za-z0-9_]+\\.[A-Za-z0-9_]+$",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "native_target": {
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$",
+          "type": "string"
+        },
+        "repository_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": ["id", "datahub_urn", "repository_id", "dbt_unique_id", "native_target"],
+      "type": "object"
+    },
+    "evidence_snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "references": {
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": ["digest", "captured_at", "expires_at", "references"],
+      "type": "object"
+    },
+    "generated_targets": {
+      "items": {
+        "pattern": "^tests/retirement_conductor/[a-z0-9_-]+/[0-9]{2}_[a-z0-9_-]+\\.sql$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "git_plan_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "materializations": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          "content_digest": {
+            "$ref": "#/$defs/digest"
+          },
+          "path": {
+            "pattern": "^tests/retirement_conductor/[a-z0-9_-]+/[0-9]{2}_[a-z0-9_-]+\\.sql$",
+            "type": "string"
+          },
+          "template_version": {
+            "const": "semantic-dbt-v1"
+          }
+        },
+        "required": ["check_id", "path", "content_digest", "template_version"],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "plan_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "proposal_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "repository": {
+      "additionalProperties": false,
+      "properties": {
+        "base_branch": {
+          "pattern": "^[A-Za-z0-9._/-]+$",
+          "type": "string"
+        },
+        "comparison_relation": {
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "type": "string"
+        },
+        "consumer_relation": {
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/digest"
+        },
+        "source_version": {
+          "minLength": 7,
+          "type": "string"
+        },
+        "target_branch": {
+          "pattern": "^[A-Za-z0-9._/-]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "base_branch",
+        "source_version",
+        "target_branch",
+        "comparison_relation",
+        "consumer_relation"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "target": {
+      "$ref": "#/$defs/fieldIdentity"
+    },
+    "replacement": {
+      "$ref": "#/$defs/fieldIdentity"
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "git_plan_digest",
+    "repository",
+    "target",
+    "replacement",
+    "consumer",
+    "evidence_snapshot",
+    "checks",
+    "materializations",
+    "generated_targets",
+    "proposal_digest",
+    "plan_digest"
+  ],
+  "title": "Semantic validation plan v1",
+  "type": "object"
+}
