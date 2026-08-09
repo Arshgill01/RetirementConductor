@@ -13,6 +13,9 @@ import time
 import urllib.parse
 import urllib.request
 from collections import Counter
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -36,9 +39,10 @@ from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.watch import WatchWorkflow, retirement_lease_status
 from scripts.reference_services import (
-    DATAHUB_GMS_URL,
-    DATAHUB_MCP_URL,
-    reference_services,
+    MCP_COMMIT,
+    MCP_PACKAGE_VERSION,
+    MCP_TOOL_ROOT,
+    prepare_mcp_tool,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,6 +56,9 @@ DBT_EXECUTABLE = (
     ROOT / ".retirement-conductor" / "tools" / "dbt-duckdb-1.10.1" / "bin" / "dbt"
 )
 PRODUCER_MARKER = ROOT / "fixtures" / "producer" / "retire-order-status.json"
+GAUNTLET_GMS_URL = "http://127.0.0.1:18081"
+GAUNTLET_MCP_URL = "http://127.0.0.1:8001/mcp"
+GAUNTLET_MCP_HEALTH_URL = "http://127.0.0.1:8001/health"
 
 
 def utc_now() -> str:
@@ -150,6 +157,154 @@ def run_command(arguments: list[str], *, cwd: Path = ROOT, timeout: int = 600) -
             f"{result.stderr[-1200:]}"
         )
     return result.stdout
+
+
+def healthy_json(url: str) -> dict[str, Any] | None:
+    try:
+        with urllib.request.urlopen(url, timeout=3) as response:
+            value = json.load(response)
+    except (OSError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+@dataclass(frozen=True)
+class GauntletServices:
+    compose_file: Path
+    compose_env: Path
+    mcp_process: subprocess.Popen[str]
+    gms_container_id: str
+
+    def evidence(self) -> dict[str, Any]:
+        image = run_command(
+            [
+                "docker",
+                "inspect",
+                "--format",
+                "{{json .Config.Image}}",
+                self.gms_container_id,
+            ]
+        ).strip()
+        health = run_command(
+            [
+                "docker",
+                "inspect",
+                "--format",
+                "{{json .State.Health.Status}}",
+                self.gms_container_id,
+            ]
+        ).strip()
+        return {
+            "datahub_core": {
+                "configured_image": json.loads(image),
+                "container_health": json.loads(health),
+                "published_port": "127.0.0.1:18081",
+                "scope": "isolated loopback disposable Core",
+            },
+            "mcp_server": {
+                "health": healthy_json(GAUNTLET_MCP_HEALTH_URL),
+                "listener": "127.0.0.1:8001",
+                "source_commit": MCP_COMMIT,
+                "package_version": MCP_PACKAGE_VERSION,
+                "scope": "isolated loopback disposable Core",
+            },
+        }
+
+
+@contextmanager
+def isolated_reference_services(run_root: Path) -> Iterator[GauntletServices]:
+    """Run a distinct Compose project and MCP listener for this worktree."""
+
+    source_compose = (
+        ROOT / "deploy" / "datahub" / "docker-compose.core.yml"
+    ).read_text(encoding="utf-8")
+    compose_file = run_root / "docker-compose.gauntlet.yml"
+    compose_file.write_text(
+        source_compose.replace(
+            "name: retirement-conductor-datahub",
+            "name: retirement-conductor-gauntlet-v2-80fb",
+            1,
+        ).replace("127.0.0.1:18080:8080", "127.0.0.1:18081:8080", 1),
+        encoding="utf-8",
+    )
+    compose_env = run_root / "core.env"
+    run_command(
+        [
+            "uv",
+            "run",
+            "python",
+            "scripts/datahub_core_env.py",
+            "--output",
+            str(compose_env),
+        ]
+    )
+    compose = [
+        "docker",
+        "compose",
+        "--env-file",
+        str(compose_env),
+        "-f",
+        str(compose_file),
+    ]
+    process: subprocess.Popen[str] | None = None
+    try:
+        run_command([*compose, "up", "-d", "--wait", "datahub-gms"], timeout=600)
+        container_id = run_command([*compose, "ps", "-q", "datahub-gms"]).strip()
+        require(bool(container_id), "isolated DataHub GMS container was absent")
+        executable = prepare_mcp_tool()
+        environment = {
+            **os.environ,
+            "DATAHUB_GMS_URL": GAUNTLET_GMS_URL,
+            "DATAHUB_SKIP_CONFIG": "true",
+            "DATAHUB_MCP_DISABLE_DEFAULT_VIEW": "true",
+            "TOOLS_IS_MUTATION_ENABLED": "true",
+            "SAVE_DOCUMENT_TOOL_ENABLED": "true",
+            "DATAHUB_TELEMETRY_ENABLED": "false",
+            "DO_NOT_TRACK": "1",
+            "FASTMCP_PORT": "8001",
+        }
+        log_file = (run_root / "mcp-server.log").open("w", encoding="utf-8")
+        process = subprocess.Popen(
+            [str(executable), "--transport", "http"],
+            cwd=MCP_TOOL_ROOT,
+            env=environment,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            text=True,
+            start_new_session=True,
+        )
+        log_file.close()
+        for _ in range(90):
+            if healthy_json(GAUNTLET_MCP_HEALTH_URL) is not None:
+                break
+            if process.poll() is not None:
+                raise RuntimeError("isolated pinned MCP server exited before health")
+            time.sleep(1)
+        else:
+            raise RuntimeError("isolated pinned MCP server did not become healthy")
+        yield GauntletServices(
+            compose_file=compose_file,
+            compose_env=compose_env,
+            mcp_process=process,
+            gms_container_id=container_id,
+        )
+    finally:
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=15)
+        subprocess.run(
+            [*compose, "down", "--volumes"],
+            cwd=ROOT,
+            env={**os.environ, "LC_ALL": "C.UTF-8"},
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=300,
+        )
 
 
 def git(repository: Path, *arguments: str) -> str:
@@ -442,7 +597,7 @@ def approval(
 
 def aspect_digest(urn: str, aspect_name: str) -> str:
     quoted = urllib.parse.quote(urn, safe="")
-    url = f"{DATAHUB_GMS_URL}/aspects/{quoted}?aspect={aspect_name}&version=0"
+    url = f"{GAUNTLET_GMS_URL}/aspects/{quoted}?aspect={aspect_name}&version=0"
     with urllib.request.urlopen(url, timeout=20) as response:
         value = json.load(response)
     require(
@@ -518,7 +673,7 @@ def seed_datahub(run_root: Path, *, add_late: str | None = None) -> dict[str, An
         "--corpus",
         str(CORPUS_PATH),
         "--gms-url",
-        DATAHUB_GMS_URL,
+        GAUNTLET_GMS_URL,
         "--receipt",
         str(receipt),
     ]
@@ -534,7 +689,7 @@ def refresh_receipt(run_root: Path, seed_receipt: dict[str, Any], case_id: str) 
         {
             "schema_version": "1.0.0",
             "mode": "live",
-            "gms_url": DATAHUB_GMS_URL,
+            "gms_url": GAUNTLET_GMS_URL,
             "ingestion_run_id": f"gauntlet-{case_id}-{seed_receipt['observed_at']}",
             "source_updated_at": seed_receipt["observed_at"],
             "target_urn": entry["target_urn"],
@@ -812,8 +967,8 @@ def execute(
     environment = {
         **os.environ,
         "DATAHUB_ENVIRONMENT": "PROD",
-        "DATAHUB_GMS_URL": DATAHUB_GMS_URL,
-        "DATAHUB_MCP_URL": DATAHUB_MCP_URL,
+        "DATAHUB_GMS_URL": GAUNTLET_GMS_URL,
+        "DATAHUB_MCP_URL": GAUNTLET_MCP_URL,
         "DATAHUB_PAGE_SIZE": "2",
         "DATAHUB_PRINCIPAL": "gauntlet-local",
     }
@@ -824,7 +979,7 @@ def execute(
     false_ready = 0
     unexpected_closures = 0
     producer_actions = 0
-    with reference_services() as services:
+    with isolated_reference_services(run_root) as services:
         seed_receipt = seed_datahub(run_root)
         boundary = datahub_boundary(environment)
         with CampaignStore(store_path, writer_id=f"gauntlet-{token}") as store:
