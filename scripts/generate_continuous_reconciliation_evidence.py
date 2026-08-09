@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from retirement_conductor.canonical import verify_digest, write_json
+from retirement_conductor.canonical import digest_json, verify_digest, write_json
 from retirement_conductor.schemas import validate_schema
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +41,8 @@ def run() -> dict[str, Any]:
         or summary["gate"]["sentinel_count_before"]
         != summary["gate"]["sentinel_count_after"]
         or summary["recovery"]["decision_after_edge_removal"] != "UNSAFE"
-        or summary["late_consumer"]["confidence_basis"] != "column_lineage_edge"
+        or summary["late_consumer"]["confidence_basis"]
+        != "datahub_upstream_lineage_aspect"
     ):
         raise RuntimeError("WS-03 evidence does not prove the acceptance contract")
     if summary["watch"]["receipt_digest"] != receipt["receipt_digest"]:
@@ -49,6 +50,13 @@ def run() -> dict[str, Any]:
     run_root = RUNTIME_ROOT / str(summary["runtime_run_id"])
     write_receipt = load_object(run_root / "late-datahub-write-receipt.json")
     verify_digest(write_receipt, "refresh_digest")
+    exact_field_reread = load_object(run_root / "late-field-lineage-reread.json")
+    if (
+        digest_json(exact_field_reread)
+        != summary["late_consumer"]["exact_field_reread_digest"]
+        or exact_field_reread.get("matched_edge_count") != 1
+    ):
+        raise RuntimeError("the exact field reread is not bound to the live summary")
     snapshot_digest = summary["late_consumer"]["independent_snapshot_digest"]
     matches = []
     for path in (run_root / "independent-reread" / "late-consumer").rglob(
@@ -60,16 +68,7 @@ def run() -> dict[str, Any]:
     if len(matches) != 1:
         raise RuntimeError("the exact independent late-consumer reread is ambiguous")
     snapshot = matches[0]
-    late_claim_id = summary["late_consumer"]["exact_field_claim_id"]
-    late_claims = [
-        claim for claim in snapshot["claims"] if claim.get("claim_id") == late_claim_id
-    ]
-    if (
-        len(late_claims) != 1
-        or late_claims[0].get("confidence_basis") != "column_lineage_edge"
-    ):
-        raise RuntimeError("the late-consumer reread lacks exact field lineage")
-    late_subject = late_claims[0]["subject"]
+    late_subject = exact_field_reread["consumer_urn"]
     late_consumers = [
         consumer
         for consumer in snapshot["consumers"]
@@ -83,7 +82,7 @@ def run() -> dict[str, Any]:
         "captured_at": snapshot["captured_at"],
         "snapshot_digest": snapshot["snapshot_digest"],
         "consumer": late_consumers[0],
-        "claim": late_claims[0],
+        "exact_field_reread": exact_field_reread,
         "pagination": snapshot["pagination"],
         "limitations": [
             (

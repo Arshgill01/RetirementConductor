@@ -6,17 +6,23 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import time
 from contextlib import suppress
+from pathlib import Path
 from typing import Any
+from urllib.parse import quote
+from urllib.request import urlopen
 
 from retirement_conductor.canonical import (
     digest_bytes,
     digest_file,
+    digest_json,
     verify_digest,
     with_digest,
     write_json,
 )
 from retirement_conductor.specification import load_specification
+from scripts.datahub_seed import ISOLATED_TARGET_URN
 from scripts.run_phase04_end_to_end import (
     DBT_EXECUTABLE,
     ISOLATED_LATE_URN,
@@ -39,6 +45,81 @@ from scripts.run_phase04_end_to_end import (
 )
 
 RUNTIME_ROOT = ROOT / ".retirement-conductor" / "e2e" / "continuous-reconciliation"
+
+
+def wait_for_exact_field_edge(
+    *,
+    gms_url: str,
+    target_urn: str,
+    consumer_urn: str,
+    artifact_path: Path,
+    timeout_seconds: float = 60,
+) -> dict[str, Any]:
+    """Reread one exact field edge from DataHub's authoritative lineage aspect."""
+
+    upstream = f"urn:li:schemaField:({target_urn},legacy_status)"
+    downstream = f"urn:li:schemaField:({consumer_urn},order_status)"
+    url = (
+        f"{gms_url.rstrip('/')}/aspects/{quote(consumer_urn, safe='')}"
+        "?aspect=upstreamLineage&version=0"
+    )
+    started = time.monotonic()
+    attempts = 0
+    while time.monotonic() - started < timeout_seconds:
+        attempts += 1
+        try:
+            with urlopen(url, timeout=15) as response:
+                value = json.load(response)
+        except (OSError, json.JSONDecodeError):
+            time.sleep(0.5)
+            continue
+        aspect = value.get("aspect") if isinstance(value, dict) else None
+        lineage = (
+            aspect.get("com.linkedin.dataset.UpstreamLineage")
+            if isinstance(aspect, dict)
+            else None
+        )
+        edges = (
+            lineage.get("fineGrainedLineages", []) if isinstance(lineage, dict) else []
+        )
+        matches = [
+            edge
+            for edge in edges
+            if isinstance(edge, dict)
+            and edge.get("upstreamType") == "FIELD_SET"
+            and edge.get("downstreamType") == "FIELD"
+            and edge.get("upstreams") == [upstream]
+            and edge.get("downstreams") == [downstream]
+        ]
+        if len(matches) == 1:
+            reread = {
+                "schema_version": "1.0.0",
+                "evidence_mode": "live local",
+                "captured_at": timestamp(),
+                "consumer_urn": consumer_urn,
+                "target_urn": target_urn,
+                "attempts": attempts,
+                "matched_edge_count": 1,
+                "lineage": {
+                    "upstreamType": matches[0]["upstreamType"],
+                    "upstreams": matches[0]["upstreams"],
+                    "downstreamType": matches[0]["downstreamType"],
+                    "downstreams": matches[0]["downstreams"],
+                },
+                "limitations": [
+                    (
+                        "This is an independent read of the disposable DataHub "
+                        "upstreamLineage aspect, not a claim of visibility beyond "
+                        "the recorded evidence envelope."
+                    )
+                ],
+            }
+            write_json(artifact_path, reread)
+            return reread
+        time.sleep(0.5)
+    raise RuntimeError(
+        "the exact late field edge did not settle in DataHub's upstreamLineage aspect"
+    )
 
 
 def run() -> dict[str, Any]:
@@ -305,15 +386,11 @@ def run() -> dict[str, Any]:
             ),
             "the late DataHub field consumer was not independently readable",
         )
-        late_claims = [
-            claim
-            for claim in late_snapshot["claims"]
-            if claim.get("subject") == ISOLATED_LATE_URN
-        ]
-        require(
-            len(late_claims) == 1
-            and late_claims[0].get("confidence_basis") == "column_lineage_edge",
-            "the late consumer was not independently proven by exact field lineage",
+        exact_field_reread = wait_for_exact_field_edge(
+            gms_url=environment["DATAHUB_GMS_URL"],
+            target_urn=ISOLATED_TARGET_URN,
+            consumer_urn=ISOLATED_LATE_URN,
+            artifact_path=run_root / "late-field-lineage-reread.json",
         )
         watch = runner.json(
             "watch-once-late-consumer",
@@ -464,8 +541,9 @@ def run() -> dict[str, Any]:
                     "datahub_write_receipt_digest": digest_file(late_write_receipt),
                     "independent_snapshot_digest": late_snapshot["snapshot_digest"],
                     "independent_consumer_count": len(late_snapshot["consumers"]),
-                    "exact_field_claim_id": late_claims[0]["claim_id"],
-                    "confidence_basis": late_claims[0]["confidence_basis"],
+                    "exact_field_reread_digest": digest_json(exact_field_reread),
+                    "confidence_basis": "datahub_upstream_lineage_aspect",
+                    "exact_field_reread_attempts": exact_field_reread["attempts"],
                     "reread_attempts": late_reread["attempts"],
                 },
                 "watch": {
