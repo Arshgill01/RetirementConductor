@@ -15,11 +15,18 @@ dependencies = [
   "PyYAML>=6.0.2,<7",
 ]
 
+[project.optional-dependencies]
+agent = [
+  "mcp>=2.0.0,<3",
+]
+
 [project.scripts]
 retirement-conductor = "retirement_conductor.cli:main"
+retirement-conductor-mcp = "retirement_conductor.agent_mcp:main"
 
 [dependency-groups]
 dev = [
+  "mcp>=2.0.0,<3",
   "mypy>=1.14,<2",
   "pytest>=9.0.3,<10",
   "ruff>=0.9,<1",
@@ -31,6 +38,7 @@ dev = [
 packages = ["src/retirement_conductor"]
 
 [tool.hatch.build.targets.wheel.force-include]
+".agents/skills/retirement-conductor-agent" = "retirement_conductor/agent_skill"
 "fixtures/repository" = "retirement_conductor/fixture_data/repository"
 "fixtures/scenarios" = "retirement_conductor/fixture_data/scenarios"
 "fixtures/data-quality" = "retirement_conductor/data_quality_data"
@@ -41,6 +49,7 @@ packages = ["src/retirement_conductor"]
 [tool.hatch.build.targets.sdist]
 include = [
   "/.env.example",
+  "/.agents/skills/retirement-conductor-agent",
   "/CONTRIBUTING.md",
   "/LICENSE",
   "/README.md",
@@ -50,6 +59,7 @@ include = [
   "/docs/EVALUATION.md",
   "/docs/MAINTENANCE.md",
   "/docs/runbooks/DEPLOYMENT.md",
+  "/docs/runbooks/AGENT_DEMO.md",
   "/docs/runbooks/RECOVERY.md",
   "/docs/templates/OPERATOR_OBSERVATION.md",
   "/fixtures/repository",

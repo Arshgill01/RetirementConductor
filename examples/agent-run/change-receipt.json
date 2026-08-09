@@ -1,0 +1,17 @@
+{
+  "apply_digest": "sha256:7112ec4a04c4541beb0bc4dcd18cf5c523a46d151bf619abb4623cc9a4a7a5cd",
+  "campaign_id": "ret-orders-agent-1930ce52b2a7",
+  "consumer_id": "dh-477310f4b3971b7103d3",
+  "example_digest": "sha256:d5b4761df4acfb07deb0420c38e0b89f3470b16885a4ae18a01e84d59e7c60c3",
+  "migration_commit": "138e644e72b9637b7baba9627f7d56dac7bc893c",
+  "plan_digest": "sha256:5ad1502b87870f7356b64d9862c06605cb7f647af6af0cb6a5ad5b6d97a607a1",
+  "presentation_name": "Change Receipt",
+  "receipt_digest": "sha256:ff136144f091149f3bae1e1d4867e9bf365908f299e17ffaffa522e6e2d2a810",
+  "receipt_id": "git-dbt-dh-477310f4b3971b7103d3-138e644e72b9",
+  "schema_version": "1.0.0",
+  "source_version": "289df4ddb3a67050d5dad0c9ef2ce9682f8f30b3",
+  "target": "models/orders_isolated_model.sql",
+  "validation_digest": "sha256:b5c6c48f600a131a50f023ca1ff0bd154aa9267be514d2e472cd8cb720f90fbb",
+  "validation_result": "PASSED",
+  "validator": "dbt parse + seed + build + test on DuckDB"
+}

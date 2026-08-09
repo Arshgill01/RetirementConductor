@@ -1,0 +1,7 @@
+diff --git a/models/orders_isolated_model.sql b/models/orders_isolated_model.sql
+index 1847124..8e12885 100644
+--- a/models/orders_isolated_model.sql
++++ b/models/orders_isolated_model.sql
+@@ -13 +13 @@ select
+-    legacy_status as normalized_status,
++    order_status as normalized_status,

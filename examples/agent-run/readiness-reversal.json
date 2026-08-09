@@ -1,0 +1,19 @@
+{
+  "added_consumer_ids": [
+    "dh-c474f47154490fd18206"
+  ],
+  "blocker_codes": [
+    "POLICY_CONSUMER_OPAQUE",
+    "RECONCILIATION_NEW_CONSUMER"
+  ],
+  "campaign_id": "ret-orders-agent-1930ce52b2a7",
+  "decision_after": "UNSAFE",
+  "decision_before": "READY_TO_RETIRE",
+  "example_digest": "sha256:f517a04681992f2bd82379366a6216c0dcd4a38d4b9487173a1fd8fba91a39cd",
+  "manifest_digest": "sha256:8ebd40d18d8ae14ab71d7b2bd0463f8a1571c63541091dca27b05eeb1ffe2b33",
+  "new_retirement_lease_prepared": false,
+  "next_action": "Migrate or resolve every unsafe consumer, validate in its native system, then reconcile again.",
+  "publication_readback_verified": true,
+  "schema_version": "1.0.0",
+  "second_gate_called": false
+}

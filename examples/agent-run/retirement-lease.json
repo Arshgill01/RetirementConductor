@@ -1,0 +1,16 @@
+{
+  "campaign_id": "ret-orders-agent-1930ce52b2a7",
+  "change_receipt_digest": "sha256:ff136144f091149f3bae1e1d4867e9bf365908f299e17ffaffa522e6e2d2a810",
+  "example_digest": "sha256:3712a8f5ff78e9ffc1a2d5cb2012b1adc8ce42616a1fa8a228f56e3c9a5fcc25",
+  "expires_at": "2026-08-09T11:40:12.920059Z",
+  "gate_receipt_digest": "sha256:c7b29ec4d4f1bb2dc2075dec2ecbda4486e297027eb440876ae86e5de5a74961",
+  "gate_result": "EXECUTED",
+  "lease_digest": "sha256:849f95e9104a4f2982ffd8fdb7ed1326518e3ecf2735c2cbfc522cb87e891e4d",
+  "manifest_digest": "sha256:1e081b9b81efebc14502a5258f6096e6e0b8328dff8c96d2f228c42edb04ed83",
+  "migration_plan_digest": "sha256:5ad1502b87870f7356b64d9862c06605cb7f647af6af0cb6a5ad5b6d97a607a1",
+  "outcome_digest": "sha256:0208ca57d245563b5d458269e6b483489d8a6d61717580aa6ef17da89b07df1e",
+  "prepared_at": "2026-08-09T11:30:40.495587Z",
+  "presentation_name": "Retirement Lease",
+  "producer_action": "write_public_safe_sentinel",
+  "schema_version": "1.0.0"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retirement Conductor Agent"
+  short_description: "Safely replace and retire DataHub fields"
+  default_prompt: "Use $retirement-conductor-agent to assess and safely migrate a legacy data field without bypassing native validation."

@@ -1,0 +1,168 @@
+{
+  "acceptance": {
+    "agent_shell_call_count": 0,
+    "authorized_target_set_preserved": true,
+    "bounded_ready_gate_executed": true,
+    "datahub_summary_published_and_read_back": true,
+    "dbt_native_validation_passed": true,
+    "exact_migration_planned": true,
+    "fresh_reconciliation_completed": true,
+    "human_authorization_pause_observed": true,
+    "late_consumer_reversed_readiness": true,
+    "model_inspected_datahub": true
+  },
+  "actor_boundary": {
+    "authorization": "external operator command directed by the user",
+    "authorization_mode": "explicit user-directed outer orchestration",
+    "deterministic_authority": "campaign policy, preconditions, native validators, and producer gate",
+    "independent_operator_evidence": "NOT_RUN",
+    "product_agent": "Codex using the Retirement Conductor skill and MCP tools"
+  },
+  "agent_full_run_digest": "sha256:0c30d644f08245c7647ccc7513819cc489e443b17c64383794338933df2e01fe",
+  "artifact_classification": "public-safe full model execution evidence",
+  "behavior_commit": "de5f8958d35c53a36ff557c193d5a793ac9870ff",
+  "campaign_id": "ret-orders-agent-1930ce52b2a7",
+  "change_receipt": {
+    "contract_name": "consumer receipt",
+    "presentation_name": "Change Receipt",
+    "receipt_digest": "sha256:ff136144f091149f3bae1e1d4867e9bf365908f299e17ffaffa522e6e2d2a810",
+    "receipt_id": "git-dbt-dh-477310f4b3971b7103d3-138e644e72b9",
+    "result": "PASSED",
+    "terminal_disposition": "VALIDATED",
+    "validation_digest": "sha256:b5c6c48f600a131a50f023ca1ff0bd154aa9267be514d2e472cd8cb720f90fbb",
+    "validator": "dbt parse + seed + build + test on DuckDB"
+  },
+  "evidence_mode": "live-local DataHub and disposable Git/dbt",
+  "human_authorization_pause": {
+    "agent_authorization_tool_exposed": false,
+    "authorized_targets": [
+      "models/orders_isolated_model.sql"
+    ],
+    "plan_digest": "sha256:5ad1502b87870f7356b64d9862c06605cb7f647af6af0cb6a5ad5b6d97a607a1",
+    "required_environment_keys": [
+      "GIT_DBT_ALLOW_APPLY",
+      "GIT_DBT_DBT_EXECUTABLE",
+      "GIT_DBT_PRINCIPAL",
+      "GIT_DBT_REPOSITORY_ROOT"
+    ],
+    "result": "HUMAN_AUTHORIZATION_REQUIRED"
+  },
+  "late_consumer_reversal": {
+    "added_consumer_ids": [
+      "dh-c474f47154490fd18206"
+    ],
+    "blocker_codes": [
+      "POLICY_CONSUMER_OPAQUE",
+      "RECONCILIATION_NEW_CONSUMER"
+    ],
+    "consumer_count_after": 2,
+    "consumer_count_before": 1,
+    "decision_after": "UNSAFE",
+    "decision_before": "READY_TO_RETIRE",
+    "manifest_digest": "sha256:8ebd40d18d8ae14ab71d7b2bd0463f8a1571c63541091dca27b05eeb1ffe2b33",
+    "new_retirement_lease_prepared": false,
+    "next_action": "Migrate or resolve every unsafe consumer, validate in its native system, then reconcile again.",
+    "publication_readback_verified": true,
+    "second_gate_called": false
+  },
+  "limitations": [
+    "This was a user-directed author/operator run, not independent operator evidence.",
+    "All source systems were disposable local services; no production data system was mutated.",
+    "The producer action was a harmless local sentinel, not warehouse column deletion.",
+    "Readiness is valid only within the recorded DataHub and Git/dbt evidence envelope.",
+    "Raw model traces remain ignored because they contain private runtime details."
+  ],
+  "migration": {
+    "actual_targets": [
+      "models/orders_isolated_model.sql"
+    ],
+    "after_token": "order_status",
+    "apply_digest": "sha256:7112ec4a04c4541beb0bc4dcd18cf5c523a46d151bf619abb4623cc9a4a7a5cd",
+    "before_token": "legacy_status",
+    "branch": "codex/ret-orders-agent-1930ce52b2a7",
+    "migration_commit": "138e644e72b9637b7baba9627f7d56dac7bc893c",
+    "plan_digest": "sha256:5ad1502b87870f7356b64d9862c06605cb7f647af6af0cb6a5ad5b6d97a607a1",
+    "source_version": "289df4ddb3a67050d5dad0c9ef2ce9682f8f30b3",
+    "target": "models/orders_isolated_model.sql"
+  },
+  "observed_at": "2026-08-09T11:32:34.866311Z",
+  "ready_path": {
+    "gate_receipt_digest": "sha256:c7b29ec4d4f1bb2dc2075dec2ecbda4486e297027eb440876ae86e5de5a74961",
+    "gate_result": "EXECUTED",
+    "membership": {
+      "added": [],
+      "disappeared_without_closure": [],
+      "unchanged": [
+        "dh-477310f4b3971b7103d3"
+      ]
+    },
+    "outcome_digest": "sha256:0208ca57d245563b5d458269e6b483489d8a6d61717580aa6ef17da89b07df1e",
+    "producer_action": "public-safe local sentinel only",
+    "publication_readback_verified": true,
+    "ready_manifest_digest": "sha256:1e081b9b81efebc14502a5258f6096e6e0b8328dff8c96d2f228c42edb04ed83",
+    "retirement_lease_digest": "sha256:849f95e9104a4f2982ffd8fdb7ed1326518e3ecf2735c2cbfc522cb87e891e4d"
+  },
+  "schema_version": "1.0.0",
+  "trace": {
+    "apply_and_validate": {
+      "raw_trace_digest": "sha256:49d585d78e3f205eb2b207a1a59bb495b4b62de8752b5ba41a6d10febe42f0ba",
+      "raw_trace_retention": "ignored local evidence; not published",
+      "shell_call_count": 0,
+      "tool_order": [
+        "retirement_conductor.apply_git_dbt_migration",
+        "retirement_conductor.validate_git_dbt_migration",
+        "retirement_conductor.inspect_retirement_campaign"
+      ]
+    },
+    "authorization_pause": {
+      "raw_trace_digest": "sha256:071d38ac436b9db85769037e4c830362bd0f8b38abd234edeeb699dd121e6df2",
+      "raw_trace_retention": "ignored local evidence; not published",
+      "shell_call_count": 0,
+      "tool_order": [
+        "retirement_conductor.get_human_authorization_instructions"
+      ]
+    },
+    "inspect_and_plan": {
+      "raw_trace_digest": "sha256:fe623b1c2947e2ffc5320ef33beaaa687819180150a7920cba1bf7ccb412a258",
+      "raw_trace_retention": "ignored local evidence; not published",
+      "shell_call_count": 0,
+      "tool_order": [
+        "retirement_conductor.list_mcp_resources",
+        "codex.list_mcp_resources",
+        "datahub.search",
+        "datahub.list_schema_fields",
+        "datahub.get_lineage",
+        "retirement_conductor.create_retirement_campaign",
+        "retirement_conductor.inventory_retirement_consumers",
+        "retirement_conductor.preflight_git_dbt_consumer",
+        "retirement_conductor.plan_git_dbt_migration"
+      ]
+    },
+    "late_consumer_reversal": {
+      "raw_trace_digest": "sha256:265d7c57de586de4ddc04bd57b00ff939c20543c9aca01796bd7c4e6fe038bab",
+      "raw_trace_retention": "ignored local evidence; not published",
+      "shell_call_count": 0,
+      "tool_order": [
+        "datahub.get_lineage",
+        "retirement_conductor.reconcile_retirement_campaign",
+        "retirement_conductor.publish_retirement_summary",
+        "retirement_conductor.verify_retirement_summary",
+        "retirement_conductor.inspect_retirement_campaign",
+        "retirement_conductor.explain_retirement_campaign"
+      ]
+    },
+    "reconcile_and_execute": {
+      "raw_trace_digest": "sha256:3f40d80eb2e548250f36068afd7e3caac7ed2a586b8b5e83e8c69022521abdc3",
+      "raw_trace_retention": "ignored local evidence; not published",
+      "shell_call_count": 0,
+      "tool_order": [
+        "retirement_conductor.reconcile_retirement_campaign",
+        "retirement_conductor.publish_retirement_summary",
+        "retirement_conductor.verify_retirement_summary",
+        "retirement_conductor.inspect_retirement_campaign",
+        "retirement_conductor.prepare_producer_retirement_plan",
+        "retirement_conductor.execute_retirement_gate"
+      ]
+    }
+  }
+}

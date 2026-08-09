@@ -1616,3 +1616,116 @@ rendering; plan confirmation tests; public and secret scans; final desktop and
 mobile screenshots; keyboard focus order and disclosure activation; measured
 overflow and external requests; axe results; structural/contrast results; and
 generated whitespace via staged `git diff --check`.
+
+## Post-goal MCP agent orchestration evidence
+
+Tested behavior commit: `0d70db9b8cb3dbfde0b1c56ca7b37d31800db605`
+
+Mode: ephemeral Codex model trace over retained Phase 04 live-local campaign
+state. This is orchestration and explanation evidence; it is not a fresh
+DataHub read, production operation, or independent customer observation.
+
+Commands:
+
+```text
+make agent-acceptance
+uv run python scripts/check_public_artifacts.py
+uv run python scripts/check_secrets.py
+```
+
+Observed result: Codex CLI 0.145.0 called exactly the two declared Retirement
+Conductor MCP tools, `explain_retirement_campaign` and
+`inspect_retirement_campaign`, with no shell calls and no unexpected MCP
+server. The existing deterministic campaign view reported two consumers: one
+closed and natively validated, one open and opaque. The decision remained
+`UNSAFE` with `POLICY_CONSUMER_OPAQUE` and
+`RECONCILIATION_NEW_CONSUMER`. The model plainly refused producer retirement,
+did not attempt the producer action, and named native migration or verified
+closure plus fresh equivalent reconciliation as the safe recovery.
+
+The promoted artifact is
+`artifacts/public/agent/agent-acceptance.json`, with evidence digest
+`sha256:af4450ba95e35260bef253d7133a23c543573fda99283440367d32db2ef6596b`.
+The ignored raw JSONL trace is bound by digest
+`sha256:79caa77e86d4f6bc4077152a2405250f10a3ce75517e5770381bfc6e9dbfaef5`
+but is not public because model traces can contain private runtime details.
+The artifact binds back to retained live Phase 04 evidence digest
+`sha256:5824e1d9440f01ce07d5531c3e1b586bdbfd79545a4d801b0c34b434a395762e`
+and late manifest digest
+`sha256:21b394099faa38d10eedd6da6a63142793722b1f79d414bdd5ea78ae4c8428ff`.
+
+Failure observation: the first acceptance attempt called the same safe tool
+set in the opposite order from the runner's initial hard-coded expectation.
+The runner refused to promote evidence. Commit `0d70db9` corrected the test to
+require each exact tool once while preserving observed order; it did not relax
+the no-shell, no-extra-server, blocker, decision, or producer-action checks.
+
+Upstream evidence: the same audit reproduced a DataHub MCP lineage pagination
+defect and opened issue #194 plus PR #195 with a failing-before/passing-after
+test. It also implemented existing issue #192 as PR #196 with a regression
+test for deployment-gate diagnostics. Both PRs are external and open; this
+ledger does not claim merge, maintainer acceptance, or live CI success.
+
+What this proves: a real model can discover and use the bounded MCP interface,
+read the canonical decision, explain a late-consumer reversal, and stop before
+a producer action. The model remains outside authorization and policy.
+
+What this does not prove: a fresh source inventory, model determinism,
+production safety, independent adoption, automatic closure of the Spark
+consumer, or any mutation beyond the established disposable Git/dbt and
+sentinel evidence.
+
+## Post-goal complete MCP agent execution evidence
+
+Tested behavior commit: `de5f8958d35c53a36ff557c193d5a793ac9870ff`
+
+Mode: five-stage Codex product-agent run over disposable live-local DataHub
+Core and a disposable Git/dbt repository. The user explicitly directed the
+separate outer operator to record the exact authorization returned by the
+product agent. This is author/operator evidence, not independent RC-018
+evidence.
+
+Observed result: the product agent inspected DataHub, created campaign
+`ret-orders-agent-1930ce52b2a7`, inventoried one exact dbt consumer, and planned
+only `models/orders_isolated_model.sql` at plan digest
+`sha256:5ad1502b87870f7356b64d9862c06605cb7f647af6af0cb6a5ad5b6d97a607a1`.
+It stopped at `HUMAN_AUTHORIZATION_REQUIRED`; no authorization-recording MCP
+tool existed. After the external operator action, the agent applied the exact
+target and dbt parse, seed, build, test, and semantic-equivalence validation
+passed. The Change Receipt digest was
+`sha256:ff136144f091149f3bae1e1d4867e9bf365908f299e17ffaffa522e6e2d2a810`.
+
+Fresh equivalent reconciliation found the one unchanged validated consumer.
+The campaign summary was published to DataHub and verified on first read-back.
+The ready manifest digest was
+`sha256:1e081b9b81efebc14502a5258f6096e6e0b8328dff8c96d2f228c42edb04ed83`;
+the Retirement Lease digest was
+`sha256:849f95e9104a4f2982ffd8fdb7ed1326518e3ecf2735c2cbfc522cb87e891e4d`.
+The gate executed one harmless public-safe sentinel with gate receipt
+`sha256:c7b29ec4d4f1bb2dc2075dec2ecbda4486e297027eb440876ae86e5de5a74961`.
+
+After a late Spark consumer was injected, cache-bypassed complete paging found
+two of two consumers. The existing dbt consumer remained closed and validated;
+the new consumer was open and `OPAQUE`. The same campaign reversed to `UNSAFE`
+with `POLICY_CONSUMER_OPAQUE` and `RECONCILIATION_NEW_CONSUMER`. The unsafe
+manifest digest was
+`sha256:8ebd40d18d8ae14ab71d7b2bd0463f8a1571c63541091dca27b05eeb1ffe2b33`.
+The revoked summary was published and verified on first read-back. The agent
+prepared no second Retirement Lease and did not call the gate again.
+
+The public bundle is `artifacts/public/agent/full-run.json` and
+`examples/agent-run/`. The aggregate evidence digest is
+`sha256:0c30d644f08245c7647ccc7513819cc489e443b17c64383794338933df2e01fe`.
+It binds five ignored raw traces by digest, asserts the exact MCP tool order,
+and records zero product-agent shell calls. The concrete examples include the
+one-line dbt patch, Change Receipt, Retirement Lease, readiness reversal, and
+public-safe stage responses.
+
+What this proves: the product agent performs the complete bounded operational
+loop, takes a real reviewable Git/dbt action after external authorization,
+accepts native evidence, publishes/read-backs durable DataHub state, executes a
+manifest-bound gate, and revokes readiness when fresh evidence changes.
+
+What this does not prove: independent adoption, production warehouse deletion,
+universal discovery, a second automated native adapter, or safety beyond the
+recorded evidence envelope.
