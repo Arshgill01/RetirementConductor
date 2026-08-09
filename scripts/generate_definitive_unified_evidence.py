@@ -22,6 +22,7 @@ DEFAULT_OUTPUT = ROOT / "artifacts/public/definitive-unified-run/index.json"
 EXPECTED_PUBLIC_REPOSITORY = (
     "https://github.com/Arshgill01/retirement-conductor-definitive-acceptance"
 )
+EXPECTED_PRODUCT_VERSION = "0.2.0"
 INITIAL_PROMPT = (
     "Use $retirement-conductor-agent. Replace "
     "retirement_conductor.analytics.commerce.orders_isolated.legacy_status with "
@@ -281,6 +282,9 @@ def generate(latest_path: Path, output_path: Path) -> dict[str, Any]:
     receipt = load_object(
         run_root / "artifacts" / campaign_id / "git-dbt" / "receipt.json"
     )
+    adapter = as_object(receipt.get("adapter"), "missing Git/dbt adapter identity")
+    require(adapter.get("name") == "git-dbt", "unexpected native adapter")
+    require(adapter.get("version") == "0.1.0", "unexpected Git/dbt adapter version")
     migration_commit = str(receipt["apply"]["native_change_ids"][0])
     require(pr["headRefOid"] == migration_commit, "PR head differs from applied commit")
     require(
@@ -533,7 +537,8 @@ def generate(latest_path: Path, output_path: Path) -> dict[str, Any]:
                     "bounded_language_preserved": True,
                 },
                 "versions": {
-                    "retirement_conductor": "0.1.0",
+                    "retirement_conductor": EXPECTED_PRODUCT_VERSION,
+                    "git_dbt_adapter": str(adapter["version"]),
                     "datahub_core": "1.6.0",
                     "datahub_mcp": {"version": "0.6.0", "commit": "9a6946daa7d3"},
                     "dbt_core": "1.12.0",

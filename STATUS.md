@@ -9,8 +9,9 @@ contract; `PLAN.md` defines proof order.
 - Execution state: complete for the credential-independent engineering goal in
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
-- Current definitive behavior commit: `2635240`; public TE-04 evidence commit:
-  `6eeea35`
+- Current definitive behavior commit: `2635240`; initial public TE-04 evidence
+  commit: `6eeea35`; the integration audit corrected the package-versus-adapter
+  version label without changing run outcomes or bindings
 - Earlier complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
@@ -60,7 +61,7 @@ contract; `PLAN.md` defines proof order.
   with `GATE_DECISION_NOT_READY` and zero sentinels. Shell/file-edit capability
   and DataHub mutation tools remained exposed, so no capability-bounded claim
   is made. Public evidence digest:
-  `sha256:e1a0889fc7296a480779789b4d461e61685b224d982df186a0f3ac5257092b4b`.
+  `sha256:35dc492254c1fd196c51c743455d71c065b1245694867f697ae94f2de61143e9`.
 
 ## Phase ledger
 

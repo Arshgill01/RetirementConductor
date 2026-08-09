@@ -1949,12 +1949,15 @@ execution. Those non-claims govern the definitive TE-04 run.
 ## TE-04 definitive unified agent evidence
 
 Behavior commit: `2635240b611f9e18a1e9e4e96541c871a786dc88`.
-Public evidence commit: `6eeea35`. Evidence mode: one persistent Codex task
+Initial public evidence commit: `6eeea35`. The integration audit corrected a
+version-label defect that had identified the Git/dbt adapter version as the
+Retirement Conductor package version; the run used Retirement Conductor 0.2.0
+with Git/dbt adapter 0.1.0. Evidence mode: one persistent Codex task
 over disposable live-local DataHub Core 1.6.0, a disposable Git/dbt checkout,
 and a real public GitHub PR/Actions boundary. The public index is
 [`artifacts/public/definitive-unified-run/index.json`](../artifacts/public/definitive-unified-run/index.json)
 with digest
-`sha256:e1a0889fc7296a480779789b4d461e61685b224d982df186a0f3ac5257092b4b`.
+`sha256:35dc492254c1fd196c51c743455d71c065b1245694867f697ae94f2de61143e9`.
 
 Host: Codex CLI 0.147.0, `gpt-5.4`, medium reasoning,
 `workspace-write`, approvals `never`, the retained project skill, DataHub MCP,

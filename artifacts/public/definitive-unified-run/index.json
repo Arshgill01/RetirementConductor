@@ -174,7 +174,7 @@
       "status": "ENABLED_AND_USED"
     }
   },
-  "index_digest": "sha256:e1a0889fc7296a480779789b4d461e61685b224d982df186a0f3ac5257092b4b",
+  "index_digest": "sha256:35dc492254c1fd196c51c743455d71c065b1245694867f697ae94f2de61143e9",
   "limitations": [
     "The result is bounded by the recorded disposable evidence envelope and is not universal safety.",
     "The author and user-directed outer operator are the same evaluation operator; no independent operator study was run.",
@@ -372,7 +372,8 @@
     },
     "dbt_core": "1.12.0",
     "dbt_duckdb": "1.10.1",
+    "git_dbt_adapter": "0.1.0",
     "github_actions_run": "31325110949",
-    "retirement_conductor": "0.1.0"
+    "retirement_conductor": "0.2.0"
   }
 }

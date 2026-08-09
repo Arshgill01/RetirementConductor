@@ -40,6 +40,8 @@ def test_definitive_run_binds_public_validation_and_lease_reversal() -> None:
         "result": "REFUSED",
         "sentinel_count": 0,
     }
+    assert evidence["versions"]["retirement_conductor"] == "0.2.0"
+    assert evidence["versions"]["git_dbt_adapter"] == "0.1.0"
 
 
 def test_definitive_run_discloses_actual_capability_surface() -> None:
