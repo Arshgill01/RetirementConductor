@@ -1,0 +1,31 @@
+pipeline_name: ws04-superset-native-executor
+source:
+  type: superset
+  config:
+    connect_uri: ${SUPERSET_URL}
+    username: ${SUPERSET_USERNAME}
+    password: ${SUPERSET_PASSWORD}
+    provider: db
+    platform_instance: ws04-feasibility
+    env: PROD
+    ingest_charts: true
+    ingest_dashboards: true
+    ingest_datasets: true
+    max_threads: 1
+    timeout: 30
+    database_pattern:
+      allow: ["^WS04 Orders PostgreSQL$"]
+    dataset_pattern:
+      allow: ["^ws04_status_by_order$"]
+    chart_pattern:
+      allow: ["^WS04 Order Status Detail$"]
+    dashboard_pattern:
+      allow: ["^WS04 Legacy Status Feasibility$"]
+    stateful_ingestion:
+      enabled: true
+      remove_stale_metadata: true
+      fail_safe_threshold: 100
+sink:
+  type: datahub-rest
+  config:
+    server: ${DATAHUB_GMS_URL}

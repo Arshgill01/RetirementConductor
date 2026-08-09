@@ -1,0 +1,91 @@
+{
+  "bindings": {
+    "actual_targets": [
+      "superset:dataset:1:c40f2cbb-6683-4278-b6df-790a5ac1611d"
+    ],
+    "apply_digest": "sha256:24b7fd6523daa3129682f80aa69f0983141a69d613dc5350aa7744ab57e27b8d",
+    "compensation_digest": "sha256:c31b9ce1d7f93c2647f085248e7b04f1865e0ed7271a6fae5896601210873878",
+    "plan_digest": "sha256:ccac87ec817d055160cb15fe74dcc452f33db522f193addaded7bf2f87eae208",
+    "receipt_digest": "sha256:bd2e35e7153d17fd47c24256ff6c1c1c12d342b619b011385b1f57618d7a22e0",
+    "reconciliation_digest": "sha256:311441d0f95b6e53ff0f61c2a58a24e63969ee424812a8fa8cc4e5f991a44917",
+    "validation_digest": "sha256:df537c96111e3f954abc38be475d594ce818ca48dc49af9014c1954e3d443624"
+  },
+  "credential_values_recorded": false,
+  "evidence_mode": "live-local disposable Superset and DataHub Core",
+  "fault_matrix": {
+    "ambiguous_identity": "PASSED",
+    "api_timeout_outcome_unknown": "PASSED",
+    "compensation_owner_conflict": "PASSED",
+    "connector_failure": "PASSED",
+    "execution_failure": "PASSED",
+    "mode": "live probes where named; otherwise focused deterministic fault injection",
+    "semantic_drift": "PASSED",
+    "source_drift": "PASSED",
+    "table_only_evidence": "PASSED"
+  },
+  "feasibility_gate": {
+    "authentication_mode": "database login to JWT bearer plus CSRF",
+    "datahub_connector_version": "1.6.0",
+    "field_authority": "direct native virtual-dataset SQL",
+    "forced_native_execution": true,
+    "fresh_connector_reread": true,
+    "mapping_basis": "connector datasource_id URL plus native UUID reread",
+    "native_identity": {
+      "chart_id": 1,
+      "chart_uuid": "c0a07c3b-2f73-4066-8f5e-6d9eb99f8a11",
+      "database_id": 1,
+      "database_uuid": "441e07c8-4a86-4931-a2d0-5324cce29ddc",
+      "dataset_id": 1,
+      "dataset_uuid": "c40f2cbb-6683-4278-b6df-790a5ac1611d"
+    },
+    "result": "PASSED",
+    "safe_compensation": true,
+    "semantic_output_parity": true,
+    "single_allowlisted_object": true,
+    "superset_version": "6.0.0"
+  },
+  "focused_tests": {
+    "command": "uv run pytest -q tests/unit/test_superset.py tests/unit/test_superset_config.py",
+    "evidence_mode": "focused deterministic fault-injection tests",
+    "result": "PASSED",
+    "summary": "17 passed in 0.28s"
+  },
+  "limitations": [
+    "DataHub documents Superset table-level lineage as the supported capability",
+    "Any observed parser-derived field edge is corroboration for this SQL only",
+    "Direct native dataset SQL is authoritative for exact field dependence",
+    "The connector contract documents table-level lineage.",
+    "The observed parser-derived field edge is retained only as corroboration for this SQL.",
+    "This workstream does not register Superset with the campaign gate or alter the Git/dbt-only product claim."
+  ],
+  "live_refusals": {
+    "approval_missing": "AUTH_APPROVAL_MISSING",
+    "connector_failure": "SOURCE_CONFIGURATION_FAILED",
+    "connector_failure_preserved_receipt": true,
+    "owner_change": "COMPENSATION_CONFLICT",
+    "owner_change_preserved": true,
+    "source_drift": "SOURCE_FINGERPRINT_MISMATCH",
+    "source_drift_preserved": true
+  },
+  "restored_native_state": {
+    "execution": {
+      "columns": [
+        "id",
+        "status",
+        "amount"
+      ],
+      "error_present": false,
+      "is_cached": null,
+      "query_digest": "sha256:f64104655b270e35fbabee2f6b530fdeebc38f65d0e17ac5941e3c5a1ad64943",
+      "result": "PASSED",
+      "returned_rows": 6,
+      "rowcount": 6,
+      "safe_output_digest": "sha256:267611543bda20468e64befcdcbdd00724a37e76550ea4779de210cbf8a1f6aa",
+      "sql_rowcount": 6,
+      "status": "success"
+    },
+    "fingerprint": "sha256:5980bab73a4a96b7412bc8e56c1a661509ccd873f4e6757e928175f8b9160f36"
+  },
+  "schema_version": "1.0.0",
+  "workstream": "WS-04 Superset native executor"
+}

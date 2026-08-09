@@ -1,0 +1,61 @@
+name: retirement-conductor-superset
+
+services:
+  db:
+    image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: ${SUPERSET_POSTGRES_PASSWORD:?runtime password required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superset -d superset"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - metadata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+
+  init:
+    image: apache/superset:6.0.0-dev@sha256:100af35c5a3c96384d4092ae4bd7fffb8c23d361e9a5a8b94312c50426aa1144
+    depends_on:
+      db:
+        condition: service_healthy
+    environment: &superset_environment
+      SUPERSET_CONFIG_PATH: /app/superset_config.py
+      SUPERSET_METADATA_DATABASE_URI: ${SUPERSET_METADATA_DATABASE_URI:?runtime URI required}
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:?runtime key required}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:?runtime password required}
+    command:
+      - /bin/bash
+      - -eu
+      - -c
+      - |
+        superset db upgrade
+        if ! superset fab list-users | grep -q 'admin@superset.local'; then
+          superset fab create-admin --username admin --firstname Superset \
+            --lastname Admin --email admin@superset.local \
+            --password "$$SUPERSET_ADMIN_PASSWORD"
+        fi
+        superset init
+    volumes:
+      - ./superset_config.py:/app/superset_config.py:ro
+
+  app:
+    image: apache/superset:6.0.0-dev@sha256:100af35c5a3c96384d4092ae4bd7fffb8c23d361e9a5a8b94312c50426aa1144
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    environment: *superset_environment
+    command:
+      - /bin/bash
+      - -eu
+      - -c
+      - superset run -h 0.0.0.0 -p 8088 --with-threads
+    ports:
+      - 127.0.0.1:18088:8088
+    volumes:
+      - ./superset_config.py:/app/superset_config.py:ro
+
+volumes:
+  metadata:

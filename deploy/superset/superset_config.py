@@ -1,0 +1,9 @@
+"""Configuration for the disposable WS-04 Superset only."""
+
+import os
+
+SQLALCHEMY_DATABASE_URI = os.environ["SUPERSET_METADATA_DATABASE_URI"]
+SECRET_KEY = os.environ["SUPERSET_SECRET_KEY"]
+WTF_CSRF_ENABLED = True
+ROW_LIMIT = 1000
+SUPERSET_WEBSERVER_TIMEOUT = 60
