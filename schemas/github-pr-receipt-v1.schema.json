@@ -1,0 +1,205 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/github-pr-receipt-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "pathList": {
+      "items": {
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "ci": {
+      "additionalProperties": false,
+      "properties": {
+        "check_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "check_run_id": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "conclusion": {
+          "const": "success"
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "validator_versions": {
+          "additionalProperties": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9.+_-]{0,63}$",
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "workflow_run_id": {
+          "minimum": 1,
+          "type": ["integer", "null"]
+        }
+      },
+      "required": [
+        "head_sha",
+        "check_name",
+        "check_run_id",
+        "workflow_run_id",
+        "conclusion",
+        "completed_at",
+        "validator_versions"
+      ],
+      "type": "object"
+    },
+    "commit": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_files": {
+          "$ref": "#/$defs/pathList"
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "tree_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": ["head_sha", "tree_digest", "changed_files"],
+      "type": "object"
+    },
+    "plan_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "native_validation": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_ids": {
+          "items": {
+            "$ref": "#/$defs/digest"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "result": {
+          "const": "PASSED"
+        },
+        "validation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "validator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "validator_version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "head_sha",
+        "result",
+        "validator",
+        "validator_version",
+        "validation_digest",
+        "artifact_ids"
+      ],
+      "type": "object"
+    },
+    "pull_request": {
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "changed_files": {
+          "$ref": "#/$defs/pathList"
+        },
+        "head": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "state": {
+          "enum": ["OPEN", "CLOSED", "MERGED"]
+        },
+        "url": {
+          "pattern": "^https://github\\.com/",
+          "type": "string"
+        }
+      },
+      "required": ["number", "url", "base", "head", "head_sha", "state", "changed_files"],
+      "type": "object"
+    },
+    "receipt_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "remote": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "repository": {
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$",
+          "type": "string"
+        },
+        "url_identity": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": ["name", "repository", "url_identity"],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    }
+  },
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "plan_digest",
+    "remote",
+    "commit",
+    "native_validation",
+    "pull_request",
+    "ci",
+    "captured_at",
+    "receipt_digest"
+  ],
+  "title": "GitHub pull request and CI receipt v1",
+  "type": "object"
+}

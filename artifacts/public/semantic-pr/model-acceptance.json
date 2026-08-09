@@ -1,0 +1,66 @@
+{
+  "captured_at": "2026-08-09T11:54:41.650106Z",
+  "evidence_input_digest": "sha256:5d8e486fac331beb9c8697995f97cfd052642afa99595f5128548bb4a0ac9369",
+  "evidence_mode": "live",
+  "kernel_rejection_probe": {
+    "accepted": false,
+    "probe": "foreign_authority_field",
+    "refusal_code": "SPEC_SCHEMA_INVALID"
+  },
+  "kernel_result": {
+    "accepted": true,
+    "generated_targets": [
+      "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql"
+    ],
+    "plan_digest": "sha256:1695c11f887e153c547dd29e14be572988e8426414f22aa367cd38d49c40ac95"
+  },
+  "model_evidence_digest": "sha256:037381ff857590c73d24849ed45953fdc45e942e285652962505703f5ce3367d",
+  "model_identifier": "gemini-3-flash-preview",
+  "non_authority": {
+    "authorized": false,
+    "readiness_decided": false,
+    "validation_accepted": false
+  },
+  "prompt_template_digest": "sha256:44c3573964963307ccc3f97d564c61a61c0a8b160c8dc6771090dcf1efd6b42a",
+  "proposed_plan_digest": "sha256:3b523a3b044e13a208fa3f3c5b863d7541ea2e20acd4b69b2518cf08df4881b8",
+  "provider": "google-vertex-ai",
+  "requested_model": "gemini-3-flash-preview",
+  "response_id": "cmp4atm0DPLo8vUP567TmA8",
+  "response_ids": [
+    "bGp4avfjNoCe7PkPktH5yAI",
+    "cmp4atm0DPLo8vUP567TmA8"
+  ],
+  "schema_version": "1.0.0",
+  "token_usage": {
+    "candidatesTokenCount": 794,
+    "promptTokenCount": 5572,
+    "thoughtsTokenCount": 2248,
+    "totalTokenCount": 8614
+  },
+  "tool_call_trace": [
+    {
+      "arguments_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "result_digest": "sha256:6af1cb2c3c76e4b86e9baca019282773d21deabec34f39f76ed6ad75b47b8abb",
+      "sequence": 1,
+      "status": "READ",
+      "tool": "read_datahub_context",
+      "turn": 1
+    },
+    {
+      "arguments_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "result_digest": "sha256:cc8af08429ca242a8060625dfbde01ccb27574ab49fa4bab2fdef83d36bd86cb",
+      "sequence": 2,
+      "status": "READ",
+      "tool": "read_dbt_context",
+      "turn": 1
+    },
+    {
+      "arguments_digest": "sha256:1cb29d8b61154a9dd791ea1666827b349d27e058defa3eef06254d50c0644ccf",
+      "result_digest": "sha256:16162920b7fe3e4ad34610b13a23bf82d593a8c89a9c84e9526561d5071def65",
+      "sequence": 3,
+      "status": "SUBMITTED",
+      "tool": "submit_semantic_validation_proposal",
+      "turn": 2
+    }
+  ]
+}

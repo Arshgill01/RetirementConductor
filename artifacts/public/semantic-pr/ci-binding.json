@@ -1,0 +1,17 @@
+{
+  "campaign_id": "ret-orders-semantic-pr",
+  "captured_at": "2026-08-09T12:05:59.464090Z",
+  "check_name": "semantic-dbt",
+  "check_run_id": 93242055881,
+  "ci_binding_digest": "sha256:78cd088f80fd1ee3725418392448a813a6605ae0a46872c6e7efc0db890fcbb0",
+  "conclusion": "success",
+  "head_sha": "6c26af7c11d36a6d1cc55cba38701982c1e546e3",
+  "plan_digest": "sha256:1695c11f887e153c547dd29e14be572988e8426414f22aa367cd38d49c40ac95",
+  "pull_request_number": 1,
+  "schema_version": "1.0.0",
+  "validator_versions": {
+    "dbt-core": "1.12.0",
+    "dbt-duckdb": "1.10.1"
+  },
+  "workflow_run_id": 31312387660
+}

@@ -1,0 +1,11 @@
+{
+  "history_digest": "sha256:57c0666920782663cbd0dbab0c2c1d9333e3ac915ab7e80e9d907e84974ba59b",
+  "owner_change_preserved_in_history": true,
+  "owner_commit": "7ea31a59b5e74e9ddffa9e4bd23a1066f8427f9b",
+  "recovery_commit": "6c26af7c11d36a6d1cc55cba38701982c1e546e3",
+  "restored_changed_files": [
+    "models/orders_model_00.sql",
+    "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql"
+  ],
+  "schema_version": "1.0.0"
+}

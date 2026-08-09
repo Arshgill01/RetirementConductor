@@ -1,0 +1,229 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/semantic-model-acceptance-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "evidence_input_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "evidence_mode": {
+      "enum": ["live", "fixture"]
+    },
+    "kernel_result": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "accepted": {
+              "const": true
+            },
+            "generated_targets": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "plan_digest": {
+              "$ref": "#/$defs/digest"
+            }
+          },
+          "required": ["accepted", "plan_digest", "generated_targets"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "accepted": {
+              "const": false
+            },
+            "message": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "refusal_code": {
+              "pattern": "^[A-Z][A-Z0-9_]+$",
+              "type": "string"
+            }
+          },
+          "required": ["accepted", "refusal_code", "message"],
+          "type": "object"
+        }
+      ]
+    },
+    "kernel_rejection_probe": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted": {
+          "const": false
+        },
+        "probe": {
+          "enum": [
+            "foreign_authority_field",
+            "submitted_proposal"
+          ]
+        },
+        "refusal_code": {
+          "pattern": "^[A-Z][A-Z0-9_]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "accepted",
+        "probe",
+        "refusal_code"
+      ],
+      "type": "object"
+    },
+    "model_evidence_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "model_identifier": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "non_authority": {
+      "additionalProperties": false,
+      "properties": {
+        "authorized": {
+          "const": false
+        },
+        "readiness_decided": {
+          "const": false
+        },
+        "validation_accepted": {
+          "const": false
+        }
+      },
+      "required": ["authorized", "validation_accepted", "readiness_decided"],
+      "type": "object"
+    },
+    "prompt_template_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "proposed_plan_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "provider": {
+      "const": "google-vertex-ai"
+    },
+    "requested_model": {
+      "pattern": "^gemini-",
+      "type": "string"
+    },
+    "response_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "response_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "token_usage": {
+      "additionalProperties": false,
+      "properties": {
+        "cachedContentTokenCount": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "candidatesTokenCount": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "promptTokenCount": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "thoughtsTokenCount": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "totalTokenCount": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "tool_call_trace": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "arguments_digest": {
+            "$ref": "#/$defs/digest"
+          },
+          "result_digest": {
+            "$ref": "#/$defs/digest"
+          },
+          "sequence": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "status": {
+            "enum": ["READ", "REFUSED_BEFORE_KERNEL", "SUBMITTED"]
+          },
+          "tool": {
+            "enum": [
+              "read_datahub_context",
+              "read_dbt_context",
+              "submit_semantic_validation_proposal"
+            ]
+          },
+          "turn": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sequence",
+          "turn",
+          "tool",
+          "arguments_digest",
+          "result_digest",
+          "status"
+        ],
+        "type": "object"
+      },
+      "minItems": 3,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "evidence_mode",
+    "provider",
+    "requested_model",
+    "model_identifier",
+    "response_id",
+    "response_ids",
+    "prompt_template_digest",
+    "evidence_input_digest",
+    "proposed_plan_digest",
+    "kernel_result",
+    "kernel_rejection_probe",
+    "tool_call_trace",
+    "token_usage",
+    "non_authority",
+    "captured_at",
+    "model_evidence_digest"
+  ],
+  "title": "Semantic model acceptance evidence v1",
+  "type": "object"
+}

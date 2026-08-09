@@ -1,0 +1,130 @@
+{
+  "campaign_id": "ret-orders-semantic-pr",
+  "checks": [
+    {
+      "check_id": "type-compat-orders-status",
+      "evidence_references": [
+        "datahub-schema",
+        "dbt-manifest"
+      ],
+      "expected_validator": {
+        "name": "dbt-core",
+        "version_family": "1.x"
+      },
+      "limitations": [],
+      "parameters": {},
+      "primitive": "type_compatibility",
+      "rationale": "Ensure the replacement field order_status is type-compatible with the legacy_status field it replaces in the Snowflake commerce schema."
+    },
+    {
+      "check_id": "parity-orders-model-output",
+      "evidence_references": [
+        "datahub-schema",
+        "dbt-manifest"
+      ],
+      "expected_validator": {
+        "name": "dbt-core",
+        "version_family": "1.x"
+      },
+      "limitations": [],
+      "parameters": {},
+      "primitive": "exact_model_output_parity",
+      "rationale": "Verify that the consumer model orders_model_00 produces identical output after the field migration using the reviewed singular test."
+    }
+  ],
+  "consumer": {
+    "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_model_00,PROD)",
+    "dbt_unique_id": "model.retirement_conductor_consumer.orders_model_00",
+    "id": "dh-39b6c65bcbecb310e0cd",
+    "native_target": "models/orders_model_00.sql",
+    "repository_id": "analytics"
+  },
+  "evidence_snapshot": {
+    "captured_at": "2026-08-09T11:54:19.299017Z",
+    "digest": "sha256:9f3add34772c6e287fe17a042c1c6065ef22ae2f0681a2ceca11ad8c65541319",
+    "expires_at": "2026-08-09T12:54:19.299017Z",
+    "references": [
+      {
+        "artifact_id": "sha256:9e0c5cf374c87dc052937ed7c00db81a0b59ec2bb13278ecc3dca92cedaafbe4",
+        "evidence_id": "datahub-schema",
+        "kind": "datahub_schema",
+        "observed_at": "2026-08-09T11:41:18.506262Z",
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "subject": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+      },
+      {
+        "artifact_id": "sha256:5adf798bb534b6c0e9b4400dd5e611ce93c9d1c63ec75f0f724cf8de1034b346",
+        "evidence_id": "datahub-lineage",
+        "kind": "datahub_lineage",
+        "observed_at": "2026-08-09T11:41:18.506262Z",
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "subject": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_model_00,PROD)"
+      },
+      {
+        "artifact_id": "sha256:e88577ac69e6a7b67e1c737a74ff1be4ddd908b41111ceef7307e3ec8f7f477e",
+        "evidence_id": "datahub-query-history",
+        "kind": "datahub_query",
+        "observed_at": "2026-08-09T11:41:18.506262Z",
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "subject": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+      },
+      {
+        "artifact_id": "sha256:9e0c5cf374c87dc052937ed7c00db81a0b59ec2bb13278ecc3dca92cedaafbe4",
+        "evidence_id": "datahub-quality-status",
+        "kind": "datahub_quality",
+        "observed_at": "2026-08-09T11:41:18.506262Z",
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "subject": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+      },
+      {
+        "artifact_id": "sha256:9e0c5cf374c87dc052937ed7c00db81a0b59ec2bb13278ecc3dca92cedaafbe4",
+        "evidence_id": "datahub-glossary-status",
+        "kind": "datahub_glossary",
+        "observed_at": "2026-08-09T11:41:18.506262Z",
+        "source_version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}",
+        "subject": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)"
+      },
+      {
+        "artifact_id": "sha256:de0618e79a229e5fbd289db1fe3d10fdb985a6bffc7ba00c61ec2862bee23423",
+        "evidence_id": "dbt-manifest",
+        "kind": "repository_manifest",
+        "observed_at": "2026-08-09T11:48:00.131526Z",
+        "source_version": "e6152e5e09c4a1c6d10fdba57a21178190cedce2",
+        "subject": "model.retirement_conductor_consumer.orders_model_00"
+      }
+    ]
+  },
+  "generated_targets": [
+    "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql"
+  ],
+  "git_plan_digest": "sha256:c0a60e0d7d996ab0db332cd3537e081174ee79f137b3caeefdd3b6904ba3144d",
+  "materializations": [
+    {
+      "check_id": "parity-orders-model-output",
+      "content_digest": "sha256:790af11d2447559b2ecb294209befbad3ed4047ac12217b5288d4b325096bf7c",
+      "path": "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql",
+      "template_version": "semantic-dbt-v1"
+    }
+  ],
+  "plan_digest": "sha256:1695c11f887e153c547dd29e14be572988e8426414f22aa367cd38d49c40ac95",
+  "proposal_digest": "sha256:3b523a3b044e13a208fa3f3c5b863d7541ea2e20acd4b69b2518cf08df4881b8",
+  "replacement": {
+    "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)",
+    "field": "order_status",
+    "native_type": "VARCHAR"
+  },
+  "repository": {
+    "base_branch": "main",
+    "comparison_relation": "orders",
+    "consumer_relation": "orders_model_00",
+    "identity": "sha256:d3e3535dcb9ab5aaba4e1be4f3f9110fed5c86892a4873bce7dac594b50c4b7b",
+    "source_version": "e6152e5e09c4a1c6d10fdba57a21178190cedce2",
+    "target_branch": "codex/ret-orders-semantic-pr"
+  },
+  "schema_version": "1.0.0",
+  "target": {
+    "datahub_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,retirement_conductor.analytics.commerce.orders,PROD)",
+    "field": "legacy_status",
+    "native_type": "VARCHAR"
+  }
+}
