@@ -2031,3 +2031,53 @@ customer value, universal model behavior, authorship from digests, or host
 capability containment. The author and external authorization operator were
 the same evaluator; DataHub and the harmless producer boundary were disposable
 local services.
+
+## Post-goal Retirement Workbench evidence
+
+Behavior commit: `17ec47f77599e0471ee1f3edf7bb0be01ad44168`.
+Evidence mode: the Workbench read the retained 18-event author-operated
+live-local agent campaign through a loopback API with actions disabled. The
+same route was then inspected at 1600 × 1000 and 390 × 844, and without the API
+to exercise its explicitly recorded public fallback.
+
+Observed bindings:
+
+- every Workbench read verified the canonical manifest and required the exact
+  event-digest sequence to equal manifest transition history;
+- the displayed `UNSAFE` state, added consumer ID, accepted Git/dbt receipt,
+  DataHub evidence coverage, publication read-back, and invalidated lease came
+  from those records; the view did not infer the late consumer's platform;
+- the API accepted only `127.0.0.1` and loopback browser origins, disabled
+  runtime actions by default, and rejected operations outside inventory and
+  reconciliation;
+- first-tab skip navigation reached the campaign content, visible focus and
+  native controls remained available, reduced-motion mode rendered normally,
+  and the 390-pixel layout had no page-level horizontal overflow;
+- the committed site preview screenshots are indexed in
+  [`artifacts/public/workbench/README.md`](../artifacts/public/workbench/README.md);
+- the recorded projection SHA-256 is
+  `c702bd127679965537cb821474c53900afaf2ba71aa43b882e59d718acdd0af9`
+  and it retains canonical manifest digest
+  `sha256:49aa07fa4afd1e065c0eedfbaaa7074be0827a9917e9941047183ba49a7efe28`.
+
+Acceptance on the behavior tree:
+
+```text
+make check
+Result: 262 tests passed; Ruff; formatting; strict mypy; repository/link,
+secret, and public-artifact checks; source/wheel builds; diff check passed
+
+npm --prefix site run lint
+Result: passed
+
+npm --prefix site test
+Result: production build and 5 rendered-route tests passed
+```
+
+What this proves: one polished operator route renders and navigates real
+canonical campaign evidence without adding browser policy authority, and the
+two opt-in runtime operations preserve the existing command boundary.
+
+What this does not prove: production graph coverage, a shared multi-operator
+service, independent adoption, or safe browser authorization/apply/gate
+controls. Those mutation boundaries remain intentionally absent.
