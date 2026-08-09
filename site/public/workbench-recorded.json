@@ -1,0 +1,307 @@
+{
+  "activity": [
+    {
+      "event_digest": "sha256:78423c2089e3d0b4aad5fefa5fd94780b5d37179f3849bc667a75421ff4948df",
+      "event_type": "PUBLICATION_VERIFIED",
+      "occurred_at": "2026-08-09T11:22:23.785893Z",
+      "sequence": 18
+    },
+    {
+      "event_digest": "sha256:6c104567d8e90b5279fb7671e6bfa41773f2d2a5bfebe3d3856d97c2588ece21",
+      "event_type": "PUBLICATION_RECORDED",
+      "occurred_at": "2026-08-09T11:22:20.533315Z",
+      "sequence": 17
+    },
+    {
+      "event_digest": "sha256:77890dffca40f74d4dfd5827866670ad4f226393f174506d8488c1d42d98b010",
+      "event_type": "POLICY_EVALUATED",
+      "occurred_at": "2026-08-09T11:22:14.476075Z",
+      "sequence": 16
+    },
+    {
+      "event_digest": "sha256:c1d002514daf6c8144b245d06af9f4f59a68d3346fd93b5eb1a8191aca13ad86",
+      "event_type": "RECONCILIATION_RECORDED",
+      "occurred_at": "2026-08-09T11:22:14.476075Z",
+      "sequence": 15
+    },
+    {
+      "event_digest": "sha256:ebca46ca9a4d31b3ee1b8ab14210e433eab363ad3a8122643299f9adcee85597",
+      "event_type": "PUBLICATION_VERIFIED",
+      "occurred_at": "2026-08-09T11:16:27.828915Z",
+      "sequence": 14
+    },
+    {
+      "event_digest": "sha256:57b888484e4a5ca2718ac1e9c9eeff7674a083601f7aab43d9be30cec64141a2",
+      "event_type": "PUBLICATION_RECORDED",
+      "occurred_at": "2026-08-09T11:16:22.975268Z",
+      "sequence": 13
+    },
+    {
+      "event_digest": "sha256:d7d78a7d4094c3bba51a534c9e48a4b9e118d57075a9513a56de10320fb4fb0c",
+      "event_type": "POLICY_EVALUATED",
+      "occurred_at": "2026-08-09T11:16:17.533595Z",
+      "sequence": 12
+    },
+    {
+      "event_digest": "sha256:eda6bc3f59de8ed3043c1c28d7ff94f8842aa49f22d0ba49596fa1e282544b80",
+      "event_type": "RECONCILIATION_RECORDED",
+      "occurred_at": "2026-08-09T11:16:17.533595Z",
+      "sequence": 11
+    },
+    {
+      "event_digest": "sha256:79176c597e99904a62a7a0025caaf5db2bfbb3bddf6bde6b231e6f81ba4e1623",
+      "event_type": "RECEIPT_ACCEPTED",
+      "occurred_at": "2026-08-09T11:14:16.661358Z",
+      "sequence": 10
+    },
+    {
+      "event_digest": "sha256:f3d8e98c4c7a8793f95c5aa37d82207a477c07e424b3e4f5f273517d442c1a53",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "occurred_at": "2026-08-09T11:13:59.737404Z",
+      "sequence": 9
+    },
+    {
+      "event_digest": "sha256:d6c072cfa968a7760305ac80b76bedbd5e2e4f8f1e61397cdbea925488a9f3fc",
+      "event_type": "MIGRATION_STARTED",
+      "occurred_at": "2026-08-09T11:13:59.737404Z",
+      "sequence": 8
+    },
+    {
+      "event_digest": "sha256:557dcfd5b4f81c3ecd775a288e964b0b95122017af49b71ce1e202413fcea9e5",
+      "event_type": "NATIVE_IDENTITY_CLAIMED",
+      "occurred_at": "2026-08-09T11:13:59.737404Z",
+      "sequence": 7
+    },
+    {
+      "event_digest": "sha256:2c9a8d2a877816c241f4c8027aee97339fa2c64ae0f5edfd5d953be09189264c",
+      "event_type": "APPROVAL_RECORDED",
+      "occurred_at": "2026-08-09T11:12:48.485272Z",
+      "sequence": 6
+    },
+    {
+      "event_digest": "sha256:a54c4807f5a46ae3281a772108f5cce6e8d2e8a490d4f45c12718a70fb4c5102",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "occurred_at": "2026-08-09T11:07:24.136865Z",
+      "sequence": 5
+    },
+    {
+      "event_digest": "sha256:e5fd79bbc2a53e660b914ef3389ed9714be97a2a4c86391a2d759510ae517359",
+      "event_type": "CONSUMER_DISPOSITION_CHANGED",
+      "occurred_at": "2026-08-09T11:07:24.136865Z",
+      "sequence": 4
+    },
+    {
+      "event_digest": "sha256:efc37c7a01609ac94a47687cb380d1845bc3cb69ddd423a277ef714fa1e3c4c9",
+      "event_type": "INVENTORY_RECORDED",
+      "occurred_at": "2026-08-09T11:07:05.524623Z",
+      "sequence": 3
+    },
+    {
+      "event_digest": "sha256:d712cf30f61f665fbfd2f6cc939be222f241287aec516fa38737609f78a4cf11",
+      "event_type": "INVENTORY_RECORDED",
+      "occurred_at": "2026-08-09T11:07:00.199248Z",
+      "sequence": 2
+    },
+    {
+      "event_digest": "sha256:29365a5667afdff6adbae87821713cab5e2d3ff5b38ef362805874cfd03fe3cf",
+      "event_type": "CAMPAIGN_CREATED",
+      "occurred_at": "2026-08-09T11:05:10.099058Z",
+      "sequence": 1
+    }
+  ],
+  "blockers": [
+    {
+      "code": "POLICY_CONSUMER_OPAQUE",
+      "condition_type": "Blocker",
+      "evidence_source": "campaign policy",
+      "message": "Consumer remains opaque.",
+      "recovery_action": "Resolve the named consumer state or policy input, then evaluate again."
+    },
+    {
+      "code": "RECONCILIATION_NEW_CONSUMER",
+      "condition_type": "Blocker",
+      "evidence_source": "fresh reconciliation",
+      "message": "A consumer appeared after the frozen inventory.",
+      "recovery_action": "Refresh equivalent evidence scope and reconcile the complete observed set again."
+    }
+  ],
+  "campaign": {
+    "id": "ret-orders-agent-c8eccc140033",
+    "name": "Phase 04 disposable isolated end-to-end campaign",
+    "state": "BLOCKED"
+  },
+  "change": {
+    "paths": [
+      "models/orders_isolated_model.sql"
+    ],
+    "receipt": {
+      "accepted_at": "2026-08-09T11:14:16.661358Z",
+      "adapter": "git-dbt",
+      "consumer_id": "dh-477310f4b3971b7103d3",
+      "digest": "sha256:eaed247f581c6f67ecd19729206861e6272844758c801eae265c67255e0f8bef",
+      "result": "APPLIED"
+    }
+  },
+  "consumers": [
+    {
+      "closed": true,
+      "disposition": "VALIDATED",
+      "id": "dh-477310f4b3971b7103d3",
+      "native_action": "analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status",
+      "newly_observed": false,
+      "receipt_digest": "sha256:eaed247f581c6f67ecd19729206861e6272844758c801eae265c67255e0f8bef",
+      "receipt_state": "VALIDATED — native receipt accepted at manifest time"
+    },
+    {
+      "closed": false,
+      "disposition": "OPAQUE",
+      "id": "dh-c474f47154490fd18206",
+      "native_action": "analytics.commerce.orders_isolated.legacy_status → analytics.commerce.orders_isolated.order_status",
+      "newly_observed": true,
+      "receipt_digest": null,
+      "receipt_state": "MISSING — no accepted native validation receipt"
+    }
+  ],
+  "decision": "UNSAFE",
+  "decision_label": "A known consumer or changed condition makes retirement unsafe",
+  "evidence": {
+    "captured_at": "2026-08-09T11:22:14.476075Z",
+    "coverage": {
+      "complete": 2,
+      "gaps": 0,
+      "label": "Complete within declared scope — 2 of 2 required sources",
+      "required": 2,
+      "state": "BOUNDED_COMPLETE"
+    },
+    "mode": "live",
+    "sources": [
+      {
+        "freshness": {
+          "maximum_age_seconds": 900,
+          "observed_at": "2026-08-09T11:22:13.358916Z",
+          "source_updated_at": "2026-08-09T11:20:55.973155Z"
+        },
+        "id": "datahub",
+        "identity": "http://127.0.0.1:18080",
+        "limitations": [
+          "DataHub Core did not expose isPartial",
+          "DataHub did not expose lineage cache freshness",
+          "MCP field-lineage lookup does not expose a cache bypass; complete GMS consumer paging is cache-bypassed",
+          "Ownership is routing context only",
+          "Query-history absence is not closure evidence",
+          "Table-only lineage cannot authorize field mutation or closure"
+        ],
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "max_hops": 3,
+          "pages": 3,
+          "reported_total": 2,
+          "returned_total": 2
+        },
+        "status": "COMPLETE",
+        "version": "{\"managedIngestion.defaultCliVersion\":\"1.6.0\",\"versions.acryldata/datahub.version\":\"v1.6.0\"}"
+      },
+      {
+        "freshness": {
+          "maximum_age_seconds": 31536000,
+          "observed_at": "2026-08-09T11:22:14.476075Z",
+          "source_updated_at": "2026-08-09T11:13:59Z"
+        },
+        "id": "git:analytics",
+        "identity": "sha256:e8f9879f8aa0b8a247cf7774b6eb7a86bb7d138f609d20201a73e587b0e0e377",
+        "limitations": [
+          "Only the declared source branch was searched",
+          "Text discovery is high-recall evidence, not completeness proof",
+          "External dbt packages are refused in the initial adapter"
+        ],
+        "required": true,
+        "scope": {
+          "direction": "downstream",
+          "max_hops": 1,
+          "pages": 1,
+          "reported_total": 1,
+          "returned_total": 1
+        },
+        "status": "COMPLETE",
+        "version": "3206d81b64d5a27120212c85c0d804b0c9777f88"
+      }
+    ]
+  },
+  "generated_at": "2026-08-09T11:22:23.785893Z",
+  "manifest_digest": "sha256:49aa07fa4afd1e065c0eedfbaaa7074be0827a9917e9941047183ba49a7efe28",
+  "mode": "recorded-evidence",
+  "new_consumer_ids": [
+    "dh-c474f47154490fd18206"
+  ],
+  "primary_action": {
+    "description": "Resolve the newly observed consumer before another lease.",
+    "enabled": true,
+    "kind": "navigate",
+    "label": "Review new consumer",
+    "view": "consumers"
+  },
+  "publication": {
+    "readback_verified": true,
+    "recorded": true
+  },
+  "replacement": "analytics.commerce.orders_isolated.order_status",
+  "review_requirements": [],
+  "schema_version": "1.0.0",
+  "stages": [
+    {
+      "key": "inventory",
+      "label": "Inventory",
+      "number": "01",
+      "occurred_at": "2026-08-09T11:07:05.524623Z",
+      "status": "complete"
+    },
+    {
+      "key": "plan",
+      "label": "Plan",
+      "number": "02",
+      "occurred_at": "2026-08-09T11:13:59.737404Z",
+      "status": "complete"
+    },
+    {
+      "key": "authorize",
+      "label": "Authorize",
+      "number": "03",
+      "occurred_at": "2026-08-09T11:12:48.485272Z",
+      "status": "complete"
+    },
+    {
+      "key": "apply",
+      "label": "Apply",
+      "number": "04",
+      "occurred_at": "2026-08-09T11:13:59.737404Z",
+      "status": "complete"
+    },
+    {
+      "key": "validate",
+      "label": "Validate",
+      "number": "05",
+      "occurred_at": "2026-08-09T11:14:16.661358Z",
+      "status": "complete"
+    },
+    {
+      "key": "reconcile",
+      "label": "Reconcile",
+      "number": "06",
+      "occurred_at": "2026-08-09T11:22:14.476075Z",
+      "status": "current"
+    },
+    {
+      "key": "lease",
+      "label": "Lease",
+      "number": "07",
+      "occurred_at": null,
+      "status": "invalidated"
+    }
+  ],
+  "summary": {
+    "cause": "A consumer appeared after the frozen inventory.",
+    "headline": "A new consumer changed the answer."
+  },
+  "target": "analytics.commerce.orders_isolated.legacy_status"
+}

@@ -573,6 +573,22 @@ explain, local HTML, and public HTML. It may translate stable codes into safe
 recovery language, but it may not recompute a policy result or add UI-only
 campaign state.
 
+The Retirement Workbench is a focused derivative view, not another campaign
+contract. It accepts one verified manifest plus the canonical events whose
+digests exactly equal `transition_history`. It may derive completed/current
+stage labels, identify consumers added by the latest recorded reconciliation,
+and group already recorded receipt or evidence fields. It must not infer a
+native platform, owner, consumer identity, or causal claim that those records
+do not contain.
+
+The local HTTP boundary is fixed to `127.0.0.1`, one campaign selected at
+startup, and explicit loopback origins. `GET /api/workbench` is read-only.
+`POST /api/workbench/action` accepts only `inventory` or `reconcile`, only when
+the server was started with actions enabled, and only when the confirmation
+header equals the request operation. Both operations call the existing command
+runtime. Authorization, apply, validation acceptance, lease issuance, and gate
+execution are absent from this interface.
+
 The first view includes target, replacement, exact decision, consumer and open
 condition counts, bounded evidence coverage, required next action, and
 manifest digest. Expanded views retain source mode, scope, freshness,

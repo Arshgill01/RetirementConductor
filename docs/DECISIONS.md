@@ -885,3 +885,29 @@ invalidated its Retirement Lease without clock retries.
 
 Status: accepted in `80322be` and `2635240`; exercised by TE-04 evidence at
 `6eeea35`.
+
+## D-050 — make the Workbench a thin local view, not another control plane
+
+Date: 2026-08-09
+
+Decision: add a focused Retirement Workbench for one campaign while retaining
+the existing event store, policy engine, command runtime, and human authority
+boundary as the only product authority. The browser renders a verified
+manifest and matching canonical event history. Its loopback API exposes
+read-only state by default and only opt-in inventory and reconciliation
+operations; it has no authorization, apply, lease-issuance, or gate endpoint.
+
+Why: the complete campaign needs a judge-legible and operator-legible surface,
+but a second TypeScript state machine or browser-side SQLite boundary would
+weaken technical execution and create conflicting truth. Inventory and
+reconciliation are useful no-authority operations that can safely demonstrate
+the real engine without turning a polished screen into implied permission.
+
+Observed consequence: the retained 18-event agent campaign renders its exact
+`UNSAFE` decision, new-consumer reconciliation, accepted Git/dbt receipt,
+DataHub evidence coverage, verified publication, and invalidated lease from
+canonical records. The interface calls the new consumer a hashed observed
+identity rather than inventing its platform. The public route falls back to an
+explicitly recorded, digest-bound view when no local runtime is connected.
+
+Status: accepted for the local single-writer operator path.

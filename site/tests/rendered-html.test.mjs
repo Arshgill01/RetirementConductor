@@ -8,13 +8,13 @@ const publicHtmlUrl = new URL(
   import.meta.url,
 );
 
-async function renderRoot() {
+async function renderPath(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${path}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -30,12 +30,23 @@ async function renderRoot() {
 }
 
 test("root routes visitors to the standalone technical dossier", async () => {
-  const response = await renderRoot();
+  const response = await renderPath();
   assert.ok([301, 302, 303, 307, 308].includes(response.status));
   assert.equal(
     new URL(response.headers.get("location"), "http://localhost").pathname,
     "/retirement-conductor.html",
   );
+});
+
+test("workbench renders a real-runtime connection state without fake campaign data", async () => {
+  const response = await renderPath("/workbench");
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(html, /Retirement Workbench/);
+  assert.match(html, /Reading canonical state/);
+  assert.doesNotMatch(html, /A new consumer changed the answer/);
+  assert.doesNotMatch(html, /READY_TO_RETIRE|UNSAFE/);
 });
 
 test("standalone HTML contains the current product, evidence, and limits", async () => {
