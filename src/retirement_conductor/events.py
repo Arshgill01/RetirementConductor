@@ -47,6 +47,7 @@ class CampaignProjection:
     receipt_digests: list[str] = field(default_factory=list)
     approvals: dict[str, dict[str, Any]] = field(default_factory=dict)
     waivers: dict[str, dict[str, Any]] = field(default_factory=dict)
+    review_requirements: list[dict[str, str]] = field(default_factory=list)
     reconciliations: list[dict[str, Any]] = field(default_factory=list)
     reconciled: bool = False
     publication: dict[str, Any] | None = None
@@ -195,6 +196,7 @@ def _policy_result(
         current_consumer_ids=projection.current_consumer_ids,
         reconciled=projection.reconciled,
         policy=projection.policy,
+        semantic_reviews=projection.review_requirements,
     )
 
 
@@ -349,6 +351,65 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
         consumer["receipt_digest"] = receipt["receipt_digest"]
         consumer["receipt"] = receipt
         projection.receipt_digests.append(str(receipt["receipt_digest"]))
+    elif event_type == "NON_APPLICABILITY_RECORDED":
+        receipt = dict(payload.get("receipt") or {})
+        required = {
+            "schema_version",
+            "campaign_id",
+            "consumer_id",
+            "basis",
+            "observed_at",
+            "source_version",
+            "evidence_ids",
+            "receipt_digest",
+        }
+        if set(receipt) != required or receipt.get("schema_version") != "1.0.0":
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "A non-applicability receipt must contain the exact evidence binding.",
+            )
+        verify_digest(receipt, "receipt_digest")
+        consumer_id = str(receipt["consumer_id"])
+        if receipt["campaign_id"] != projection.campaign_id:
+            raise Refusal(
+                RefusalCode.IDENTITY_NOT_FOUND,
+                "The non-applicability receipt belongs to another campaign.",
+            )
+        receipt_consumer = projection.consumers.get(consumer_id)
+        if receipt_consumer is None:
+            raise Refusal(
+                RefusalCode.IDENTITY_NOT_FOUND,
+                "The non-applicability receipt referenced an unknown consumer.",
+            )
+        require_consumer_transition(
+            ConsumerDisposition(str(receipt_consumer["disposition"])),
+            ConsumerDisposition.NOT_APPLICABLE,
+        )
+        receipt_consumer["disposition"] = ConsumerDisposition.NOT_APPLICABLE
+        receipt_consumer["receipt_digest"] = receipt["receipt_digest"]
+        projection.receipt_digests.append(str(receipt["receipt_digest"]))
+    elif event_type == "REVIEW_REQUIREMENT_RECORDED":
+        required = {"code", "message"}
+        permitted_fields: set[str] = {*required, "consumer_id"}
+        if (
+            not required.issubset(payload)
+            or not set(payload).issubset(permitted_fields)
+            or not str(payload["code"]).startswith("REVIEW_")
+            or not str(payload["message"]).strip()
+        ):
+            raise Refusal(
+                RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+                "A review requirement must contain one stable review code and message.",
+            )
+        consumer_id = payload.get("consumer_id")
+        if consumer_id is not None and str(consumer_id) not in projection.consumers:
+            raise Refusal(
+                RefusalCode.IDENTITY_NOT_FOUND,
+                "A review requirement referenced an unknown campaign consumer.",
+            )
+        requirement = {key: str(payload[key]) for key in sorted(payload)}
+        if requirement not in projection.review_requirements:
+            projection.review_requirements.append(requirement)
     elif event_type == "RECONCILIATION_RECORDED":
         require_campaign_transition(projection.state, CampaignState.RECONCILING)
         projection.state = CampaignState.RECONCILING

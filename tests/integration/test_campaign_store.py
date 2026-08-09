@@ -450,6 +450,85 @@ def test_complete_validated_flow_reaches_ready(tmp_path: Path) -> None:
         assert len(store.events(CAMPAIGN_ID)) == 10
 
 
+def test_durable_review_requirement_reaches_review_required(tmp_path: Path) -> None:
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        propose_and_approve(store, CAMPAIGN_ID)
+        begin_and_apply(store, CAMPAIGN_ID)
+        store.accept_receipt(
+            CAMPAIGN_ID,
+            CONSUMER_ID,
+            receipt_for(),
+            trusted_now=TRUSTED_NOW,
+            occurred_at="2026-01-01T11:30:00Z",
+            idempotency_key="receipt",
+        )
+        store.record_reconciliation(
+            CAMPAIGN_ID,
+            evidence_envelope=live_envelope(),
+            consumer_ids=[CONSUMER_ID],
+            snapshot_digest=SNAPSHOT_TWO,
+            occurred_at="2026-01-01T11:40:00Z",
+        )
+        store.record_review_requirement(
+            CAMPAIGN_ID,
+            code="REVIEW_TEMPORAL_SEMANTICS",
+            message="Confirm event-time and processing-time semantics.",
+            consumer_id=CONSUMER_ID,
+            occurred_at="2026-01-01T11:41:00Z",
+            idempotency_key="review-temporal-semantics",
+        )
+
+        manifest = store.evaluate(
+            CAMPAIGN_ID,
+            occurred_at="2026-01-01T11:45:00Z",
+        )
+
+        assert manifest["decision"] == "REVIEW_REQUIRED"
+        assert manifest["campaign"]["state"] == "BLOCKED"
+        assert manifest["review_requirements"] == [
+            {
+                "code": "REVIEW_TEMPORAL_SEMANTICS",
+                "consumer_id": CONSUMER_ID,
+                "message": "Confirm event-time and processing-time semantics.",
+            }
+        ]
+
+
+def test_non_applicability_requires_a_digest_bound_receipt(tmp_path: Path) -> None:
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        create_and_inventory(store)
+        receipt = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "campaign_id": CAMPAIGN_ID,
+                "consumer_id": CONSUMER_ID,
+                "basis": (
+                    "Exact field lineage proves this consumer reads another field."
+                ),
+                "observed_at": "2026-01-01T10:20:00Z",
+                "source_version": "fixture-live/1",
+                "evidence_ids": [f"sha256:{'8' * 64}"],
+            },
+            "receipt_digest",
+        )
+
+        manifest = store.record_non_applicability(
+            CAMPAIGN_ID,
+            receipt,
+            occurred_at="2026-01-01T10:20:00Z",
+            idempotency_key="non-applicable",
+        )
+
+        assert manifest["consumers"] == [
+            {
+                "id": CONSUMER_ID,
+                "disposition": "NOT_APPLICABLE",
+                "receipt_digest": receipt["receipt_digest"],
+            }
+        ]
+
+
 def test_reconciliation_adds_new_consumer_without_reopening_validated_receipt(
     tmp_path: Path,
 ) -> None:
