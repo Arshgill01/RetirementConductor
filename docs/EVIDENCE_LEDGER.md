@@ -1883,3 +1883,65 @@ the same recorded Codex run as the canonical 16-tool campaign, independent
 operator adoption, production infrastructure, or a supported Superset
 campaign adapter. The public narrated submission video and Devpost packaging
 remain presentation work, not engineering evidence.
+
+## Post-goal truth-experiment integration evidence
+
+Audited integration base: `90872dc03c0fc900d39fd35e3c32778e5b0973ae`.
+The frozen experiment inputs and final public artifacts were committed in that
+order on the merged histories. TE-04 independently verified all three public
+self-digests, the TE-02 frozen corpus and oracle, aggregate counts, retained
+failures, and the merged focused test surface before selecting architecture.
+
+TE-01 mode: 15-scenario deterministic fixture truth with 135 final attempts,
+including 90 live Vertex AI attempts and 180 unique native response IDs. The
+frozen corpus commit is `4c171ce`; tested behavior is `86b1524`. The canonical
+summary digest is
+`sha256:14e4c48066fcc62bd50c2d35a26642a3f6f91c59cae5ac371c7215eac5f6c359`.
+Full DataHub context improved critical fault coverage from 53.3% to 100%, but
+the nested Gemini arm achieved 20% exact minimum plans and accepted 48
+unnecessary checks. Recommendation: remove nested Gemini and keep bounded
+DataHub context. Raw request/response evidence remains ignored and private.
+
+TE-02 mode: deterministic fixture truth through durable campaign state,
+live-local DataHub Core, and disposable native Git/dbt. The frozen truth commit
+is `f10a7e3`; tested behavior is `b88affc`; the public evidence digest is
+`sha256:28e8cfc536700232533b92ec67a18a72041be2e8d231a8f59f985fce74fe0220`.
+All 24 cases matched the independent oracle, recalled 121/121 controlled
+consumers, produced zero false readiness and one producer action, and refused
+unchanged-watch, late-consumer, and expired lease sequences as declared.
+Non-applicability receipts remain controlled fixture evidence, not native
+validation or model authority.
+
+TE-03 mode: 72 Codex runs over deterministic disposable campaign state with
+live-local DataHub MCP availability. The frozen corpus commit is `af82d88`;
+the launcher-repair commit is `a451758`; final public evidence is `4d68383`.
+The aggregate digest is
+`sha256:c7a747618debc99e9f45d6d27cba80823ee9e88151c894068bb23f340652fb32`.
+The skill raised correct completion from 66.67% to 95.83%, and MCP-only reached
+66.67% versus 29.17% for CLI/shell. All 26 scored failures and 24 pre-model
+host failures remain digest-bound. Every formal run had
+`capability_bounded=false`; shell and file editing were present in every arm
+and DataHub advertised metadata mutation tools.
+
+Spot-check commands and results:
+
+```text
+uv run python <offline canonical digest and aggregate assertion>
+Result: TE_INPUT_EVIDENCE_SPOTCHECK_PASSED
+
+uv run python -m scripts.run_retirement_gauntlet_v2 --verify-frozen-only
+Result: FROZEN_TRUTH_VERIFIED; 24 cases
+
+uv run pytest -q tests/unit/test_semantic_ablation.py tests/unit/test_semantic_model_planner.py tests/unit/test_semantic_validation.py tests/unit/test_retirement_gauntlet_v2.py tests/integration/test_campaign_store.py tests/unit/test_agent_boundary_ablation.py tests/unit/test_agent_mcp.py
+Result: 56 passed
+```
+
+What this proves: the integrated artifacts preserve their audited inputs,
+digests, aggregate outcomes, failures, and predeclared recommendations. The
+evidence selects removal of nested Gemini, retention of bounded DataHub
+context, retention of the project skill and product MCP, and retention of the
+durable campaign/lease boundary.
+
+What this does not prove: production graph coverage, customer value,
+independent operation, universal model behavior, or capability-bounded host
+execution. Those non-claims govern the definitive TE-04 run.

@@ -139,11 +139,18 @@ override the producer gate. Sixteen MCP tools cover campaign inspection,
 Git/dbt planning and execution, publication, Retirement Lease status, one-shot
 fresh observation, and the final separately confirmed gate.
 
-An optional Vertex AI semantic planner may propose two to four checks through
-forced read-only function calls. Its output is accepted only after exact
-identity, evidence, policy, schema, and digest validation. The model cannot
-emit SQL or arbitrary paths; deterministic templates create any approved dbt
-tests. This is an advisory quality layer, not another decision engine.
+Planning retains bounded DataHub schema, lineage, glossary, query, quality,
+ownership, and freshness context, but nested model selection is not part of
+the supported product. A 135-attempt ablation found that the richer context
+improved safety-critical fault coverage while the nested Gemini planner failed
+the predeclared minimum-plan and operator-value thresholds. Deterministic code
+selects and validates supported checks; reviewed templates materialize them.
+
+The project skill and product MCP remain the primary Codex operating surface
+because a separate 72-run ablation improved correct completion and reduced
+calls and retries. This is an operational result for the recorded host and
+model, not capability containment: shell, file editing, and mutation-capable
+DataHub tools remained exposed in every tested condition.
 
 A bounded Superset executor has passed a disposable feasibility experiment,
 including native identity, one allowlisted mutation, forced chart validation,

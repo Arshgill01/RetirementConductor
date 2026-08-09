@@ -56,6 +56,11 @@ removal, or proved non-applicability closes them.
   **`NOT_RUN` / `NOT_SATISFIED`**.
 - The current release is `retirement-conductor` **0.2.0**.
 - The supported release contains DataHub plus Git/dbt boundaries only.
+- The selected agent architecture keeps bounded DataHub context, the project
+  skill, and the 16-tool product MCP, while removing nested Vertex/Gemini
+  planning from the supported product.
+- The truth experiments do not prove capability boundedness; recorded hosts
+  exposed shell/file editing and mutation-capable DataHub tools.
 - The former Looker adapter was intentionally removed; it is historical,
   superseded evidence, not supported product behavior.
 - Phase 06 matched **14/14** oracle scenarios with **zero false readiness**,

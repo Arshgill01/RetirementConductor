@@ -173,3 +173,4 @@ evidence is in `artifacts/public/phase07/` with summary digest
 - R-36 divergent campaign writers;
 - R-37 contradictory connector evidence;
 - R-43 native SQL and intervening-owner edit safety.
+- R-45 behavioral non-use mistaken for capability containment.

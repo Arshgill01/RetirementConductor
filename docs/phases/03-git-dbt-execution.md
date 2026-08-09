@@ -146,3 +146,4 @@ Inspect:
 - R-30 replacement drift groundwork;
 - R-41 model proposal authority and injection;
 - R-42 remote PR and CI head drift.
+- R-44 context-driven check over-selection and operator load.

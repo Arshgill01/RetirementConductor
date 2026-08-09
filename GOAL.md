@@ -461,3 +461,11 @@ back campaign state, removed only confirmed state, and completed the live-local
 reference entirely through the installed wheel. The supported release contains
 only DataHub plus Git/dbt product boundaries. RC-018 remains a visible
 independent-operator follow-on and no adoption result is claimed.
+
+The subsequent TE-01 through TE-03 truth experiments selected the agent
+architecture for the definitive run. Nested Vertex/Gemini planning is removed;
+bounded DataHub context, the project skill, the product MCP, durable campaign
+state, and the Retirement Lease remain. The experiments cover controlled
+corpora and exact recorded hosts only. They do not establish production graph
+coverage, customer adoption, universal model behavior, or capability-bounded
+execution.

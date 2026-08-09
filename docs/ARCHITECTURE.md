@@ -192,25 +192,25 @@ credentials and bounded filesystem, subprocess, environment, and network
 access appropriate to the supported source. Path and symlink resolution must
 remain inside the approved root.
 
-### Model-assisted planner
+### Context-aware deterministic planner
 
-Model assistance is optional and constrained to:
+The supported planner consumes bounded DataHub and dbt evidence as data:
 
-- explaining consumers and candidate mappings;
-- proposing minimal source changes;
-- highlighting aliases, templates, and indirect references;
-- generating operator summaries.
+- exact schema and field identities;
+- field and table lineage with their granularity kept distinct;
+- glossary, query, quality, ownership, and freshness signals with explicit
+  absence and limitations;
+- exact repository, manifest, file, validator, and supported-check identities.
 
-Every proposal is data, not authority. Deterministic boundaries verify file
-scope, content versions, target identity, and validator results.
+Deterministic code selects only the supported safe primitives, binds their
+evidence, and materializes reviewed templates. It verifies file scope, content
+versions, target identity, and validator results. The removed nested
+Vertex/Gemini transport remains represented only by historical experiment
+artifacts and does not participate in the packaged or canonical run.
 
-The implemented optional semantic planner further constrains one model call to
-two campaign-bounded read tools and one typed proposal tool. Forced function
-calling, strict schemas, a safe primitive vocabulary, evidence expiry, and a
-deterministic kernel prevent the model from supplying SQL, shell, arbitrary
-paths, authorization, or final validation. Approved templates may then be
-committed to a disposable branch and bound to a GitHub pull request plus the
-named CI check on its exact head.
+Codex may still interpret this context, choose campaign operations, and
+explain results through the retained skill and product MCP. Its output is not
+authorization, native validation, or policy input.
 
 ### Agent interface
 
@@ -220,6 +220,12 @@ inspect context, choose operations, and explain refusals. The server has no
 authorization-recording tool. Human approval remains an out-of-agent durable
 record, and every mutation or gate call still passes through deterministic
 preconditions.
+
+The interface is authority-contained by those deterministic preconditions,
+not by the host capability surface. Recorded Codex environments exposed shell
+and file editing, and the DataHub MCP advertised metadata mutations. Tool
+non-use is behavioral evidence only; the architecture makes no
+capability-bounded claim.
 
 ### Reconciler
 

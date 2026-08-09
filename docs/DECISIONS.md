@@ -829,3 +829,37 @@ cannot be mutated accidentally.
 
 Status: accepted as an experimental proof from inspected WS-04 evidence at
 `84e6707`; not accepted as a second supported executor.
+
+## D-048 — select the evidence-backed agent architecture
+
+Date: 2026-08-09
+
+Decision: remove nested Vertex/Gemini planning from the supported package,
+headline, and canonical run. Keep bounded DataHub schema, lineage, glossary,
+query, quality, ownership, and freshness context as input to deterministic
+planning and operator review. Keep the project skill and Retirement Conductor
+MCP as the primary Codex surface, and keep the durable campaign,
+reconciliation, publication, and Retirement Lease boundary.
+
+Why: TE-01 found that full DataHub context improved critical planted-fault
+coverage from 53.3% to 100%, but the nested model achieved only 20% exact
+minimum plans, fell below the stability threshold, and added 48 unnecessary
+accepted checks. TE-03 found that the skill improved correct completion from
+66.67% to 95.83% and that MCP-only completion exceeded CLI/shell by 37.5
+percentage points with lower call burden. TE-02 matched all 24 independent
+oracle cases with 121/121 controlled consumers, zero false readiness, and
+correct lease refusal sequences.
+
+Capability containment is not part of this decision. Every TE-03 condition
+exposed shell and file editing, and DataHub advertised mutation-capable tools.
+Deterministic product controls own authority; observed tool non-use cannot be
+presented as a capability-bounded host.
+
+Consequences: D-045 remains historical evidence for the earlier WS-02
+experiment but is superseded as supported architecture. Its public PR/CI
+artifacts remain immutable provenance. The model-specific transport and live
+configuration leave the release; the deterministic semantic-validation and
+GitHub PR/CI bindings may remain where they add value without a nested model.
+
+Status: accepted from TE-01 through TE-03 evidence spot-checked on integrated
+base `90872dc`.

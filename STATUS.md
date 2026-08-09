@@ -15,7 +15,8 @@ contract; `PLAN.md` defines proof order.
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
 - Next acceptance target: record the public three-minute product run and finish
-  the Devpost entry. Optional independent-operator evaluation for RC-018
+  the definitive minimally prompted TE-04 run, then finish the public video
+  and Devpost entry. Optional independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
 - Last integrated repository validation: 242 tests, Ruff, formatting, strict
   mypy over 88 source files, 200-file repository validation, 369-file secret
@@ -41,9 +42,10 @@ contract; `PLAN.md` defines proof order.
   after a late Spark consumer then reversed `READY_TO_RETIRE` to `UNSAFE`; no
   second lease or gate call occurred. This was a user-directed author/operator
   run, so RC-018 remains honestly `NOT_RUN`.
-- Integrated post-goal workstreams: a live Vertex Gemini advisory planner
-  produced a typed proposal that deterministic code bound to an exact public
-  GitHub PR and passing CI; continuous reconciliation invalidated an already
+- Integrated post-goal workstreams: the TE-01 ablation removed the nested
+  Vertex/Gemini planner while retaining bounded DataHub context; TE-03 retained
+  the project skill and product MCP without a capability-bounded claim;
+  continuous reconciliation invalidated an already
   issued Retirement Lease from a fresh late DataHub field edge; and a bounded
   Superset 6.0.0 experiment proved one native mutation, validation,
   reingestion, compensation, and owner-drift refusal. The first two are

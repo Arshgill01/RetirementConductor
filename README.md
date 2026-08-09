@@ -52,10 +52,10 @@ deployment-gate diagnostics.
 Three additional inspected workstreams deepen that path without moving safety
 authority into a model:
 
-- an optional live Vertex AI planner used forced read-only function calls to
-  propose typed semantic checks; deterministic code rejected foreign authority,
-  generated reviewed dbt templates, and bound a real public GitHub PR plus its
-  successful CI run to the exact head;
+- a 135-attempt semantic ablation removed the nested Vertex/Gemini planner
+  from the supported product. Bounded DataHub context remains valuable input
+  to deterministic planning and operator review, while the historical public
+  PR/CI evidence remains available as experiment provenance;
 - a one-shot watcher now projects `ISSUED`, `EXPIRED`, `CONSUMED`, and
   `INVALIDATED` Retirement Leases. Live Core evidence discovered an exact late
   field consumer, reversed the campaign, invalidated the preserved lease, and
@@ -66,10 +66,17 @@ authority into a model:
   proof and cannot change campaign readiness; Git/dbt is still the sole
   supported automated executor.
 
-See the [semantic PR runbook](docs/runbooks/SEMANTIC_PR.md),
+See the historical [semantic PR runbook](docs/runbooks/SEMANTIC_PR.md),
 [continuous reconciliation runbook](docs/runbooks/CONTINUOUS_RECONCILIATION.md),
 and [Superset feasibility runbook](docs/runbooks/SUPERSET.md) for exact evidence
 and limitations.
+
+The same truth-experiment series measured the agent boundary. For the exact
+recorded Codex host and model, the project skill and Retirement Conductor MCP
+both improved correct completion and reduced operational burden, so both stay
+in the supported path. Every tested host still exposed shell and file editing,
+and DataHub advertised mutation tools; the project therefore makes no
+capability-bounded claim.
 
 ## The problem in plain language
 

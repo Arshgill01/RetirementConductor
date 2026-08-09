@@ -109,6 +109,17 @@ deprecated adapter surface has been removed.
 - Maintain tested commits, modes, artifacts, and limitations in
   [EVIDENCE_LEDGER.md](docs/EVIDENCE_LEDGER.md).
 
+### Selected agent architecture
+
+- Keep bounded DataHub semantic context in deterministic planning and operator
+  review.
+- Keep the project skill and Retirement Conductor MCP as the primary Codex
+  path.
+- Exclude nested remote-model planning from the supported package and
+  canonical run.
+- Record exact tool exposure and deterministic authority controls without
+  claiming the host is capability bounded.
+
 ### Safety
 
 - Separate read, plan, apply, validate, and final gate capabilities.
