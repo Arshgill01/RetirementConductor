@@ -1,0 +1,8 @@
+{
+  "message": "Apply requires an explicit target-bound approval.",
+  "operation": "materialize-before-authorization",
+  "refusal_code": "AUTH_APPROVAL_MISSING",
+  "refusal_digest": "sha256:1791d853576d78e779e36c5bb578193563887e0499a1a0ee1f7eb936cbd0ac2d",
+  "result": "REFUSED",
+  "schema_version": "1.0.0"
+}

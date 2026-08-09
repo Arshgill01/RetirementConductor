@@ -1,0 +1,64 @@
+{
+  "acceptance_digest": "sha256:8610d08f8e928248870d490576e0bf1c9ea96428c683ba934e52873385f72ace",
+  "approved_targets": [
+    "models/orders_model_00.sql",
+    "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql"
+  ],
+  "campaign_id": "ret-orders-semantic-pr",
+  "checks": [
+    "type_compatibility",
+    "exact_model_output_parity"
+  ],
+  "ci_binding_digest": "sha256:78cd088f80fd1ee3725418392448a813a6605ae0a46872c6e7efc0db890fcbb0",
+  "evidence_mode": "live",
+  "head_drift_refusal_digest": "sha256:4f20c3b40bb385c1b7b03677b41480bb64dc32d92b3778d558eca6149c40b043",
+  "limitations": [
+    "DataHub returned no glossary association or field-quality assertion.",
+    "Empty query history is explicitly non-authoritative.",
+    "The optional model did not authorize, validate, or decide readiness.",
+    "The sample pull request remains open and unmerged."
+  ],
+  "model": {
+    "evidence_digest": "sha256:037381ff857590c73d24849ed45953fdc45e942e285652962505703f5ce3367d",
+    "identifier": "gemini-3-flash-preview",
+    "non_authority": {
+      "authorized": false,
+      "readiness_decided": false,
+      "validation_accepted": false
+    },
+    "provider": "google-vertex-ai",
+    "response_id": "cmp4atm0DPLo8vUP567TmA8"
+  },
+  "native_validation": {
+    "artifact_ids": [
+      "sha256:0373de370b72a3b42a9cbd3b7992671e11b3c03d8eeea8ea04a581c96d626840",
+      "sha256:1a11aa8d715a5988611bcb44017a576cb688039a82d989f25af85a0177d17257",
+      "sha256:2fac7e0574aafdf3a69d2852da3e0a4e7b02c8b4b62f871bb5a7adaa643ab620",
+      "sha256:40f81a949cb4bd7995cdc6e01bb92ea122e94b29e2b056cd027e8baa3a91d440",
+      "sha256:4d812acd86905b57067905aa9a98628f0c9764d6c7f965eb8f6bf569d90b915b",
+      "sha256:f8965f55ac975d666b2f15af8ad6edbfe099fa8750dc230c3a4c0cf2ef484124"
+    ],
+    "head_sha": "6c26af7c11d36a6d1cc55cba38701982c1e546e3",
+    "result": "PASSED",
+    "validation_digest": "sha256:54ea139dc1ee34596163a0f04eda6a23ccd33fa4431a0f6b5aaec571c4fdc729",
+    "validator": "dbt parse + seed + build + test on DuckDB",
+    "validator_version": "1.12.0"
+  },
+  "owner_change_preserved_in_history": true,
+  "pre_authorization_refusal": "AUTH_APPROVAL_MISSING",
+  "pull_request": {
+    "base": "main",
+    "changed_files": [
+      "models/orders_model_00.sql",
+      "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql"
+    ],
+    "head": "codex/ret-orders-semantic-pr",
+    "head_sha": "6c26af7c11d36a6d1cc55cba38701982c1e546e3",
+    "number": 1,
+    "state": "OPEN",
+    "url": "https://github.com/Arshgill01/retirement-conductor-semantic-pr-acceptance/pull/1"
+  },
+  "recovery_receipt_digest": "sha256:58973cee2fb6fe652740538edfa839bca5da70b040677d13c4a8cd73006ca1dc",
+  "schema_version": "1.0.0",
+  "semantic_plan_digest": "sha256:1695c11f887e153c547dd29e14be572988e8426414f22aa367cd38d49c40ac95"
+}

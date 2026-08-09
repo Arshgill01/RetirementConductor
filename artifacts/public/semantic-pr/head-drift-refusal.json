@@ -1,0 +1,14 @@
+{
+  "accepted_head_sha": "a3b4435edcc254866201799d72275abb804ebc3f",
+  "message": "The pull-request head changed; replan, reapprove, and revalidate.",
+  "observed_changed_files": [
+    "OWNER_NOTE.md",
+    "models/orders_model_00.sql",
+    "tests/retirement_conductor/ret-orders-semantic-pr/02_parity-orders-model-output.sql"
+  ],
+  "observed_head_sha": "7ea31a59b5e74e9ddffa9e4bd23a1066f8427f9b",
+  "refusal_code": "SOURCE_GIT_BRANCH_MOVED",
+  "refusal_digest": "sha256:4f20c3b40bb385c1b7b03677b41480bb64dc32d92b3778d558eca6149c40b043",
+  "result": "REFUSED",
+  "schema_version": "1.0.0"
+}

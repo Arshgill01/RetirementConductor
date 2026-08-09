@@ -85,6 +85,7 @@ def publish(private: Path, repository: Path, output: Path) -> None:
         "diff",
         "--no-ext-diff",
         "--no-color",
+        "--unified=0",
         f"{plan['repository']['source_version']}..{receipt['commit']['head_sha']}",
         "--",
         *expected_files,
