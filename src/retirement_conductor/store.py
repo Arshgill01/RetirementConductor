@@ -1726,6 +1726,47 @@ class CampaignStore:
             idempotency_key=idempotency_key,
         )
 
+    def record_review_requirement(
+        self,
+        campaign_id: str,
+        *,
+        code: str,
+        message: str,
+        occurred_at: str,
+        idempotency_key: str,
+        consumer_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Persist a bounded human-review requirement without granting closure."""
+
+        payload = {"code": code, "message": message}
+        if consumer_id is not None:
+            payload["consumer_id"] = consumer_id
+        return self.append_event(
+            campaign_id,
+            "REVIEW_REQUIREMENT_RECORDED",
+            payload,
+            occurred_at=occurred_at,
+            idempotency_key=idempotency_key,
+        )
+
+    def record_non_applicability(
+        self,
+        campaign_id: str,
+        receipt: Mapping[str, Any],
+        *,
+        occurred_at: str,
+        idempotency_key: str,
+    ) -> dict[str, Any]:
+        """Close one consumer only from an explicit digest-bound evidence receipt."""
+
+        return self.append_event(
+            campaign_id,
+            "NON_APPLICABILITY_RECORDED",
+            {"receipt": dict(receipt)},
+            occurred_at=occurred_at,
+            idempotency_key=idempotency_key,
+        )
+
     def record_watch_observation(
         self,
         campaign_id: str,
@@ -1923,6 +1964,7 @@ class CampaignStore:
             reconciled=projection.reconciled,
             policy=projection.policy,
             bound_inputs_match=bound,
+            semantic_reviews=projection.review_requirements,
         )
         return self.append_event(
             campaign_id,
