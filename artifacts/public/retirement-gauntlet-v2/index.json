@@ -1,0 +1,729 @@
+{
+  "cases": [
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:1828fae5b454e8d4d5511dadceefcdbf22da6f46da2f8ef281fd6334b04db931",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:e32fd75aba1c074d60b1115c05aae6d799cffd465390326c14481fd2f7b8372f"
+      },
+      "expected_codes": [],
+      "expected_decision": "READY_TO_RETIRE",
+      "family": "enum",
+      "id": "enum-clean-isolated",
+      "manifest_digest": "sha256:842089d5f80eeb3f4e65760c59ee5996bd1017452bb7ef16e5bd09599b11b169",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:dbf5bbb7342c34586c9b20c1fda3af12f79a8191997a6ef6d0480a5bb300cd0c",
+        "receipt_digest": "sha256:8ec4ca050c7e253a6a5bfa8f47f469af9e89e77cd5345c0d261b21558f4babe4",
+        "validation_result": "PASSED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [],
+      "observed_consumer_count": 5,
+      "observed_decision": "READY_TO_RETIRE",
+      "sequence": {
+        "after": "CONSUMED",
+        "case_id": "enum-clean-isolated",
+        "gate_refusal": null,
+        "issued": "ISSUED",
+        "outcome": "CONSUMED_EXECUTED",
+        "plan_digest": "sha256:3ab3be645ffa680b54b9f0314b05414c682797da236103b5ecb7238854d30cef",
+        "producer_action_count": 1,
+        "publication_verified": true
+      }
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:f338b307af19946f953b0485e1bb283a5f91a13f76804b3b18e042d4a6e25082",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:819c72a5717dafd5a0d791a3301c53e54a061afcc992e2a9b47911233540a4fb"
+      },
+      "expected_codes": [],
+      "expected_decision": "READY_TO_RETIRE",
+      "family": "enum",
+      "id": "enum-alias-macro-ready",
+      "manifest_digest": "sha256:793c4df165a16856deb7bd6878b405812d11c33604842f7fb1edbc9e98e73d6d",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:bf2c3de4201745043e92b0a44ebc4c6793e8c38b6ae67b333d8f4589df5b12f4",
+        "receipt_digest": "sha256:58178f598b47ff62549d57762bb0c9f3836a4f975cd710de3c1575bf87e8a0a0",
+        "validation_result": "PASSED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [],
+      "observed_consumer_count": 5,
+      "observed_decision": "READY_TO_RETIRE",
+      "sequence": {
+        "after": "INVALIDATED",
+        "case_id": "enum-alias-macro-ready",
+        "gate_refusal": "GATE_STATE_DRIFT",
+        "issued": "ISSUED",
+        "outcome": "UNCHANGED",
+        "plan_digest": "sha256:f68dd31b5bd10cbf2f3426fc14c5c6370e731cdd0da810146ede3808040bcd94",
+        "producer_action_count": 0,
+        "publication_verified": true
+      }
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:cd091f8bf02d7845ed4c73d19ab50ef2225e434b8821cbb23a780aebea39ec01",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:45789674d6ffe2e24a5b922ae64e20b43b45240b92d641f64669582d859fdb03"
+      },
+      "expected_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "expected_decision": "BLOCKED",
+      "family": "enum",
+      "id": "enum-incomplete-page",
+      "manifest_digest": "sha256:fa4b484d4d712c7bca1cb3e55bede3d523fbb1687973d4c491180765a2ab5af1",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "BLOCKED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:ded84ebd1ea7d24463693411169ebc405ee8bac2169d67b12b942e60c7c6e34d",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:1585ebd3ef19e49c47fa1d108ca41401a7bb9c98a81db761927d6165156f96db"
+      },
+      "expected_codes": [
+        "IDENTITY_NOT_FOUND"
+      ],
+      "expected_decision": "BLOCKED",
+      "family": "enum",
+      "id": "enum-ambiguous-identity",
+      "manifest_digest": "sha256:559ff549f245de75d360aa67203c1d6f888358814fc32d649a637fd0010ec422",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "IDENTITY_NOT_FOUND"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "BLOCKED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:bbad61dc9a2609f27a4169a027a3147097782198fcec19aa6c117e1365c92cee",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:37c112ce6aae3aacc33ae4ffdf6fcda001e89cf1b6ebf60e7c7a9ae4f21e756c"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "enum",
+      "id": "enum-unmapped-category",
+      "manifest_digest": "sha256:3f46bd64a1abf168bd6ace349c6eb65decd0940c74a865fb0cb76f43a255c083",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:8e3947586dbdfaa737392533dd0a0e1b792d35c43456200d5d3f9061699c6273",
+        "receipt_digest": null,
+        "validation_result": "FAILED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:a051e726e72e7ce915446998b1773717e0fe52f9cad2783d148fbbdeeaffaf18",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:99086b7047c39754ac4ec67276e9f992f1ce21a715cc448127a2817c9245fd8d"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "enum",
+      "id": "enum-null-inflation",
+      "manifest_digest": "sha256:172a02a147b6999e164f963766382eb7a596edfffaeaa35357296bda66dfad4c",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:a1f54dc02e9901b788b65c965014c8e58de71eda49c7f2b22396e85b4882a639",
+        "receipt_digest": null,
+        "validation_result": "FAILED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "POLICY_INPUT_DRIFT"
+      ],
+      "expected_decision": "BLOCKED",
+      "family": "enum",
+      "id": "enum-owner-drift",
+      "manifest_digest": "sha256:6a6b3427a55adb60eb333bf1f62d3e2b767ccc2a675672db726a656ffd120e05",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_INPUT_DRIFT"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "BLOCKED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "REVIEW_OWNER_CONFIRMATION"
+      ],
+      "expected_decision": "REVIEW_REQUIRED",
+      "family": "enum",
+      "id": "enum-owner-review",
+      "manifest_digest": "sha256:2daa4dcea2d01d57ccd3ac5f957e779e084d12a2604fe8ba375ccd7afb22f87a",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "REVIEW_OWNER_CONFIRMATION"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "REVIEW_REQUIRED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:e751e07b9fd8d0d177bef28d22a452506bf1ecca4cf512df7010eba1da76600a",
+        "ownership_digest": "sha256:559a8c39b9ccd5904544e4cbe714847ba72e4e224ad80bc8144b5e35ff9d8f1a",
+        "schema_digest": "sha256:648a02cf196e76ee57d7eaa10dcf52259501e6c604563482ea9070d2f19aa53e"
+      },
+      "expected_codes": [],
+      "expected_decision": "READY_TO_RETIRE",
+      "family": "measure",
+      "id": "measure-gross-net-clean",
+      "manifest_digest": "sha256:eeb8f1370ad9a10aaeca1a24db9b8131ab4eaee0400e16a30b6f528e8cc0116d",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:bc274d90c899da4b2d1b16cd61bc38612c3bd2d04e8515d13322d9e5e9715de7",
+        "receipt_digest": "sha256:700ca6c053dc8d3698cb93acc7295c8dd98815ec316e21289058a07fb29d1ef1",
+        "validation_result": "PASSED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [],
+      "observed_consumer_count": 5,
+      "observed_decision": "READY_TO_RETIRE",
+      "sequence": {
+        "after": "INVALIDATED",
+        "case_id": "measure-gross-net-clean",
+        "gate_refusal": "GATE_DECISION_NOT_READY",
+        "issued": "ISSUED",
+        "outcome": "REVERSED",
+        "plan_digest": "sha256:629babba530c77751373b59c1af24c93b5588c529f9daa9faf39c6cc48d96d39",
+        "producer_action_count": 0,
+        "publication_verified": true
+      }
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:2a4804409c9a72d30ca485c58af17bc28740ec34d5ad07884e78e08e3a19f987",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:f8e96f0b9512d70e519138d013d1b5ac059d6956887826932fd08a20c35175a5"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "measure",
+      "id": "measure-aggregate-drift",
+      "manifest_digest": "sha256:905c7292eb8478e707aa12eeb7c9d8434709d814280b1b8a6e9b3b39be703817",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:16b32c3fee578a1929e7f789e7287d47d816914fd79d413fed49e61b1109ae0c",
+        "receipt_digest": null,
+        "validation_result": "FAILED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:f81bee157827554e99af586a4ee7794c4e80c4196f3a1deef3276029c5a20d37",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:f557c5f536e26fd09488c3d02eb64ec2c1ff34dd50f2fbbe66b44feb2defbe5f"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "measure",
+      "id": "measure-duplicate-key",
+      "manifest_digest": "sha256:037612935decfd6febc229e2e808000662ea96a64317679eb9a79d78fd70fdb4",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:a3d6d43d3690addf2904baa23cb07efc4f4379e77c90031c68df62494a743d59",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:17c15cdef3345313f511e77e91690793e0ae0233a376228e5f84b9d5573cf51f"
+      },
+      "expected_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "expected_decision": "BLOCKED",
+      "family": "measure",
+      "id": "measure-stale-evidence",
+      "manifest_digest": "sha256:b9ea0211d67df7b3d026de11dca6a44ab97bd4bcd1a3aeb079fd7a0fac3b3bc2",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "BLOCKED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:c37e716622d501b10dcd618a36dc544fa20084097e3524f624fbc10878c2be74",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:af86f6599191f11b7fa8b9b5ad72d1424d0106cc6a6f9ddbe9ce7cada3d6679a"
+      },
+      "expected_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "expected_decision": "BLOCKED",
+      "family": "measure",
+      "id": "measure-permission-partial",
+      "manifest_digest": "sha256:f46c98baa8b8c9fb08690f647936553fd06acd16ff931f450228e6733fa4ae50",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "BLOCKED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "REVIEW_AGGREGATE_GRAIN"
+      ],
+      "expected_decision": "REVIEW_REQUIRED",
+      "family": "measure",
+      "id": "measure-grain-review",
+      "manifest_digest": "sha256:48940ea908b9c58b2e6127810be3dcc6a4ec994be5a4b2f1ac3242a98ffac5f8",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "REVIEW_AGGREGATE_GRAIN"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "REVIEW_REQUIRED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:c159c591dcadd187ff75ccb47f27a7096cc75d24eaf4d77f959671d8cb9c7e13",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:4ba7dde4e3230cf4308392da46123623c3ee0a4ff8fb13d8cb027fce5ed9fa8c"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_STALE"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "measure",
+      "id": "measure-disappearing-edge",
+      "manifest_digest": "sha256:e27b555fa4095c765c892f0eb613dca8f31eb0190bd3a96ec5a165ca60fc74b6",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_CONSUMER_STALE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "REVIEW_GENERATED_SQL"
+      ],
+      "expected_decision": "REVIEW_REQUIRED",
+      "family": "measure",
+      "id": "measure-generated-review",
+      "manifest_digest": "sha256:158684070514647a76050873e9b048d1ae5ec995e267d143570a2e49e4c09881",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "REVIEW_GENERATED_SQL"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "REVIEW_REQUIRED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:b1a3ea779f794b2fa4a1eb3525cbfdd33747d219fb7da8c0ff88e13dcefdd341",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:ec928942c25549574a917fc1767aee505a316833cba4f9d56c4bfb092f5ae943"
+      },
+      "expected_codes": [],
+      "expected_decision": "READY_TO_RETIRE",
+      "family": "temporal",
+      "id": "temporal-clean-utc",
+      "manifest_digest": "sha256:3f3aa1529b4a796ad78326e028ea2f27dec7050d530707cfd36c291c4c1df7ca",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:afae091a0787e29e52e04ccfb3a4ca3b5d82afd7cd92275aba1f106c9764c7da",
+        "receipt_digest": "sha256:9337017b28ecbe202d13b8955e87ff0b2a7c80da1be63f11ba8c02e35cb26f81",
+        "validation_result": "PASSED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [],
+      "observed_consumer_count": 5,
+      "observed_decision": "READY_TO_RETIRE",
+      "sequence": {
+        "after": "EXPIRED",
+        "case_id": "temporal-clean-utc",
+        "gate_refusal": "GATE_PLAN_EXPIRED",
+        "issued": "ISSUED",
+        "outcome": "EXPIRED_REFUSED",
+        "plan_digest": "sha256:84940fa7b9dec1ccf23084286cbc0e733006fa7df2a9762d3143c47aaa42627a",
+        "producer_action_count": 0,
+        "publication_verified": true
+      }
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "temporal",
+      "id": "temporal-timezone-drift",
+      "manifest_digest": "sha256:5f92f83dc125ba4da5eae747cbfc73a0ba920af901d3abe01068ec7ed60fbaec",
+      "matched": true,
+      "native": {
+        "actual_targets": [
+          "models/consumer.sql"
+        ],
+        "approval_guard_refusal": "AUTH_APPROVAL_MISSING",
+        "plan_digest": "sha256:db6fc5a330fd7a50847d1c3b27a8d6190d0344b27344ecd8ebcec686e7a98e8d",
+        "receipt_digest": null,
+        "validation_result": "FAILED",
+        "validator_version": "1.12.0"
+      },
+      "observed_codes": [
+        "POLICY_CONSUMER_FAILED"
+      ],
+      "observed_consumer_count": 6,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "expected_decision": "BLOCKED",
+      "family": "temporal",
+      "id": "temporal-stale-native-data",
+      "manifest_digest": "sha256:7d5f3038a5604978724f1fe4051822826ef854f1eaed84fe46ba3ad86e7bd04f",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "EVIDENCE_REQUIRED_SOURCE_INCOMPLETE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "BLOCKED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 6,
+      "datahub": {
+        "lineage_digest": "sha256:206f0a34927b387b19823b268890c400c45c7a7f792d42e9bb3ab479a025ef66",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:5088c497082ccfedaf685e9a4cac4037f3213f4ff44cea894fee718c914f201b"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_OPAQUE",
+        "RECONCILIATION_NEW_CONSUMER"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "temporal",
+      "id": "temporal-late-consumer",
+      "manifest_digest": "sha256:b21331a84cd9dee82f0256915b93d2d7eda796379c72082b8f65d864782774e4",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_CONSUMER_OPAQUE",
+        "RECONCILIATION_NEW_CONSUMER"
+      ],
+      "observed_consumer_count": 6,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "REVIEW_TEMPORAL_SEMANTICS"
+      ],
+      "expected_decision": "REVIEW_REQUIRED",
+      "family": "temporal",
+      "id": "temporal-semantics-review",
+      "manifest_digest": "sha256:0270f42e5b4c496ed5c543abcb8889bad1cabad99b950d09840d3917fb17aff6",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "REVIEW_TEMPORAL_SEMANTICS"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "REVIEW_REQUIRED",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "POLICY_CONSUMER_STALE"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "temporal",
+      "id": "temporal-source-drift",
+      "manifest_digest": "sha256:da7b0f6f2e1d91d50d8338c4db0197333a463b453995a3b46f9a8e1b755505d2",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_CONSUMER_STALE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": null,
+      "expected_codes": [
+        "POLICY_CONSUMER_STALE"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "temporal",
+      "id": "temporal-recreated-identity",
+      "manifest_digest": "sha256:5e6b8971d6fcbd8213accb615572d82159c0688401651a5eef3ce926c6c71efc",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_CONSUMER_STALE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    },
+    {
+      "controlled_consumer_count": 5,
+      "datahub": {
+        "lineage_digest": "sha256:70faa097576bda0e54223c76e4a9bba0b46325e5c607ac3dd568bf821abe0711",
+        "ownership_digest": "sha256:900eaa7157dffbf3c69f2c2331ae9f2d785691fd06aee2b629c5d417207598c7",
+        "schema_digest": "sha256:5a43cec616fe3f4953453cf6ccaba73a6563d7f534cf00f0859147f89592fc3f"
+      },
+      "expected_codes": [
+        "POLICY_CONSUMER_OPAQUE"
+      ],
+      "expected_decision": "UNSAFE",
+      "family": "temporal",
+      "id": "temporal-cycle-table-only",
+      "manifest_digest": "sha256:84fe8c077c1f276b143e669acc5d10c7ee47559d62f0e7b557c4522b4275e267",
+      "matched": true,
+      "native": null,
+      "observed_codes": [
+        "POLICY_CONSUMER_OPAQUE"
+      ],
+      "observed_consumer_count": 5,
+      "observed_decision": "UNSAFE",
+      "sequence": null
+    }
+  ],
+  "controlled_consumer_count": 121,
+  "corrupt_oracle_detection": "REJECTED",
+  "datahub": {
+    "actual_multi_page_retrieval": true,
+    "core": {
+      "configured_image": "acryldata/datahub-gms:v1.6.0",
+      "published_port": "127.0.0.1:18081",
+      "scope": "isolated loopback disposable Core",
+      "startup_container_health": "healthy"
+    },
+    "live_twin_semantically_equivalent": true,
+    "mcp": {
+      "health": null,
+      "listener": "127.0.0.1:8001",
+      "package_version": "0.6.0",
+      "scope": "isolated loopback disposable Core",
+      "source_commit": "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9"
+    },
+    "page_size": 2
+  },
+  "decision_counts": {
+    "BLOCKED": 6,
+    "READY_TO_RETIRE": 4,
+    "REVIEW_REQUIRED": 4,
+    "UNSAFE": 10
+  },
+  "defect_fixes": [
+    {
+      "defect": "Durable state could not retain a predeclared review requirement.",
+      "fix": "Digest-chained review events now feed the canonical policy projection."
+    },
+    {
+      "defect": "Non-applicability had no dedicated evidence-bearing event.",
+      "fix": "Exact digest-bound non-applicability receipts now close only one consumer."
+    }
+  ],
+  "evidence_classification": {
+    "datahub": "live local Core over fixture metadata",
+    "git_dbt": "live local disposable Git/dbt",
+    "production_claim": false,
+    "truth": "deterministic fixture"
+  },
+  "evidence_digest": "sha256:28e8cfc536700232533b92ec67a18a72041be2e8d231a8f59f985fce74fe0220",
+  "expected_consumer_recall": 1.0,
+  "false_readiness_count": 0,
+  "frozen_truth": {
+    "corpus_sha256": "b0e9c23f0d206e4a8925da578ce6e4fdf315a47b057198b2cc1c4e1fcf9ff03c",
+    "frozen_commit": "f10a7e3",
+    "oracle_sha256": "ff67034d1b4b6eff85c80dcb94f499dd8e293a5f353f39fbb1ea2ec2a9facdb0"
+  },
+  "limitations": [
+    "Controlled fixture truth and live-local systems do not establish production coverage.",
+    "Only Git/dbt is an automated native mutation boundary.",
+    "Non-applicability receipts are exact controlled-graph evidence, not native validation.",
+    "DataHub eventual consistency is bounded by polling in this disposable run."
+  ],
+  "native_validator_versions": [
+    "1.12.0"
+  ],
+  "producer_action_count": 1,
+  "raw_evidence": {
+    "classification": "ignored local operational evidence",
+    "location": ".retirement-conductor/gauntlet-v2/",
+    "retention": "operator-managed; never packaged or published"
+  },
+  "schema_version": "retirement-gauntlet-evidence/v2",
+  "sequence_outcomes": [
+    {
+      "after": "CONSUMED",
+      "case_id": "enum-clean-isolated",
+      "gate_refusal": null,
+      "issued": "ISSUED",
+      "outcome": "CONSUMED_EXECUTED",
+      "plan_digest": "sha256:3ab3be645ffa680b54b9f0314b05414c682797da236103b5ecb7238854d30cef",
+      "producer_action_count": 1,
+      "publication_verified": true
+    },
+    {
+      "after": "INVALIDATED",
+      "case_id": "enum-alias-macro-ready",
+      "gate_refusal": "GATE_STATE_DRIFT",
+      "issued": "ISSUED",
+      "outcome": "UNCHANGED",
+      "plan_digest": "sha256:f68dd31b5bd10cbf2f3426fc14c5c6370e731cdd0da810146ede3808040bcd94",
+      "producer_action_count": 0,
+      "publication_verified": true
+    },
+    {
+      "after": "INVALIDATED",
+      "case_id": "measure-gross-net-clean",
+      "gate_refusal": "GATE_DECISION_NOT_READY",
+      "issued": "ISSUED",
+      "outcome": "REVERSED",
+      "plan_digest": "sha256:629babba530c77751373b59c1af24c93b5588c529f9daa9faf39c6cc48d96d39",
+      "producer_action_count": 0,
+      "publication_verified": true
+    },
+    {
+      "after": "EXPIRED",
+      "case_id": "temporal-clean-utc",
+      "gate_refusal": "GATE_PLAN_EXPIRED",
+      "issued": "ISSUED",
+      "outcome": "EXPIRED_REFUSED",
+      "plan_digest": "sha256:84940fa7b9dec1ccf23084286cbc0e733006fa7df2a9762d3143c47aaa42627a",
+      "producer_action_count": 0,
+      "publication_verified": true
+    }
+  ],
+  "tier_counts": {
+    "datahub": 15,
+    "durable": 24,
+    "git_dbt": 8,
+    "sequence": 4
+  },
+  "unexpected_closure_count": 0
+}

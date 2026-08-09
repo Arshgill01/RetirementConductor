@@ -60,6 +60,85 @@ promote the event changes.
 - Public aggregate: `artifacts/public/retirement-gauntlet-v2/index.json`.
 - Production and customer-value claims: explicitly not established.
 
-Final tested commit, observed failures/fixes, command results, public digest,
-and remaining limitations are appended only after the full run, artifact
-inspection, `make check`, and clean-worktree verification succeed.
+## Final evidence
+
+- Tested behavior commit: `b88affc`
+- Runner command:
+  `uv run python -m scripts.run_retirement_gauntlet_v2`
+- Result: `RETIREMENT_GAUNTLET_V2_PASSED`
+- Public evidence digest:
+  `sha256:28e8cfc536700232533b92ec67a18a72041be2e8d231a8f59f985fce74fe0220`
+- Decisions: 4 `READY_TO_RETIRE`, 6 `BLOCKED`, 10 `UNSAFE`, and 4
+  `REVIEW_REQUIRED`; every decision and refusal/review code matched the
+  independent oracle.
+- Tiers: 24 durable-store cases, 15 live-local DataHub cases, 8 disposable
+  Git/dbt cases, and 4 gate/watch sequence cases.
+- Controlled recall: 121/121 expected consumers, with zero false readiness
+  and zero unexpected closure.
+- The deliberately corrupted oracle comparison was rejected.
+- One producer action executed in the clean case. The other sequence cases
+  refused an unchanged-watch-invalidated plan, a late-consumer-reversed plan,
+  and an expired plan.
+
+The READY exemplar was inspected rather than accepted by exit status alone.
+Its raw evidence has a complete four-page, 5/5 DataHub inventory; a Git apply
+receipt bound to one exact consumer; dbt parse, seed, build, and test commands
+with exit code zero; a `VALIDATED` terminal receipt; unchanged reconciliation;
+verified DataHub publication; and an `EXECUTED` producer gate receipt. The
+compact public index contains no raw repository paths or run token.
+
+## Observed failures and fixes
+
+The successful evidence follows several failure-closed attempts. None of the
+failed attempts published a result.
+
+1. A shared DataHub port collision occurred before product execution. The
+   runner now uses an isolated Compose project and loopback ports.
+2. Eventual-consistency gaps produced transient missing lineage pages and MCP
+   transport truncation. Retries are bounded to the affected live read and do
+   not turn partial evidence into complete evidence.
+3. A full uncached twin traversal exhausted the shared host. The retained twin
+   is an independent cache-bypassed paged GMS read, while every live case also
+   performs direct schema, lineage, and ownership reads.
+4. Partial pagination initially lost controlled identities. The runner now
+   retains the frozen controlled identities as opaque under the partial
+   envelope, so missing pages block rather than silently erase consumers.
+5. Replay-only Git/dbt evidence used a pre-normalization envelope shape. It now
+   validates against the current evidence-envelope schema before campaign use.
+6. The stale-native-data case initially described only fresh metadata. It now
+   records a separate required `native-data` source as `STALE`, preserving the
+   fresh DataHub source and producing the frozen refusal through policy.
+7. Compose replaced the GMS container during its update lifecycle. Immutable
+   image and health provenance is now captured when startup health succeeds,
+   before seeding and product execution, rather than by retaining a container
+   ID until the end.
+
+These fixes changed the experiment boundary or durable event projection; they
+did not change the frozen corpus, oracle, policy rules, or product decision
+expectations.
+
+## Validation and inspection
+
+- `uv run ruff check scripts/run_retirement_gauntlet_v2.py tests/unit/test_retirement_gauntlet_v2.py`
+  — passed.
+- `uv run mypy` — passed for 89 source files.
+- `uv run pytest -q tests/unit/test_retirement_gauntlet_v2.py` — 3 passed,
+  including the corrupted-oracle rejection and stale-native envelope check.
+- `uv run python scripts/check_public_artifacts.py` — passed, 74 files checked.
+- `uv run python scripts/check_secrets.py` — passed, 383 text files checked.
+- `git diff --check` — passed before the final gauntlet run.
+- `make check` — passed: ruff and format checks, mypy over 89 source files,
+  247 tests, repository validation, secret and public-artifact scans, source and
+  wheel builds, and `git diff --check`.
+
+The final MCP health probe in the compact index is `null`; the server had
+already served all 15 live cases, and startup health plus per-case raw MCP/GMS
+artifacts prove the exercised boundary. This is a disposable-lifecycle
+observation, not production evidence, and should remain a stated limitation.
+
+## Final recommendation
+
+`KEEP` the durable campaign/gate boundary and the two narrow event types. The
+promotion criteria above passed. Integration should preserve the frozen-file
+boundary and apply the deferred shared-document hunks only after comparing the
+TE-01 and TE-03 reports.
