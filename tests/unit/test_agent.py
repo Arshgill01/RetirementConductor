@@ -78,7 +78,18 @@ def test_agent_runtime_rejects_path_and_identifier_escape(tmp_path: Path) -> Non
         runtime.inspect_campaign("../../campaign")
 
 
-def test_authorization_instructions_cannot_record_approval(tmp_path: Path) -> None:
+def test_authorization_instructions_cannot_record_approval(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    monkeypatch.setenv("GIT_DBT_REPOSITORY_ROOT", str(repository))
+    monkeypatch.setenv("GIT_DBT_REPOSITORY_ID", "analytics")
+    monkeypatch.setenv("GIT_DBT_DEFAULT_BRANCH", "main")
+    monkeypatch.setenv("GIT_DBT_DBT_EXECUTABLE", "/opt/dbt/bin/dbt")
+    monkeypatch.setenv("GIT_DBT_PRINCIPAL", "demo-operator")
+    monkeypatch.setenv("GIT_DBT_ALLOW_APPLY", "true")
     runtime = _runtime(tmp_path)
     plan_path = (
         tmp_path / "artifacts" / "ret-orders-legacy-status" / "git-dbt" / "plan.json"
@@ -105,6 +116,14 @@ def test_authorization_instructions_cannot_record_approval(tmp_path: Path) -> No
         "git-dbt",
         "authorize",
     ]
+    assert result["required_environment"] == {
+        "GIT_DBT_REPOSITORY_ROOT": str(repository),
+        "GIT_DBT_REPOSITORY_ID": "analytics",
+        "GIT_DBT_DEFAULT_BRANCH": "main",
+        "GIT_DBT_DBT_EXECUTABLE": "/opt/dbt/bin/dbt",
+        "GIT_DBT_PRINCIPAL": "demo-operator",
+        "GIT_DBT_ALLOW_APPLY": "true",
+    }
     assert not runtime.settings.store.exists()
     assert json.loads(plan_path.read_text(encoding="utf-8"))["plan_digest"] == (
         "sha256:" + ("a" * 64)

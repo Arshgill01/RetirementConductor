@@ -15,7 +15,8 @@ and deterministic gate still decide what is allowed.
 - public-safe orchestration evidence under `artifacts/public/agent/`.
 
 The MCP server does not expose an authorization-recording tool. It can return
-the exact external CLI command, but a human must review and run that command.
+the exact external CLI command plus its required non-secret Git/dbt environment,
+but a human must review and direct that command outside the product agent.
 The server invokes the existing Python command dispatcher directly with fixed
 arguments; it does not shell out or implement a second policy engine.
 
@@ -57,6 +58,12 @@ same skill automatically from `.agents/skills/`.
 7. Close with the exact recovery: migrate or verify the Spark consumer in its
    native system, reconcile equivalent fresh scope, publish and verify the new
    summary, then issue a new short-lived producer plan.
+
+Presentation names used in the three-minute demo map directly to existing
+artifacts: a native consumer receipt is a **Change Receipt**, the short-lived
+producer plan is a **Retirement Lease**, and the existing public technical
+dossier is the **Evidence & Trust Center**. These labels do not create a second
+policy or artifact format.
 
 Run the retained-live-state trace with:
 

@@ -367,10 +367,11 @@ def create_server(runtime: AgentCommandRuntime | None = None) -> Any:
 
     @server.tool(
         name="prepare_producer_retirement_plan",
-        title="Prepare producer retirement plan",
+        title="Prepare Retirement Lease",
         description=(
-            "Issue one short-lived producer plan for the exact current canonical "
-            "manifest. This cannot make a non-ready campaign ready."
+            "Issue one short-lived Retirement Lease for the exact current canonical "
+            "manifest. The maximum lifetime is 15 minutes. This cannot make a "
+            "non-ready campaign ready."
         ),
         annotations=ToolAnnotations(
             read_only_hint=False,
@@ -392,8 +393,9 @@ def create_server(runtime: AgentCommandRuntime | None = None) -> Any:
         name="execute_retirement_gate",
         title="Execute retirement gate",
         description=(
-            "Verify and consume the exact issued producer plan. This can execute the "
-            "configured producer action only when every failure-closed check passes."
+            "Verify and consume the current issued Retirement Lease. This can execute "
+            "the configured producer action only when every failure-closed check "
+            "passes."
         ),
         annotations=ToolAnnotations(
             read_only_hint=False,
@@ -404,9 +406,8 @@ def create_server(runtime: AgentCommandRuntime | None = None) -> Any:
     )
     def execute_retirement_gate(
         campaign_id: str,
-        plan: str | None = None,
     ) -> dict[str, Any]:
-        return tool_runtime.execute_gate(campaign_id, plan=plan)
+        return tool_runtime.execute_gate(campaign_id)
 
     return server
 

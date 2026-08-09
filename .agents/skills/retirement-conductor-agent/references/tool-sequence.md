@@ -24,8 +24,8 @@
 | Reconcile | `reconcile_retirement_campaign` | reread source and graph; revoke on drift |
 | Publish | `publish_retirement_summary` | write one stable DataHub summary |
 | Verify | `verify_retirement_summary` | read exact summary back |
-| Producer plan | `prepare_producer_retirement_plan` | issue one short-lived exact plan |
-| Gate | `execute_retirement_gate` | consume plan and execute only if ready |
+| Retirement Lease | `prepare_producer_retirement_plan` | issue one exact lease valid for at most 15 minutes |
+| Gate | `execute_retirement_gate` | consume the current lease and execute only if ready |
 
 Use direct DataHub MCP search, entity, schema, lineage, path, query, and
 document tools before and around this sequence for agent-visible context.

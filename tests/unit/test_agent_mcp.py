@@ -69,6 +69,13 @@ def test_mcp_server_advertises_focused_annotated_tools() -> None:
             assert "human records authorization outside this server" in (
                 SERVER_INSTRUCTIONS
             )
+            assert (
+                "plan"
+                not in by_name["execute_retirement_gate"].input_schema["properties"]
+            )
+            assert (
+                "15 minutes" in by_name["prepare_producer_retirement_plan"].description
+            )
 
     asyncio.run(exercise())
 

@@ -17,6 +17,14 @@ from retirement_conductor.cli import main as cli_main
 from retirement_conductor.git_dbt import load_object
 
 _CAMPAIGN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+_AUTHORIZATION_ENVIRONMENT = (
+    "GIT_DBT_REPOSITORY_ROOT",
+    "GIT_DBT_REPOSITORY_ID",
+    "GIT_DBT_DEFAULT_BRANCH",
+    "GIT_DBT_DBT_EXECUTABLE",
+    "GIT_DBT_PRINCIPAL",
+    "GIT_DBT_ALLOW_APPLY",
+)
 
 
 @dataclass(frozen=True)
@@ -189,6 +197,11 @@ class AgentCommandRuntime:
         plan = load_object(
             self.settings.artifact_directory / campaign / "git-dbt" / "plan.json"
         )
+        required_environment = {
+            name: os.environ[name]
+            for name in _AUTHORIZATION_ENVIRONMENT
+            if os.environ.get(name)
+        }
         return {
             "result": "HUMAN_AUTHORIZATION_REQUIRED",
             "campaign_id": campaign,
@@ -196,8 +209,10 @@ class AgentCommandRuntime:
             "authorized_targets": [plan["target"]["path"]],
             "instructions": (
                 "Review the exact plan and target, then run this command outside "
-                "the agent. The agent has no authorization-recording tool."
+                "the agent with the returned non-secret environment. The agent "
+                "has no authorization-recording tool."
             ),
+            "required_environment": required_environment,
             "command_argv": [
                 "retirement-conductor",
                 "adapter",
