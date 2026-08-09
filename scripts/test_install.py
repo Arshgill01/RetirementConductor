@@ -32,6 +32,7 @@ from scripts.phase08_support import (
 
 PYTHON_VERSIONS = ("3.11", "3.12", "3.13", "3.14")
 REFERENCE_DIGEST = "manifest_digest"
+AGENT_TOOL_COUNT = 16
 
 
 def require(condition: bool, message: str) -> None:
@@ -391,6 +392,76 @@ def exercise_uninstall(root: Path) -> dict[str, Any]:
     }
 
 
+def exercise_agent_extra(root: Path) -> dict[str, Any]:
+    """Install the optional agent surface and perform a real MCP handshake."""
+
+    environment_root = create_clean_environment(
+        root / "venv",
+        python_version="3.13",
+    )
+    python = environment_root / "bin" / "python"
+    checked(
+        [
+            "uv",
+            "pip",
+            "install",
+            "--python",
+            str(python),
+            "--no-config",
+            "--no-progress",
+            f"{current_wheel()}[agent]",
+        ],
+        timeout=900,
+    )
+    home = root / "home"
+    environment = runtime_environment(home)
+    work = root / "work"
+    work.mkdir()
+    script = """
+import asyncio
+import json
+
+from mcp import Client
+from retirement_conductor.agent_mcp import create_server
+
+
+async def inspect() -> None:
+    async with Client(create_server()) as client:
+        tools = (await client.list_tools()).tools
+    print(json.dumps({
+        "tool_count": len(tools),
+        "tool_names": sorted(tool.name for tool in tools),
+    }))
+
+
+asyncio.run(inspect())
+"""
+    result = checked(
+        [str(python), "-I", "-c", script],
+        cwd=work,
+        environment=environment,
+    )
+    observation = json.loads(result.stdout)
+    require(
+        observation["tool_count"] == AGENT_TOOL_COUNT,
+        "installed agent exposed the wrong MCP tool count",
+    )
+    require(
+        (environment_root / "bin" / "retirement-conductor-mcp").is_file(),
+        "installed agent console entry point is missing",
+    )
+    return {
+        **observation,
+        "python_version": checked(
+            [str(python), "-c", "import platform; print(platform.python_version())"],
+            cwd=work,
+            environment=environment,
+        ).stdout.strip(),
+        "entry_point": "retirement-conductor-mcp",
+        "handshake": "PASSED",
+    }
+
+
 def run() -> dict[str, Any]:
     require(current_wheel().is_file(), "run make package before test-install")
     observations = []
@@ -403,6 +474,7 @@ def run() -> dict[str, Any]:
                 exercise_runtime(base / f"python-{version}", python_version=version)
             )
         uninstall = exercise_uninstall(base / "uninstall")
+        agent = exercise_agent_extra(base / "agent-extra")
 
     reference_digests = {
         str(item["reference_manifest_digest"]) for item in observations
@@ -424,6 +496,7 @@ def run() -> dict[str, Any]:
             },
             "runtimes": observations,
             "uninstall": uninstall,
+            "agent": agent,
             "limitations": [
                 "Virtual environments isolate Python packages on one Linux host.",
                 "The clean-install test does not exercise external integrations.",
@@ -435,6 +508,7 @@ def run() -> dict[str, Any]:
     write_json(PHASE08_RUNTIME / "install-evidence.json", evidence)
     print(
         f"Clean install passed on {len(observations)} Python runtimes; "
+        f"installed agent exposed {agent['tool_count']} MCP tools; "
         "confirmed state and package removal passed."
     )
     return evidence
