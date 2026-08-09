@@ -501,19 +501,23 @@ def fixture_envelope(case_id: str, status: str = "COMPLETE") -> dict[str, Any]:
                     "status": status,
                     "source_version": "gauntlet-controlled-replay/v2",
                     "identity": f"controlled:{case_id}",
-                    "scope": {"direction": "downstream", "max_hops": 5, "filters": []},
+                    "scope": {
+                        "direction": "downstream",
+                        "max_hops": 5,
+                        "filters": [],
+                        "pages": 3,
+                        "reported_total": 5,
+                        "returned_total": 5,
+                    },
                     "freshness": {
                         "observed_at": utc_now(),
                         "source_updated_at": utc_now(),
                         "maximum_age_seconds": 900,
                     },
-                    "pagination": {
-                        "complete": status == "COMPLETE",
-                        "pages": 3,
-                        "reported_total": 5,
-                        "returned_total": 5,
+                    "permissions": {
+                        "principal": "gauntlet-controlled-replay",
+                        "effective_scope": "read",
                     },
-                    "permissions": {"status": "COMPLETE"},
                     "limitations": [
                         "Deterministic controlled replay, not live DataHub"
                     ],
