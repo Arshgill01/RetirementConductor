@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from retirement_conductor.canonical import digest_json, with_digest, write_json
-from retirement_conductor.datahub import DataHubBoundary
+from retirement_conductor.datahub import ArtifactWriter, DataHubBoundary
 from retirement_conductor.datahub_config import DataHubSettings
 from retirement_conductor.datahub_http import DataHubGraphClient
 from retirement_conductor.errors import Refusal
@@ -1039,22 +1039,22 @@ def execute(
                             entry["target_urn"], "ownership"
                         ),
                     }
-                    twin = inventory_with_retry(
-                        boundary,
-                        specification,
-                        artifact_root=artifact_root / campaign_id / "datahub" / "twin",
-                        forced_failure_offset=forced,
-                    )
-                    twin_urns = {str(item["datahub_urn"]) for item in twin["consumers"]}
-                    if forced is None:
+                    if case_id == "enum-clean-isolated":
+                        twin = boundary.page_downstream(
+                            str(snapshot["resolution"]["dataset"]["urn"]),
+                            max_hops=5,
+                            writer=ArtifactWriter(
+                                artifact_root / campaign_id / "datahub" / "paged-twin"
+                            ),
+                        )
+                        twin_urns = {str(item["urn"]) for item in twin.consumers}
                         require(
                             twin_urns == actual_urns,
                             f"live twin differed: {case_id}",
                         )
-                    else:
                         require(
-                            twin["pagination"]["status"] == "PARTIAL",
-                            f"intentional partial twin passed: {case_id}",
+                            str(twin.status) == "COMPLETE" and len(twin.pages) > 1,
+                            "live paged twin was not complete and multi-page",
                         )
                     consumers = [dict(item) for item in snapshot["consumers"]]
                     envelope = dict(snapshot["evidence_envelope"])
