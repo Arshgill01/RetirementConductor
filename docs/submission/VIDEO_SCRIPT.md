@@ -15,8 +15,8 @@ indexing waits, and validator runtime should be cut.
 
 **Say:**
 
-> A database field almost never belongs to one team. Replace it, and a model,
-> dashboard, or Spark job you do not own can fail.
+> Here is the problem: changing one warehouse column can break systems your
+> repository cannot even see.
 
 ### 0:07–0:14 — Why DataHub
 
@@ -24,9 +24,9 @@ indexing waits, and validator runtime should be cut.
 
 **Say:**
 
-> In one live test, repository analysis found one consumer. Complete DataHub
-> field lineage found thirty-one. That is why DataHub changes the decision; it
-> is not decoration.
+> In our test, repository search found one consumer. DataHub found thirty-one,
+> across seven pages. So DataHub is not a lookup here. It changes whether the
+> column can be removed.
 
 ### 0:14–0:22 — The promise
 
@@ -34,22 +34,24 @@ indexing waits, and validator runtime should be cut.
 
 **Say:**
 
-> Retirement Conductor turns that graph into one workflow: discover, change,
-> test natively, recheck, then remove the old field—or refuse.
+> Retirement Conductor takes it from there: move the consumers we can change,
+> run their real tests, check the graph again, and then drop the old field—or
+> stop.
 
 ## 0:22–1:18 — The agent changes a real consumer
 
 ### 0:22–0:43 — DataHub to exact plan
 
-**Screen:** a fresh Codex task. Show the prompt, named MCP calls, exact file,
-and plan digest. Keep tool details collapsed unless the tool name itself is the
-proof.
+**Screen:** the retained real Codex task, or a fresh task only if the disposable
+demo environment has already been prepared. Show the prompt, named MCP calls,
+exact file, and plan digest. Keep tool details collapsed unless the tool name
+itself is the proof.
 
 **Say:**
 
-> Codex is the operator. A project skill and sixteen-tool MCP server let it
-> inspect DataHub and drive the same campaign engine as the CLI. It resolves the
-> exact fields, finds one changeable dbt model, and proposes one file change.
+> Here is the actual agent run. I ask Codex to replace `legacy_status` with
+> `order_status`. It uses DataHub and our MCP server, finds the exact dbt model,
+> and produces a one-file plan.
 
 ### 0:43–0:55 — Human authority
 
@@ -59,8 +61,8 @@ authorization is recorded.
 
 **Say:**
 
-> Then it stops. The agent cannot approve itself. I review and authorize this
-> exact digest outside the agent.
+> And then it stops. That matters: the agent cannot approve its own change. I
+> authorize that exact plan in a separate operator terminal.
 
 ### 0:55–1:18 — Native proof
 
@@ -70,10 +72,9 @@ publication read-back.
 
 **Say:**
 
-> The approved change goes through a real pull request. dbt parse, build, test,
-> and semantic validation pass. Retirement Conductor records the native receipt,
-> rechecks DataHub, writes the result back, and verifies that another agent can
-> read it.
+> That opens a real pull request. dbt parse, build, test, and semantic checks all
+> pass. The result is written back to DataHub, read back, and tied to the same
+> campaign.
 
 ## 1:18–2:32 — Consequential action and reversal
 
@@ -90,10 +91,10 @@ publication read-back.
 
 **Say:**
 
-> The final command runs outside Codex with separate PostgreSQL credentials. It
-> freshly checks DataHub, the native consumers, approval, and the producer
-> schema. In the clean run it commits exactly one drop, preserves the replacement,
-> the replacement Spark workload stays healthy, and replay is refused.
+> Now for the part I cared about: does it actually do anything? In the clean
+> run, a separately privileged command checks everything again and really drops
+> the PostgreSQL column. One drop. The replacement survives, the Spark workload
+> stays healthy, and replay is refused.
 
 ### 1:43–2:09 — Late consumer
 
@@ -102,9 +103,8 @@ reconciliation result changing to `UNSAFE`.
 
 **Say:**
 
-> Now the important case. After the original approval, a Spark job appears in
-> DataHub still reading `legacy_status`. The same fresh reconciliation changes
-> the answer to unsafe.
+> Then we make it harder. After approval, a new Spark consumer appears in
+> DataHub, still reading `legacy_status`. The answer flips to unsafe.
 
 ### 2:09–2:32 — Refusal with a real consequence
 
@@ -116,9 +116,9 @@ reconciliation result changing to `UNSAFE`.
 
 **Say:**
 
-> Retirement Conductor performs zero destructive statements and preserves the
-> column. This is not a cosmetic warning: in the matched static-signoff control,
-> the drop goes through and Spark fails with SQLSTATE four-two-seven-zero-three.
+> The same final command now commits nothing, and the old column stays. This is
+> not a staged red badge: in the static-signoff control, the drop goes through
+> and Spark actually fails with SQLSTATE four-two-seven-zero-three.
 
 ## 2:32–2:57 — Workbench and close
 
@@ -127,11 +127,10 @@ the broken Spark branch and the `UNSAFE` decision.
 
 **Say:**
 
-> The Workbench reads that same campaign store: the exact cause, consumers,
-> change, validation, freshness, and event history. It is deliberately not a
-> privileged database console. Retirement Conductor does not promise it found
-> the universe. It makes the evidence explicit, changes what it can prove, and
-> blocks the database change when that evidence changes.
+> The Workbench is simply the readable view of that same campaign: what changed,
+> what passed, what is fresh, and exactly why we stopped. We do not pretend
+> DataHub sees the universe. We make the evidence explicit—and when it changes,
+> the database change does not happen.
 
 ## Final frame
 

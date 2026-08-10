@@ -4,16 +4,26 @@ This is the production checklist for the three-minute Devpost video. The
 finished edit may use cuts, zooms, and time compression. It must not imply that
 reading a retained artifact performed the original action.
 
-## Recording surfaces
+## What to open
 
-Prepare five surfaces in this order:
+You do not need two Codex instances. Prepare these windows before recording:
 
-1. **Opening deck:** `/pitch`, full screen, browser chrome hidden.
-2. **Codex:** one clean task with only the prompt and product tool activity
-   visible.
-3. **GitHub:** the public one-file PR and its passing `semantic-dbt` check.
-4. **Terminal:** the definitive producer command and inspected CP-05 outcomes.
-5. **Workbench:** the overview and Evidence view.
+1. **Browser tab 1 — deck:**
+   <https://retirement-conductor.arshgill01.chatgpt.site/pitch>
+2. **Codex app — one task:** use the retained real agent task for the safest
+   take. Start a fresh task only if the disposable DataHub and campaign runtime
+   have already been prepared. The repository for a fresh task is the clean
+   main worktree at `/home/arshdeepsingh/work/RetirementConductor-final`.
+3. **Normal terminal — operator:** one shell tab opened at that same repository
+   root. This is not another Codex CLI or another Codex task.
+4. **Browser tab 2 — GitHub:** preload the public one-file pull request and its
+   passing check.
+5. **Browser tab 3 — Workbench:** preload `/workbench`, first on Overview and
+   then ready to open Evidence.
+
+Record one dominant full-screen surface at a time. Do not put all five windows
+side by side. The final video is an edited sequence of short clips, not one
+continuous desktop performance.
 
 Use 1920×1080 or 2560×1440 at 100% browser zoom. Keep the cursor still unless
 it is showing the next action. Do not show notification badges, tokens, home
@@ -32,9 +42,16 @@ workflow is the architecture.
 
 ## Codex prompt
 
-Start a new task from the repository root after the project skill, Retirement
-Conductor MCP, and DataHub MCP are connected to the prepared disposable demo
-environment.
+**Recommended under deadline:** reopen the completed real Codex task that
+created the public migration PR and record its prompt, product tool calls,
+authorization stop, and final result. That is real evidence and avoids gambling
+the take on cold DataHub or MCP setup. It is the earlier task whose final output
+begins, "Done. The Retirement Conductor agent—not me—completed a real end-to-end
+run," and links to `examples/agent-run/agent-transcript.md`.
+
+If the disposable demo runtime is already running and you deliberately choose a
+fresh run, start exactly one new Codex task from the clean main worktree. Paste
+the following into that task:
 
 Use this exact first prompt:
 
@@ -48,8 +65,11 @@ Retirement Conductor MCP; do not use shell or edit files directly. Show the
 exact target, validators, evidence limitations, and plan digest.
 ```
 
-After running the returned authorization command in the separate operator
-terminal, use:
+Codex should stop and return an exact authorization command. Copy that command
+into the **normal operator terminal** opened at the repository root. Do not
+open another Codex task and do not paste the command into Codex.
+
+After the terminal command succeeds, return to the **same Codex task** and paste:
 
 ```text
 The exact plan authorization has now been recorded outside the agent. Continue
@@ -63,19 +83,35 @@ If Codex uses shell, edits the file directly, authorizes itself, skips native
 validation, or calls the legacy lease/gate path, discard the take. Do not
 explain the mistake in the final video.
 
+The second prompt is therefore not a second agent. The boundary is:
+
+```text
+same Codex task: inspect and plan
+  → normal terminal: record one human authorization
+  → same Codex task: apply, validate, reconcile, publish, stop
+```
+
 ## Producer footage
 
-The producer action is a separate proof boundary. Capture a fresh disposable
-CP-05 run before editing:
+Run producer commands in the **normal terminal**, from:
+
+```bash
+cd /home/arshdeepsingh/work/RetirementConductor-final
+```
+
+This is a separate proof boundary from the Codex task. If you want a fresh
+disposable CP-05 run, run it before recording the polished result frames:
 
 ```bash
 uv run python scripts/run_definitive_consequential.py run
 uv run python scripts/run_definitive_consequential.py verify
 ```
 
-The run is intentionally much longer than the video. Record the real command
-and final results, then cut indexing, container startup, and native workload
-waits. Never point it at production.
+The run is intentionally much longer than the video and may update generated
+evidence files. Record the real command and its final result, then cut indexing,
+container startup, and native workload waits. Never point it at production. If
+time is tight, use the already inspected CP-05 artifacts and say, "This captured
+run produced this evidence." Do not pretend reading an artifact is a fresh run.
 
 For clean, legible result frames, inspect only the fields used in narration:
 
@@ -90,8 +126,26 @@ jq '{result, destructive_statements_committed, legacy_workload_after}' \
   artifacts/public/definitive-consequential-run/point-in-time-static.json
 ```
 
+`jq` is only a JSON viewer. These commands read the already-produced evidence
+files and print five or six useful fields so the judge is not staring at a wall
+of JSON. They do not run, change, authorize, or retry anything.
+
 Say “the captured run produced this evidence” while these are visible. Do not
 say that `jq` executed the migration.
+
+## Exact edit order
+
+Use these cuts; the times match `VIDEO_SCRIPT.md`:
+
+1. `0:00–0:22` — deck slides 1–3.
+2. `0:22–0:43` — Codex prompt, DataHub/MCP tool calls, exact one-file plan.
+3. `0:43–0:55` — authorization stop, then the normal terminal command.
+4. `0:55–1:18` — GitHub PR and green CI, then Codex publication/read-back.
+5. `1:18–1:43` — clean producer command and filtered clean evidence.
+6. `1:43–2:09` — late Spark consumer and `UNSAFE` reconciliation.
+7. `2:09–2:32` — refusal beside the static Spark failure control.
+8. `2:32–2:57` — Workbench Overview, one click to Evidence, hold the final
+   unsafe frame for two seconds.
 
 ## Public links to preload
 
@@ -123,10 +177,11 @@ Reject the finished cut unless all are true:
 
 ## Fallback hierarchy
 
-1. **Preferred:** fresh Codex consumer run plus fresh CP-05 producer run.
-2. **Acceptable:** inspected retained Codex run plus fresh CP-05 producer run,
-   explicitly described as two verified runs.
-3. **Emergency:** public agent transcript, public PR, CP-05 public evidence,
+1. **Recommended now:** inspected retained Codex run plus fresh CP-05 producer
+   run, explicitly described as two verified runs.
+2. **Fresh:** fresh Codex consumer run plus fresh CP-05 producer run, but only
+   after the disposable runtime has been prepared and dry-run once.
+3. **Fallback:** public agent transcript, public PR, CP-05 public evidence,
    and Workbench. Label every retained artifact as recorded evidence.
 
 Never substitute a scripted fake terminal or hard-coded “ready → unsafe”
