@@ -1,0 +1,39 @@
+{
+  "action": {
+    "action_type": "postgres_drop_column_v1",
+    "allow_cascade": false,
+    "maximum_actions": 1,
+    "target": {
+      "database": "rc_cp01_producer",
+      "legacy_column": "legacy_status",
+      "replacement_column": "order_status",
+      "schema": "retirement_lab",
+      "table": "orders"
+    }
+  },
+  "acceptance_cases": [
+    "missing_allowlist",
+    "apply_disabled",
+    "wrong_schema",
+    "wrong_table",
+    "wrong_column",
+    "non_loopback_endpoint",
+    "source_fingerprint_drift",
+    "replacement_type_drift",
+    "dependent_object_requires_cascade",
+    "insufficient_mutation_permission",
+    "wrong_confirmed_digest",
+    "connection_loss_before_execution",
+    "connection_loss_after_intent",
+    "replay_after_commit",
+    "concurrent_duplicate_attempt"
+  ],
+  "evidence_mode": "fixture",
+  "fixture_variants": [
+    "clean",
+    "replacement_type_drift",
+    "dependent_view"
+  ],
+  "postgres_image": "postgres@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b",
+  "schema_version": "1.0.0"
+}

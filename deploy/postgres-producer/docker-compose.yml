@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+    environment:
+      POSTGRES_DB: ${RC_CP01_DATABASE}
+      POSTGRES_USER: ${RC_CP01_ADMIN_USER}
+      POSTGRES_PASSWORD: ${RC_CP01_ADMIN_PASSWORD}
+      RC_CP01_OBSERVER_PASSWORD: ${RC_CP01_OBSERVER_PASSWORD}
+      RC_CP01_MUTATION_PASSWORD: ${RC_CP01_MUTATION_PASSWORD}
+      RC_CP01_UNPRIVILEGED_PASSWORD: ${RC_CP01_UNPRIVILEGED_PASSWORD}
+      RC_CP01_FIXTURE_VARIANT: ${RC_CP01_FIXTURE_VARIANT:-clean}
+    ports:
+      - "127.0.0.1:${RC_CP01_PORT:-25432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-fixture.sh:/docker-entrypoint-initdb.d/10-init-fixture.sh:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready --username "$${POSTGRES_USER}" --dbname "$${POSTGRES_DB}"
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: "no"
+
+volumes:
+  postgres-data:
