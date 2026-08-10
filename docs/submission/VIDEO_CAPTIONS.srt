@@ -1,61 +1,64 @@
 1
-00:00:00,000 --> 00:00:07,000
-Here is the problem: changing one warehouse column
-can break systems your repository cannot even see.
+00:00:00,000 --> 00:00:11,000
+Imagine you own this warehouse table. order_status is live.
+Now you want to delete legacy_status. That sounds like one SQL statement—
+until a model, dashboard, or Spark job still reads it.
 
 2
-00:00:07,000 --> 00:00:14,000
-In our test, repository search found one consumer.
-DataHub found thirty-one, across seven pages.
-It changes whether the column can be removed.
+00:00:11,000 --> 00:00:22,000
+Repository search found one consumer in our live scope test.
+DataHub field lineage found thirty-one, across seven complete pages.
+The hard part is knowing what must move before DROP COLUMN.
 
 3
-00:00:14,000 --> 00:00:22,000
-Retirement Conductor moves the consumers we can change,
-runs their real tests, checks the graph again,
-and then drops the old field—or stops.
+00:00:22,000 --> 00:00:33,000
+Retirement Conductor is the workflow around that deletion.
+It finds consumers, changes only what it is allowed to change,
+runs their real tests, checks the graph again, and deletes—or stops.
 
 4
-00:00:22,000 --> 00:00:43,000
-Here is the actual agent run. I ask Codex to replace legacy_status
-with order_status. It uses DataHub and our MCP server,
-finds the exact dbt model, and produces a one-file plan.
+00:00:33,000 --> 00:00:53,000
+Here is one real campaign. Codex is the operator interface,
+not the safety authority. Through DataHub and our MCP server,
+it finds the exact dbt model and proposes a one-file change.
 
 5
-00:00:43,000 --> 00:00:55,000
-And then it stops. The agent cannot approve its own change.
-I authorize that exact plan in a separate operator terminal.
+00:00:53,000 --> 00:01:04,000
+Before changing code, it stops.
+I review the file, validators, and digest,
+then authorize that exact plan outside the agent.
 
 6
-00:00:55,000 --> 00:01:18,000
-That opens a real pull request.
-dbt parse, build, test, and semantic checks all pass.
-The result is written back to DataHub, read back,
-and tied to the same campaign.
+00:01:04,000 --> 00:01:22,000
+The pull request changes one line.
+dbt parse, build, test, and semantic checks pass.
+The result is rechecked, published to DataHub, and read back.
 
 7
-00:01:18,000 --> 00:01:43,000
-Now for the part I cared about: does it actually do anything?
-A separately privileged command checks everything again
-and really drops the PostgreSQL column. One drop.
-The replacement survives, Spark stays healthy, and replay is refused.
+00:01:22,000 --> 00:01:47,000
+Migrating the consumer is not the finish line.
+In a separate consequential run of the same protocol,
+a privileged command checks everything again and executes one real
+PostgreSQL DROP COLUMN.
+The old field is gone, the replacement survives,
+Spark succeeds, and replay is refused.
 
 8
-00:01:43,000 --> 00:02:09,000
-Then we make it harder. After approval, a new Spark consumer
-appears in DataHub, still reading legacy_status.
-The answer flips to unsafe.
+00:01:47,000 --> 00:02:08,000
+After approval, an ad hoc Spark job appears in DataHub,
+still reading legacy_status. The execution-time answer flips to unsafe.
+The final command commits nothing, and the old column stays.
 
 9
-00:02:09,000 --> 00:02:32,000
-The same final command now commits nothing, and the old column stays.
-This is not a staged red badge: in the static-signoff control,
-the drop goes through and Spark actually fails with SQLSTATE 42703.
+00:02:08,000 --> 00:02:32,000
+That is not dashboard theatre. In the static-signoff control,
+nobody rechecks the graph. The column is dropped,
+and Spark fails with SQLSTATE 42703: column does not exist.
+Retirement Conductor prevents that exact failure.
 
 10
 00:02:32,000 --> 00:02:57,000
-The Workbench is the readable view of that same campaign:
-what changed, what passed, what is fresh, and why we stopped.
-We do not pretend DataHub sees the universe.
-We make the evidence explicit—and when it changes,
-the database change does not happen.
+The Workbench is the readable view of that consequential campaign:
+consumers, exact change, native tests, freshness, and why the decision changed.
+DataHub is not decoration, and the model does not decide safety.
+Retirement Conductor delivers a verified database change—or a safe refusal.

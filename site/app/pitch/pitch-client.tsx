@@ -52,11 +52,12 @@ export function PitchClient() {
         aria-hidden={slide !== 0}
       >
         <h1>
-          Replace a legacy field
-          <span>without breaking what still uses it.</span>
+          The new field is live.
+          <span>Can we delete the old one?</span>
         </h1>
         <p className="pitch-opening-note">
-          One field change. Many systems. No trustworthy final answer.
+          One SQL statement can break every model, dashboard, or job still
+          reading orders.legacy_status.
         </p>
       </section>
 
@@ -95,8 +96,8 @@ export function PitchClient() {
         aria-hidden={slide !== 2}
       >
         <h2>
-          Change what you can prove.
-          <span>Block what you cannot.</span>
+          Retirement Conductor owns the path to deletion.
+          <span>The latest evidence decides.</span>
         </h2>
 
         <ol className="pitch-flow">
@@ -117,8 +118,8 @@ export function PitchClient() {
         </ol>
 
         <p className="pitch-method-note">
-          The last database command obeys the latest evidence—not the original
-          approval.
+          Find every observed reader. Move and test what is authorized. Recheck
+          before the database change.
         </p>
       </section>
 

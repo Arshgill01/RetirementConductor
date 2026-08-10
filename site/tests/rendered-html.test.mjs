@@ -69,9 +69,11 @@ test("pitch route renders the three recording slides", async () => {
   const html = await response.text();
 
   assert.equal(response.status, 200);
-  assert.match(html, /Replace a legacy field/);
+  assert.match(html, /The new field is live/);
+  assert.match(html, /Can we delete the old one/);
   assert.match(html, /DataHub found/);
-  assert.match(html, /Change what you can prove/);
+  assert.match(html, /Retirement Conductor owns the path to deletion/);
+  assert.match(html, /The latest evidence decides/);
   assert.match(html, /Remove/);
   assert.match(html, /or refuse/);
 });

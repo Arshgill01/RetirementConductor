@@ -10,10 +10,11 @@ You do not need two Codex instances. Prepare these windows before recording:
 
 1. **Browser tab 1 — deck:**
    <https://retirement-conductor.arshgill01.chatgpt.site/pitch>
-2. **Codex app — one task:** use the retained real agent task for the safest
-   take. Start a fresh task only if the disposable DataHub and campaign runtime
-   have already been prepared. The repository for a fresh task is the clean
-   main worktree at `/home/arshdeepsingh/work/RetirementConductor-final`.
+2. **Codex app — one task:** use the
+   [fresh judge-visible task](codex://threads/019fecee-651d-7322-afd9-4be22c76e6ff).
+   It runs from the
+   clean main worktree at `/home/arshdeepsingh/work/RetirementConductor-final`
+   against the prepared disposable DataHub and campaign runtime.
 3. **Normal terminal — operator:** one shell tab opened at that same repository
    root. This is not another Codex CLI or another Codex task.
 4. **Browser tab 2 — GitHub:** preload the public one-file pull request and its
@@ -37,29 +38,24 @@ paths, environment dumps, raw traces, Docker logs, or long JSON digests.
 - `H`: hide the controls before recording.
 - `?slide=1`, `?slide=2`, or `?slide=3`: open a specific slide directly.
 
-The opening should take 22 seconds. Do not add an architecture slide. The live
-workflow is the architecture.
+The opening should take about 33 seconds. It must establish the proposed
+database deletion, the downstream failure risk, DataHub's expanded evidence,
+and the product definition before the first tool call. Do not add an
+architecture slide. The live workflow is the architecture.
 
 ## Codex prompt
 
-**Recommended under deadline:** reopen the completed real Codex task that
-created the public migration PR and record its prompt, product tool calls,
-authorization stop, and final result. That is real evidence and avoids gambling
-the take on cold DataHub or MCP setup. It is the earlier task whose final output
-begins, "Done. The Retirement Conductor agent—not me—completed a real end-to-end
-run," and links to `examples/agent-run/agent-transcript.md`.
-
-If the disposable demo runtime is already running and you deliberately choose a
-fresh run, start exactly one new Codex task from the clean main worktree. Paste
-the following into that task:
+The disposable runtime has been prepared for the fresh task linked above. Its
+first turn uses this exact prompt:
 
 Use this exact first prompt:
 
 ```text
 Use $retirement-conductor-agent to replace
 retirement_conductor.analytics.commerce.orders_isolated.legacy_status with
-order_status. Inspect DataHub directly, create one campaign, inventory the
-complete bounded evidence, and plan the smallest safe Git/dbt migration.
+order_status. Inspect DataHub directly, create one campaign from
+git-dbt-isolated-live.yaml, inventory the complete bounded evidence, and plan
+the smallest safe Git/dbt migration.
 Stop at the external human-authorization boundary. Use DataHub MCP and the
 Retirement Conductor MCP; do not use shell or edit files directly. Show the
 exact target, validators, evidence limitations, and plan digest.
@@ -137,25 +133,29 @@ say that `jq` executed the migration.
 
 Use these cuts; the times match `VIDEO_SCRIPT.md`:
 
-1. `0:00–0:22` — deck slides 1–3.
-2. `0:22–0:43` — Codex prompt, DataHub/MCP tool calls, exact one-file plan.
-3. `0:43–0:55` — authorization stop, then the normal terminal command.
-4. `0:55–1:18` — GitHub PR and green CI, then Codex publication/read-back.
-5. `1:18–1:43` — clean producer command and filtered clean evidence.
-6. `1:43–2:09` — late Spark consumer and `UNSAFE` reconciliation.
-7. `2:09–2:32` — refusal beside the static Spark failure control.
+1. `0:00–0:33` — deck slides 1–3: deletion, danger, product.
+2. `0:33–0:53` — Codex prompt, DataHub/MCP tool calls, exact one-file plan.
+3. `0:53–1:04` — authorization stop, then the normal terminal command.
+4. `1:04–1:22` — GitHub one-line diff and green CI, then publication/read-back.
+5. `1:22–1:47` — clean producer command and filtered clean evidence.
+6. `1:47–2:08` — late Spark consumer and `UNSAFE` reconciliation.
+7. `2:08–2:32` — refusal beside the static Spark failure control.
 8. `2:32–2:57` — Workbench Overview, one click to Evidence, hold the final
    unsafe frame for two seconds.
 
 ## Public links to preload
 
 - Workbench: <https://retirement-conductor.arshgill01.chatgpt.site/workbench>
-- Codex migration PR:
-  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1>
+- Codex migration PR, one-line diff:
+  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1/files>
+- Native semantic-dbt job:
+  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/actions/runs/31325110949/job/93274114385>
 - Source repository: <https://github.com/Arshgill01/RetirementConductor>
 
-Open every page before recording. Collapse unrelated GitHub navigation and
-zoom the one-file diff and passing check until both are legible.
+Open every page before recording. The pull request's Conversation page is not
+the useful frame: it mostly shows the check summary. Record the **Files
+changed** URL for the exact one-line replacement, then cut to the Actions job
+for the native validation commands and successful result.
 
 ## Take acceptance
 
@@ -177,10 +177,10 @@ Reject the finished cut unless all are true:
 
 ## Fallback hierarchy
 
-1. **Recommended now:** inspected retained Codex run plus fresh CP-05 producer
-   run, explicitly described as two verified runs.
-2. **Fresh:** fresh Codex consumer run plus fresh CP-05 producer run, but only
-   after the disposable runtime has been prepared and dry-run once.
+1. **Recommended now:** the linked fresh Codex consumer task plus the inspected
+   CP-05 producer evidence, explicitly described as two verified runs.
+2. **Fresh producer:** the linked fresh Codex task plus a fresh CP-05 producer
+   run when the extra runtime is available.
 3. **Fallback:** public agent transcript, public PR, CP-05 public evidence,
    and Workbench. Label every retained artifact as recorded evidence.
 
