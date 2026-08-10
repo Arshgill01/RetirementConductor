@@ -14,7 +14,9 @@ You do not need two Codex instances. Prepare these windows before recording:
    [fresh judge-visible task](codex://threads/019fecee-651d-7322-afd9-4be22c76e6ff).
    It runs from the
    clean main worktree at `/home/arshdeepsingh/work/RetirementConductor-final`
-   against the prepared disposable DataHub and campaign runtime.
+   against the prepared disposable DataHub and campaign runtime. This task was
+   created through Codex CLI, so it may not appear in the normal sidebar index;
+   open it through this direct task link.
 3. **Normal terminal — operator:** one shell tab opened at that same repository
    root. This is not another Codex CLI or another Codex task.
 4. **Browser tab 2 — GitHub:** preload the public one-file pull request and its
@@ -147,9 +149,9 @@ Use these cuts; the times match `VIDEO_SCRIPT.md`:
 
 - Workbench: <https://retirement-conductor.arshgill01.chatgpt.site/workbench>
 - Codex migration PR, one-line diff:
-  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1/files>
+  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/2/files>
 - Native semantic-dbt job:
-  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/actions/runs/31325110949/job/93274114385>
+  <https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/actions/runs/31420802937/job/93560781990>
 - Source repository: <https://github.com/Arshgill01/RetirementConductor>
 
 Open every page before recording. The pull request's Conversation page is not
