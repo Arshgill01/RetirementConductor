@@ -78,6 +78,22 @@ test("pitch route renders the three recording slides", async () => {
   assert.match(html, /or refuse/);
 });
 
+test("artifact index exposes consequential proof and honest limits", async () => {
+  const response = await renderPath("/artifacts");
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(html, /Start with the run\. Then inspect every claim\./);
+  assert.match(html, /Clean retirement/);
+  assert.match(html, /Late-consumer refusal/);
+  assert.match(html, /Static sign-off control/);
+  assert.match(html, /31 \/ 31/);
+  assert.match(html, /NO MATERIAL ADVANTAGE/);
+  assert.match(html, /mcp-server-datahub\/pull\/195/);
+  assert.match(html, /examples\/agent-run\/migration\.patch/);
+  assert.match(html, /no production coverage or independent adoption is claimed/i);
+});
+
 test("standalone HTML contains the current product, evidence, and limits", async () => {
   const html = await readFile(publicHtmlUrl, "utf8");
 
