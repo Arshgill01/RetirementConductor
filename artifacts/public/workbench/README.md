@@ -18,3 +18,11 @@ SHA-256
 and embeds canonical manifest digest
 `sha256:49aa07fa4afd1e065c0eedfbaaa7074be0827a9917e9941047183ba49a7efe28`.
 It is explicitly labeled `recorded-evidence` and cannot dispatch an operation.
+
+The finalized hosted-to-loopback acceptance is recorded in
+`pairing-acceptance.json`; SHA-256
+`f368ddd4342ea236dcb861a91396592021b77e14acec8740137ca6a2a826cdf6`.
+Normal Chrome required an explicit Local Network Access grant, then the public
+version 4 page replaced its recording with the matching canonical campaign and
+displayed `PAIRED READ ONLY`. No runtime action or privileged boundary was
+enabled for that acceptance.

@@ -1,0 +1,41 @@
+{
+  "browser": {
+    "engine": "Chrome",
+    "local_network_access": "explicitly_granted",
+    "version": "150.0.7871.115"
+  },
+  "campaign": {
+    "campaign_id": "ret-orders-agent-c8eccc140033",
+    "decision": "UNSAFE",
+    "manifest_digest": "sha256:49aa07fa4afd1e065c0eedfbaaa7074be0827a9917e9941047183ba49a7efe28"
+  },
+  "evidence_mode": "author-operated hosted-to-loopback acceptance",
+  "limitations": [
+    "The retained campaign and loopback runtime are disposable local evidence, not production coverage.",
+    "The runtime was intentionally read-only; this acceptance did not invoke inventory or reconciliation.",
+    "The browser has no authorization, apply, receipt-acceptance, lease, or producer-gate route."
+  ],
+  "observed_at": "2026-08-10T10:22:00Z",
+  "result": "PASS",
+  "runtime": {
+    "authentication": "process-scoped bearer token",
+    "bind": "127.0.0.1",
+    "mode": "read-only",
+    "token_persistence": "browser sessionStorage only"
+  },
+  "schema_version": "1.0.0",
+  "site": {
+    "deployment_id": "appgdep_6a79a1538b9c8191a11128478e3e70b0",
+    "source_commit": "1f2ecb61414f0e354c69eaa2ec27b1018a27ce44",
+    "url": "https://retirement-conductor.arshgill01.chatgpt.site/workbench",
+    "version_id": "appgprj_6a7451377b608191a4452fc13453b3b3~appgver_659de9c6107481919fcd6a5073653a96",
+    "version_number": 4
+  },
+  "verified_behavior": [
+    "The public page loaded recorded evidence without probing the loopback runtime.",
+    "The pairing request triggered Chrome Local Network Access permission.",
+    "The local API accepted only the configured HTTPS origin and valid process token.",
+    "The health campaign identifier matched the canonical Workbench campaign identifier.",
+    "The visible mode changed to PAIRED READ ONLY only after both authenticated reads succeeded."
+  ]
+}

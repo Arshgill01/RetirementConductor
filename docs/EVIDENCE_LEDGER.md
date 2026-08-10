@@ -2147,3 +2147,61 @@ What this does not prove: production coverage, broad customer demand,
 independent operability, or a second complete producer-gated executor. The
 final gate still independently refreshes only DataHub and Git/dbt, so Superset
 remains campaign-integrated experimental scope.
+
+## Finalized hosted Retirement Workbench evidence
+
+Behavior commits: `d9d366f` and `68c2139`. Site source commit:
+`1f2ecb61414f0e354c69eaa2ec27b1018a27ce44`. Evidence mode:
+author-operated public HTTPS page paired to a loopback runtime over the retained
+18-event campaign, with actions disabled.
+
+Observed bindings and refusals:
+
+- the public page loaded labeled recorded evidence without probing loopback;
+- pairing required the exact configured HTTPS origin and a fresh process token;
+- missing and incorrect tokens returned HTTP 401, insecure remote origins and
+  non-loopback binds refused, and private-network preflight did not widen the
+  allowlist;
+- normal Chrome displayed its Local Network Access prompt; only after an
+  explicit **Allow** did authenticated health and view reads complete;
+- health and view returned the same campaign ID, after which the visible mode
+  changed to `PAIRED READ ONLY` and the Evidence view remained navigable;
+- SQLite access is serialized across reads and operations; injected contention
+  returns stable `RUNTIME_STORE_LOCKED` instead of leaking a traceback;
+- rejected visual prototypes and the query-parameter variant surface were
+  removed from the production tree.
+
+Acceptance results:
+
+```text
+TMPDIR=/home/arshdeepsingh/.rc-check-workbench make check
+Result: 271 tests; Ruff; formatting; strict mypy over 100 source files;
+204-file repository and 179-link validation; 437-file secret review;
+92-file public-artifact review; source/wheel build; diff check passed
+
+npm --prefix site run lint
+Result: passed
+
+npm --prefix site test
+Result: production build and 6 rendered-route tests passed
+
+Sites production deployment
+Result: version 4 succeeded at
+https://retirement-conductor.arshgill01.chatgpt.site/workbench
+```
+
+The public pairing record is
+[`artifacts/public/workbench/pairing-acceptance.json`](../artifacts/public/workbench/pairing-acceptance.json),
+SHA-256
+`f368ddd4342ea236dcb861a91396592021b77e14acec8740137ca6a2a826cdf6`.
+
+What this proves: the accepted public design can become a real canonical
+single-campaign operator view through an explicitly authorized, token-bound
+loopback companion without moving DataHub credentials or policy authority into
+the hosted application.
+
+What this does not prove: production graph coverage, shared multi-operator
+operation, independent adoption, or browser authority over authorization,
+apply, receipt acceptance, lease issuance, or producer execution. The final
+acceptance was intentionally read-only and did not invoke inventory or
+reconciliation.
