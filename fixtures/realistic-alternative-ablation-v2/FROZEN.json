@@ -1,0 +1,493 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "realistic-alternative-ablation-v2",
+  "frozen_before_execution": true,
+  "frozen_at": "2026-08-10T18:00:00Z",
+  "base_commit": "b8a839acd0b411d905fa0ed142838cd76ab618f4",
+  "product_question": "After identical inventory, migration, native validation, approval, drift, and producer action, does the campaign protocol prevent more unsafe actions, preserve more usable recovery state, or produce a more complete causal audit than a small fresh-check CI workflow?",
+  "target": "postgresql://retirement_lab/orders#legacy_status",
+  "replacement": "postgresql://retirement_lab/orders#order_status",
+  "initial_approved_snapshot": {
+    "datahub_status": "COMPLETE",
+    "pagination_complete": true,
+    "permissions_complete": true,
+    "maximum_age_seconds": 300,
+    "consumer_membership": [
+      "git-dbt:model.orders_status",
+      "superset:chart.orders_status"
+    ],
+    "producer_fingerprint": "producer-schema-v1",
+    "git_dbt_validation": "git-dbt-receipt-v1",
+    "superset_validation": "superset-receipt-v1",
+    "approval_scope": "snapshot-and-native-bindings-v1",
+    "approval_expires_at": "2026-08-10T18:15:00Z"
+  },
+  "arms": [
+    {
+      "id": "point-in-time",
+      "contract": "Freeze the initial complete impact report, native CI result, and approval. Perform no automatic DataHub, source, validation, or approval refresh before the producer action."
+    },
+    {
+      "id": "fresh-ci",
+      "contract": "Rerun complete paged DataHub inventory immediately before action, fail closed on evidence defects, compare exact membership and producer/native/approval bindings, use the common native action, resolve uncertainty by native reread, and write a safe report."
+    },
+    {
+      "id": "retirement-conductor",
+      "contract": "Use durable campaign state, fresh reconciliation, publication readback, a manifest-bound one-use Retirement Lease, the common native action, and retained outcome resolution."
+    }
+  ],
+  "required_fresh_ci_capabilities": [
+    "complete_paged_inventory",
+    "freshness_enforcement",
+    "permission_enforcement",
+    "ambiguity_refusal",
+    "exact_membership_comparison",
+    "producer_fingerprint_reread",
+    "git_dbt_validation_binding",
+    "superset_native_validation_binding",
+    "approval_scope_and_expiry",
+    "same_native_action_boundary",
+    "native_outcome_reread",
+    "automatic_safe_retry",
+    "safe_causal_report"
+  ],
+  "fresh_ci_capability_statement": {
+    "schema_version": "1.0.0",
+    "arm": "fresh-ci",
+    "architecture": "one failure-closed pre-action CI run; no campaign database or reusable bearer decision",
+    "represents_named_vendor": false,
+    "capabilities": {
+      "complete_paged_inventory": true,
+      "freshness_enforcement": true,
+      "permission_enforcement": true,
+      "ambiguity_refusal": true,
+      "exact_membership_comparison": true,
+      "producer_fingerprint_reread": true,
+      "git_dbt_validation_binding": true,
+      "superset_native_validation_binding": true,
+      "approval_scope_and_expiry": true,
+      "same_native_action_boundary": true,
+      "native_outcome_reread": true,
+      "automatic_safe_retry": true,
+      "safe_causal_report": true,
+      "persistent_campaign_state": false,
+      "retirement_lease": false
+    },
+    "limitations": [
+      "The arm is stateless beyond its immutable CI report and the common native action boundary.",
+      "It coordinates no long-lived consumer migration campaign.",
+      "It is a competent workflow contract, not a representation of DataHub or another vendor product."
+    ]
+  },
+  "native_action_contract": {
+    "integration_owner": "CP-01",
+    "adapter_version": "cp01-postgres-action-adapter-v1-placeholder",
+    "action": "DROP_COLUMN",
+    "database": "retirement_conductor_cp03",
+    "schema": "retirement_lab",
+    "table": "orders",
+    "legacy_column": "legacy_status",
+    "replacement_column": "order_status",
+    "cascade": false,
+    "maximum_committed_actions": 1,
+    "lost_response_resolution": "native schema reread",
+    "foundation_mode": "protocol fake; replace only with CP-01 exact adapter during CP-05"
+  },
+  "superset_refresh_adapter": {
+    "integration_owner": "CP-02",
+    "adapter_version": "cp02-superset-gate-refresh-v1-placeholder",
+    "foundation_mode": "frozen boolean native-binding observation; replace during CP-05"
+  },
+  "downstream_outcome_adapter": {
+    "integration_owner": "CP-04",
+    "adapter_version": "cp04-native-outcome-probe-v1-placeholder",
+    "foundation_mode": "frozen health fact; replace during CP-05"
+  },
+  "modeled_action_path_ms": {
+    "point-in-time": 20,
+    "fresh-ci": 85,
+    "retirement-conductor": 130
+  },
+  "decision_rule": {
+    "frozen_before_arm_outputs": true,
+    "classifications": [
+      "MATERIALLY_BETTER",
+      "SAFETY_EQUIVALENT_PROTOCOL_ADVANTAGE",
+      "NO_MATERIAL_ADVANTAGE",
+      "WORSE",
+      "INCONCLUSIVE"
+    ],
+    "materially_better": "Retirement Conductor prevents an unsafe action or stale/replayed authority that fresh CI permits, with zero clean-control false refusals.",
+    "protocol_advantage": "Safety is equal and Retirement Conductor strictly improves manual recovery, correct outcome-unknown handling, or required causal-audit binding coverage.",
+    "no_material_advantage": "Fresh CI matches safety, stale-authority, recovery, outcome, and causal-audit properties while using fewer persistent machinery units.",
+    "worse": "Retirement Conductor causes any extra unsafe action or clean-control false refusal.",
+    "inconclusive": "Required comparable arms, frozen bindings, or native observations cannot be completed.",
+    "clean_control_false_refusal_threshold": 0,
+    "unsafe_committed_action_threshold": 0,
+    "persistent_machinery_units": {
+      "fresh-ci": 1,
+      "retirement-conductor": 3
+    }
+  },
+  "scenarios": [
+    {
+      "id": "no-drift-clean-control",
+      "required_observation": "Every safe arm permits exactly one action with no false refusal.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": true
+      },
+      "expected_properties": {
+        "producer_action_safe": true,
+        "destructive_statement_may_execute": true,
+        "expected_max_committed_action_count": 1,
+        "expected_final_column_present": false,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": true,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "late-exact-field-consumer",
+      "required_observation": "The static authority proceeds while both failure-closed arms block the changed exact membership.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "spark:job.late_legacy_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "late-table-only-ambiguous-edge",
+      "required_observation": "Failure-closed arms refuse ambiguous table-only evidence instead of inferring field safety.",
+      "action_time_facts": {
+        "datahub_status": "AMBIGUOUS",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "datahub-unavailable-at-action-time",
+      "required_observation": "Fresh CI and Retirement Conductor refuse unavailable required graph evidence.",
+      "action_time_facts": {
+        "datahub_status": "UNAVAILABLE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "incomplete-pagination",
+      "required_observation": "Failure-closed arms refuse incomplete paging.",
+      "action_time_facts": {
+        "datahub_status": "PARTIAL",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "producer-schema-drift",
+      "required_observation": "Fresh CI and Retirement Conductor refuse before action when the producer fingerprint changes.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": false,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "git-dbt-source-or-validation-drift",
+      "required_observation": "The earlier dbt validation cannot authorize action after source or validator drift.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": false,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "superset-native-drift",
+      "required_observation": "The earlier BI receipt cannot authorize action after current native Superset evidence drifts.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": false,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": false
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "approval-expired-or-scope-changed",
+      "required_observation": "Stale or differently scoped approval cannot authorize action.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": false,
+        "audit_sink_available": true,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": true
+      },
+      "expected_properties": {
+        "producer_action_safe": false,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": false,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "action-replay",
+      "required_observation": "Exactly one destructive statement commits; later use refuses or proves already applied.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "ACTION_REPLAY",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": true
+      },
+      "expected_properties": {
+        "producer_action_safe": true,
+        "destructive_statement_may_execute": true,
+        "expected_max_committed_action_count": 1,
+        "expected_final_column_present": false,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": true,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "crash-before-action",
+      "required_observation": "Automatic retry or resume cannot duplicate the action and requires no unsafe manual reconstruction.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "CRASH_BEFORE_ACTION",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": true
+      },
+      "expected_properties": {
+        "producer_action_safe": true,
+        "destructive_statement_may_execute": true,
+        "expected_max_committed_action_count": 1,
+        "expected_final_column_present": false,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": true,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "lost-response-after-action-intent",
+      "required_observation": "A native reread resolves the committed outcome; no arm blindly retries the destructive statement.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": true,
+        "action_fault": "LOST_RESPONSE_AFTER_COMMIT",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": true
+      },
+      "expected_properties": {
+        "producer_action_safe": true,
+        "destructive_statement_may_execute": true,
+        "expected_max_committed_action_count": 1,
+        "expected_final_column_present": false,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": true,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    },
+    {
+      "id": "publication-or-audit-artifact-unavailable",
+      "required_observation": "Failure-closed arms distinguish safe source state from unavailable causal-audit persistence and refuse before action.",
+      "action_time_facts": {
+        "datahub_status": "COMPLETE",
+        "approved_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "consumer_membership": ["git-dbt:model.orders_status", "superset:chart.orders_status"],
+        "producer_fingerprint_matches": true,
+        "git_dbt_validation_matches": true,
+        "superset_validation_matches": true,
+        "approval_valid_for_scope_and_time": true,
+        "audit_sink_available": false,
+        "action_fault": "NONE",
+        "native_outcome_reread_available": true,
+        "downstream_uses_replacement_only": true
+      },
+      "expected_properties": {
+        "producer_action_safe": true,
+        "destructive_statement_may_execute": false,
+        "expected_max_committed_action_count": 0,
+        "expected_final_column_present": true,
+        "expected_downstream_workload_health": true,
+        "prior_approval_operationally_reusable": true,
+        "must_retain_unresolved_outcome": false,
+        "minimum_audit_fields": ["graph", "source", "approval", "validation", "action", "outcome"]
+      }
+    }
+  ],
+  "limitations": [
+    "This foundation matrix is executable fixture evidence. It does not claim a live PostgreSQL, DataHub, Superset, Git/dbt, or downstream-workload run.",
+    "The CP-01 native action, CP-02 Superset refresh, and CP-04 downstream outcome boundaries are explicit placeholders for CP-05 integration.",
+    "Modeled elapsed milliseconds are descriptive frozen harness costs, not performance measurements or a winning metric.",
+    "The fresh-CI baseline is a competent architecture under test, not DataHub or another named vendor product.",
+    "A CP-05 live-local rerun may change the classification; the frozen rule must be applied without post-hoc edits."
+  ],
+  "frozen_digest": "sha256:1f8a357a3ba57ecaaa3ee01049633122337df3b9d50e61a1357907d6c066b577"
+}

@@ -1,0 +1,97 @@
+{
+  "baseline_capability_digest": "sha256:b874c60526ae4eea5ab26a964cd62d81b4c541bb226153865a1cca8444b0cac3",
+  "classification": "NO_MATERIAL_ADVANTAGE",
+  "decision_rule": {
+    "classifications": [
+      "MATERIALLY_BETTER",
+      "SAFETY_EQUIVALENT_PROTOCOL_ADVANTAGE",
+      "NO_MATERIAL_ADVANTAGE",
+      "WORSE",
+      "INCONCLUSIVE"
+    ],
+    "clean_control_false_refusal_threshold": 0,
+    "frozen_before_arm_outputs": true,
+    "inconclusive": "Required comparable arms, frozen bindings, or native observations cannot be completed.",
+    "materially_better": "Retirement Conductor prevents an unsafe action or stale/replayed authority that fresh CI permits, with zero clean-control false refusals.",
+    "no_material_advantage": "Fresh CI matches safety, stale-authority, recovery, outcome, and causal-audit properties while using fewer persistent machinery units.",
+    "persistent_machinery_units": {
+      "fresh-ci": 1,
+      "retirement-conductor": 3
+    },
+    "protocol_advantage": "Safety is equal and Retirement Conductor strictly improves manual recovery, correct outcome-unknown handling, or required causal-audit binding coverage.",
+    "unsafe_committed_action_threshold": 0,
+    "worse": "Retirement Conductor causes any extra unsafe action or clean-control false refusal."
+  },
+  "evidence_mode": "fixture executable local",
+  "experiment_id": "realistic-alternative-ablation-v2",
+  "failures_digest": "sha256:0c622a39ba97401000948412e11c4a169bd50ea9a50cfbaf713d867ac127f1d8",
+  "frozen_digest": "sha256:1f8a357a3ba57ecaaa3ee01049633122337df3b9d50e61a1357907d6c066b577",
+  "integration_adapters": {
+    "cp01": {
+      "action": "DROP_COLUMN",
+      "adapter_version": "cp01-postgres-action-adapter-v1-placeholder",
+      "cascade": false,
+      "database": "retirement_conductor_cp03",
+      "foundation_mode": "protocol fake; replace only with CP-01 exact adapter during CP-05",
+      "integration_owner": "CP-01",
+      "legacy_column": "legacy_status",
+      "lost_response_resolution": "native schema reread",
+      "maximum_committed_actions": 1,
+      "replacement_column": "order_status",
+      "schema": "retirement_lab",
+      "table": "orders"
+    },
+    "cp02": {
+      "adapter_version": "cp02-superset-gate-refresh-v1-placeholder",
+      "foundation_mode": "frozen boolean native-binding observation; replace during CP-05",
+      "integration_owner": "CP-02"
+    },
+    "cp04": {
+      "adapter_version": "cp04-native-outcome-probe-v1-placeholder",
+      "foundation_mode": "frozen health fact; replace during CP-05",
+      "integration_owner": "CP-04"
+    }
+  },
+  "limitations": [
+    "This foundation matrix is executable fixture evidence. It does not claim a live PostgreSQL, DataHub, Superset, Git/dbt, or downstream-workload run.",
+    "The CP-01 native action, CP-02 Superset refresh, and CP-04 downstream outcome boundaries are explicit placeholders for CP-05 integration.",
+    "Modeled elapsed milliseconds are descriptive frozen harness costs, not performance measurements or a winning metric.",
+    "The fresh-CI baseline is a competent architecture under test, not DataHub or another named vendor product.",
+    "A CP-05 live-local rerun may change the classification; the frozen rule must be applied without post-hoc edits."
+  ],
+  "matrix_digest": "sha256:5decfb8faa42b7b567c239145b16c77d60d1f60c09c9bcd914bacad6eac3d86c",
+  "oracle_digest": "sha256:c6bffbbb3cac81d38a0a51fbb86b087a240d057477a0062a29790a84ad1dcba8",
+  "per_arm_summary": {
+    "fresh-ci": {
+      "audit_binding_count": 72,
+      "destructive_statements_attempted": 4,
+      "destructive_statements_committed": 4,
+      "false_refusals": 0,
+      "manual_interventions_required": 0,
+      "stale_approval_or_green_artifact_reuse": 0,
+      "unsafe_committed_producer_actions": 0
+    },
+    "point-in-time": {
+      "audit_binding_count": 76,
+      "destructive_statements_attempted": 13,
+      "destructive_statements_committed": 13,
+      "false_refusals": 0,
+      "manual_interventions_required": 0,
+      "stale_approval_or_green_artifact_reuse": 12,
+      "unsafe_committed_producer_actions": 8
+    },
+    "retirement-conductor": {
+      "audit_binding_count": 72,
+      "destructive_statements_attempted": 4,
+      "destructive_statements_committed": 4,
+      "false_refusals": 0,
+      "manual_interventions_required": 0,
+      "stale_approval_or_green_artifact_reuse": 0,
+      "unsafe_committed_producer_actions": 0
+    }
+  },
+  "recommendation": "SIMPLIFY",
+  "report_digest": "sha256:d5154a22decbd20360c29e5656fa9bf19ea35083c030b8e17c71b9e9d8e0451e",
+  "run_digest": "sha256:d8d51f15522bf2c039777b415122dec425f601c22216e3df3f98f15665657cb4",
+  "schema_version": "1.0.0"
+}

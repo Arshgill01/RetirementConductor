@@ -1,0 +1,27 @@
+{
+  "classification": "NO_MATERIAL_ADVANTAGE",
+  "experiment_id": "realistic-alternative-ablation-v2",
+  "files": [
+    "baseline-capability.json",
+    "failure-attempts.json",
+    "matrix.json",
+    "report.json"
+  ],
+  "frozen_digest": "sha256:1f8a357a3ba57ecaaa3ee01049633122337df3b9d50e61a1357907d6c066b577",
+  "index_digest": "sha256:48c42ea6d12c2241b9c0405fdca8760dfe96bc5aaee2107ee67a624a7150d1ae",
+  "limitations": [
+    "This foundation matrix is executable fixture evidence. It does not claim a live PostgreSQL, DataHub, Superset, Git/dbt, or downstream-workload run.",
+    "The CP-01 native action, CP-02 Superset refresh, and CP-04 downstream outcome boundaries are explicit placeholders for CP-05 integration.",
+    "Modeled elapsed milliseconds are descriptive frozen harness costs, not performance measurements or a winning metric.",
+    "The fresh-CI baseline is a competent architecture under test, not DataHub or another named vendor product.",
+    "A CP-05 live-local rerun may change the classification; the frozen rule must be applied without post-hoc edits."
+  ],
+  "raw_evidence": {
+    "digest": "sha256:d8d51f15522bf2c039777b415122dec425f601c22216e3df3f98f15665657cb4",
+    "path_class": "ignored task-local runtime state",
+    "retention": "retain through CP-05 integration; do not publish"
+  },
+  "recommendation": "SIMPLIFY",
+  "report_digest": "sha256:d5154a22decbd20360c29e5656fa9bf19ea35083c030b8e17c71b9e9d8e0451e",
+  "schema_version": "1.0.0"
+}

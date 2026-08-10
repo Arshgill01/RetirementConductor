@@ -1,0 +1,29 @@
+{
+  "architecture": "one failure-closed pre-action CI run; no campaign database or reusable bearer decision",
+  "arm": "fresh-ci",
+  "capabilities": {
+    "ambiguity_refusal": true,
+    "approval_scope_and_expiry": true,
+    "automatic_safe_retry": true,
+    "complete_paged_inventory": true,
+    "exact_membership_comparison": true,
+    "freshness_enforcement": true,
+    "git_dbt_validation_binding": true,
+    "native_outcome_reread": true,
+    "permission_enforcement": true,
+    "persistent_campaign_state": false,
+    "producer_fingerprint_reread": true,
+    "retirement_lease": false,
+    "safe_causal_report": true,
+    "same_native_action_boundary": true,
+    "superset_native_validation_binding": true
+  },
+  "capability_digest": "sha256:b874c60526ae4eea5ab26a964cd62d81b4c541bb226153865a1cca8444b0cac3",
+  "limitations": [
+    "The arm is stateless beyond its immutable CI report and the common native action boundary.",
+    "It coordinates no long-lived consumer migration campaign.",
+    "It is a competent workflow contract, not a representation of DataHub or another vendor product."
+  ],
+  "represents_named_vendor": false,
+  "schema_version": "1.0.0"
+}

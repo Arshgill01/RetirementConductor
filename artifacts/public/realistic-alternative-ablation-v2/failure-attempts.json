@@ -1,0 +1,37 @@
+{
+  "experiment_id": "realistic-alternative-ablation-v2",
+  "failures_digest": "sha256:0c622a39ba97401000948412e11c4a169bd50ea9a50cfbaf713d867ac127f1d8",
+  "probes": [
+    {
+      "expected_refusal_contains": "missing arms",
+      "observed_refusal": "missing arms or scenarios in run evidence",
+      "passed": true,
+      "probe": "missing-arm"
+    },
+    {
+      "expected_refusal_contains": "inputs changed",
+      "observed_refusal": "run inputs changed after freeze",
+      "passed": true,
+      "probe": "changed-inputs"
+    },
+    {
+      "expected_refusal_contains": "unmatched native",
+      "observed_refusal": "unmatched native actions across comparison arms",
+      "passed": true,
+      "probe": "unmatched-native-action"
+    },
+    {
+      "expected_refusal_contains": "post-hoc oracle",
+      "observed_refusal": "post-hoc oracle or input edit detected: expected sha256:1f8a357a3ba57ecaaa3ee01049633122337df3b9d50e61a1357907d6c066b577, got sha256:ed33e0c311aa32d59746ace7de41bbbddf5b29107cbf1ece446b841e8fa9b0db",
+      "passed": true,
+      "probe": "post-hoc-oracle-edit"
+    },
+    {
+      "expected_refusal_contains": "biased fresh-CI",
+      "observed_refusal": "intentionally biased fresh-CI baseline: missing ['complete_paged_inventory']",
+      "passed": true,
+      "probe": "biased-baseline"
+    }
+  ],
+  "schema_version": "1.0.0"
+}
