@@ -11,14 +11,17 @@ production safety or general warehouse support.
 ## Branch boundary
 
 - Exact base: `b8a839acd0b411d905fa0ed142838cd76ab618f4`
+- Tested behavior commit: `f7f57769bbc15c95cc55f489faf2acc249739520`
 - Branch: `codex/cp-01-postgres-producer-action`
 - Compose project: `rc_cp01_producer`
 - Reserved endpoint: `127.0.0.1:25432`
 - Shared gate, CLI, MCP, schemas, canonical documents, dependencies, and
   existing Make targets were not changed.
 
-The public evidence index and exact tested behavior commit are recorded under
-`artifacts/public/postgres-producer-action/`. Raw evidence remains ignored at
+The public evidence index is
+`artifacts/public/postgres-producer-action/index.json`, with canonical digest
+`sha256:54d3432968bb37f99abcf006893470b2b39664e244be17cb561f2e0673947af8`.
+Raw evidence remains ignored at
 `.retirement-conductor/cp01/private/acceptance.json`.
 
 ## New integration surface
@@ -77,8 +80,21 @@ standard library plus `psql` from the pinned disposable PostgreSQL image.
 
 ## Validation and evidence
 
-The final evidence-promotion commit records the exact commands, results,
-versions, artifact digest, failure attempts, and clean-worktree status. CP-05
-should rerun the direct acceptance command after merging, then exercise both a
-gate refusal that leaves the column present and a clean integrated gate action
-that removes it.
+Observed against PostgreSQL 16.14 (Debian build), Docker Engine 29.1.3, and
+Docker Compose 2.40.3. The frozen fixture digest is
+`sha256:2e5bd748963d915f6cd26b88d104b821083de4744bc4eb4b1ab375e82806380d`.
+The focused unit suite passed 19 tests; the opt-in live integration test passed
+in 48.42 seconds; `make check` passed 280 tests with the live test skipped by
+default, plus Ruff, formatting, strict mypy, repository/link validation,
+secret/public-artifact scans, package builds, and `git diff --check`.
+
+The public matrix contains 16 rows: all 15 frozen success/refusal/recovery
+cases plus the clean native success row. Three exact destructive statements
+were attempted and committed: clean success, connection loss after committed
+intent, and one winner from a concurrent duplicate. Replay and the concurrent
+loser performed no additional destructive statement. The service, network,
+and disposable volume were stopped after the run.
+
+CP-05 should rerun the direct acceptance command after merging, then exercise
+both a gate refusal that leaves the column present and a clean integrated gate
+action that removes it.
