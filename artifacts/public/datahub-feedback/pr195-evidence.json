@@ -1,0 +1,230 @@
+{
+  "cache_probe": {
+    "cache_bypassed_after_late": {
+      "count": 100,
+      "degrees": [
+        2
+      ],
+      "duration_ms": 175,
+      "freshness": null,
+      "is_partial": null,
+      "late_consumer_present": true,
+      "requested_degrees": [
+        "2"
+      ],
+      "returned": 1,
+      "start": 0,
+      "total": 1
+    },
+    "default_after_late": {
+      "count": 100,
+      "degrees": [
+        2
+      ],
+      "duration_ms": 63,
+      "freshness": null,
+      "is_partial": null,
+      "late_consumer_present": true,
+      "requested_degrees": [
+        "2"
+      ],
+      "returned": 1,
+      "start": 0,
+      "total": 1
+    },
+    "late_edge_visibility": {
+      "attempts": 2,
+      "duration_ms": 9353
+    },
+    "stale_default_reproduced": false,
+    "warmed_default_before_late": {
+      "count": 100,
+      "degrees": [],
+      "duration_ms": 2490,
+      "freshness": null,
+      "is_partial": null,
+      "late_consumer_present": false,
+      "requested_degrees": [
+        "2"
+      ],
+      "returned": 0,
+      "start": 0,
+      "total": 0
+    }
+  },
+  "captured_at": "2026-08-09T13:01:12.875819Z",
+  "degree_filter_probe": {
+    "combined": {
+      "count": 100,
+      "degrees": [
+        1,
+        2
+      ],
+      "duration_ms": 131,
+      "freshness": null,
+      "is_partial": null,
+      "late_consumer_present": true,
+      "requested_degrees": [
+        "1",
+        "2",
+        "3+"
+      ],
+      "returned": 2,
+      "start": 0,
+      "total": 2
+    },
+    "combined_filter_omission_reproduced": false,
+    "individual": [
+      {
+        "count": 100,
+        "degrees": [
+          1
+        ],
+        "duration_ms": 94,
+        "freshness": null,
+        "is_partial": null,
+        "late_consumer_present": false,
+        "requested_degrees": [
+          "1"
+        ],
+        "returned": 1,
+        "start": 0,
+        "total": 1
+      },
+      {
+        "count": 100,
+        "degrees": [
+          2
+        ],
+        "duration_ms": 201,
+        "freshness": null,
+        "is_partial": null,
+        "late_consumer_present": true,
+        "requested_degrees": [
+          "2"
+        ],
+        "returned": 1,
+        "start": 0,
+        "total": 1
+      },
+      {
+        "count": 100,
+        "degrees": [],
+        "duration_ms": 163,
+        "freshness": null,
+        "is_partial": null,
+        "late_consumer_present": false,
+        "requested_degrees": [
+          "3+"
+        ],
+        "returned": 0,
+        "start": 0,
+        "total": 0
+      }
+    ]
+  },
+  "evidence_digest": "sha256:86729d9e86867728a92358a1a74bcef0fa463364564c28568e355fbde9b4f240",
+  "evidence_mode": "live-local disposable DataHub Core and MCP",
+  "field_lineage_probe": {
+    "direct_upstream_lineage_aspect": {
+      "exact_two_hop_chain_present": true,
+      "late_edge_present": true,
+      "matched_edge_count": 2,
+      "model_edge_present": true
+    },
+    "mcp_column_lineage": {
+      "degrees": [
+        1,
+        2
+      ],
+      "has_more": false,
+      "late_consumer_present": true,
+      "offset": 0,
+      "returned": 2,
+      "total": 2
+    },
+    "unexpected_multihop_gap_observed": false
+  },
+  "limitations": [
+    "The graph is synthetic and disposable; it does not prove production coverage.",
+    "Core returned null isPartial and freshness fields during these lineage queries.",
+    "The experiment diagnoses read behavior and does not mutate lifecycle metadata."
+  ],
+  "mcp_capability": {
+    "lineage_docs_describe_pagination": true,
+    "lineage_has_cache_bypass_parameter": false,
+    "lineage_has_offset_parameter": true,
+    "tool_count": 18
+  },
+  "mcp_offset_probe": {
+    "defect_reproduced": false,
+    "first_page": {
+      "degrees": [
+        2
+      ],
+      "has_more": true,
+      "late_consumer_present": false,
+      "offset": 0,
+      "returned": 1,
+      "total": 31
+    },
+    "gms_second_row_control": {
+      "count": 1,
+      "degrees": [
+        2
+      ],
+      "duration_ms": 294,
+      "freshness": null,
+      "is_partial": null,
+      "late_consumer_present": false,
+      "requested_degrees": [
+        "1",
+        "2",
+        "3+"
+      ],
+      "returned": 1,
+      "start": 1,
+      "total": 31
+    },
+    "proposed_fix": "https://github.com/acryldata/mcp-server-datahub/pull/195",
+    "related_issue": "https://github.com/acryldata/mcp-server-datahub/issues/194",
+    "second_page": {
+      "degrees": [
+        2
+      ],
+      "has_more": true,
+      "late_consumer_present": false,
+      "offset": 1,
+      "returned": 1,
+      "total": 31
+    }
+  },
+  "restore": {
+    "duration_ms": 8199,
+    "mode": "base",
+    "refresh_digest": "sha256:d6f50d09594e81eb0f7741685bafc6a5a2eb202c580b4a005381ea39037ab587"
+  },
+  "schema_version": "1.0.0",
+  "scope": {
+    "gms": "loopback disposable Core (retirement-conductor-feedback-clean/new-project-scoped-volumes)",
+    "mcp": "loopback 0.6.1.dev1+pr195@4f2a71252f629b9f1f33019942acdc8499a60ebd",
+    "production_systems_mutated": false
+  },
+  "seed_operations": [
+    {
+      "duration_ms": 9622,
+      "mode": "base",
+      "refresh_digest": "sha256:a9418b899907e4db121d255e755ab1ee02c123bc80ed1b86edfd06664e63c45c"
+    },
+    {
+      "duration_ms": 8162,
+      "mode": "late",
+      "refresh_digest": "sha256:b2b2558ab7d432a7cb0955aedc03a0c72935bb4ae5d78fd9d126c3deea78c499"
+    }
+  ],
+  "versions": {
+    "datahub_core": "v1.6.0",
+    "managed_ingestion_cli": "1.6.0",
+    "mcp_server": "0.6.1.dev1+pr195@4f2a71252f629b9f1f33019942acdc8499a60ebd"
+  }
+}

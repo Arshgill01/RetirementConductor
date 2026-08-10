@@ -4,7 +4,7 @@ Technical and competitive claims use primary public sources. Source
 capabilities can change; review this ledger before changing product
 positioning or integration contracts.
 
-Checked: 2026-08-02.
+Checked: 2026-08-09.
 
 ## DataHub
 
@@ -12,7 +12,7 @@ Checked: 2026-08-02.
 |---|---|---|
 | [DataHub Core](https://github.com/datahub-project/datahub) | `2bbb932452e39eb8680489b79071ff7aa1de540e` | metadata model, deprecation mutation, GraphQL behavior |
 | [DataHub documentation](https://docs.datahub.com/docs/) | `1.6.0` site | lineage, MCP, contracts, incidents, applications, workflows |
-| [DataHub MCP Server](https://github.com/acryldata/mcp-server-datahub) | `9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9` | actual open-source tool registry and lineage behavior |
+| [DataHub MCP Server](https://github.com/acryldata/mcp-server-datahub) | release control `9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9`; PR 195 control `4f2a71252f629b9f1f33019942acdc8499a60ebd` | actual open-source tool registry, lineage behavior, and failing-before/passing-after pagination control |
 | [DataHub Skills](https://github.com/datahub-project/datahub-skills) | `f22f93074cf265ba6f9401947404f090c2584d9d` | shipped search, lineage, and enrichment workflows |
 | [Hackathon resources](https://datahub.devpost.com/resources) | page checked 2026-08-02 | official tooling and sample-dataset inventory |
 | [DataHub static assets](https://github.com/datahub-project/static-assets) | `a6479c691dd2a40dd89563396d9c8b2b28bee83c` | `fiction-retail`, `nyc-taxi`, and `healthcare` source, license, scenario, and ingestion documentation |
@@ -21,6 +21,11 @@ Key pages:
 
 - [DataHub MCP Server](https://docs.datahub.com/docs/features/feature-guides/mcp/)
 - [DataHub lineage](https://docs.datahub.com/docs/features/feature-guides/lineage/)
+- [DataHub lineage API tutorial](https://docs.datahub.com/docs/api/tutorials/lineage)
+- [DataHub document API tutorial](https://docs.datahub.com/docs/api/tutorials/documents)
+- [DataHub Superset source](https://docs.datahub.com/docs/generated/ingestion/sources/superset)
+- [MCP lineage offset issue 194](https://github.com/acryldata/mcp-server-datahub/issues/194)
+- [MCP lineage offset fix PR 195](https://github.com/acryldata/mcp-server-datahub/pull/195)
 - [Data contracts](https://docs.datahub.com/docs/managed-datahub/observe/data-contract)
 - [Incidents](https://docs.datahub.com/docs/incidents/incidents)
 - [Change proposals](https://docs.datahub.com/docs/managed-datahub/change-proposals)

@@ -17,6 +17,11 @@ open risk.
    shallow and where it becomes unnecessarily elaborate.
 5. [Source ledger](SOURCE_LEDGER.md) records the primary sources and source
    revisions used for current claims.
+6. [DataHub feedback worklog](DATAHUB_FEEDBACK_WORKLOG.md) and the associated
+   [submission draft](DATAHUB_FEEDBACK_SUBMISSION.md) preserve the iterative,
+   evidence-backed hackathon feedback pass without changing product claims.
+   Public-safe released-versus-patched experiment artifacts live under
+   `artifacts/public/datahub-feedback/`.
 
 ## Current synthesis
 
