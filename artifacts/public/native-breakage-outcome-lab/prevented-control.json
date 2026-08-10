@@ -1,0 +1,93 @@
+{
+  "action_denied_hook": {
+    "decision": "DENIED_BY_CALLER",
+    "requested_target": "retirement_lab.orders.legacy_status",
+    "statement_executed": false
+  },
+  "artifact_digest": "sha256:20f361079929a25dc5798f347d97e3e0a9f351c98966a8b9ad10f29b0dc188da",
+  "destructive_statement_count": 0,
+  "evidence_mode": "live-local disposable PostgreSQL and Apache Spark/JDBC",
+  "result": "UNSAFE_ACTION_PREVENTED",
+  "schema": {
+    "after": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "is_nullable": "NO",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "legacy_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "order_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "amount_cents",
+          "data_type": "bigint",
+          "is_nullable": "NO",
+          "ordinal_position": 4
+        }
+      ],
+      "schema_digest": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e"
+    },
+    "before": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "is_nullable": "NO",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "legacy_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "order_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "amount_cents",
+          "data_type": "bigint",
+          "is_nullable": "NO",
+          "ordinal_position": 4
+        }
+      ],
+      "schema_digest": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e"
+    }
+  },
+  "schema_version": "1.0.0",
+  "sequence": "prevented-action-control",
+  "workloads": {
+    "legacy": {
+      "captured_at": "2026-08-10T07:08:39Z",
+      "duration_ms": 25190,
+      "exit_code": 0,
+      "outcome": "SUCCEEDED",
+      "row_count": 128,
+      "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "spark_version": "3.5.3"
+    },
+    "replacement": {
+      "captured_at": "2026-08-10T07:09:00Z",
+      "duration_ms": 21563,
+      "exit_code": 0,
+      "outcome": "SUCCEEDED",
+      "row_count": 128,
+      "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "spark_version": "3.5.3"
+    }
+  }
+}

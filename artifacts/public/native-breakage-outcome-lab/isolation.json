@@ -1,0 +1,24 @@
+{
+  "artifact_digest": "sha256:885dd48d4ece79685b84885f032472c690ae6642bd306d91be021a335012293d",
+  "compose_project_count": 2,
+  "credential_values_recorded": false,
+  "cross_run_credentials": [
+    {
+      "authenticated": false,
+      "direction": "B credential against A database",
+      "exit_code": 2
+    },
+    {
+      "authenticated": false,
+      "direction": "A credential against B database",
+      "exit_code": 2
+    }
+  ],
+  "evidence_mode": "live-local disposable PostgreSQL",
+  "producer_digest_equal": true,
+  "result": "ISOLATION_PROVED",
+  "schema_digest_equal": true,
+  "schema_version": "1.0.0",
+  "sequence": "service-and-credential-isolation",
+  "shared_network_count": 0
+}

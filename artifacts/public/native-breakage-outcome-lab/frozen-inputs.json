@@ -1,0 +1,35 @@
+{
+  "artifact_digest": "sha256:e26a9bd5d53eb96191847c732a6fe0349d92fca1863cba8aca8963b8e6017f17",
+  "expected_safe_digests": {
+    "producer_whole_result": "sha256:14ea1813228f73dde3a710cc6fef64532d6d09373f102d5d41d625ffa7a821f5",
+    "workload_semantic_result": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078"
+  },
+  "expected_schema_digests": {
+    "after_drop": "sha256:256884463e71dede75f4736af08cdb7f6565245485989f47fa11f11e47fd2abd",
+    "before_drop": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e"
+  },
+  "files": {
+    "deploy/native-breakage-lab/docker-compose.yml": "sha256:df1cd04a7785b98a0bbf5f6430de96d7478c60b9bbac139fb0466dbf21499449",
+    "deploy/native-breakage-lab/initdb/10-native-breakage-lab.sql": "sha256:6c81e2c8c68475aba2c0f12381892b33608a1efa88915f4f8ed1182d3a7838ad",
+    "deploy/native-breakage-lab/workload.py": "sha256:ebaee5a00d1505e8d2b59f1d32f83a9d37e6bc29bfdf0c659ebb69b1ddcf34b0",
+    "fixtures/native-breakage-lab/contract.json": "sha256:a49c10004853f65bec13d15a322b83c8d93c3aacc9c5ad558756f10d77862a04"
+  },
+  "frozen_input_digest": "sha256:e1bcca73b76984be7195778da1eeadcbbd1280aabb79be929d1e666199037813",
+  "generator": {
+    "name": "native-breakage-sql-generator",
+    "row_count": 128,
+    "seed": 20260810,
+    "version": "1.0.0"
+  },
+  "jdbc_driver": {
+    "artifact": "org.postgresql:postgresql:42.7.4",
+    "sha256": "188976721ead8e8627eb6d8389d500dccc0c9bebd885268a3047180274a6031e",
+    "size_bytes": 1086687,
+    "url": "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/42.7.4/postgresql-42.7.4.jar"
+  },
+  "runtime_images": {
+    "postgres": "postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b",
+    "spark": "apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74"
+  },
+  "schema_version": "1.0.0"
+}

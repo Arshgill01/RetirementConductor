@@ -1,0 +1,30 @@
+{
+  "descriptor_digest": "sha256:4fc28d2b611e9479d4af2c7b9deeec3e30fa6d9effa662cb32fc5d568f83d626",
+  "descriptor_type": "public-safe-native-consumer",
+  "evidence_mode": "live-local disposable fixture data",
+  "limitations": [
+    "This descriptor is not DataHub lineage evidence.",
+    "CP-05 must ingest and directly reread the corresponding DataHub aspect before campaign use.",
+    "The observation is live-local over deterministic fixture rows, not production or customer evidence."
+  ],
+  "observation": {
+    "executed_at": "2026-08-10T07:05:31Z",
+    "outcome": "SUCCEEDED",
+    "row_count": 128,
+    "success_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078"
+  },
+  "producer": {
+    "dataset_identity": "postgresql://native-breakage-lab/retirement_lab.orders",
+    "field_usage": {
+      "field": "legacy_status",
+      "operation": "selected as selected_status, uppercased, ordered, and included in whole-result digest"
+    }
+  },
+  "schema_version": "1.0.0",
+  "workload": {
+    "native_job_identity": "spark-batch://native-breakage-lab/legacy-status-digest/v1",
+    "source_code_digest": "sha256:ebaee5a00d1505e8d2b59f1d32f83a9d37e6bc29bfdf0c659ebb69b1ddcf34b0",
+    "type": "Apache Spark batch over PostgreSQL JDBC",
+    "version": "3.5.3"
+  }
+}

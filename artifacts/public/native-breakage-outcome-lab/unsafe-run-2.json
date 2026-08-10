@@ -1,0 +1,128 @@
+{
+  "artifact_digest": "sha256:b893103448dcf3299cf5ed5be9c8b1a777598e51bc9bcb9bd8928df8fdcdb063",
+  "destructive_statement": {
+    "count": 1,
+    "operation": "DROP COLUMN",
+    "target": "retirement_lab.orders.legacy_status"
+  },
+  "evidence_mode": "live-local disposable PostgreSQL and Apache Spark/JDBC",
+  "native_versions": {
+    "postgres_server": "16.14 (Debian 16.14-1.pgdg13+1)",
+    "spark_image_id": "sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74"
+  },
+  "principals": {
+    "legacy_reader": {
+      "delete": false,
+      "insert": false,
+      "select": true,
+      "update": false
+    },
+    "replacement_reader": {
+      "delete": false,
+      "insert": false,
+      "select": true,
+      "update": false
+    }
+  },
+  "producer": {
+    "compatibility_mismatch_count": 0,
+    "compatibility_null_count": 0,
+    "row_count": 128,
+    "safe_whole_result_digest": "sha256:14ea1813228f73dde3a710cc6fef64532d6d09373f102d5d41d625ffa7a821f5"
+  },
+  "result": "UNSAFE_ACTION_CONSEQUENCE_OBSERVED",
+  "schema": {
+    "after": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "is_nullable": "NO",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "order_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "amount_cents",
+          "data_type": "bigint",
+          "is_nullable": "NO",
+          "ordinal_position": 4
+        }
+      ],
+      "schema_digest": "sha256:256884463e71dede75f4736af08cdb7f6565245485989f47fa11f11e47fd2abd"
+    },
+    "before": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "integer",
+          "is_nullable": "NO",
+          "ordinal_position": 1
+        },
+        {
+          "column_name": "legacy_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 2
+        },
+        {
+          "column_name": "order_status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "ordinal_position": 3
+        },
+        {
+          "column_name": "amount_cents",
+          "data_type": "bigint",
+          "is_nullable": "NO",
+          "ordinal_position": 4
+        }
+      ],
+      "schema_digest": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e"
+    }
+  },
+  "schema_version": "1.0.0",
+  "sequence": "unsafe-action-run-2",
+  "workloads": {
+    "legacy_after": {
+      "captured_at": "2026-08-10T07:07:35Z",
+      "duration_ms": 14173,
+      "exit_code": 42,
+      "missing_field": "legacy_status",
+      "native_error_class": "org.postgresql.util.PSQLException",
+      "outcome": "LEGACY_COLUMN_MISSING",
+      "sqlstate": "42703"
+    },
+    "legacy_before": {
+      "captured_at": "2026-08-10T07:06:59Z",
+      "duration_ms": 20976,
+      "exit_code": 0,
+      "outcome": "SUCCEEDED",
+      "row_count": 128,
+      "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "spark_version": "3.5.3"
+    },
+    "replacement_after": {
+      "captured_at": "2026-08-10T07:08:08Z",
+      "duration_ms": 32992,
+      "exit_code": 0,
+      "outcome": "SUCCEEDED",
+      "row_count": 128,
+      "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "spark_version": "3.5.3"
+    },
+    "replacement_before": {
+      "captured_at": "2026-08-10T07:07:20Z",
+      "duration_ms": 20914,
+      "exit_code": 0,
+      "outcome": "SUCCEEDED",
+      "row_count": 128,
+      "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "spark_version": "3.5.3"
+    }
+  }
+}

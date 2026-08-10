@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+    environment:
+      POSTGRES_DB: native_breakage
+      POSTGRES_USER: lab_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?runtime password required}
+      LEGACY_READER_PASSWORD: ${LEGACY_READER_PASSWORD:?runtime password required}
+      REPLACEMENT_READER_PASSWORD: ${REPLACEMENT_READER_PASSWORD:?runtime password required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab_admin -d native_breakage"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - producer-data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    security_opt:
+      - no-new-privileges:true
+
+  spark-workload:
+    profiles: ["workload"]
+    image: apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/native_breakage
+      DB_USER: ${WORKLOAD_DB_USER:?workload principal required}
+      DB_PASSWORD: ${WORKLOAD_DB_PASSWORD:?workload password required}
+      WORKLOAD_FIELD: ${WORKLOAD_FIELD:?legacy_status or order_status required}
+    entrypoint: ["/opt/spark/bin/spark-submit"]
+    command:
+      - --master
+      - local[1]
+      - --driver-memory
+      - 512m
+      - --conf
+      - spark.ui.enabled=false
+      - --conf
+      - spark.sql.shuffle.partitions=1
+      - --conf
+      - spark.default.parallelism=1
+      - --jars
+      - /opt/lab/postgresql-42.7.4.jar
+      - /opt/lab/workload.py
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    volumes:
+      - ./workload.py:/opt/lab/workload.py:ro
+      - ${NATIVE_BREAKAGE_JDBC_JAR:?verified JDBC path required}:/opt/lab/postgresql-42.7.4.jar:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 768m
+    cpus: 1.0
+
+  credential-probe:
+    profiles: ["probe"]
+    image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+    environment:
+      PGPASSWORD: ${WORKLOAD_DB_PASSWORD:?probe password required}
+    entrypoint: ["psql"]
+    command:
+      - -h
+      - postgres
+      - -U
+      - legacy_reader
+      - -d
+      - native_breakage
+      - -Atqc
+      - SELECT 1
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    cpus: 0.25
+
+volumes:
+  producer-data:

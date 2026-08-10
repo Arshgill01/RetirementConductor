@@ -1,0 +1,88 @@
+{
+  "components": {
+    "jdbc": {
+      "artifact": "org.postgresql:postgresql:42.7.4",
+      "sha256": "sha256:188976721ead8e8627eb6d8389d500dccc0c9bebd885268a3047180274a6031e",
+      "version": "42.7.4"
+    },
+    "postgres": {
+      "image": "postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b",
+      "server_version": "16.14 (Debian 16.14-1.pgdg13+1)"
+    },
+    "spark": {
+      "image": "apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74",
+      "version": "3.5.3"
+    }
+  },
+  "consumer_descriptor": {
+    "artifact": "consumer-descriptor.json",
+    "descriptor_digest": "sha256:4fc28d2b611e9479d4af2c7b9deeec3e30fa6d9effa662cb32fc5d568f83d626"
+  },
+  "destructive_statement_count": 2,
+  "evidence_mode": "live-local disposable PostgreSQL and Apache Spark/JDBC over deterministic fixture data",
+  "fallback_classification": "NOT_USED_SPARK_ACHIEVED",
+  "frozen_input_digest": "sha256:e1bcca73b76984be7195778da1eeadcbbd1280aabb79be929d1e666199037813",
+  "isolation": {
+    "artifact": "isolation.json",
+    "artifact_digest": "sha256:885dd48d4ece79685b84885f032472c690ae6642bd306d91be021a335012293d",
+    "result": "ISOLATION_PROVED"
+  },
+  "limitations": [
+    "This lab is disposable and non-production.",
+    "The data is deterministic fixture data and does not establish customer or production coverage.",
+    "The consumer descriptor is a handoff record, not DataHub lineage evidence.",
+    "CP-04 does not integrate DataHub or Retirement Conductor and does not decide why an action is denied."
+  ],
+  "missing_column_error": {
+    "exit_code": 42,
+    "missing_field": "legacy_status",
+    "normalized_outcome": "LEGACY_COLUMN_MISSING",
+    "sqlstate": "42703"
+  },
+  "prevented_action": {
+    "artifact": "prevented-control.json",
+    "artifact_digest": "sha256:20f361079929a25dc5798f347d97e3e0a9f351c98966a8b9ad10f29b0dc188da",
+    "legacy": "SUCCEEDED",
+    "replacement": "SUCCEEDED",
+    "result": "UNSAFE_ACTION_PREVENTED"
+  },
+  "public_artifact_scan": {
+    "files_checked": 8,
+    "finding_count": 0,
+    "result": "PASSED"
+  },
+  "raw_evidence": "ignored runtime state only",
+  "recommendation": "KEEP_SPARK",
+  "reconstruction": {
+    "artifact": "reconstruction.json",
+    "artifact_digest": "sha256:744e35f01a515109de0645821c6e6b00cd5a063071f39d7d3612d98eeb7333a0",
+    "result": "DETERMINISTIC_RECONSTRUCTION_PROVED"
+  },
+  "result": "NATIVE_BREAKAGE_OUTCOME_LAB_PASSED",
+  "schema_digests": {
+    "after": "sha256:256884463e71dede75f4736af08cdb7f6565245485989f47fa11f11e47fd2abd",
+    "before": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e",
+    "reconstructed": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e"
+  },
+  "schema_version": "1.0.0",
+  "self_digest": "sha256:9ffd98967d4388d6c547f31e627fbc2b2d5336041e0d29e208c681c1a93e7238",
+  "unsafe_action_runs": [
+    {
+      "artifact": "unsafe-run-1.json",
+      "artifact_digest": "sha256:3fe712c0ede39eaaa83a7c17e00f37efcf1e4b1f0c59a582236a65f71124ba22",
+      "legacy_after": "LEGACY_COLUMN_MISSING",
+      "legacy_before": "SUCCEEDED",
+      "replacement_after_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "replacement_before_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078"
+    },
+    {
+      "artifact": "unsafe-run-2.json",
+      "artifact_digest": "sha256:b893103448dcf3299cf5ed5be9c8b1a777598e51bc9bcb9bd8928df8fdcdb063",
+      "legacy_after": "LEGACY_COLUMN_MISSING",
+      "legacy_before": "SUCCEEDED",
+      "replacement_after_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+      "replacement_before_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078"
+    }
+  ],
+  "workstream": "CP-04 native downstream breakage outcome lab"
+}

@@ -1,0 +1,9 @@
+{
+  "artifact_digest": "sha256:744e35f01a515109de0645821c6e6b00cd5a063071f39d7d3612d98eeb7333a0",
+  "legacy_workload_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+  "original_environment_removed_before_reconstruction": true,
+  "replacement_workload_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+  "result": "DETERMINISTIC_RECONSTRUCTION_PROVED",
+  "schema_digest": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e",
+  "schema_version": "1.0.0"
+}

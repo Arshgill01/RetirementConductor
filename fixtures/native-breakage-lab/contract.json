@@ -1,0 +1,62 @@
+{
+  "allowed_status_values": [
+    "pending",
+    "processing",
+    "shipped",
+    "delivered"
+  ],
+  "compatibility_oracle": {
+    "expected_mismatch_count": 0,
+    "expected_null_count": 0
+  },
+  "expected_outcomes": {
+    "post_drop_legacy": "LEGACY_COLUMN_MISSING",
+    "post_drop_replacement": "SUCCEEDED",
+    "pre_drop_legacy": "SUCCEEDED",
+    "pre_drop_replacement": "SUCCEEDED",
+    "prevented_legacy": "SUCCEEDED",
+    "prevented_replacement": "SUCCEEDED"
+  },
+  "generator": {
+    "name": "native-breakage-sql-generator",
+    "row_count": 128,
+    "seed": 20260810,
+    "version": "1.0.0"
+  },
+  "jdbc_driver": {
+    "artifact": "org.postgresql:postgresql:42.7.4",
+    "sha256": "188976721ead8e8627eb6d8389d500dccc0c9bebd885268a3047180274a6031e",
+    "size_bytes": 1086687,
+    "url": "https://repo.maven.apache.org/maven2/org/postgresql/postgresql/42.7.4/postgresql-42.7.4.jar"
+  },
+  "producer": {
+    "dataset_identity": "postgresql://native-breakage-lab/retirement_lab.orders",
+    "legacy_field": "legacy_status",
+    "replacement_field": "order_status"
+  },
+  "runtime_images": {
+    "postgres": "postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b",
+    "spark": "apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74"
+  },
+  "safe_digests": {
+    "producer_whole_result": "sha256:14ea1813228f73dde3a710cc6fef64532d6d09373f102d5d41d625ffa7a821f5",
+    "workload_semantic_result": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078"
+  },
+  "schema_digests": {
+    "after_drop": "sha256:256884463e71dede75f4736af08cdb7f6565245485989f47fa11f11e47fd2abd",
+    "before_drop": "sha256:eecd792f5bf6fecb50d5cc72cefa1cbed2979d1aa69086427ab9941f8441080e"
+  },
+  "schema_version": "1.0.0",
+  "workloads": {
+    "legacy": {
+      "field": "legacy_status",
+      "job_identity": "spark-batch://native-breakage-lab/legacy-status-digest/v1",
+      "principal": "legacy_reader"
+    },
+    "replacement": {
+      "field": "order_status",
+      "job_identity": "spark-batch://native-breakage-lab/order-status-digest/v1",
+      "principal": "replacement_reader"
+    }
+  }
+}
