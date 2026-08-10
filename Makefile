@@ -1,4 +1,4 @@
-.PHONY: agent-acceptance agent-full-evidence benchmark-workspace check continuous-reconciliation-acceptance continuous-reconciliation-evidence datahub-core-env datahub-core-up datahub-core-down datahub-seed definitive-unified-verify \
+.PHONY: agent-acceptance agent-full-evidence benchmark-workspace check continuous-reconciliation-acceptance continuous-reconciliation-evidence datahub-core-env datahub-core-up datahub-core-down datahub-seed definitive-unified-verify heterogeneous-datahub heterogeneous-campaign-acceptance lease-value-comparison operator-packet \
 	format git-dbt-tool git-dbt-workspace git-dbt-isolated-workspace \
 	phase00-evidence phase01-evidence phase02-evidence phase03-evidence \
 	phase04-evidence phase05-browser phase05-evidence \
@@ -35,6 +35,20 @@ continuous-reconciliation-evidence:
 semantic-ablation-verify:
 	uv run python scripts/run_semantic_value_ablation.py verify-freeze
 	uv run python scripts/run_semantic_value_ablation.py verify
+
+lease-value-comparison:
+	uv run python scripts/run_lease_value_comparison.py
+
+operator-packet:
+	uv run python scripts/prepare_operator_packet.py
+
+heterogeneous-datahub:
+	DATAHUB_GMS_URL=http://127.0.0.1:18080 \
+	uv run --python 3.11 --with 'acryl-datahub==1.6.0' \
+		python scripts/seed_heterogeneous_datahub.py
+
+heterogeneous-campaign-acceptance: heterogeneous-datahub
+	uv run python scripts/run_heterogeneous_campaign_acceptance.py
 
 test-winning-workstreams:
 	uv run pytest -q \

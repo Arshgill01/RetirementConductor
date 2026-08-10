@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "lease-value-comparison-v1",
+  "frozen_before_execution": true,
+  "question": "Does a revocable, evidence-bound retirement permission prevent stale-green execution after the same late-consumer intervention that leaves an immutable sign-off unchanged?",
+  "source_evidence": {
+    "mode": "live local",
+    "campaign_summary": "artifacts/public/ws03/continuous-reconciliation.json",
+    "watch_receipt": "artifacts/public/ws03/watch-receipt.json"
+  },
+  "intervention": {
+    "type": "late exact-field consumer",
+    "required_confidence_basis": "datahub_upstream_lineage_aspect"
+  },
+  "arms": [
+    {
+      "id": "static-signoff",
+      "contract": "Persist the pre-intervention READY_TO_RETIRE decision and its evidence digest. Do not poll, refresh, revoke, or revalidate it before the producer action.",
+      "expected_after_intervention": "STALE_GREEN",
+      "executable_baseline": true
+    },
+    {
+      "id": "revocable-lease",
+      "contract": "Issue a short-lived permission bound to the READY manifest, reconcile fresh evidence, invalidate on manifest change, and recheck at the producer gate.",
+      "expected_after_intervention": "INVALIDATED_AND_REFUSED",
+      "executable_baseline": false
+    }
+  ],
+  "primary_metrics": [
+    "stale_green_retained",
+    "permission_invalidated",
+    "producer_action_prevented"
+  ],
+  "success_criteria": {
+    "same_pre_intervention_decision": "READY_TO_RETIRE",
+    "static_signoff_stale_green_retained": true,
+    "lease_status_after": "INVALIDATED",
+    "lease_gate_refusal": "GATE_DECISION_NOT_READY",
+    "lease_producer_action_count_delta": 0
+  },
+  "limitations": [
+    "The static arm is an intentionally minimal executable sign-off contract, not a claim about every catalog or ticketing product.",
+    "The intervention and revocable-lease outcome reuse an inspected live-local DataHub/Git/dbt run rather than rerunning infrastructure.",
+    "The producer action is a harmless sentinel, not a warehouse mutation."
+  ]
+}

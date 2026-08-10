@@ -5,6 +5,12 @@ behavior and inspectable evidence; prose alone does not advance the product.
 The continuous execution and completion rules are defined in
 [GOAL.md](GOAL.md); live state is recorded in [STATUS.md](STATUS.md).
 
+Post-goal extensions now include a frozen static-signoff versus Retirement
+Lease comparison, an independent-operator packet, and a campaign-integrated
+experimental Superset path. The Superset result affects canonical readiness
+but does not broaden the complete producer-gated claim until gate-time native
+refresh is implemented and accepted.
+
 ## Objective
 
 Build a trustworthy control plane for one complete data-field retirement:

@@ -1,18 +1,25 @@
 from __future__ import annotations
 
 import copy
-from datetime import UTC, datetime
+import json
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from retirement_conductor.canonical import digest_json, with_digest
+from retirement_conductor.clock import parse_timestamp
 from retirement_conductor.errors import Refusal
+from retirement_conductor.specification import load_specification
+from retirement_conductor.store import CampaignStore
 from retirement_conductor.superset import SupersetAdapter, replace_identifier_once
+from retirement_conductor.superset_campaign_workflow import SupersetCampaignWorkflow
 from retirement_conductor.superset_config import SupersetSettings
 from retirement_conductor.superset_workflow import SupersetWorkflow
 from retirement_conductor.vocabulary import RefusalCode
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class FakeSupersetClient:
@@ -482,3 +489,291 @@ def test_table_only_datahub_evidence_cannot_close_consumer(tmp_path: Path) -> No
         )
 
     assert exc_info.value.code == RefusalCode.RECONCILIATION_SCOPE_MISMATCH
+
+
+def test_superset_receipt_participates_in_campaign_readiness_and_reversal(
+    tmp_path: Path,
+) -> None:
+    campaign_id = "ret-orders-legacy-status"
+    git_consumer = "consumer-git"
+    superset_consumer = "consumer-superset"
+    git_plan_digest = f"sha256:{'a' * 64}"
+    git_source_version = "commit-one"
+    git_targets = ["models/orders.sql"]
+    envelope = with_digest(
+        {
+            "schema_version": "1.0.0",
+            "captured_at": "2026-08-09T00:00:00Z",
+            "mode": "live",
+            "sources": [
+                {
+                    "id": "datahub",
+                    "required": True,
+                    "status": "COMPLETE",
+                    "source_version": "1.6.0",
+                    "identity": "http://127.0.0.1:18080",
+                    "scope": {
+                        "direction": "downstream",
+                        "max_hops": 3,
+                        "filters": [],
+                        "pages": 1,
+                        "reported_total": 2,
+                        "returned_total": 2,
+                    },
+                    "freshness": {
+                        "observed_at": "2026-08-09T00:00:00Z",
+                        "source_updated_at": "2026-08-09T00:00:00Z",
+                        "maximum_age_seconds": 3600,
+                    },
+                    "permissions": {
+                        "principal": "fixture-datahub",
+                        "effective_scope": "read",
+                    },
+                    "limitations": [],
+                    "artifact_ids": [f"sha256:{'1' * 64}"],
+                },
+                {
+                    "id": "git:analytics",
+                    "required": True,
+                    "status": "COMPLETE",
+                    "source_version": git_source_version,
+                    "identity": "fixture-git-repository",
+                    "scope": {
+                        "direction": "downstream",
+                        "max_hops": 1,
+                        "filters": ["branch:main"],
+                        "pages": 1,
+                        "reported_total": 1,
+                        "returned_total": 1,
+                    },
+                    "freshness": {
+                        "observed_at": "2026-08-09T00:00:00Z",
+                        "source_updated_at": "2026-08-09T00:00:00Z",
+                        "maximum_age_seconds": 3600,
+                    },
+                    "permissions": {
+                        "principal": "fixture-git",
+                        "effective_scope": "read,apply,validate",
+                    },
+                    "limitations": [],
+                    "artifact_ids": [f"sha256:{'2' * 64}"],
+                },
+            ],
+        },
+        "envelope_digest",
+    )
+    client = FakeSupersetClient()
+    adapter = SupersetAdapter(settings(), client)
+    with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
+        store.create_campaign(
+            load_specification(ROOT / "fixtures/specs/valid.yaml"),
+            occurred_at="2026-08-09T00:00:00Z",
+        )
+        store.record_inventory(
+            campaign_id,
+            evidence_envelope=envelope,
+            consumers=[
+                {
+                    "id": git_consumer,
+                    "disposition": "IDENTIFIED",
+                    "receipt_digest": None,
+                },
+                {
+                    "id": superset_consumer,
+                    "disposition": "OPAQUE",
+                    "receipt_digest": None,
+                },
+            ],
+            snapshot_digest=f"sha256:{'3' * 64}",
+            occurred_at="2026-08-09T00:00:00Z",
+        )
+        workflow = SupersetCampaignWorkflow(
+            store=store,
+            adapter=adapter,
+            artifact_directory=tmp_path / "artifacts",
+        )
+        planned_campaign = workflow.plan(
+            campaign_id,
+            consumer_id=superset_consumer,
+            datahub_entities=[
+                {
+                    "urn": (
+                        "urn:li:dataset:(urn:li:dataPlatform:superset,"
+                        "WS04.public.ws04_status_by_order,PROD)"
+                    ),
+                    "external_url": (
+                        "http://127.0.0.1:18088/explore/"
+                        "?datasource_type=table&datasource_id=1"
+                    ),
+                }
+            ],
+            dataset_id=1,
+            chart_id=2,
+            legacy_field="legacy_status",
+            replacement_field="order_status",
+        )
+        operation_time = str(planned_campaign["preflight"]["captured_at"])
+        expires_at = (
+            (parse_timestamp(operation_time) + timedelta(hours=1))
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
+
+        store.change_consumer_disposition(
+            campaign_id,
+            git_consumer,
+            "CHANGE_PROPOSED",
+            occurred_at=operation_time,
+            idempotency_key="git-plan",
+            plan_digest=git_plan_digest,
+            source_version=git_source_version,
+            approved_targets=git_targets,
+        )
+        authorization_digest = store.projection(campaign_id).input_digests[
+            "authorization"
+        ]
+        git_approval = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "approval_id": "git-approval",
+                "campaign_id": campaign_id,
+                "plan_digest": git_plan_digest,
+                "source_version": git_source_version,
+                "targets": git_targets,
+                "principal": "external-operator",
+                "scope": ["apply"],
+                "authorization_digest": authorization_digest,
+                "authorized_at": operation_time,
+                "expires_at": expires_at,
+            },
+            "approval_digest",
+        )
+        store.record_approval(
+            campaign_id,
+            git_approval,
+            plan_digest=git_plan_digest,
+            source_version=git_source_version,
+            targets=git_targets,
+            required_scope=["apply"],
+            trusted_now=parse_timestamp(operation_time),
+            occurred_at=operation_time,
+            idempotency_key="git-approval",
+        )
+        workflow.authorize(
+            campaign_id,
+            principal="external-operator",
+            authorized_at=operation_time,
+            expires_at=expires_at,
+        )
+        store.begin_migration_with_claim(
+            campaign_id,
+            {"repository": "analytics", "path": git_targets[0]},
+            plan_digest=git_plan_digest,
+            source_version=git_source_version,
+            targets=git_targets,
+            required_scope=["apply"],
+            trusted_now=parse_timestamp(operation_time),
+            occurred_at=operation_time,
+        )
+        store.change_consumer_disposition(
+            campaign_id,
+            git_consumer,
+            "APPLIED",
+            occurred_at=operation_time,
+            idempotency_key="git-applied",
+        )
+        git_receipt = json.loads(
+            (ROOT / "artifacts/public/phase00/receipt.json").read_text(encoding="utf-8")
+        )
+        git_receipt.update(
+            {
+                "campaign_id": campaign_id,
+                "consumer_id": git_consumer,
+                "captured_at": operation_time,
+                "expires_at": expires_at,
+            }
+        )
+        git_receipt["adapter"].update({"name": "git-dbt", "mode": "live"})
+        git_receipt["source_before"]["version"] = git_source_version
+        git_receipt["plan"].update(
+            {
+                "digest": git_plan_digest,
+                "proposed_targets": git_targets,
+                "approved_targets": git_targets,
+            }
+        )
+        git_receipt["apply"].update(
+            {"result": "APPLIED", "actual_targets": git_targets}
+        )
+        git_receipt = with_digest(git_receipt, "receipt_digest")
+        store.accept_receipt(
+            campaign_id,
+            git_consumer,
+            git_receipt,
+            trusted_now=parse_timestamp(operation_time),
+            occurred_at=operation_time,
+            idempotency_key="git-receipt",
+        )
+
+        superset_plan = planned_campaign["plan"]
+        workflow.apply(
+            campaign_id,
+            confirmed_plan_digest=str(superset_plan["plan_digest"]),
+            occurred_at=operation_time,
+        )
+        superset_result = workflow.validate(campaign_id, expires_at=expires_at)
+        reconciled = workflow.reconcile_source(
+            campaign_id,
+            {
+                "dataset_urn": superset_plan["datahub_urn"],
+                "dataset_external_url": (
+                    "http://127.0.0.1:18088/explore/"
+                    "?datasource_type=table&datasource_id=1"
+                ),
+                "upstream_field_urns": [
+                    "urn:li:schemaField:(urn:li:dataset:(postgres,orders,PROD),"
+                    "order_status)"
+                ],
+                "table_only": False,
+                "connector_version": "1.6.0",
+                "direct_reread": True,
+            },
+        )
+        reconciliation_time = str(reconciled["observation"]["captured_at"])
+        store.record_reconciliation(
+            campaign_id,
+            evidence_envelope=reconciled["evidence_envelope"],
+            consumer_ids=[git_consumer, superset_consumer],
+            comparison={
+                "comparison_digest": reconciled["observation"]["reconciliation_digest"]
+            },
+            snapshot_digest=str(reconciled["observation"]["reconciliation_digest"]),
+            occurred_at=reconciliation_time,
+        )
+        ready = store.evaluate(campaign_id, occurred_at=reconciliation_time)
+
+        assert ready["decision"] == "READY_TO_RETIRE"
+        assert len(ready["receipt_digests"]) == 2
+        assert superset_result["receipt"]["adapter"]["name"] == "superset"
+
+        client.dataset["sql"] = f"{superset_plan['target']['after_sql']} WHERE id > 0"
+        with pytest.raises(Refusal) as exc_info:
+            workflow.reconcile_source(
+                campaign_id,
+                {
+                    "dataset_urn": superset_plan["datahub_urn"],
+                    "dataset_external_url": (
+                        "http://127.0.0.1:18088/explore/"
+                        "?datasource_type=table&datasource_id=1"
+                    ),
+                    "upstream_field_urns": [],
+                    "table_only": True,
+                },
+            )
+        assert exc_info.value.code == RefusalCode.SOURCE_FINGERPRINT_MISMATCH
+        unsafe = store.evaluate(
+            campaign_id,
+            occurred_at=store.projection(campaign_id).generated_at,
+            idempotency_key="superset-drift-evaluation",
+        )
+        assert unsafe["decision"] == "UNSAFE"

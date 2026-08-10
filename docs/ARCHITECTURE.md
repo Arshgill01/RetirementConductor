@@ -22,8 +22,11 @@ schemas, Git content, BI objects, or the metadata graph.
               │ DataHub boundary │   │ Git/dbt boundary    │
               │ graph + context  │   │ guarded + validated │
               └────────┬─────────┘   └─────────┬───────────┘
-                       │                       │
-                       └──────────┬────────────┘
+                       │              ┌─────────▼───────────┐
+                       │              │ Superset boundary  │
+                       │              │ experimental       │
+                       │              └─────────┬───────────┘
+                       └──────────┬─────────────┘
                                   │ receipts
                        ┌──────────▼───────────┐
                        │ Campaign store       │
@@ -168,7 +171,7 @@ runtime rather than assume the union of their documentation.
 
 ### Git/dbt execution boundary
 
-The sole automated executor maps a DataHub consumer to an exact Git/dbt native
+The sole fully producer-gated executor maps a DataHub consumer to an exact Git/dbt native
 identity and implements:
 
 ```text
@@ -183,14 +186,28 @@ preflight
 ```
 
 The executor never decides campaign readiness. It returns evidence or a stable
-refusal. Other source domains can contribute strictly validated external
-receipts, but the current product does not automate their mutation.
+refusal.
 
 Native execution treats repositories, project code, macros, hooks, generated
 content, and API responses as untrusted input. Validators run with disposable
 credentials and bounded filesystem, subprocess, environment, and network
 access appropriate to the supported source. Path and symlink resolution must
 remain inside the approved root.
+
+### Experimental Superset execution boundary
+
+The loopback-only Superset boundary maps one DataHub connector URL to exact
+dataset, database, and chart UUIDs. It replaces one executable unquoted SQL
+identifier under an explicit dataset allowlist, forces saved-chart execution,
+compares safe semantic output, emits the common consumer receipt, and supports
+fingerprint-safe compensation. `SupersetCampaignWorkflow` binds those records
+to the same durable campaign transitions as Git/dbt, including multiple exact
+native identity claims in one campaign.
+
+This is not yet a second complete producer-gated path. Campaign reconciliation
+and readiness accept the receipt, but the final gate still independently
+refreshes only DataHub and Git/dbt. Until a gate-time Superset reread lands, the
+extension remains experimental and cannot grant producer action authority.
 
 ### Context-aware deterministic planner
 

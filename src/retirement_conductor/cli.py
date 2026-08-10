@@ -54,6 +54,9 @@ from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.reference import run_reference_fixture
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
+from retirement_conductor.superset import SupersetAdapter
+from retirement_conductor.superset_campaign_workflow import SupersetCampaignWorkflow
+from retirement_conductor.superset_config import SupersetSettings
 from retirement_conductor.vocabulary import CampaignState, Decision
 from retirement_conductor.watch import (
     WATCH_EXIT_CODES,
@@ -370,6 +373,41 @@ def build_parser() -> argparse.ArgumentParser:
     authorize.add_argument("--authorized-at", required=True)
     authorize.add_argument("--expires-at", required=True)
 
+    superset = adapter_subparsers.add_parser(
+        "superset",
+        help="operate one campaign-bound Superset virtual dataset",
+    )
+    superset_subparsers = superset.add_subparsers(
+        dest="adapter_command",
+        required=True,
+    )
+    superset_plan = superset_subparsers.add_parser("plan")
+    _add_live_campaign_arguments(superset_plan)
+    superset_plan.add_argument("--consumer", required=True)
+    superset_plan.add_argument("--datahub-entities", type=Path, required=True)
+    superset_plan.add_argument("--dataset-id", type=int, required=True)
+    superset_plan.add_argument("--chart-id", type=int, required=True)
+    superset_plan.add_argument("--legacy-field", required=True)
+    superset_plan.add_argument("--replacement-field", required=True)
+    superset_plan.add_argument("--allow-semantic-change", action="store_true")
+    for command in ("apply", "validate", "compensate", "reconcile"):
+        operation = superset_subparsers.add_parser(command)
+        _add_live_campaign_arguments(operation)
+        if command == "apply":
+            operation.add_argument("--confirm-plan-digest")
+            operation.add_argument("--occurred-at")
+        elif command == "validate":
+            operation.add_argument("--expires-at")
+        elif command == "compensate":
+            operation.add_argument("--occurred-at")
+        else:
+            operation.add_argument("--datahub-observation", type=Path, required=True)
+    superset_authorize = superset_subparsers.add_parser("authorize")
+    _add_live_campaign_arguments(superset_authorize)
+    superset_authorize.add_argument("--principal")
+    superset_authorize.add_argument("--authorized-at", required=True)
+    superset_authorize.add_argument("--expires-at", required=True)
+
     producer = subparsers.add_parser(
         "producer",
         help="prepare an exact short-lived producer retirement plan",
@@ -567,6 +605,18 @@ def _git_dbt_adapter_for_campaign(
     return GitDbtAdapter(GitDbtSettings.from_environment(environment))
 
 
+def _superset_workflow(
+    args: argparse.Namespace,
+    store: CampaignStore,
+) -> SupersetCampaignWorkflow:
+    settings = SupersetSettings.from_environment()
+    return SupersetCampaignWorkflow(
+        store=store,
+        adapter=SupersetAdapter(settings),
+        artifact_directory=Path(args.artifact_dir),
+    )
+
+
 def _producer_gate_workflow(
     args: argparse.Namespace,
     store: CampaignStore,
@@ -609,6 +659,17 @@ def _load_fixture_events(source: Path) -> list[dict[str, Any]]:
             {"file": path.name},
         )
     return events
+
+
+def _load_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise Refusal(
+            "SPEC_PARSE_FAILED",
+            "The requested JSON input could not be read.",
+            {"file": path.name, "error_type": type(exc).__name__},
+        ) from exc
 
 
 def _selected_campaign_id(args: argparse.Namespace) -> str:
@@ -837,6 +898,78 @@ def main(argv: Sequence[str] | None = None) -> int:
                     result = workflow.validate(
                         args.campaign_id,
                         expires_at=args.expires_at,
+                    )
+            _render(result)
+            return 0
+        if args.command == "adapter" and args.adapter_name == "superset":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                superset_workflow = _superset_workflow(args, store)
+                if args.adapter_command == "plan":
+                    entities = _load_json(args.datahub_entities)
+                    if not isinstance(entities, list) or not all(
+                        isinstance(entity, dict) for entity in entities
+                    ):
+                        raise Refusal(
+                            "SPEC_SCHEMA_INVALID",
+                            (
+                                "Superset planning requires a JSON array of "
+                                "DataHub entities."
+                            ),
+                        )
+                    result = superset_workflow.plan(
+                        args.campaign_id,
+                        consumer_id=args.consumer,
+                        datahub_entities=entities,
+                        dataset_id=args.dataset_id,
+                        chart_id=args.chart_id,
+                        legacy_field=args.legacy_field,
+                        replacement_field=args.replacement_field,
+                        allow_semantic_change=args.allow_semantic_change,
+                    )
+                elif args.adapter_command == "authorize":
+                    result = superset_workflow.authorize(
+                        args.campaign_id,
+                        principal=(
+                            args.principal
+                            or superset_workflow.adapter.settings.principal
+                        ),
+                        authorized_at=args.authorized_at,
+                        expires_at=args.expires_at,
+                    )
+                elif args.adapter_command == "apply":
+                    if not args.confirm_plan_digest:
+                        raise Refusal(
+                            "AUTH_APPROVAL_MISSING",
+                            (
+                                "Apply requires explicit confirmation of the "
+                                "exact plan digest."
+                            ),
+                        )
+                    result = superset_workflow.apply(
+                        args.campaign_id,
+                        confirmed_plan_digest=args.confirm_plan_digest,
+                        occurred_at=args.occurred_at,
+                    )
+                elif args.adapter_command == "validate":
+                    result = superset_workflow.validate(
+                        args.campaign_id,
+                        expires_at=args.expires_at,
+                    )
+                elif args.adapter_command == "compensate":
+                    result = superset_workflow.compensate(
+                        args.campaign_id,
+                        occurred_at=args.occurred_at,
+                    )
+                else:
+                    observation = _load_json(args.datahub_observation)
+                    if not isinstance(observation, dict):
+                        raise Refusal(
+                            "SPEC_SCHEMA_INVALID",
+                            "Superset reconciliation requires one JSON object.",
+                        )
+                    result = superset_workflow.reconcile_source(
+                        args.campaign_id,
+                        observation,
                     )
             _render(result)
             return 0

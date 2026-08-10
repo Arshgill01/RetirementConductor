@@ -2081,3 +2081,69 @@ two opt-in runtime operations preserve the existing command boundary.
 What this does not prove: production graph coverage, a shared multi-operator
 service, independent adoption, or safe browser authorization/apply/gate
 controls. Those mutation boundaries remain intentionally absent.
+
+## Post-goal lease-value, operator, and heterogeneous-campaign evidence
+
+Behavior and public-evidence commit: `87bbf41`. Evidence modes: paired analysis
+over inspected live-local evidence, prepared-not-run human evaluation, and a
+new live-local DataHub Core 1.6.0 plus Git/dbt plus Superset 6.0.0 campaign.
+
+The frozen lease-value protocol is
+[`fixtures/lease-value-comparison-v1/FROZEN.json`](../fixtures/lease-value-comparison-v1/FROZEN.json).
+Its executable static arm persisted the same pre-intervention
+`READY_TO_RETIRE` decision and intentionally had no refresh or revocation
+operation. Under the inspected WS-03 late exact-field intervention it therefore
+retained stale green. The Retirement Lease arm changed to `UNSAFE`, became
+`INVALIDATED`, refused the preserved plan with `GATE_DECISION_NOT_READY`, and
+changed the producer sentinel count by zero. Public report digest:
+`sha256:267ad05d9971785b27e430ca8e002ae9473bf68c3edd7d28b0ec0dc7c30e1dcd`.
+The static arm is a minimal contract, not a named-vendor comparison.
+
+The independent-operator packet generator built a checksum-bound wheel, source
+archive, runbooks, participant brief, and observation template under ignored
+runtime state. It explicitly emits `PREPARED_NOT_RUN`, records every author
+intervention as disqualifying evidence, and offers a 30–45 minute bounded
+core-workflow observation plus a 60–90 minute full RC-018 track. No person had
+completed the packet when this entry was written; RC-018 remains `NOT_RUN`, and
+no adoption, willingness, frequency, or buyer claim is made.
+
+The heterogeneous acceptance used one exact PostgreSQL producer field in
+DataHub, a public-safe seeded dbt field edge, and the official DataHub 1.6.0
+Superset connector. Two connector runs each exited zero, reported eight records,
+and were followed by direct stored-aspect rereads rather than trusted as closure
+evidence. Git/dbt applied one exact model change and passed parse, seed, build,
+and test in the bubblewrap/DuckDB boundary. Superset applied one exact
+allowlisted virtual-dataset change, retained dataset/database/chart UUIDs, and
+passed forced saved-chart semantic parity. The canonical campaign accepted both
+live receipts, recorded two exact native migrations, and became
+`READY_TO_RETIRE`. Authorized Superset compensation made that consumer `STALE`
+and the campaign `UNSAFE`. Public evidence digest:
+`sha256:e043a644780542acc46ff6d99523729a645406927225fe55270a06e85f45b03d`.
+
+Commands and inspected results:
+
+```text
+make lease-value-comparison
+Result: REVOCABLE_LEASE_ADDS_DECISIVE_SAFETY_VALUE
+
+make heterogeneous-datahub
+Result: exact public-safe dbt field edge written and digest-bound
+
+uv run python scripts/run_heterogeneous_campaign_acceptance.py
+Result: HETEROGENEOUS_CAMPAIGN_PASSED
+
+make check
+Result: 261 tests; Ruff; formatting; strict mypy over 97 source files;
+204-file repository and 175-link validation; 426-file secret review;
+90-file public-artifact review; source/wheel build; diff check passed
+```
+
+What this proves: revocation adds an observable safety property beyond static
+impact sign-off; Superset can now participate consequentially in the same
+campaign, receipt, reconciliation, and readiness kernel as Git/dbt; and the
+remaining independent-human boundary is executable without being fabricated.
+
+What this does not prove: production coverage, broad customer demand,
+independent operability, or a second complete producer-gated executor. The
+final gate still independently refreshes only DataHub and Git/dbt, so Superset
+remains campaign-integrated experimental scope.

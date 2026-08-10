@@ -152,11 +152,14 @@ calls and retries. This is an operational result for the recorded host and
 model, not capability containment: shell, file editing, and mutation-capable
 DataHub tools remained exposed in every tested condition.
 
-A bounded Superset executor has passed a disposable feasibility experiment,
-including native identity, one allowlisted mutation, forced chart validation,
-fresh DataHub reread, and compensation. It is not registered with campaign
-state or the producer gate and therefore is not a supported second executor.
-Promotion requires a real operator need plus end-to-end campaign integration.
+A bounded Superset executor has passed a disposable campaign-integration
+experiment. It now uses canonical campaign state, digest-bound approval,
+consumer receipts, reconciliation, deterministic readiness, compensation, and
+an operator CLI. One live campaign accepted both Git/dbt and Superset receipts,
+became `READY_TO_RETIRE`, and returned to `UNSAFE` when the Superset change was
+restored. It remains experimental: the final producer gate does not yet perform
+an independent gate-time Superset native refresh, and no independent operator
+need has been observed.
 
 ## Build, borrow, and delegate
 

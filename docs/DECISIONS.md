@@ -886,7 +886,41 @@ invalidated its Retirement Lease without clock retries.
 Status: accepted in `80322be` and `2635240`; exercised by TE-04 evidence at
 `6eeea35`.
 
-## D-050 — make the Workbench a thin local view, not another control plane
+## D-050 — retain revocable permission as product substance
+
+Date: 2026-08-10
+
+Decision: retain the Retirement Lease and one-shot watcher as a core product
+boundary, not merely demo choreography. Compare it against an executable static
+sign-off using the same inspected live-local late-consumer intervention.
+
+Why: the frozen static contract retained its pre-intervention green decision.
+The revocable path changed to `UNSAFE`, invalidated the exact lease, and refused
+the preserved producer plan with zero actions. The result isolates the value of
+continuous permission from the value of initial impact analysis.
+
+Status: accepted from `artifacts/public/lease-value-comparison-v1/`; the static
+arm is a minimal contract and is not presented as a named vendor comparison.
+
+## D-051 — promote Superset to campaign-integrated experimental status
+
+Date: 2026-08-10
+
+Decision: bind the bounded Superset executor to canonical inventory, planning,
+approval, multiple native migration claims, receipt acceptance, reconciliation,
+readiness, compensation, and CLI operation. Do not call it a second complete
+producer-gated executor until the final gate independently refreshes Superset.
+
+Why: one live-local campaign used the official DataHub Superset connector,
+direct aspect rereads, native dbt validation, forced Superset chart execution,
+and two exact receipts. It became `READY_TO_RETIRE`; authorized Superset
+compensation made its consumer `STALE` and the same campaign `UNSAFE`.
+
+Status: accepted as campaign-integrated experimental evidence at
+`artifacts/public/heterogeneous-campaign/`. Independent operator value and
+gate-time Superset refresh remain open.
+
+## D-052 — make the Workbench a thin local view, not another control plane
 
 Date: 2026-08-09
 
