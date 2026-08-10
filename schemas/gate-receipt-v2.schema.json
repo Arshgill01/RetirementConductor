@@ -1,0 +1,102 @@
+{
+  "$id": "https://retirement-conductor.example/schemas/gate-receipt-v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Producer gate receipt v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result",
+    "campaign_id",
+    "manifest_digest",
+    "decision",
+    "producer_plan_digest",
+    "attempt_digest",
+    "outcome_digest",
+    "trusted_run_id",
+    "writer_id",
+    "verification",
+    "action",
+    "executed_at",
+    "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "2.0.0"},
+    "result": {"enum": ["EXECUTED", "RECOVERED_COMMITTED"]},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "manifest_digest": {"$ref": "#/$defs/digest"},
+    "decision": {"const": "READY_TO_RETIRE"},
+    "producer_plan_digest": {"$ref": "#/$defs/digest"},
+    "attempt_digest": {"$ref": "#/$defs/digest"},
+    "outcome_digest": {"$ref": "#/$defs/digest"},
+    "trusted_run_id": {"type": "string", "minLength": 1},
+    "writer_id": {"type": "string", "minLength": 1},
+    "verification": {
+      "type": "object",
+      "required": [
+        "datahub_snapshot_digest",
+        "git_dbt_reconciliation_digest",
+        "superset_observations",
+        "producer_schema_observation_digest",
+        "publication_readback_artifact_id",
+        "verification_digest"
+      ],
+      "properties": {
+        "datahub_snapshot_digest": {"$ref": "#/$defs/digest"},
+        "git_dbt_reconciliation_digest": {"$ref": "#/$defs/digest"},
+        "superset_observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["consumer_id", "observation_digest"],
+            "properties": {
+              "consumer_id": {"type": "string", "minLength": 1},
+              "observation_digest": {"$ref": "#/$defs/digest"}
+            }
+          }
+        },
+        "producer_schema_observation_digest": {"$ref": "#/$defs/digest"},
+        "publication_readback_artifact_id": {"$ref": "#/$defs/digest"},
+        "verification_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "result",
+        "action_digest",
+        "native_attempt_digest",
+        "before_schema_fingerprint",
+        "after_schema_fingerprint",
+        "legacy_column_present",
+        "replacement_column_preserved",
+        "destructive_statements_attempted",
+        "destructive_statements_committed",
+        "recovery"
+      ],
+      "properties": {
+        "type": {"const": "postgres_drop_column_v1"},
+        "result": {"const": "COMMITTED"},
+        "action_digest": {"$ref": "#/$defs/digest"},
+        "native_attempt_digest": {"$ref": "#/$defs/digest"},
+        "before_schema_fingerprint": {"$ref": "#/$defs/digest"},
+        "after_schema_fingerprint": {"$ref": "#/$defs/digest"},
+        "legacy_column_present": {"const": false},
+        "replacement_column_preserved": {"const": true},
+        "destructive_statements_attempted": {"const": 1},
+        "destructive_statements_committed": {"const": 1},
+        "recovery": {"type": "string", "minLength": 1}
+      }
+    },
+    "executed_at": {"type": "string", "format": "date-time"},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

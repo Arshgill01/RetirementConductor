@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -248,6 +249,7 @@ class SupersetCampaignWorkflow:
         campaign_id: str,
         *,
         expires_at: str | None = None,
+        covered_consumers: Mapping[str, str] | None = None,
     ) -> dict[str, Any]:
         plan = self._plan(campaign_id)
         projection = self.store.projection(campaign_id)
@@ -277,7 +279,130 @@ class SupersetCampaignWorkflow:
                 f"superset-receipt-{str(receipt['receipt_digest'])[-16:]}"
             ),
         )
-        return {**accepted, "manifest": manifest}
+        covered_receipts = self._accept_covered_consumer_receipts(
+            campaign_id,
+            plan=plan,
+            receipt=receipt,
+            covered_consumers=covered_consumers or {},
+        )
+        return {
+            **accepted,
+            "manifest": manifest,
+            "covered_receipts": covered_receipts,
+        }
+
+    def _accept_covered_consumer_receipts(
+        self,
+        campaign_id: str,
+        *,
+        plan: Mapping[str, Any],
+        receipt: Mapping[str, Any],
+        covered_consumers: Mapping[str, str],
+    ) -> list[dict[str, Any]]:
+        covered_receipts: list[dict[str, Any]] = []
+        occurred_at = str(receipt["captured_at"])
+        for consumer_id, datahub_urn in sorted(covered_consumers.items()):
+            if not datahub_urn.startswith(
+                ("urn:li:chart:(superset,", "urn:li:dashboard:(superset,")
+            ):
+                raise Refusal(
+                    RefusalCode.IDENTITY_NOT_FOUND,
+                    (
+                        "Only exact Superset chart or dashboard graph consumers "
+                        "can be covered."
+                    ),
+                    {"consumer_id": consumer_id},
+                )
+            projection = self.store.projection(campaign_id)
+            consumer = projection.consumers.get(consumer_id)
+            if consumer is None:
+                raise Refusal(
+                    RefusalCode.IDENTITY_NOT_FOUND,
+                    "A covered Superset graph consumer is absent from inventory.",
+                    {"consumer_id": consumer_id},
+                )
+            disposition = ConsumerDisposition(str(consumer["disposition"]))
+            if disposition in {
+                ConsumerDisposition.DISCOVERED,
+                ConsumerDisposition.OPAQUE,
+                ConsumerDisposition.UNRESOLVED,
+            }:
+                self.store.change_consumer_disposition(
+                    campaign_id,
+                    consumer_id,
+                    ConsumerDisposition.IDENTIFIED,
+                    occurred_at=occurred_at,
+                    idempotency_key=f"superset-covered-identify-{consumer_id}",
+                )
+                disposition = ConsumerDisposition.IDENTIFIED
+            if disposition != ConsumerDisposition.IDENTIFIED:
+                raise Refusal(
+                    RefusalCode.POLICY_ILLEGAL_CONSUMER_TRANSITION,
+                    "A covered Superset graph consumer has an incompatible state.",
+                    {"consumer_id": consumer_id, "disposition": disposition},
+                )
+            self.store.change_consumer_disposition(
+                campaign_id,
+                consumer_id,
+                ConsumerDisposition.CHANGE_PROPOSED,
+                occurred_at=occurred_at,
+                idempotency_key=f"superset-covered-plan-{consumer_id}",
+                plan_digest=str(plan["plan_digest"]),
+                source_version=str(plan["source_version"]),
+                approved_targets=[str(item) for item in plan["proposed_targets"]],
+            )
+            self.store.change_consumer_disposition(
+                campaign_id,
+                consumer_id,
+                ConsumerDisposition.APPLIED,
+                occurred_at=occurred_at,
+                idempotency_key=f"superset-covered-applied-{consumer_id}",
+            )
+            covered = deepcopy(dict(receipt))
+            covered.update(
+                {
+                    "receipt_id": (
+                        f"superset-covered-{consumer_id}-"
+                        f"{str(receipt['receipt_digest'])[-12:]}"
+                    ),
+                    "consumer_id": consumer_id,
+                    "datahub_urn": datahub_urn,
+                    "native_identity": {
+                        **dict(receipt["native_identity"]),
+                        "coverage_parent_consumer_id": plan["consumer_id"],
+                        "covered_datahub_urn": datahub_urn,
+                    },
+                    "limitations": [
+                        *list(receipt["limitations"]),
+                        (
+                            "This graph consumer was not mutated independently; "
+                            "it is covered by the exact dataset change and forced "
+                            "saved-chart execution."
+                        ),
+                    ],
+                }
+            )
+            covered = with_digest(covered, "receipt_digest")
+            validate_schema(
+                "consumer-receipt",
+                covered,
+                refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+            )
+            write_versioned_artifact(
+                self._root(campaign_id),
+                f"covered-receipt-{consumer_id}",
+                covered,
+            )
+            self.store.accept_receipt(
+                campaign_id,
+                consumer_id,
+                covered,
+                trusted_now=parse_timestamp(occurred_at),
+                occurred_at=occurred_at,
+                idempotency_key=f"superset-covered-receipt-{consumer_id}",
+            )
+            covered_receipts.append(covered)
+        return covered_receipts
 
     def compensate(
         self,
@@ -326,6 +451,8 @@ class SupersetCampaignWorkflow:
         self,
         campaign_id: str,
         datahub_observation: Mapping[str, Any],
+        *,
+        gate_principal: str | None = None,
     ) -> dict[str, Any]:
         plan = self._plan(campaign_id)
         receipt = load_object(self._root(campaign_id) / "receipt.json")
@@ -362,6 +489,7 @@ class SupersetCampaignWorkflow:
             observation,
             baseline_source=baseline_source,
             plan=plan,
+            gate_principal=gate_principal,
         )
         return {
             "result": "RECONCILED",
@@ -487,6 +615,7 @@ def merge_superset_reconciliation_evidence(
     *,
     baseline_source: Mapping[str, Any],
     plan: Mapping[str, Any],
+    gate_principal: str | None = None,
 ) -> dict[str, Any]:
     """Refresh Superset evidence without widening its declared scope."""
 
@@ -509,6 +638,16 @@ def merge_superset_reconciliation_evidence(
             },
             "limitations": list(observation["limitations"]),
             "artifact_ids": [observation["reconciliation_digest"]],
+            **(
+                {
+                    "permissions": {
+                        "principal": gate_principal,
+                        "effective_scope": "read-only",
+                    }
+                }
+                if gate_principal is not None
+                else {}
+            ),
         }
     )
     merged = with_digest(

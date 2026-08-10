@@ -88,7 +88,8 @@ def retirement_lease_status(
         entry
         for entry in store.gate_attempts(campaign_id)
         if entry["attempt"].get("plan_digest") == plan_digest
-        and entry["status"] in {"INTENT_RECORDED", "EXECUTED", "OUTCOME_UNKNOWN"}
+        and entry["status"]
+        in {"INTENT_RECORDED", "EXECUTED", "NOT_COMMITTED", "OUTCOME_UNKNOWN"}
     ]
     now = observed_at or utc_now()
     parse_timestamp(now)

@@ -6,7 +6,7 @@ import json
 import os
 import re
 import subprocess
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path, PurePosixPath
@@ -34,6 +34,16 @@ from retirement_conductor.git_dbt import (
     write_versioned_artifact,
 )
 from retirement_conductor.policy import default_policy
+from retirement_conductor.postgres_producer import (
+    ACTION_TYPE as POSTGRES_ACTION_TYPE,
+)
+from retirement_conductor.postgres_producer import (
+    PostgresActionOutcome,
+    PostgresClientProtocol,
+    PostgresProducerAction,
+    target_from_mapping,
+)
+from retirement_conductor.postgres_producer_config import PostgresTarget
 from retirement_conductor.publication import publication_source_manifest
 from retirement_conductor.reconciliation import scope_signature
 from retirement_conductor.records import (
@@ -43,6 +53,12 @@ from retirement_conductor.records import (
 )
 from retirement_conductor.schemas import validate_schema
 from retirement_conductor.store import CampaignStore
+from retirement_conductor.superset_config import SupersetSettings
+from retirement_conductor.superset_gate import (
+    SupersetGateClient,
+    SupersetGateVerifier,
+    capture_superset_gate_binding,
+)
 from retirement_conductor.vocabulary import (
     CampaignState,
     ConsumerDisposition,
@@ -108,6 +124,11 @@ class ProducerGateWorkflow:
         sentinel_root: Path,
         boundary: DataHubBoundary | None,
         git_dbt: GitDbtAdapter | None,
+        postgres_action: PostgresProducerAction | None = None,
+        postgres_target: PostgresTarget | None = None,
+        mutation_client_factory: Callable[[], PostgresClientProtocol] | None = None,
+        superset_settings: SupersetSettings | None = None,
+        superset_client: SupersetGateClient | None = None,
     ) -> None:
         self.store = store
         self.artifact_directory = artifact_directory
@@ -116,6 +137,11 @@ class ProducerGateWorkflow:
         self.sentinel_root = sentinel_root.resolve()
         self.boundary = boundary
         self.git_dbt = git_dbt
+        self.postgres_action = postgres_action
+        self.postgres_target = postgres_target
+        self.mutation_client_factory = mutation_client_factory
+        self.superset_settings = superset_settings
+        self.superset_client = superset_client
 
     def prepare(
         self,
@@ -124,6 +150,7 @@ class ProducerGateWorkflow:
         context: TrustedProducerContext,
         expires_at: str,
         prepared_at: str | None = None,
+        action_type: str = "write_public_safe_sentinel",
     ) -> dict[str, Any]:
         """Prepare a short-lived plan after readiness and publication verification."""
 
@@ -151,7 +178,10 @@ class ProducerGateWorkflow:
         bindings = self._git_dbt_bindings(campaign_id)
         reconciliation_digest = self._reconciliation_digest(campaign_id)
         producer_source = self._producer_source()
-        self._prepare_sentinel_root()
+        superset = self._capture_superset_bindings(
+            campaign_id,
+            trusted_now=operation_time,
+        )
         action_identity = digest_json(
             [
                 campaign_id,
@@ -160,10 +190,72 @@ class ProducerGateWorkflow:
                 producer_source["version"],
             ]
         ).removeprefix("sha256:")[:20]
-        relative_path = f"{campaign_id}/{context.run_id}-{action_identity}.json"
+        if action_type == "write_public_safe_sentinel":
+            if superset:
+                raise Refusal(
+                    RefusalCode.GATE_PLAN_INVALID,
+                    (
+                        "A Superset-bound producer plan requires the versioned "
+                        "PostgreSQL action in this release."
+                    ),
+                )
+            self._prepare_sentinel_root()
+            relative_path = f"{campaign_id}/{context.run_id}-{action_identity}.json"
+            action: dict[str, Any] = {
+                "type": "write_public_safe_sentinel",
+                "action_id": f"producer-sentinel-{action_identity}",
+                "sentinel_root_identity": digest_json(str(self.sentinel_root)),
+                "relative_path": relative_path,
+            }
+            schema_version = "1.0.0"
+            limitations = [
+                (
+                    "The trusted run identity is deployment provenance, "
+                    "not cryptographic authorship."
+                ),
+                (
+                    "The producer action is a public-safe local sentinel; "
+                    "it does not mutate a warehouse."
+                ),
+            ]
+        elif action_type == POSTGRES_ACTION_TYPE:
+            native_action, target = self._required_postgres_action()
+            observation = native_action.observe(target)
+            native_plan = native_action.plan(
+                observation,
+                actions=[target],
+                action_expires_at=expires_at,
+            )
+            action = {
+                "type": POSTGRES_ACTION_TYPE,
+                "action_id": f"postgres-retirement-{action_identity}",
+                "action_digest": native_plan["action_digest"],
+                "postgres_action_plan": native_plan,
+            }
+            schema_version = "2.0.0"
+            limitations = [
+                (
+                    "The trusted run identity is deployment provenance, "
+                    "not cryptographic authorship."
+                ),
+                (
+                    "The PostgreSQL action is confined to one allowlisted "
+                    "disposable loopback tuple and never emits CASCADE."
+                ),
+                (
+                    "The final external race is bounded by the native transaction "
+                    "lock but cannot be eliminated across DataHub and PostgreSQL."
+                ),
+            ]
+        else:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The requested producer action type is unsupported.",
+                {"action_type": action_type},
+            )
         plan = with_digest(
             {
-                "schema_version": "1.0.0",
+                "schema_version": schema_version,
                 "campaign_id": campaign_id,
                 "prepared_at": operation_time,
                 "expires_at": expires_at,
@@ -189,30 +281,13 @@ class ProducerGateWorkflow:
                 },
                 "producer_source": producer_source,
                 "git_dbt": bindings["binding"],
-                "action": {
-                    "type": "write_public_safe_sentinel",
-                    "action_id": f"producer-sentinel-{action_identity}",
-                    "sentinel_root_identity": digest_json(str(self.sentinel_root)),
-                    "relative_path": relative_path,
-                },
-                "limitations": [
-                    (
-                        "The trusted run identity is deployment provenance, "
-                        "not cryptographic authorship."
-                    ),
-                    (
-                        "The producer action is a public-safe local sentinel; "
-                        "it does not mutate a warehouse."
-                    ),
-                ],
+                **({"superset": superset} if schema_version == "2.0.0" else {}),
+                "action": action,
+                "limitations": limitations,
             },
             "plan_digest",
         )
-        validate_schema(
-            "producer-plan",
-            plan,
-            refusal_code=RefusalCode.GATE_PLAN_INVALID,
-        )
+        self._validate_producer_plan(plan)
         self.store.issue_gate_plan(plan)
         write_versioned_artifact(
             self._producer_artifact_root(campaign_id),
@@ -252,6 +327,10 @@ class ProducerGateWorkflow:
                 context=context,
                 trusted_now=operation_time,
             )
+            self.store.require_unconsumed_gate_plan(
+                campaign_id,
+                plan_digest=str(plan["plan_digest"]),
+            )
             verification = self._verify_ready_state(
                 campaign_id,
                 manifest=manifest,
@@ -269,12 +348,21 @@ class ProducerGateWorkflow:
                     RefusalCode.GATE_SOURCE_DRIFT,
                     "The producer repository changed after plan preparation.",
                 )
-            sentinel_target = self._sentinel_target(plan)
-            if sentinel_target.exists() or sentinel_target.is_symlink():
-                raise Refusal(
-                    RefusalCode.GATE_PLAN_REPLAYED,
-                    "The exact producer sentinel already exists.",
+            action_type = str(plan["action"]["type"])
+            sentinel_target: Path | None = None
+            if action_type == "write_public_safe_sentinel":
+                sentinel_target = self._sentinel_target(plan)
+                if sentinel_target.exists() or sentinel_target.is_symlink():
+                    raise Refusal(
+                        RefusalCode.GATE_PLAN_REPLAYED,
+                        "The exact producer sentinel already exists.",
+                    )
+            verification_digest = str(
+                verification.get(
+                    "verification_digest",
+                    digest_json(verification),
                 )
+            )
             intent = self.store.claim_gate_plan(
                 campaign_id,
                 manifest_digest=str(manifest["manifest_digest"]),
@@ -282,8 +370,36 @@ class ProducerGateWorkflow:
                 plan_digest=str(plan["plan_digest"]),
                 trusted_run_id=context.run_id,
                 recorded_at=operation_time,
+                action_type=action_type,
+                action_digest=(
+                    str(plan["action"].get("action_digest"))
+                    if plan["action"].get("action_digest") is not None
+                    else None
+                ),
+                verification_digest=verification_digest,
             )
             intent_claimed = True
+            if action_type == POSTGRES_ACTION_TYPE:
+                return self._execute_postgres_action(
+                    campaign_id,
+                    manifest=manifest,
+                    plan=plan,
+                    context=context,
+                    intent=intent,
+                    verification=verification,
+                    executed_at=operation_time,
+                )
+            if action_type != "write_public_safe_sentinel" or sentinel_target is None:
+                self.store.complete_gate_not_committed(
+                    str(intent["attempt_id"]),
+                    action_outcome=None,
+                    refusal_code=str(RefusalCode.GATE_PLAN_INVALID),
+                    observed_at=operation_time,
+                )
+                raise Refusal(
+                    RefusalCode.GATE_PLAN_INVALID,
+                    "The issued producer action type is unsupported.",
+                )
             try:
                 sentinel = with_digest(
                     {
@@ -367,6 +483,382 @@ class ProducerGateWorkflow:
                 )
             raise
 
+    def _execute_postgres_action(
+        self,
+        campaign_id: str,
+        *,
+        manifest: Mapping[str, Any],
+        plan: Mapping[str, Any],
+        context: TrustedProducerContext,
+        intent: Mapping[str, Any],
+        verification: Mapping[str, Any],
+        executed_at: str,
+    ) -> dict[str, Any]:
+        native_action, _target = self._required_postgres_action()
+        if self.mutation_client_factory is None:
+            self.store.complete_gate_not_committed(
+                str(intent["attempt_id"]),
+                action_outcome=None,
+                refusal_code=str(RefusalCode.RUNTIME_CONFIGURATION_INCOMPLETE),
+                observed_at=executed_at,
+            )
+            raise Refusal(
+                RefusalCode.RUNTIME_CONFIGURATION_INCOMPLETE,
+                "The separately privileged PostgreSQL mutation client is unavailable.",
+            )
+        native_plan = dict(plan["action"]["postgres_action_plan"])
+        verify_digest(native_plan, "action_digest")
+        if native_plan["action_digest"] != plan["action"]["action_digest"]:
+            self.store.complete_gate_not_committed(
+                str(intent["attempt_id"]),
+                action_outcome=None,
+                refusal_code=str(RefusalCode.GATE_PLAN_INVALID),
+                observed_at=executed_at,
+            )
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The PostgreSQL action digest differs from the issued producer plan.",
+            )
+
+        # The factory is intentionally invoked only after claim_gate_plan has
+        # committed the single-use intent above.
+        try:
+            mutation_client = self.mutation_client_factory()
+        except (OSError, Refusal) as exc:
+            pre_execution = native_action.classify_pre_execution_failure(
+                native_plan,
+                attempt_id=str(intent["attempt_id"]),
+                trusted_now=parse_timestamp(executed_at),
+            )
+            if pre_execution["outcome"] == str(PostgresActionOutcome.NOT_COMMITTED):
+                self.store.complete_gate_not_committed(
+                    str(intent["attempt_id"]),
+                    action_outcome=pre_execution,
+                    refusal_code=str(RefusalCode.GATE_ACTION_NOT_COMMITTED),
+                    observed_at=executed_at,
+                )
+                raise Refusal(
+                    RefusalCode.GATE_ACTION_NOT_COMMITTED,
+                    (
+                        "The privileged PostgreSQL client failed before execution; "
+                        "a fresh native reread proved no commit."
+                    ),
+                    {"error_type": type(exc).__name__},
+                ) from exc
+            self.store.mark_gate_outcome_unknown(
+                str(intent["attempt_id"]),
+                error_type=type(exc).__name__,
+                observed_at=executed_at,
+                action_outcome=pre_execution,
+            )
+            raise Refusal(
+                RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                "The pre-execution failure could not be resolved from native state.",
+            ) from exc
+        try:
+            native_outcome = native_action.apply(
+                native_plan,
+                mutation_client=mutation_client,
+                confirmed_action_digest=str(plan["action"]["action_digest"]),
+                attempt_id=str(intent["attempt_id"]),
+                trusted_now=parse_timestamp(executed_at),
+            )
+        except Refusal as exc:
+            self.store.complete_gate_not_committed(
+                str(intent["attempt_id"]),
+                action_outcome=None,
+                refusal_code=str(exc.code),
+                observed_at=executed_at,
+            )
+            raise
+
+        outcome = str(native_outcome["outcome"])
+        if outcome == str(PostgresActionOutcome.NOT_COMMITTED):
+            self.store.complete_gate_not_committed(
+                str(intent["attempt_id"]),
+                action_outcome=native_outcome,
+                refusal_code=str(RefusalCode.GATE_ACTION_NOT_COMMITTED),
+                observed_at=executed_at,
+            )
+            raise Refusal(
+                RefusalCode.GATE_ACTION_NOT_COMMITTED,
+                "Native PostgreSQL state proved that the action did not commit.",
+                {"native_attempt_digest": native_outcome["attempt_digest"]},
+            )
+        if outcome == str(PostgresActionOutcome.OUTCOME_UNKNOWN):
+            self.store.mark_gate_outcome_unknown(
+                str(intent["attempt_id"]),
+                error_type="PostgresActionOutcomeUnknown",
+                observed_at=executed_at,
+                action_outcome=native_outcome,
+            )
+            raise Refusal(
+                RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                (
+                    "The PostgreSQL result is unknown; the consumed plan cannot "
+                    "be retried before explicit native outcome resolution."
+                ),
+                {"native_attempt_digest": native_outcome["attempt_digest"]},
+            )
+        if outcome != str(PostgresActionOutcome.COMMITTED):
+            self.store.mark_gate_outcome_unknown(
+                str(intent["attempt_id"]),
+                error_type="UnexpectedPostgresActionOutcome",
+                observed_at=executed_at,
+                action_outcome=native_outcome,
+            )
+            raise Refusal(
+                RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                "The PostgreSQL action returned an unsupported terminal outcome.",
+            )
+        ledger_outcome = self.store.complete_gate_action_attempt(
+            str(intent["attempt_id"]),
+            action_outcome=native_outcome,
+            executed_at=executed_at,
+        )
+        receipt = self._postgres_gate_receipt(
+            campaign_id,
+            manifest_digest=str(manifest["manifest_digest"]),
+            plan=plan,
+            context=context,
+            attempt_digest=str(intent["attempt_digest"]),
+            ledger_outcome=ledger_outcome,
+            native_outcome=native_outcome,
+            verification=verification,
+            executed_at=executed_at,
+            result="EXECUTED",
+        )
+        write_versioned_artifact(
+            self._producer_artifact_root(campaign_id),
+            "gate-receipt",
+            receipt,
+        )
+        return {
+            "result": "EXECUTED",
+            "decision": manifest["decision"],
+            "manifest_digest": manifest["manifest_digest"],
+            "gate_receipt": receipt,
+        }
+
+    def _postgres_gate_receipt(
+        self,
+        campaign_id: str,
+        *,
+        manifest_digest: str,
+        plan: Mapping[str, Any],
+        context: TrustedProducerContext,
+        attempt_digest: str,
+        ledger_outcome: Mapping[str, Any],
+        native_outcome: Mapping[str, Any],
+        verification: Mapping[str, Any],
+        executed_at: str,
+        result: str,
+    ) -> dict[str, Any]:
+        receipt = with_digest(
+            {
+                "schema_version": "2.0.0",
+                "result": result,
+                "campaign_id": campaign_id,
+                "manifest_digest": manifest_digest,
+                "decision": plan["manifest"]["decision"],
+                "producer_plan_digest": plan["plan_digest"],
+                "attempt_digest": attempt_digest,
+                "outcome_digest": ledger_outcome["outcome_digest"],
+                "trusted_run_id": context.run_id,
+                "writer_id": self.store.writer_id,
+                "verification": dict(verification),
+                "action": {
+                    "type": POSTGRES_ACTION_TYPE,
+                    "result": native_outcome["outcome"],
+                    "action_digest": native_outcome["action_digest"],
+                    "native_attempt_digest": native_outcome["attempt_digest"],
+                    "before_schema_fingerprint": native_outcome[
+                        "before_schema_fingerprint"
+                    ],
+                    "after_schema_fingerprint": native_outcome[
+                        "after_schema_fingerprint"
+                    ],
+                    "legacy_column_present": native_outcome["legacy_column_present"],
+                    "replacement_column_preserved": native_outcome[
+                        "replacement_column_preserved"
+                    ],
+                    "destructive_statements_attempted": native_outcome[
+                        "destructive_statements_attempted"
+                    ],
+                    "destructive_statements_committed": native_outcome[
+                        "destructive_statements_committed"
+                    ],
+                    "recovery": native_outcome["recovery"],
+                },
+                "executed_at": executed_at,
+            },
+            "receipt_digest",
+        )
+        validate_schema(
+            "gate-receipt-v2",
+            receipt,
+            refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+        )
+        return receipt
+
+    def _capture_superset_bindings(
+        self,
+        campaign_id: str,
+        *,
+        trusted_now: str,
+    ) -> list[dict[str, str]]:
+        artifacts = self._accepted_superset_artifacts(campaign_id)
+        if not artifacts:
+            return []
+        if len(artifacts) != 1:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The concrete gate supports one exact Superset consumer.",
+                {"consumer_count": len(artifacts)},
+            )
+        settings, client = self._required_superset_gate()
+        value = artifacts[0]
+        projection = self.store.projection(campaign_id)
+        baseline = projection.evidence_envelope
+        if baseline is None:
+            raise Refusal(
+                RefusalCode.GATE_STATE_DRIFT,
+                "The campaign lacks its reconciled Superset evidence source.",
+            )
+        source_id = f"superset:{value['plan']['native_identity']['dataset_uuid']}"
+        baseline_source = _source(baseline, source_id)
+        binding = capture_superset_gate_binding(
+            settings=settings,
+            client=client,
+            consumer_id=str(value["plan"]["consumer_id"]),
+            datahub_native_identity={"urn": value["plan"]["datahub_urn"]},
+            plan=value["plan"],
+            receipt=value["receipt"],
+            validation=value["validation"],
+            expected_evidence_source=baseline_source,
+            captured_at=trusted_now,
+            maximum_age_seconds=int(
+                baseline_source["freshness"]["maximum_age_seconds"]
+            ),
+            artifact_root=(self._producer_artifact_root(campaign_id) / "superset-gate"),
+        )
+        return [
+            {
+                "consumer_id": str(value["plan"]["consumer_id"]),
+                "datahub_urn": str(value["plan"]["datahub_urn"]),
+                "binding_digest": str(binding["binding_digest"]),
+                "plan_digest": str(value["plan"]["plan_digest"]),
+                "receipt_digest": str(value["receipt"]["receipt_digest"]),
+                "validation_digest": str(value["validation"]["validation_digest"]),
+            }
+        ]
+
+    def resolve_postgres_outcome(
+        self,
+        campaign_id: str,
+        *,
+        context: TrustedProducerContext,
+        plan_path: Path | None = None,
+        observed_at: str | None = None,
+    ) -> dict[str, Any]:
+        """Resolve one consumed unknown PostgreSQL attempt by native reread only."""
+
+        operation_time = observed_at or utc_now()
+        self._require_context_identity(context)
+        if not context.trusted:
+            raise Refusal(
+                RefusalCode.GATE_PROVENANCE_UNTRUSTED,
+                "PostgreSQL outcome resolution requires the trusted producer run.",
+            )
+        plan = self._load_producer_plan(
+            plan_path or self._producer_artifact_root(campaign_id) / "plan.json"
+        )
+        if plan["action"]["type"] != POSTGRES_ACTION_TYPE:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "Only a PostgreSQL producer plan has a native outcome to resolve.",
+            )
+        self.store.require_issued_gate_plan(campaign_id, plan)
+        if plan["trusted_run"] != {
+            "id": context.run_id,
+            "provider": context.provider,
+        }:
+            raise Refusal(
+                RefusalCode.GATE_PROVENANCE_UNTRUSTED,
+                "The producer plan is bound to another trusted run.",
+            )
+        attempts = [
+            entry
+            for entry in self.store.gate_attempts(campaign_id)
+            if entry["attempt"].get("plan_digest") == plan["plan_digest"]
+            and entry["status"] == "OUTCOME_UNKNOWN"
+        ]
+        if len(attempts) != 1:
+            raise Refusal(
+                RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                "The producer plan does not have one unresolved native attempt.",
+                {"match_count": len(attempts)},
+            )
+        entry = attempts[0]
+        prior_gate_outcome = entry.get("outcome")
+        native_attempt = (
+            prior_gate_outcome.get("action_outcome")
+            if isinstance(prior_gate_outcome, Mapping)
+            else None
+        )
+        if not isinstance(native_attempt, Mapping):
+            raise Refusal(
+                RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                "The unresolved gate attempt lacks its native action binding.",
+            )
+        native_action, _target = self._required_postgres_action()
+        native_plan = dict(plan["action"]["postgres_action_plan"])
+        resolved = native_action.resolve_outcome(native_plan, native_attempt)
+        ledger_outcome = self.store.resolve_gate_outcome(
+            str(entry["attempt"]["attempt_id"]),
+            action_outcome=resolved,
+            observed_at=operation_time,
+        )
+        write_versioned_artifact(
+            self._producer_artifact_root(campaign_id),
+            "postgres-outcome-resolution",
+            resolved,
+        )
+        if resolved["outcome"] != str(PostgresActionOutcome.COMMITTED):
+            return {
+                "result": "NOT_COMMITTED",
+                "producer_plan_digest": plan["plan_digest"],
+                "native_outcome": resolved,
+                "ledger_outcome": ledger_outcome,
+            }
+        verification = load_object(
+            self._producer_artifact_root(campaign_id) / "gate-verification.json"
+        )
+        verify_digest(verification, "verification_digest")
+        receipt = self._postgres_gate_receipt(
+            campaign_id,
+            manifest_digest=str(plan["manifest"]["digest"]),
+            plan=plan,
+            context=context,
+            attempt_digest=str(entry["attempt"]["attempt_digest"]),
+            ledger_outcome=ledger_outcome,
+            native_outcome=resolved,
+            verification=verification,
+            executed_at=operation_time,
+            result="RECOVERED_COMMITTED",
+        )
+        write_versioned_artifact(
+            self._producer_artifact_root(campaign_id),
+            "gate-receipt",
+            receipt,
+        )
+        return {
+            "result": "RECOVERED_COMMITTED",
+            "decision": plan["manifest"]["decision"],
+            "manifest_digest": plan["manifest"]["digest"],
+            "gate_receipt": receipt,
+        }
+
     def _verify_ready_state(
         self,
         campaign_id: str,
@@ -374,7 +866,7 @@ class ProducerGateWorkflow:
         manifest: Mapping[str, Any],
         plan: Mapping[str, Any],
         trusted_now: str,
-    ) -> dict[str, str]:
+    ) -> dict[str, Any]:
         projection = self.store.projection(campaign_id)
         self._verify_campaign_inputs(campaign_id, projection.input_digests)
         self._validate_receipts_and_approvals(
@@ -424,12 +916,37 @@ class ProducerGateWorkflow:
             source_observation,
             baseline_source=baseline_git,
         )
+        superset_observations: list[dict[str, str]] = []
+        if plan["schema_version"] == "2.0.0":
+            current_envelope, superset_observations = (
+                self._verify_superset_gate_bindings(
+                    campaign_id,
+                    plan=plan,
+                    envelope=current_envelope,
+                    trusted_now=trusted_now,
+                )
+            )
         if scope_signature(current_envelope) != scope_signature(baseline_envelope):
             raise Refusal(
                 RefusalCode.GATE_STATE_DRIFT,
                 "Gate-time sources no longer have the reconciled declared scope.",
             )
         observed_ids = sorted(str(item["id"]) for item in snapshot["consumers"])
+        observed_by_id = {str(item["id"]): item for item in snapshot["consumers"]}
+        for superset_binding in plan.get("superset", []):
+            current_consumer = observed_by_id.get(str(superset_binding["consumer_id"]))
+            if (
+                current_consumer is None
+                or current_consumer.get("datahub_urn")
+                != superset_binding["datahub_urn"]
+            ):
+                raise Refusal(
+                    RefusalCode.GATE_STATE_DRIFT,
+                    (
+                        "Current DataHub membership does not match the accepted "
+                        "Superset native identity."
+                    ),
+                )
         if observed_ids != sorted(projection.current_consumer_ids):
             raise Refusal(
                 RefusalCode.GATE_STATE_DRIFT,
@@ -453,15 +970,45 @@ class ProducerGateWorkflow:
             plan=plan,
             target_urn=str(snapshot["resolution"]["dataset"]["urn"]),
         )
-        return {
+        verification: dict[str, Any] = {
             "datahub_snapshot_digest": str(snapshot["snapshot_digest"]),
-            "source_reconciliation_digest": str(
+            "git_dbt_reconciliation_digest": str(
                 source_observation["reconciliation_digest"]
             ),
             "publication_readback_artifact_id": str(
                 publication["readback_artifact_id"]
             ),
         }
+        if plan["schema_version"] == "1.0.0":
+            return {
+                "datahub_snapshot_digest": verification["datahub_snapshot_digest"],
+                "source_reconciliation_digest": verification[
+                    "git_dbt_reconciliation_digest"
+                ],
+                "publication_readback_artifact_id": verification[
+                    "publication_readback_artifact_id"
+                ],
+            }
+        native_action, _target = self._required_postgres_action()
+        producer_observation = native_action.verify_plan_observation(
+            plan["action"]["postgres_action_plan"],
+            trusted_now=parse_timestamp(trusted_now),
+        )
+        verification.update(
+            {
+                "superset_observations": superset_observations,
+                "producer_schema_observation_digest": producer_observation[
+                    "observation_digest"
+                ],
+            }
+        )
+        versioned = with_digest(verification, "verification_digest")
+        write_versioned_artifact(
+            self._producer_artifact_root(campaign_id),
+            "gate-verification",
+            versioned,
+        )
+        return versioned
 
     def _verify_publication(
         self,
@@ -568,12 +1115,33 @@ class ProducerGateWorkflow:
                 RefusalCode.GATE_STATE_DRIFT,
                 "The current canonical manifest no longer matches the producer plan.",
             )
-        if plan["action"]["sentinel_root_identity"] != digest_json(
-            str(self.sentinel_root)
+        action_type = plan["action"]["type"]
+        if action_type == "write_public_safe_sentinel":
+            if plan["action"]["sentinel_root_identity"] != digest_json(
+                str(self.sentinel_root)
+            ):
+                raise Refusal(
+                    RefusalCode.GATE_PLAN_INVALID,
+                    "The producer plan is bound to another sentinel root.",
+                )
+            return
+        if action_type != POSTGRES_ACTION_TYPE:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The producer plan action type is unsupported.",
+            )
+        native_action, target = self._required_postgres_action()
+        native_plan = plan["action"]["postgres_action_plan"]
+        verify_digest(native_plan, "action_digest")
+        if (
+            plan["action"]["action_digest"] != native_plan["action_digest"]
+            or target_from_mapping(native_plan["target"]) != target
+            or native_plan["allowlist_configuration_digest"]
+            != native_action.settings.allowlist_digest()
         ):
             raise Refusal(
                 RefusalCode.GATE_PLAN_INVALID,
-                "The producer plan is bound to another sentinel root.",
+                "The PostgreSQL producer action no longer matches its gate binding.",
             )
 
     def _git_dbt_bindings(self, campaign_id: str) -> dict[str, Any]:
@@ -912,6 +1480,154 @@ class ProducerGateWorkflow:
                     {"source_id": source["id"]},
                 )
 
+    def _accepted_superset_artifacts(
+        self,
+        campaign_id: str,
+    ) -> list[dict[str, Any]]:
+        root = self.artifact_directory / campaign_id / "superset"
+        plan_path = root / "plan.json"
+        if not plan_path.exists():
+            return []
+        plan = load_object(plan_path)
+        receipt = load_object(root / "receipt.json")
+        validation = load_object(root / "native-validation" / "validation.json")
+        verify_digest(plan, "plan_digest")
+        verify_digest(receipt, "receipt_digest")
+        verify_digest(validation, "validation_digest")
+        if plan.get("campaign_id") != campaign_id:
+            raise Refusal(
+                RefusalCode.GATE_STATE_DRIFT,
+                "The accepted Superset plan belongs to another campaign.",
+            )
+        consumer = self.store.projection(campaign_id).consumers.get(
+            str(plan.get("consumer_id"))
+        )
+        if (
+            consumer is None
+            or ConsumerDisposition(str(consumer["disposition"]))
+            != ConsumerDisposition.VALIDATED
+            or consumer.get("receipt_digest") != receipt.get("receipt_digest")
+            or consumer.get("receipt") != receipt
+        ):
+            raise Refusal(
+                RefusalCode.GATE_STATE_DRIFT,
+                "The Superset native artifacts are not the accepted campaign receipt.",
+            )
+        return [{"plan": plan, "receipt": receipt, "validation": validation}]
+
+    def _verify_superset_gate_bindings(
+        self,
+        campaign_id: str,
+        *,
+        plan: Mapping[str, Any],
+        envelope: Mapping[str, Any],
+        trusted_now: str,
+    ) -> tuple[dict[str, Any], list[dict[str, str]]]:
+        artifacts = self._accepted_superset_artifacts(campaign_id)
+        planned = list(plan.get("superset", []))
+        if len(artifacts) != len(planned):
+            raise Refusal(
+                RefusalCode.GATE_STATE_DRIFT,
+                "The accepted Superset consumer set changed after plan preparation.",
+            )
+        if not planned:
+            return dict(envelope), []
+        settings, client = self._required_superset_gate()
+        verifier = SupersetGateVerifier(settings=settings, client=client)
+        sources = [dict(source) for source in envelope["sources"]]
+        observations: list[dict[str, str]] = []
+        for index, accepted in enumerate(artifacts):
+            expected = planned[index]
+            binding_path = (
+                self._producer_artifact_root(campaign_id)
+                / "superset-gate"
+                / "gate-binding.json"
+            )
+            binding = load_object(binding_path)
+            verify_digest(binding, "binding_digest")
+            if (
+                binding["binding_digest"] != expected["binding_digest"]
+                or accepted["plan"]["plan_digest"] != expected["plan_digest"]
+                or accepted["receipt"]["receipt_digest"] != expected["receipt_digest"]
+                or accepted["validation"]["validation_digest"]
+                != expected["validation_digest"]
+                or accepted["plan"]["consumer_id"] != expected["consumer_id"]
+                or accepted["plan"]["datahub_urn"] != expected["datahub_urn"]
+            ):
+                raise Refusal(
+                    RefusalCode.GATE_STATE_DRIFT,
+                    "The Superset gate binding differs from the issued plan.",
+                )
+            observation = verifier.verify(
+                binding,
+                trusted_now=parse_timestamp(trusted_now),
+                artifact_root=(
+                    self._producer_artifact_root(campaign_id) / "superset-gate"
+                ),
+            )
+            source_id = str(observation["source_id"])
+            sources = [source for source in sources if source["id"] != source_id]
+            sources.append(dict(observation["evidence_source"]))
+            observations.append(
+                {
+                    "consumer_id": str(expected["consumer_id"]),
+                    "observation_digest": str(observation["observation_digest"]),
+                }
+            )
+        merged = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "captured_at": trusted_now,
+                "mode": envelope["mode"],
+                "sources": sorted(sources, key=lambda source: str(source["id"])),
+            },
+            "envelope_digest",
+        )
+        validate_schema(
+            "evidence-envelope",
+            merged,
+            refusal_code=RefusalCode.INTEGRITY_DIGEST_MISMATCH,
+        )
+        return merged, sorted(observations, key=lambda value: value["consumer_id"])
+
+    def _required_superset_gate(
+        self,
+    ) -> tuple[SupersetSettings, SupersetGateClient]:
+        if self.superset_settings is None or self.superset_client is None:
+            raise Refusal(
+                RefusalCode.RUNTIME_CONFIGURATION_INCOMPLETE,
+                "The read-only Superset gate verifier is unavailable.",
+            )
+        if self.superset_settings.allow_apply:
+            raise Refusal(
+                RefusalCode.AUTH_APPLY_DISABLED,
+                "The gate requires a Superset principal without mutation authority.",
+            )
+        return self.superset_settings, self.superset_client
+
+    def _required_postgres_action(
+        self,
+    ) -> tuple[PostgresProducerAction, PostgresTarget]:
+        if self.postgres_action is None or self.postgres_target is None:
+            raise Refusal(
+                RefusalCode.RUNTIME_CONFIGURATION_INCOMPLETE,
+                "The bounded PostgreSQL producer action is unavailable.",
+            )
+        return self.postgres_action, self.postgres_target
+
+    @staticmethod
+    def _validate_producer_plan(plan: Mapping[str, Any]) -> None:
+        schema_version = plan.get("schema_version")
+        schema_name = (
+            "producer-plan-v2" if schema_version == "2.0.0" else "producer-plan"
+        )
+        validate_schema(
+            schema_name,
+            plan,
+            refusal_code=RefusalCode.GATE_PLAN_INVALID,
+        )
+        verify_digest(dict(plan), "plan_digest")
+
     def _load_producer_plan(self, path: Path) -> dict[str, Any]:
         if not path.is_file() or path.is_symlink():
             raise Refusal(
@@ -930,12 +1646,7 @@ class ProducerGateWorkflow:
                 RefusalCode.GATE_PLAN_INVALID,
                 "The producer plan is not an object.",
             )
-        validate_schema(
-            "producer-plan",
-            value,
-            refusal_code=RefusalCode.GATE_PLAN_INVALID,
-        )
-        verify_digest(value, "plan_digest")
+        self._validate_producer_plan(value)
         return value
 
     def _sentinel_target(self, plan: Mapping[str, Any]) -> Path:

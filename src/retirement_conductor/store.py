@@ -400,7 +400,7 @@ def _preflight_existing_store(path: Path, writer_id: str) -> None:
 class CampaignStore:
     """The one supported single-writer SQLite campaign database."""
 
-    SCHEMA_VERSION = 3
+    SCHEMA_VERSION = 4
 
     def __init__(self, path: Path, *, writer_id: str) -> None:
         self.path = path.resolve()
@@ -1035,6 +1035,9 @@ class CampaignStore:
         plan_digest: str,
         trusted_run_id: str,
         recorded_at: str,
+        action_type: str | None = None,
+        action_digest: str | None = None,
+        verification_digest: str | None = None,
     ) -> dict[str, Any]:
         """Durably consume one exact producer plan before its action."""
 
@@ -1064,6 +1067,9 @@ class CampaignStore:
                 "trusted_run_id": trusted_run_id,
                 "writer_id": self.writer_id,
                 "refusal_code": None,
+                "action_type": action_type,
+                "action_digest": action_digest,
+                "verification_digest": verification_digest,
                 "recorded_at": recorded_at,
             },
             "attempt_digest",
@@ -1082,6 +1088,7 @@ class CampaignStore:
                   AND status IN (
                     'INTENT_RECORDED',
                     'EXECUTED',
+                    'NOT_COMMITTED',
                     'OUTCOME_UNKNOWN'
                   )
                 """,
@@ -1098,6 +1105,41 @@ class CampaignStore:
                 ) from exc
             raise
         return attempt
+
+    def require_unconsumed_gate_plan(
+        self,
+        campaign_id: str,
+        *,
+        plan_digest: str,
+    ) -> None:
+        """Refuse a known replay before repeating external gate verification."""
+
+        row = self.connection.execute(
+            """
+            SELECT status, attempt_id
+            FROM gate_attempts
+            WHERE campaign_id = ?
+              AND plan_digest = ?
+              AND status IN (
+                'INTENT_RECORDED',
+                'EXECUTED',
+                'NOT_COMMITTED',
+                'OUTCOME_UNKNOWN'
+              )
+            ORDER BY recorded_at, attempt_id
+            LIMIT 1
+            """,
+            (campaign_id, plan_digest),
+        ).fetchone()
+        if row is not None:
+            raise Refusal(
+                RefusalCode.GATE_PLAN_REPLAYED,
+                "The exact producer plan was already consumed by a gate attempt.",
+                {
+                    "status": row["status"],
+                    "attempt_id": row["attempt_id"],
+                },
+            )
 
     def require_issued_gate_plan_digest(
         self,
@@ -1156,30 +1198,132 @@ class CampaignStore:
         )
         return outcome
 
-    def mark_gate_outcome_unknown(
+    def complete_gate_action_attempt(
         self,
         attempt_id: str,
         *,
-        error_type: str,
-        observed_at: str,
+        action_outcome: Mapping[str, Any],
+        executed_at: str,
     ) -> dict[str, Any]:
-        """Make an interrupted producer action permanently non-retriable."""
+        """Record one committed native action after its durable gate intent."""
 
+        native = dict(action_outcome)
+        verify_digest(native, "attempt_digest")
         outcome = with_digest(
             {
-                "schema_version": "1.0.0",
+                "schema_version": "2.0.0",
                 "attempt_id": attempt_id,
-                "result": "OUTCOME_UNKNOWN",
-                "error_type": error_type,
+                "result": "EXECUTED",
+                "action_type": native.get("action_type"),
+                "action_outcome": native,
+                "executed_at": executed_at,
+            },
+            "outcome_digest",
+        )
+        self._finish_gate_attempt(
+            attempt_id,
+            status="EXECUTED",
+            outcome=outcome,
+        )
+        return outcome
+
+    def complete_gate_not_committed(
+        self,
+        attempt_id: str,
+        *,
+        action_outcome: Mapping[str, Any] | None,
+        refusal_code: str,
+        observed_at: str,
+    ) -> dict[str, Any]:
+        """Close one consumed intent after native state proves no commit."""
+
+        native = dict(action_outcome) if action_outcome is not None else None
+        if native is not None:
+            verify_digest(native, "attempt_digest")
+        outcome = with_digest(
+            {
+                "schema_version": "2.0.0",
+                "attempt_id": attempt_id,
+                "result": "NOT_COMMITTED",
+                "refusal_code": refusal_code,
+                "action_outcome": native,
                 "observed_at": observed_at,
             },
             "outcome_digest",
         )
         self._finish_gate_attempt(
             attempt_id,
+            status="NOT_COMMITTED",
+            outcome=outcome,
+        )
+        return outcome
+
+    def mark_gate_outcome_unknown(
+        self,
+        attempt_id: str,
+        *,
+        error_type: str,
+        observed_at: str,
+        action_outcome: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Make an interrupted producer action permanently non-retriable."""
+
+        native = dict(action_outcome) if action_outcome is not None else None
+        if native is not None:
+            verify_digest(native, "attempt_digest")
+        outcome_value: dict[str, Any] = {
+            "schema_version": "1.0.0",
+            "attempt_id": attempt_id,
+            "result": "OUTCOME_UNKNOWN",
+            "error_type": error_type,
+            "observed_at": observed_at,
+        }
+        if native is not None:
+            outcome_value["schema_version"] = "2.0.0"
+            outcome_value["action_outcome"] = native
+        outcome = with_digest(outcome_value, "outcome_digest")
+        self._finish_gate_attempt(
+            attempt_id,
             status="OUTCOME_UNKNOWN",
             outcome=outcome,
         )
+        return outcome
+
+    def resolve_gate_outcome(
+        self,
+        attempt_id: str,
+        *,
+        action_outcome: Mapping[str, Any],
+        observed_at: str,
+    ) -> dict[str, Any]:
+        """Resolve a consumed unknown action from a later native reread."""
+
+        native = dict(action_outcome)
+        verify_digest(native, "attempt_digest")
+        native_result = str(native.get("outcome"))
+        if native_result == "COMMITTED":
+            status = "EXECUTED"
+            result = "RESOLVED_COMMITTED"
+        elif native_result == "NOT_COMMITTED":
+            status = "NOT_COMMITTED"
+            result = "NOT_COMMITTED"
+        else:
+            raise Refusal(
+                RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                "The native action outcome remains unresolved.",
+            )
+        outcome = with_digest(
+            {
+                "schema_version": "2.0.0",
+                "attempt_id": attempt_id,
+                "result": result,
+                "action_type": native.get("action_type"),
+                "action_outcome": native,
+                "observed_at": observed_at,
+            },
+            "outcome_digest",
+        )
+        self._resolve_gate_attempt(attempt_id, status=status, outcome=outcome)
         return outcome
 
     def _insert_gate_attempt(
@@ -1282,7 +1426,13 @@ class CampaignStore:
         current_status = str(row["status"])
         if (immutable_status == "REFUSED" and current_status != "REFUSED") or (
             immutable_status == "INTENT_RECORDED"
-            and current_status not in {"INTENT_RECORDED", "EXECUTED", "OUTCOME_UNKNOWN"}
+            and current_status
+            not in {
+                "INTENT_RECORDED",
+                "EXECUTED",
+                "NOT_COMMITTED",
+                "OUTCOME_UNKNOWN",
+            }
         ):
             raise Refusal(
                 RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
@@ -1315,14 +1465,15 @@ class CampaignStore:
             )
         outcome = json.loads(str(outcome_text))
         verify_digest(outcome, "outcome_digest")
+        valid_results = {
+            "EXECUTED": {"EXECUTED", "RESOLVED_COMMITTED"},
+            "NOT_COMMITTED": {"NOT_COMMITTED"},
+            "OUTCOME_UNKNOWN": {"OUTCOME_UNKNOWN"},
+        }
         if (
             outcome.get("attempt_id") != attempt["attempt_id"]
             or outcome.get("outcome_digest") != row["outcome_digest"]
-            or (current_status == "EXECUTED" and outcome.get("result") != "EXECUTED")
-            or (
-                current_status == "OUTCOME_UNKNOWN"
-                and outcome.get("result") != "OUTCOME_UNKNOWN"
-            )
+            or outcome.get("result") not in valid_results.get(current_status, set())
         ):
             raise Refusal(
                 RefusalCode.INTEGRITY_MATERIALIZED_STATE_MISMATCH,
@@ -1366,6 +1517,43 @@ class CampaignStore:
                 raise Refusal(
                     RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
                     "The gate action intent changed before completion.",
+                )
+
+    def _resolve_gate_attempt(
+        self,
+        attempt_id: str,
+        *,
+        status: str,
+        outcome: Mapping[str, Any],
+    ) -> None:
+        verify_digest(dict(outcome), "outcome_digest")
+        with self._write_lock(), self.connection:
+            row = self.connection.execute(
+                "SELECT status FROM gate_attempts WHERE attempt_id = ?",
+                (attempt_id,),
+            ).fetchone()
+            if row is None or row["status"] != "OUTCOME_UNKNOWN":
+                raise Refusal(
+                    RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                    "The gate action has no unresolved native outcome.",
+                )
+            updated = self.connection.execute(
+                """
+                UPDATE gate_attempts
+                SET status = ?, outcome_json = ?, outcome_digest = ?
+                WHERE attempt_id = ? AND status = 'OUTCOME_UNKNOWN'
+                """,
+                (
+                    status,
+                    canonical_json(outcome),
+                    outcome["outcome_digest"],
+                    attempt_id,
+                ),
+            )
+            if updated.rowcount != 1:
+                raise Refusal(
+                    RefusalCode.GATE_ACTION_OUTCOME_UNKNOWN,
+                    "The unresolved gate outcome changed before native resolution.",
                 )
 
     def _event_rows(self, campaign_id: str) -> list[sqlite3.Row]:

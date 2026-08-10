@@ -213,7 +213,7 @@ def test_schema_migration_and_replay_match_materialized_manifest(
     tmp_path: Path,
 ) -> None:
     with CampaignStore(tmp_path / "campaign.sqlite", writer_id="writer-one") as store:
-        assert store.schema_versions() == [1, 2, 3]
+        assert store.schema_versions() == [1, 2, 3, 4]
         create_and_inventory(store)
 
         materialized = store.materialize(CAMPAIGN_ID)

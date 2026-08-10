@@ -175,7 +175,7 @@ def expected_source() -> dict[str, Any]:
         "id": "superset:c40f2cbb-6683-4278-b6df-790a5ac1611d",
         "required": True,
         "status": "COMPLETE",
-        "source_version": "0.1.0",
+        "source_version": "6.0.0",
         "identity": "dataset:1:c40f2cbb-6683-4278-b6df-790a5ac1611d:chart:2:chart-uuid",
         "scope": {
             "direction": "downstream",

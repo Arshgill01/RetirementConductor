@@ -14,7 +14,7 @@ source:
     max_threads: 1
     timeout: 30
     database_pattern:
-      allow: ["^WS04 Orders PostgreSQL$"]
+      allow: ["^(WS04 Orders PostgreSQL|ws04-feasibility\\.WS04 Orders PostgreSQL)$"]
     dataset_pattern:
       allow: ["^ws04_status_by_order$"]
     chart_pattern:

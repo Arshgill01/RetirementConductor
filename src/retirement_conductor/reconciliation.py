@@ -22,6 +22,10 @@ from retirement_conductor.git_dbt import (
     write_versioned_artifact,
 )
 from retirement_conductor.store import CampaignStore
+from retirement_conductor.superset_campaign_workflow import (
+    merge_superset_reconciliation_evidence,
+    superset_source_id,
+)
 from retirement_conductor.vocabulary import ConsumerDisposition, RefusalCode
 
 
@@ -92,6 +96,22 @@ class ReconciliationWorkflow:
                 git_observation,
                 baseline_source=baseline_git,
             )
+            superset_root = self.artifact_directory / campaign_id / "superset"
+            if (superset_root / "plan.json").is_file():
+                superset_plan = load_object(superset_root / "plan.json")
+                superset_observation = load_object(
+                    superset_root / "reconciliation" / "source-reconciliation.json"
+                )
+                baseline_superset = _source(
+                    baseline_envelope,
+                    superset_source_id(superset_plan),
+                )
+                envelope = merge_superset_reconciliation_evidence(
+                    envelope,
+                    superset_observation,
+                    baseline_source=baseline_superset,
+                    plan=superset_plan,
+                )
         except Refusal as exc:
             if exc.code not in {
                 RefusalCode.SOURCE_GIT_BRANCH_MOVED,

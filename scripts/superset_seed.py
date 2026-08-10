@@ -70,7 +70,15 @@ def exact_or_create(
     return int(created["id"])
 
 
-def seed(settings: SupersetSettings, source_database_uri: str, output: Path) -> None:
+def seed(
+    settings: SupersetSettings,
+    source_database_uri: str,
+    output: Path,
+    *,
+    database_name: str = DATABASE_NAME,
+    source_schema: str = "public",
+    before_sql: str = BEFORE_SQL,
+) -> None:
     client = SupersetClient(settings)
     client.authenticate()
     if client.health().strip() != "OK":
@@ -80,9 +88,9 @@ def seed(settings: SupersetSettings, source_database_uri: str, output: Path) -> 
         client,
         endpoint="/api/v1/database/",
         field="database_name",
-        expected=DATABASE_NAME,
+        expected=database_name,
         payload={
-            "database_name": DATABASE_NAME,
+            "database_name": database_name,
             "sqlalchemy_uri": source_database_uri,
             "expose_in_sqllab": True,
         },
@@ -94,9 +102,9 @@ def seed(settings: SupersetSettings, source_database_uri: str, output: Path) -> 
         expected=DATASET_NAME,
         payload={
             "database": database_id,
-            "schema": "public",
+            "schema": source_schema,
             "table_name": DATASET_NAME,
-            "sql": BEFORE_SQL,
+            "sql": before_sql,
             "owners": [1],
         },
     )
@@ -181,7 +189,7 @@ def seed(settings: SupersetSettings, source_database_uri: str, output: Path) -> 
             dict[str, Any], client._request("GET", f"/api/v1/dashboard/{dashboard_id}")
         )
     )
-    if dataset.get("sql") != BEFORE_SQL:
+    if dataset.get("sql") != before_sql:
         raise RuntimeError(
             "existing dataset is not at the exact before state; compensate it first"
         )
@@ -224,7 +232,14 @@ def main() -> None:
     source_database_uri = os.environ.get("SUPERSET_SOURCE_DATABASE_URI", "")
     if not source_database_uri:
         raise SystemExit("SUPERSET_SOURCE_DATABASE_URI is required")
-    seed(SupersetSettings.from_environment(), source_database_uri, arguments.output)
+    seed(
+        SupersetSettings.from_environment(),
+        source_database_uri,
+        arguments.output,
+        database_name=os.environ.get("SUPERSET_SOURCE_DATABASE_NAME", DATABASE_NAME),
+        source_schema=os.environ.get("SUPERSET_SOURCE_SCHEMA", "public"),
+        before_sql=os.environ.get("SUPERSET_SOURCE_SQL", BEFORE_SQL),
+    )
 
 
 if __name__ == "__main__":

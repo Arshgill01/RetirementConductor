@@ -198,7 +198,10 @@
       "properties": {
         "required_receipt_types": {
           "items": {
-            "const": "dbt"
+            "enum": [
+              "dbt",
+              "superset"
+            ]
           },
           "minItems": 1,
           "type": "array",

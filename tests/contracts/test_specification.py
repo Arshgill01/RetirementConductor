@@ -76,3 +76,15 @@ def test_missing_required_field_is_rejected() -> None:
 
     with pytest.raises(Refusal, match="SPEC_SCHEMA_INVALID"):
         validate_schema("retirement-spec", invalid)
+
+
+def test_declared_superset_validator_is_supported_but_unknown_validator_refuses() -> (
+    None
+):
+    value = yaml.safe_load(VALID_SPEC.read_text(encoding="utf-8"))
+    value["validation"]["required_receipt_types"].append("superset")
+    validate_schema("retirement-spec", value)
+
+    value["validation"]["required_receipt_types"].append("custom-validator")
+    with pytest.raises(Refusal, match="SPEC_SCHEMA_INVALID"):
+        validate_schema("retirement-spec", value)

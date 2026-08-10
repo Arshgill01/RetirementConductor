@@ -497,6 +497,8 @@ def test_superset_receipt_participates_in_campaign_readiness_and_reversal(
     campaign_id = "ret-orders-legacy-status"
     git_consumer = "consumer-git"
     superset_consumer = "consumer-superset"
+    superset_chart_consumer = "consumer-superset-chart"
+    superset_dashboard_consumer = "consumer-superset-dashboard"
     git_plan_digest = f"sha256:{'a' * 64}"
     git_source_version = "commit-one"
     git_targets = ["models/orders.sql"]
@@ -580,6 +582,16 @@ def test_superset_receipt_participates_in_campaign_readiness_and_reversal(
                 },
                 {
                     "id": superset_consumer,
+                    "disposition": "OPAQUE",
+                    "receipt_digest": None,
+                },
+                {
+                    "id": superset_chart_consumer,
+                    "disposition": "OPAQUE",
+                    "receipt_digest": None,
+                },
+                {
+                    "id": superset_dashboard_consumer,
                     "disposition": "OPAQUE",
                     "receipt_digest": None,
                 },
@@ -721,7 +733,14 @@ def test_superset_receipt_participates_in_campaign_readiness_and_reversal(
             confirmed_plan_digest=str(superset_plan["plan_digest"]),
             occurred_at=operation_time,
         )
-        superset_result = workflow.validate(campaign_id, expires_at=expires_at)
+        superset_result = workflow.validate(
+            campaign_id,
+            expires_at=expires_at,
+            covered_consumers={
+                superset_chart_consumer: "urn:li:chart:(superset,fixture.2)",
+                superset_dashboard_consumer: ("urn:li:dashboard:(superset,fixture.1)"),
+            },
+        )
         reconciled = workflow.reconcile_source(
             campaign_id,
             {
@@ -743,7 +762,12 @@ def test_superset_receipt_participates_in_campaign_readiness_and_reversal(
         store.record_reconciliation(
             campaign_id,
             evidence_envelope=reconciled["evidence_envelope"],
-            consumer_ids=[git_consumer, superset_consumer],
+            consumer_ids=[
+                git_consumer,
+                superset_consumer,
+                superset_chart_consumer,
+                superset_dashboard_consumer,
+            ],
             comparison={
                 "comparison_digest": reconciled["observation"]["reconciliation_digest"]
             },
@@ -753,8 +777,9 @@ def test_superset_receipt_participates_in_campaign_readiness_and_reversal(
         ready = store.evaluate(campaign_id, occurred_at=reconciliation_time)
 
         assert ready["decision"] == "READY_TO_RETIRE"
-        assert len(ready["receipt_digests"]) == 2
+        assert len(ready["receipt_digests"]) == 4
         assert superset_result["receipt"]["adapter"]["name"] == "superset"
+        assert len(superset_result["covered_receipts"]) == 2
 
         client.dataset["sql"] = f"{superset_plan['target']['after_sql']} WHERE id > 0"
         with pytest.raises(Refusal) as exc_info:

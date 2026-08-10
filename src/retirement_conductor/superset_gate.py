@@ -638,7 +638,7 @@ def _require_evidence_source(
         source.get("id") != expected_source_id
         or source.get("required") is not True
         or source.get("status") != "COMPLETE"
-        or source.get("source_version") != ADAPTER_VERSION
+        or source.get("source_version") != plan.get("source_version")
         or source.get("identity") != expected_identity
         or freshness.get("maximum_age_seconds") != maximum_age_seconds
         or permissions.get("principal") != expected_principal

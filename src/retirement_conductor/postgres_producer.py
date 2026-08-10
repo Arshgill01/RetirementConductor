@@ -403,8 +403,25 @@ class PostgresProducerAction:
                 intent_digest=intent_digest,
                 transport_phase=exc.phase,
             )
-        after = self.observer_client.observe(target)
-        self._verify_committed(plan, after)
+        try:
+            after = self.observer_client.observe(target)
+            self._verify_committed(plan, after)
+        except Refusal:
+            return outcome_record(
+                plan,
+                attempt_id=attempt_id,
+                intent_digest=intent_digest,
+                outcome=PostgresActionOutcome.OUTCOME_UNKNOWN,
+                observation=None,
+                destructive_statements_attempted=int(
+                    native.get("destructive_statements_attempted", 1)
+                ),
+                destructive_statements_committed=int(
+                    native.get("destructive_statements_committed", 0)
+                ),
+                recovery="explicit_native_observation_required",
+                transport_phase="after_commit_response",
+            )
         return outcome_record(
             plan,
             attempt_id=attempt_id,
@@ -418,6 +435,85 @@ class PostgresProducerAction:
                 native.get("destructive_statements_committed", 1)
             ),
             recovery="post_commit_native_reread",
+        )
+
+    def verify_plan_observation(
+        self,
+        plan: Mapping[str, Any],
+        *,
+        trusted_now: datetime,
+    ) -> dict[str, Any]:
+        """Reconstruct one action plan from a fresh observer reread."""
+
+        verify_digest(dict(plan), "action_digest")
+        expires_at = parse_timestamp(str(plan["action_expires_at"]))
+        if trusted_now.tzinfo is None:
+            raise Refusal(
+                RefusalCode.RUNTIME_CLOCK_INVALID,
+                "The trusted PostgreSQL verification time must include a timezone.",
+            )
+        if trusted_now >= expires_at:
+            raise Refusal(
+                POSTGRES_ACTION_EXPIRED,
+                "The PostgreSQL producer action has expired.",
+            )
+        target = target_from_mapping(cast(Mapping[str, Any], plan["target"]))
+        observation = self.observe(target)
+        reconstructed = self.plan(
+            observation,
+            actions=[target],
+            action_expires_at=str(plan["action_expires_at"]),
+        )
+        if reconstructed != dict(plan):
+            raise Refusal(
+                POSTGRES_SCHEMA_FINGERPRINT_DRIFT,
+                "The fresh PostgreSQL action binding changed after lease issuance.",
+            )
+        return observation
+
+    def classify_pre_execution_failure(
+        self,
+        plan: Mapping[str, Any],
+        *,
+        attempt_id: str,
+        trusted_now: datetime,
+    ) -> dict[str, Any]:
+        """Prove no commit when the mutation client was never constructed."""
+
+        intent_digest = digest_json(
+            {
+                "attempt_id": attempt_id,
+                "action_digest": plan["action_digest"],
+                "trusted_at": trusted_now.isoformat().replace("+00:00", "Z"),
+            }
+        )
+        try:
+            observation = self.verify_plan_observation(
+                plan,
+                trusted_now=trusted_now,
+            )
+        except Refusal:
+            return outcome_record(
+                plan,
+                attempt_id=attempt_id,
+                intent_digest=intent_digest,
+                outcome=PostgresActionOutcome.OUTCOME_UNKNOWN,
+                observation=None,
+                destructive_statements_attempted=0,
+                destructive_statements_committed=0,
+                recovery="explicit_native_observation_required",
+                transport_phase="before_execution",
+            )
+        return outcome_record(
+            plan,
+            attempt_id=attempt_id,
+            intent_digest=intent_digest,
+            outcome=PostgresActionOutcome.NOT_COMMITTED,
+            observation=observation,
+            destructive_statements_attempted=0,
+            destructive_statements_committed=0,
+            recovery="native_reread_after_pre_execution_failure",
+            transport_phase="before_execution",
         )
 
     def resolve_outcome(

@@ -80,6 +80,8 @@ class PostgresProducerSettings:
     def from_environment(
         cls,
         environment: Mapping[str, str] | None = None,
+        *,
+        require_mutation_credential: bool = True,
     ) -> PostgresProducerSettings:
         values = os.environ if environment is None else environment
         host = values.get("POSTGRES_PRODUCER_HOST", "").strip()
@@ -88,21 +90,22 @@ class PostgresProducerSettings:
         observer_password = values.get("POSTGRES_PRODUCER_OBSERVER_PASSWORD", "")
         mutation_username = values.get("POSTGRES_PRODUCER_MUTATION_USER", "").strip()
         mutation_password = values.get("POSTGRES_PRODUCER_MUTATION_PASSWORD", "")
-        if not all(
-            (
-                host,
-                database,
-                observer_username,
-                observer_password,
-                mutation_username,
-                mutation_password,
-            )
+        required_values = (
+            host,
+            database,
+            observer_username,
+            observer_password,
+            mutation_username,
+        )
+        if not all(required_values) or (
+            require_mutation_credential and not mutation_password
         ):
             raise Refusal(
                 POSTGRES_CONFIGURATION_INCOMPLETE,
                 (
-                    "PostgreSQL endpoint, database, and both principal "
-                    "credentials are required."
+                    "PostgreSQL endpoint, database, observer credential, and "
+                    "mutation principal are required; the separately privileged "
+                    "execution process must also supply the mutation credential."
                 ),
             )
         if not host_is_loopback(host):

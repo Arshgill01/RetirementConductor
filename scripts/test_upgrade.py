@@ -259,7 +259,7 @@ def run() -> dict[str, Any]:
             environment=environment,
         )
         require(
-            backup["schema_versions"] == [1, 2, 3],
+            backup["schema_versions"] == [1, 2, 3, 4],
             "upgrade did not apply every database migration",
         )
         verify_digest(backup, "backup_receipt_digest")

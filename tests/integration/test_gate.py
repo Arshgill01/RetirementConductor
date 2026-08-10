@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
@@ -14,8 +15,23 @@ from retirement_conductor.gate import (
     ProducerGateWorkflow,
     TrustedProducerContext,
 )
+from retirement_conductor.postgres_producer import (
+    MutationTransportLost,
+    PostgresActionOutcome,
+    PostgresProducerAction,
+    normalize_observation,
+)
+from retirement_conductor.postgres_producer_config import (
+    PostgresConnectionSettings,
+    PostgresProducerSettings,
+    PostgresTarget,
+)
+from retirement_conductor.schemas import validate_schema
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
+from retirement_conductor.superset_config import SupersetSettings
+from retirement_conductor.superset_gate import SupersetGateVerifier
+from retirement_conductor.vocabulary import RefusalCode
 
 ROOT = Path(__file__).resolve().parents[2]
 CAMPAIGN_ID = "ret-orders-legacy-status"
@@ -227,6 +243,7 @@ def _plan(
     tmp_path: Path,
     *,
     publication: bool = True,
+    issue: bool = True,
 ) -> dict[str, Any]:
     manifest = store.materialize(CAMPAIGN_ID)
     projection = store.projection(CAMPAIGN_ID)
@@ -297,7 +314,8 @@ def _plan(
         },
         "plan_digest",
     )
-    store.issue_gate_plan(plan)
+    if issue:
+        store.issue_gate_plan(plan)
     return plan
 
 
@@ -544,3 +562,545 @@ def test_gate_refuses_ready_campaign_without_verified_publication(
                 executed_at="2026-01-01T12:05:00Z",
             )
         assert not (tmp_path / "sentinels").exists()
+
+
+POSTGRES_TARGET = PostgresTarget(
+    database="gate_test",
+    schema="retirement_lab",
+    table="orders",
+    legacy_column="legacy_status",
+    replacement_column="order_status",
+)
+
+
+def _postgres_raw(
+    principal: str,
+    *,
+    can_alter: bool,
+    legacy_present: bool = True,
+) -> dict[str, Any]:
+    columns = [
+        {
+            "position": 1,
+            "name": "order_id",
+            "type_oid": 20,
+            "type_modifier": -1,
+            "formatted_type": "bigint",
+            "not_null": True,
+            "default_expression": None,
+            "identity_kind": "",
+            "generated_kind": "",
+        }
+    ]
+    if legacy_present:
+        columns.append(
+            {
+                "position": 2,
+                "name": "legacy_status",
+                "type_oid": 25,
+                "type_modifier": -1,
+                "formatted_type": "text",
+                "not_null": True,
+                "default_expression": None,
+                "identity_kind": "",
+                "generated_kind": "",
+            }
+        )
+    columns.append(
+        {
+            "position": 3,
+            "name": "order_status",
+            "type_oid": 25,
+            "type_modifier": -1,
+            "formatted_type": "text",
+            "not_null": True,
+            "default_expression": None,
+            "identity_kind": "",
+            "generated_kind": "",
+        }
+    )
+    return {
+        "database": {
+            "name": POSTGRES_TARGET.database,
+            "oid": 5,
+            "server_version": "16.10",
+            "server_version_num": "160010",
+        },
+        "principal": {
+            "session_user": principal,
+            "current_user": principal,
+            "table_owner": "gate_mutator",
+            "can_alter_table": can_alter,
+        },
+        "table": {
+            "relation_oid": 20,
+            "schema_oid": 10,
+            "columns": columns,
+            "legacy_dependencies": [],
+        },
+    }
+
+
+class _GatePostgresClient:
+    def __init__(
+        self,
+        principal: str,
+        *,
+        can_alter: bool,
+        behavior: str = "commit",
+    ) -> None:
+        self.connection = PostgresConnectionSettings(
+            host="127.0.0.1",
+            port=25432,
+            database=POSTGRES_TARGET.database,
+            username=principal,
+            password="runtime-only",
+            connect_timeout_seconds=5,
+            lock_timeout_seconds=5,
+        )
+        self.current = normalize_observation(
+            _postgres_raw(principal, can_alter=can_alter),
+            POSTGRES_TARGET,
+        )
+        self.behavior = behavior
+        self.execute_calls = 0
+        self.mirror: _GatePostgresClient | None = None
+        self.unavailable = False
+
+    def observe(self, target: PostgresTarget) -> dict[str, Any]:
+        assert target == POSTGRES_TARGET
+        if self.unavailable:
+            raise Refusal("POSTGRES_CONNECTION_UNAVAILABLE", "controlled outage")
+        return deepcopy(self.current)
+
+    def execute_drop(self, _plan: Mapping[str, Any]) -> dict[str, Any]:
+        self.execute_calls += 1
+        absent = normalize_observation(
+            _postgres_raw(
+                self.connection.username,
+                can_alter=True,
+                legacy_present=False,
+            ),
+            POSTGRES_TARGET,
+        )
+        self.current = absent
+        if self.mirror is not None:
+            self.mirror.current = deepcopy(absent)
+            if self.behavior == "lost-response":
+                self.mirror.unavailable = True
+        if self.behavior == "lost-response":
+            raise MutationTransportLost("after_intent")
+        return {
+            "destructive_statements_attempted": 1,
+            "destructive_statements_committed": 1,
+        }
+
+
+def _postgres_settings() -> PostgresProducerSettings:
+    return PostgresProducerSettings(
+        host="127.0.0.1",
+        port=25432,
+        database=POSTGRES_TARGET.database,
+        observer_username="gate_observer",
+        observer_password="runtime-only",
+        mutation_username="gate_mutator",
+        mutation_password="runtime-only",
+        allow_apply=True,
+        allowed_targets=(POSTGRES_TARGET,),
+    )
+
+
+def _postgres_plan(
+    store: CampaignStore,
+    tmp_path: Path,
+    action: PostgresProducerAction,
+) -> dict[str, Any]:
+    base = deepcopy(_plan(store, tmp_path, issue=False))
+    native = action.plan(
+        action.observe(POSTGRES_TARGET),
+        actions=[POSTGRES_TARGET],
+        action_expires_at="2026-01-01T12:10:00Z",
+    )
+    base["schema_version"] = "2.0.0"
+    base["superset"] = []
+    base["action"] = {
+        "type": "postgres_drop_column_v1",
+        "action_id": "postgres-action-one",
+        "action_digest": native["action_digest"],
+        "postgres_action_plan": native,
+    }
+    base["limitations"] = ["Disposable PostgreSQL fixture action only."]
+    base.pop("plan_digest")
+    value = with_digest(base, "plan_digest")
+    validate_schema("producer-plan-v2", value)
+    store.issue_gate_plan(value)
+    return value
+
+
+def _postgres_verification() -> dict[str, Any]:
+    return with_digest(
+        {
+            "datahub_snapshot_digest": f"sha256:{'7' * 64}",
+            "git_dbt_reconciliation_digest": f"sha256:{'8' * 64}",
+            "superset_observations": [],
+            "producer_schema_observation_digest": f"sha256:{'a' * 64}",
+            "publication_readback_artifact_id": f"sha256:{'9' * 64}",
+        },
+        "verification_digest",
+    )
+
+
+def _postgres_workflow(
+    store: CampaignStore,
+    tmp_path: Path,
+    action: PostgresProducerAction,
+    factory: Any,
+) -> ProducerGateWorkflow:
+    return ProducerGateWorkflow(
+        store=store,
+        artifact_directory=tmp_path / "artifacts",
+        producer_repository_root=tmp_path,
+        producer_source_marker=tmp_path / "producer.json",
+        sentinel_root=tmp_path / "sentinels",
+        boundary=None,
+        git_dbt=None,
+        postgres_action=action,
+        postgres_target=POSTGRES_TARGET,
+        mutation_client_factory=factory,
+    )
+
+
+def test_postgres_gate_claims_intent_before_one_action_and_refuses_replay(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        observer = _GatePostgresClient("gate_observer", can_alter=False)
+        action = PostgresProducerAction(_postgres_settings(), observer)
+        mutator = _GatePostgresClient("gate_mutator", can_alter=True)
+        mutator.mirror = observer
+        factory_calls = 0
+
+        def mutation_factory() -> _GatePostgresClient:
+            nonlocal factory_calls
+            factory_calls += 1
+            assert store.gate_attempts(CAMPAIGN_ID)[-1]["status"] == "INTENT_RECORDED"
+            return mutator
+
+        workflow = _postgres_workflow(store, tmp_path, action, mutation_factory)
+        plan = _postgres_plan(store, tmp_path, action)
+        plan_path = tmp_path / "postgres-plan.json"
+        write_json(plan_path, plan)
+        monkeypatch.setattr(
+            workflow, "_producer_source", lambda: plan["producer_source"]
+        )
+        verification_calls = 0
+
+        def verify_once(*_args: object, **_kwargs: object) -> dict[str, object]:
+            nonlocal verification_calls
+            verification_calls += 1
+            if verification_calls > 1:
+                raise Refusal(
+                    RefusalCode.POSTGRES_LEGACY_COLUMN_MISSING,
+                    "the committed action changed native state",
+                )
+            return _postgres_verification()
+
+        monkeypatch.setattr(workflow, "_verify_ready_state", verify_once)
+
+        result = workflow.execute(
+            CAMPAIGN_ID,
+            context=_context(),
+            plan_path=plan_path,
+            executed_at="2026-01-01T12:05:00Z",
+        )
+
+        assert result["result"] == "EXECUTED"
+        assert result["gate_receipt"]["action"]["result"] == "COMMITTED"
+        assert result["gate_receipt"]["action"]["legacy_column_present"] is False
+        assert mutator.execute_calls == 1
+        assert factory_calls == 1
+        assert verification_calls == 1
+        assert store.gate_attempts(CAMPAIGN_ID)[-1]["status"] == "EXECUTED"
+        with pytest.raises(Refusal, match="GATE_PLAN_REPLAYED"):
+            workflow.execute(
+                CAMPAIGN_ID,
+                context=_context(),
+                plan_path=plan_path,
+                executed_at="2026-01-01T12:06:00Z",
+            )
+        assert mutator.execute_calls == 1
+        assert factory_calls == 1
+
+
+def test_postgres_gate_closes_pre_execution_failure_without_mutation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        observer = _GatePostgresClient("gate_observer", can_alter=False)
+        action = PostgresProducerAction(_postgres_settings(), observer)
+
+        def failed_factory() -> _GatePostgresClient:
+            assert store.gate_attempts(CAMPAIGN_ID)[-1]["status"] == "INTENT_RECORDED"
+            raise OSError("controlled pre-execution crash")
+
+        workflow = _postgres_workflow(store, tmp_path, action, failed_factory)
+        plan = _postgres_plan(store, tmp_path, action)
+        plan_path = tmp_path / "postgres-plan.json"
+        write_json(plan_path, plan)
+        monkeypatch.setattr(
+            workflow, "_producer_source", lambda: plan["producer_source"]
+        )
+        monkeypatch.setattr(
+            workflow,
+            "_verify_ready_state",
+            lambda *_args, **_kwargs: _postgres_verification(),
+        )
+
+        with pytest.raises(Refusal, match="GATE_ACTION_NOT_COMMITTED"):
+            workflow.execute(
+                CAMPAIGN_ID,
+                context=_context(),
+                plan_path=plan_path,
+                executed_at="2026-01-01T12:05:00Z",
+            )
+        attempt = store.gate_attempts(CAMPAIGN_ID)[-1]
+        assert attempt["status"] == "NOT_COMMITTED"
+        assert (
+            attempt["outcome"]["action_outcome"]["destructive_statements_attempted"]
+            == 0
+        )
+        assert observer.current["legacy_column"] is not None
+
+
+def test_postgres_gate_permission_loss_consumes_plan_without_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        observer = _GatePostgresClient("gate_observer", can_alter=False)
+        action = PostgresProducerAction(_postgres_settings(), observer)
+        mutator = _GatePostgresClient("gate_mutator", can_alter=False)
+        workflow = _postgres_workflow(store, tmp_path, action, lambda: mutator)
+        plan = _postgres_plan(store, tmp_path, action)
+        plan_path = tmp_path / "postgres-plan.json"
+        write_json(plan_path, plan)
+        monkeypatch.setattr(
+            workflow,
+            "_producer_source",
+            lambda: plan["producer_source"],
+        )
+        monkeypatch.setattr(
+            workflow,
+            "_verify_ready_state",
+            lambda *_args, **_kwargs: _postgres_verification(),
+        )
+
+        with pytest.raises(Refusal, match="POSTGRES_MUTATION_PERMISSION_DENIED"):
+            workflow.execute(
+                CAMPAIGN_ID,
+                context=_context(),
+                plan_path=plan_path,
+                executed_at="2026-01-01T12:05:00Z",
+            )
+        assert store.gate_attempts(CAMPAIGN_ID)[-1]["status"] == "NOT_COMMITTED"
+        assert mutator.execute_calls == 0
+        assert observer.current["legacy_column"] is not None
+
+
+def test_postgres_gate_resolves_lost_response_without_retry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        observer = _GatePostgresClient("gate_observer", can_alter=False)
+        action = PostgresProducerAction(_postgres_settings(), observer)
+        mutator = _GatePostgresClient(
+            "gate_mutator", can_alter=True, behavior="lost-response"
+        )
+        mutator.mirror = observer
+        workflow = _postgres_workflow(store, tmp_path, action, lambda: mutator)
+        plan = _postgres_plan(store, tmp_path, action)
+        plan_path = tmp_path / "postgres-plan.json"
+        write_json(plan_path, plan)
+        verification = _postgres_verification()
+        write_json(
+            tmp_path
+            / "artifacts"
+            / CAMPAIGN_ID
+            / "producer"
+            / "gate-verification.json",
+            verification,
+        )
+        monkeypatch.setattr(
+            workflow, "_producer_source", lambda: plan["producer_source"]
+        )
+        monkeypatch.setattr(
+            workflow,
+            "_verify_ready_state",
+            lambda *_args, **_kwargs: verification,
+        )
+
+        with pytest.raises(Refusal, match="GATE_ACTION_OUTCOME_UNKNOWN"):
+            workflow.execute(
+                CAMPAIGN_ID,
+                context=_context(),
+                plan_path=plan_path,
+                executed_at="2026-01-01T12:05:00Z",
+            )
+        assert store.gate_attempts(CAMPAIGN_ID)[-1]["status"] == "OUTCOME_UNKNOWN"
+        observer.unavailable = False
+        recovered = workflow.resolve_postgres_outcome(
+            CAMPAIGN_ID,
+            context=_context(),
+            plan_path=plan_path,
+            observed_at="2026-01-01T12:07:00Z",
+        )
+        assert recovered["result"] == "RECOVERED_COMMITTED"
+        assert recovered["gate_receipt"]["action"]["result"] == str(
+            PostgresActionOutcome.COMMITTED
+        )
+        assert mutator.execute_calls == 1
+        assert store.gate_attempts(CAMPAIGN_ID)[-1]["status"] == "EXECUTED"
+
+
+def test_gate_merges_fresh_superset_observation_from_issued_binding(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        superset_settings = SupersetSettings(
+            base_url="http://127.0.0.1:18088",
+            username="gate-verifier",
+            password="runtime-only",
+            provider="db",
+            principal="read-only-verifier",
+            version="6.0.0",
+            allow_apply=False,
+            allowed_dataset_ids=(1,),
+            timeout_seconds=5,
+        )
+        workflow = ProducerGateWorkflow(
+            store=store,
+            artifact_directory=tmp_path / "artifacts",
+            producer_repository_root=tmp_path,
+            producer_source_marker=tmp_path / "producer.json",
+            sentinel_root=tmp_path / "sentinels",
+            boundary=None,
+            git_dbt=None,
+            superset_settings=superset_settings,
+            superset_client=object(),  # type: ignore[arg-type]
+        )
+        native_plan = with_digest(
+            {
+                "campaign_id": CAMPAIGN_ID,
+                "consumer_id": "consumer-superset",
+                "datahub_urn": "urn:li:dataset:superset-one",
+            },
+            "plan_digest",
+        )
+        native_receipt = with_digest(
+            {"consumer_id": "consumer-superset"}, "receipt_digest"
+        )
+        native_validation = with_digest({"result": "PASSED"}, "validation_digest")
+        accepted = {
+            "plan": native_plan,
+            "receipt": native_receipt,
+            "validation": native_validation,
+        }
+        binding = with_digest({"consumer_id": "consumer-superset"}, "binding_digest")
+        write_json(
+            tmp_path
+            / "artifacts"
+            / CAMPAIGN_ID
+            / "producer"
+            / "superset-gate"
+            / "gate-binding.json",
+            binding,
+        )
+        expected = {
+            "consumer_id": "consumer-superset",
+            "datahub_urn": "urn:li:dataset:superset-one",
+            "binding_digest": binding["binding_digest"],
+            "plan_digest": native_plan["plan_digest"],
+            "receipt_digest": native_receipt["receipt_digest"],
+            "validation_digest": native_validation["validation_digest"],
+        }
+        source = {
+            "id": "superset:dataset-one",
+            "required": True,
+            "status": "COMPLETE",
+            "source_version": "0.1.0",
+            "identity": "dataset:1:dataset-one:chart:2:chart-one",
+            "scope": {
+                "direction": "downstream",
+                "max_hops": 1,
+                "filters": ["dataset_id:1", "chart_id:2"],
+                "pages": 1,
+                "reported_total": 1,
+                "returned_total": 1,
+            },
+            "freshness": {
+                "observed_at": "2026-01-01T12:05:00Z",
+                "source_updated_at": "2026-01-01T12:05:00Z",
+                "maximum_age_seconds": 300,
+            },
+            "permissions": {
+                "principal": "read-only-verifier",
+                "effective_scope": "read-only",
+            },
+            "limitations": ["Table-level DataHub lineage is complementary."],
+            "artifact_ids": [f"sha256:{'b' * 64}"],
+        }
+        observation = with_digest(
+            {
+                "source_id": source["id"],
+                "evidence_source": source,
+            },
+            "observation_digest",
+        )
+        monkeypatch.setattr(
+            workflow,
+            "_accepted_superset_artifacts",
+            lambda _campaign_id: [accepted],
+        )
+        calls = 0
+
+        def verify_superset(
+            _self: SupersetGateVerifier,
+            observed_binding: dict[str, Any],
+            **_kwargs: Any,
+        ) -> dict[str, Any]:
+            nonlocal calls
+            calls += 1
+            assert observed_binding == binding
+            return observation
+
+        monkeypatch.setattr(SupersetGateVerifier, "verify", verify_superset)
+        initial = with_digest(
+            {
+                "schema_version": "1.0.0",
+                "captured_at": "2026-01-01T12:05:00Z",
+                "mode": "live",
+                "sources": [source | {"id": "datahub"}],
+            },
+            "envelope_digest",
+        )
+
+        merged, observations = workflow._verify_superset_gate_bindings(
+            CAMPAIGN_ID,
+            plan={"superset": [expected]},
+            envelope=initial,
+            trusted_now="2026-01-01T12:05:00Z",
+        )
+
+        assert calls == 1
+        assert observations == [
+            {
+                "consumer_id": "consumer-superset",
+                "observation_digest": observation["observation_digest"],
+            }
+        ]
+        assert any(item["id"] == source["id"] for item in merged["sources"])
+        validate_schema("evidence-envelope", merged)

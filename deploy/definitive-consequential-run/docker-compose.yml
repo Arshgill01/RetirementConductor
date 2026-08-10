@@ -1,0 +1,128 @@
+name: retirement-conductor-definitive-consequential-run
+
+services:
+  producer:
+    image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+    environment:
+      POSTGRES_DB: retirement_consequential
+      POSTGRES_USER: rc_admin
+      POSTGRES_PASSWORD: ${RC_CP05_ADMIN_PASSWORD:?runtime password required}
+      RC_CP05_OBSERVER_PASSWORD: ${RC_CP05_OBSERVER_PASSWORD:?runtime password required}
+      RC_CP05_MUTATION_PASSWORD: ${RC_CP05_MUTATION_PASSWORD:?runtime password required}
+      RC_CP05_SUPERSET_PASSWORD: ${RC_CP05_SUPERSET_PASSWORD:?runtime password required}
+      RC_CP05_LEGACY_PASSWORD: ${RC_CP05_LEGACY_PASSWORD:?runtime password required}
+      RC_CP05_REPLACEMENT_PASSWORD: ${RC_CP05_REPLACEMENT_PASSWORD:?runtime password required}
+    ports:
+      - "127.0.0.1:${RC_CP05_POSTGRES_PORT:-35432}:5432"
+    volumes:
+      - producer-data:/var/lib/postgresql/data
+      - ./initdb/10-consequential.sql:/docker-entrypoint-initdb.d/10-consequential.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rc_admin -d retirement_consequential"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    security_opt:
+      - no-new-privileges:true
+
+  superset-db:
+    image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: ${RC_CP05_SUPERSET_METADATA_PASSWORD:?runtime password required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superset -d superset"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - superset-metadata:/var/lib/postgresql/data
+
+  superset-init:
+    image: apache/superset:6.0.0-dev@sha256:100af35c5a3c96384d4092ae4bd7fffb8c23d361e9a5a8b94312c50426aa1144
+    depends_on:
+      superset-db:
+        condition: service_healthy
+    environment: &superset-environment
+      SUPERSET_CONFIG_PATH: /app/superset_config.py
+      SUPERSET_METADATA_DATABASE_URI: ${RC_CP05_SUPERSET_METADATA_URI:?runtime URI required}
+      SUPERSET_SECRET_KEY: ${RC_CP05_SUPERSET_SECRET_KEY:?runtime key required}
+      SUPERSET_ADMIN_PASSWORD: ${RC_CP05_SUPERSET_ADMIN_PASSWORD:?runtime password required}
+    command:
+      - /bin/bash
+      - -eu
+      - -c
+      - |
+        superset db upgrade
+        if ! superset fab list-users | grep -q 'admin@superset.local'; then
+          superset fab create-admin --username admin --firstname Superset \
+            --lastname Admin --email admin@superset.local \
+            --password "$$SUPERSET_ADMIN_PASSWORD"
+        fi
+        superset init
+    volumes:
+      - ../superset/superset_config.py:/app/superset_config.py:ro
+
+  superset:
+    image: apache/superset:6.0.0-dev@sha256:100af35c5a3c96384d4092ae4bd7fffb8c23d361e9a5a8b94312c50426aa1144
+    depends_on:
+      producer:
+        condition: service_healthy
+      superset-init:
+        condition: service_completed_successfully
+    environment: *superset-environment
+    command:
+      - /bin/bash
+      - -eu
+      - -c
+      - superset run -h 0.0.0.0 -p 8088 --with-threads
+    ports:
+      - "127.0.0.1:${RC_CP05_SUPERSET_PORT:-28088}:8088"
+    volumes:
+      - ../superset/superset_config.py:/app/superset_config.py:ro
+    security_opt:
+      - no-new-privileges:true
+
+  spark-workload:
+    profiles: ["workload"]
+    image: apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74
+    depends_on:
+      producer:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://producer:5432/retirement_consequential
+      DB_USER: ${WORKLOAD_DB_USER:?workload principal required}
+      DB_PASSWORD: ${WORKLOAD_DB_PASSWORD:?workload password required}
+      WORKLOAD_FIELD: ${WORKLOAD_FIELD:?legacy_status or order_status required}
+    entrypoint: ["/opt/spark/bin/spark-submit"]
+    command:
+      - --master
+      - local[1]
+      - --driver-memory
+      - 512m
+      - --conf
+      - spark.ui.enabled=false
+      - --conf
+      - spark.sql.shuffle.partitions=1
+      - --conf
+      - spark.default.parallelism=1
+      - --jars
+      - /opt/lab/postgresql-42.7.4.jar
+      - /opt/lab/workload.py
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    volumes:
+      - ../native-breakage-lab/workload.py:/opt/lab/workload.py:ro
+      - ${NATIVE_BREAKAGE_JDBC_JAR:?verified JDBC path required}:/opt/lab/postgresql-42.7.4.jar:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 768m
+    cpus: 1.0
+
+volumes:
+  producer-data:
+  superset-metadata:

@@ -118,7 +118,7 @@ def test_backup_restore_reproduces_manifest_and_evidence_references(
     shutil.copyfile(backup, database)
     with CampaignStore(database, writer_id="writer-one") as restored:
         assert restored.materialize(CAMPAIGN_ID) == expected_manifest
-        assert restored.schema_versions() == [1, 2, 3]
+        assert restored.schema_versions() == [1, 2, 3, 4]
 
 
 def test_backup_refuses_overwrite_copy_writer_and_tampering(tmp_path: Path) -> None:

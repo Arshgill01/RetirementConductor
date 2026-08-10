@@ -6,7 +6,7 @@ import argparse
 import json
 import os
 import sys
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -49,12 +49,20 @@ from retirement_conductor.operator import (
     safe_report_filename,
     write_campaign_report,
 )
+from retirement_conductor.postgres_producer import (
+    ACTION_TYPE as POSTGRES_ACTION_TYPE,
+)
+from retirement_conductor.postgres_producer import (
+    PostgresCliClient,
+    PostgresProducerAction,
+)
+from retirement_conductor.postgres_producer_config import PostgresProducerSettings
 from retirement_conductor.publication import CampaignPublicationWorkflow
 from retirement_conductor.reconciliation import ReconciliationWorkflow
 from retirement_conductor.reference import run_reference_fixture
 from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
-from retirement_conductor.superset import SupersetAdapter
+from retirement_conductor.superset import SupersetAdapter, SupersetClient
 from retirement_conductor.superset_campaign_workflow import SupersetCampaignWorkflow
 from retirement_conductor.superset_config import SupersetSettings
 from retirement_conductor.vocabulary import CampaignState, Decision
@@ -402,6 +410,7 @@ def build_parser() -> argparse.ArgumentParser:
             operation.add_argument("--occurred-at")
         else:
             operation.add_argument("--datahub-observation", type=Path, required=True)
+            operation.add_argument("--gate-principal")
     superset_authorize = superset_subparsers.add_parser("authorize")
     _add_live_campaign_arguments(superset_authorize)
     superset_authorize.add_argument("--principal")
@@ -420,6 +429,15 @@ def build_parser() -> argparse.ArgumentParser:
     _add_live_campaign_arguments(producer_plan)
     _add_producer_path_arguments(producer_plan)
     producer_plan.add_argument("--expires-at", required=True)
+    producer_plan.add_argument(
+        "--action",
+        choices=("sentinel", "postgres"),
+        default="sentinel",
+    )
+    producer_resolve = producer_subparsers.add_parser("resolve-postgres")
+    _add_live_campaign_arguments(producer_resolve)
+    _add_producer_path_arguments(producer_resolve)
+    producer_resolve.add_argument("--plan", type=Path)
 
     gate = subparsers.add_parser(
         "gate",
@@ -428,6 +446,11 @@ def build_parser() -> argparse.ArgumentParser:
     _add_live_campaign_arguments(gate)
     _add_producer_path_arguments(gate)
     gate.add_argument("--plan", type=Path)
+    gate.add_argument(
+        "--postgres-action",
+        action="store_true",
+        help="enable the separately privileged bounded PostgreSQL action",
+    )
 
     report = subparsers.add_parser(
         "report",
@@ -599,7 +622,41 @@ def _producer_gate_workflow(
     *,
     with_datahub: bool,
     with_git_dbt: bool,
+    with_postgres: bool,
+    require_mutation_credential: bool = False,
 ) -> ProducerGateWorkflow:
+    postgres_settings: PostgresProducerSettings | None = None
+    postgres_action: PostgresProducerAction | None = None
+    postgres_target = None
+    mutation_client_factory: Callable[[], PostgresCliClient] | None = None
+    if with_postgres:
+        postgres_settings = PostgresProducerSettings.from_environment(
+            require_mutation_credential=require_mutation_credential
+        )
+        if len(postgres_settings.allowed_targets) != 1:
+            raise Refusal(
+                "POSTGRES_ACTION_COUNT_INVALID",
+                "The producer gate requires one exact PostgreSQL target.",
+            )
+        postgres_target = postgres_settings.allowed_targets[0]
+        postgres_action = PostgresProducerAction(
+            postgres_settings,
+            PostgresCliClient(postgres_settings.observer_connection()),
+        )
+        if require_mutation_credential:
+            mutation_settings = postgres_settings
+
+            def create_mutation_client() -> PostgresCliClient:
+                return PostgresCliClient(mutation_settings.mutation_connection())
+
+            mutation_client_factory = create_mutation_client
+    superset_settings: SupersetSettings | None = None
+    superset_client: SupersetClient | None = None
+    if (
+        Path(args.artifact_dir) / str(args.campaign_id) / "superset" / "plan.json"
+    ).is_file():
+        superset_settings = SupersetSettings.from_environment()
+        superset_client = SupersetClient(superset_settings)
     return ProducerGateWorkflow(
         store=store,
         artifact_directory=Path(args.artifact_dir),
@@ -612,6 +669,11 @@ def _producer_gate_workflow(
             if with_git_dbt
             else None
         ),
+        postgres_action=postgres_action,
+        postgres_target=postgres_target,
+        mutation_client_factory=mutation_client_factory,
+        superset_settings=superset_settings,
+        superset_client=superset_client,
     )
 
 
@@ -946,6 +1008,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     result = superset_workflow.reconcile_source(
                         args.campaign_id,
                         observation,
+                        gate_principal=args.gate_principal,
                     )
             _render(result)
             return 0
@@ -989,11 +1052,33 @@ def main(argv: Sequence[str] | None = None) -> int:
                     store,
                     with_datahub=False,
                     with_git_dbt=True,
+                    with_postgres=args.action == "postgres",
                 )
                 result = producer_workflow.prepare(
                     args.campaign_id,
                     context=TrustedProducerContext.from_environment(),
                     expires_at=args.expires_at,
+                    action_type=(
+                        POSTGRES_ACTION_TYPE
+                        if args.action == "postgres"
+                        else "write_public_safe_sentinel"
+                    ),
+                )
+            _render(result)
+            return 0
+        if args.command == "producer" and args.producer_command == "resolve-postgres":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                producer_workflow = _producer_gate_workflow(
+                    args,
+                    store,
+                    with_datahub=False,
+                    with_git_dbt=False,
+                    with_postgres=True,
+                )
+                result = producer_workflow.resolve_postgres_outcome(
+                    args.campaign_id,
+                    context=TrustedProducerContext.from_environment(),
+                    plan_path=args.plan,
                 )
             _render(result)
             return 0
@@ -1006,6 +1091,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     store,
                     with_datahub=ready,
                     with_git_dbt=ready,
+                    with_postgres=args.postgres_action,
+                    require_mutation_credential=args.postgres_action,
                 )
                 result = gate_workflow.execute(
                     args.campaign_id,
