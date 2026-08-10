@@ -49,6 +49,21 @@ test("workbench renders a real-runtime connection state without fake campaign da
   assert.doesNotMatch(html, /READY_TO_RETIRE|UNSAFE/);
 });
 
+test("workbench ships one accepted design and explicit paired-local transport", async () => {
+  const [client, page] = await Promise.all([
+    readFile(new URL("../app/workbench/workbench-client.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/workbench/page.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(client, /Pair this view to the campaign engine/);
+  assert.match(client, /sessionStorage\.setItem\(PAIRING_STORAGE_KEY/);
+  assert.match(client, /headers\.set\("Authorization", `Bearer/);
+  assert.match(client, /health\.campaign_id !== view\.campaign\.id/);
+  assert.doesNotMatch(client, /NEXT_PUBLIC_RETIREMENT_CONDUCTOR_API_URL/);
+  assert.doesNotMatch(client, /PrototypeWorkbench|variant/);
+  assert.doesNotMatch(page, /workbench-prototypes/);
+});
+
 test("standalone HTML contains the current product, evidence, and limits", async () => {
   const html = await readFile(publicHtmlUrl, "utf8");
 

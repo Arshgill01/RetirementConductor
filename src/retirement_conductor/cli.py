@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import secrets
 import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -464,7 +465,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--origin",
         action="append",
         default=[],
-        help="allowed loopback browser origin; may be repeated",
+        help="allowed exact loopback or HTTPS browser origin; may be repeated",
     )
     workbench_serve.add_argument(
         "--allow-actions",
@@ -1039,11 +1040,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             origins = args.origin or [
                 "http://127.0.0.1:3000",
                 "http://localhost:3000",
+                "https://retirement-conductor.arshgill01.chatgpt.site",
             ]
+            pairing_token = secrets.token_urlsafe(32)
             print(
                 f"Retirement Workbench API: http://{args.host}:{args.port} "
                 f"({application.campaign_id}; "
                 f"{'actions enabled' if args.allow_actions else 'read only'})",
+                flush=True,
+            )
+            print(
+                f"Pairing token (valid for this process): {pairing_token}",
                 flush=True,
             )
             serve_workbench(
@@ -1051,6 +1058,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 host=args.host,
                 port=args.port,
                 allowed_origins=origins,
+                pairing_token=pairing_token,
             )
             return 0
         if (

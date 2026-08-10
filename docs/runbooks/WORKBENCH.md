@@ -29,29 +29,41 @@ retirement-conductor workbench serve \
   --store .retirement-conductor/campaigns.sqlite \
   --writer-id local-operator \
   --artifact-dir .retirement-conductor/artifacts \
-  --origin http://localhost:3000 \
   --allow-actions
 ```
 
-Start the existing site in another terminal, then open
-`http://localhost:3000/workbench`.
+The server prints a new high-entropy pairing token for that process. Open the
+[hosted Workbench](https://retirement-conductor.arshgill01.chatgpt.site/workbench),
+choose **Recorded evidence · pair local**, and paste that token. The default
+origin allowlist includes the hosted Workbench plus the two local development
+origins. Use repeated `--origin` flags to replace those defaults with an exact
+allowlist.
+
+For local site development, start the site in another terminal and open
+`http://localhost:3000/workbench`:
 
 ```bash
 npm --prefix site run dev
 ```
 
-The API refuses any non-loopback bind or browser origin. Runtime actions also
-require the browser request's explicit action confirmation header to match the
-requested operation. A successful HTTP response is still not retirement
-authorization; the canonical campaign decision and producer gate remain the
-authority.
+The API refuses any non-loopback bind. It accepts only configured loopback or
+HTTPS browser origins, requires the process-scoped bearer token for every read
+and action, and answers private-network preflight only for an allowed origin.
+The browser keeps the token in `sessionStorage`, so it remains within the
+current tab and becomes useless when the local process stops. Runtime actions
+also require the explicit action confirmation header to match the request.
+
+A successful HTTP response is still not retirement authorization; the
+canonical campaign decision and producer gate remain the authority. The
+browser has no authorization, apply, receipt-acceptance, lease, or gate route.
 
 ## Recorded public evidence
 
-When no local API is available, the public route shows a clearly labeled
-recorded view generated from the retained 18-event agent campaign. It is useful
-for review and presentation but cannot mutate anything. Its manifest digest is
-visible in Evidence, and the committed JSON is
+The public route starts with a clearly labeled recorded view generated from the
+retained 18-event agent campaign; it does not probe the local machine until the
+operator opens the pairing panel. The recording is useful for review and
+presentation but cannot mutate anything. Its manifest digest is visible in
+Evidence, and the committed JSON is
 `site/public/workbench-recorded.json`.
 
 When the retained private run is locally available, regenerate that projection

@@ -79,8 +79,11 @@ contract; `PLAN.md` defines proof order.
   reversal, accepted Git/dbt receipt, bounded DataHub evidence, verified
   publication, and invalidated lease without inventing consumer platform or
   identity. The API binds one campaign to loopback, is read-only by default,
-  and exposes only explicitly enabled inventory and reconciliation. Desktop,
-  mobile, keyboard, reduced-motion, and recorded-evidence fallback were
+  and exposes only explicitly enabled inventory and reconciliation. The
+  finalized hosted path pairs to that loopback API with an ephemeral bearer
+  token and exact origin allowlist; the public page does not probe localhost
+  before explicit pairing. Desktop, mobile, keyboard, reduced-motion, and
+  recorded-evidence fallback were
   inspected. `make check` passed 262 tests, Ruff, formatting, strict mypy,
   repository/link validation, secret and public-artifact review, package
   builds, and `git diff --check`; the site lint, production build, and five

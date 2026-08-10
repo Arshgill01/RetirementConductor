@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { PrototypeWorkbench, isPrototypeVariant } from "./workbench-prototypes";
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent, RefObject } from "react";
 
 export type Stage = {
   key: string;
@@ -95,9 +94,10 @@ export type WorkbenchView = {
 
 type ViewName = "overview" | "consumers" | "change" | "evidence" | "activity";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_RETIREMENT_CONDUCTOR_API_URL ??
-  "http://127.0.0.1:8765";
+type Pairing = { apiBase: string; token: string };
+
+const DEFAULT_API_BASE = "http://127.0.0.1:8765";
+const PAIRING_STORAGE_KEY = "retirement-conductor-workbench-pairing";
 
 const views: Array<{ key: Exclude<ViewName, "overview">; label: string }> = [
   { key: "consumers", label: "Consumers" },
@@ -106,25 +106,72 @@ const views: Array<{ key: Exclude<ViewName, "overview">; label: string }> = [
   { key: "activity", label: "Activity" },
 ];
 
-async function fetchWorkbench(): Promise<WorkbenchView> {
-  const response = await fetch(`${API_BASE}/api/workbench`, {
-    cache: "no-store",
-  });
+function normalizeApiBase(value: string) {
+  const url = new URL(value);
+  if (
+    !["http:", "https:"].includes(url.protocol) ||
+    !["127.0.0.1", "localhost"].includes(url.hostname) ||
+    url.username ||
+    url.password ||
+    (url.pathname !== "/" && url.pathname !== "") ||
+    url.search ||
+    url.hash
+  ) {
+    throw new Error("Use a loopback runtime URL such as http://127.0.0.1:8765.");
+  }
+  return url.origin;
+}
+
+async function pairedFetch(path: string, pairing: Pairing, init?: RequestInit) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 6000);
+  const headers = new Headers(init?.headers);
+  headers.set("Authorization", `Bearer ${pairing.token}`);
+  try {
+    return await fetch(`${pairing.apiBase}${path}`, {
+      ...init,
+      cache: "no-store",
+      headers,
+      signal: controller.signal,
+    });
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+async function responsePayload(response: Response) {
   const payload = await response.json();
   if (!response.ok) {
-    throw new Error(payload.message ?? payload.error ?? "Request failed.");
+    if (response.status === 401) {
+      throw new Error("The pairing token was rejected. Copy the current token from the runtime terminal.");
+    }
+    if (response.status === 403) {
+      throw new Error("This site origin is not allowed by the local runtime.");
+    }
+    throw new Error(payload.message ?? payload.error ?? "The runtime refused the request.");
   }
   return payload;
 }
 
-async function fetchInitialWorkbench(): Promise<WorkbenchView> {
-  try {
-    return await fetchWorkbench();
-  } catch {
-    const response = await fetch("/workbench-recorded.json", { cache: "no-store" });
-    if (!response.ok) throw new Error("The local runtime is unavailable.");
-    return response.json();
+async function fetchWorkbench(pairing: Pairing): Promise<WorkbenchView> {
+  const response = await pairedFetch("/api/workbench", pairing);
+  return responsePayload(response);
+}
+
+async function connectWorkbench(pairing: Pairing): Promise<WorkbenchView> {
+  const healthResponse = await pairedFetch("/api/health", pairing);
+  const health = await responsePayload(healthResponse);
+  const view = await fetchWorkbench(pairing);
+  if (health.campaign_id !== view.campaign.id) {
+    throw new Error("The runtime health check and campaign view disagree. Connection refused.");
   }
+  return view;
+}
+
+async function fetchRecordedWorkbench(): Promise<WorkbenchView> {
+  const response = await fetch("/workbench-recorded.json", { cache: "no-store" });
+  if (!response.ok) throw new Error("The recorded campaign evidence is unavailable.");
+  return response.json();
 }
 
 function shortDigest(value: string) {
@@ -336,41 +383,181 @@ function DetailView({ name, data }: { name: ViewName; data: WorkbenchView }) {
   );
 }
 
+function connectionMessage(cause: unknown) {
+  if (cause instanceof DOMException && cause.name === "AbortError") {
+    return "The loopback runtime did not respond within six seconds.";
+  }
+  if (cause instanceof TypeError) {
+    return "The browser could not reach the loopback runtime. Start it locally and allow this site's HTTPS origin.";
+  }
+  return cause instanceof Error ? cause.message : "The runtime connection failed.";
+}
+
+function PairingPanel({
+  apiBase,
+  token,
+  busy,
+  error,
+  tokenRef,
+  onApiBaseChange,
+  onTokenChange,
+  onClose,
+  onSubmit,
+}: {
+  apiBase: string;
+  token: string;
+  busy: boolean;
+  error: string | null;
+  tokenRef: RefObject<HTMLInputElement | null>;
+  onApiBaseChange: (value: string) => void;
+  onTokenChange: (value: string) => void;
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <aside
+      className="rcw-pairing"
+      role="dialog"
+      aria-labelledby="pairing-title"
+      aria-describedby="pairing-description"
+    >
+      <button className="rcw-pairing-dismiss" type="button" onClick={onClose} aria-label="Close pairing panel">
+        Close
+      </button>
+      <p>Local runtime</p>
+      <h2 id="pairing-title">Pair this view to the campaign engine.</h2>
+      <p className="rcw-pairing-intro" id="pairing-description">
+        The campaign store, DataHub connection, and mutation authority remain on your machine.
+        The ephemeral token stays in this browser tab.
+      </p>
+      <form onSubmit={onSubmit}>
+        <label htmlFor="runtime-url">Loopback API</label>
+        <input
+          id="runtime-url"
+          inputMode="url"
+          value={apiBase}
+          onChange={(event) => onApiBaseChange(event.target.value)}
+          spellCheck={false}
+          required
+        />
+        <label htmlFor="pairing-token">Pairing token</label>
+        <input
+          id="pairing-token"
+          ref={tokenRef}
+          type="password"
+          value={token}
+          onChange={(event) => onTokenChange(event.target.value)}
+          autoComplete="off"
+          spellCheck={false}
+          required
+        />
+        <button type="submit" disabled={busy || !token.trim()} aria-busy={busy}>
+          {busy ? "Pairing…" : "Pair runtime"}
+        </button>
+      </form>
+      <p className="rcw-pairing-command">
+        Start with <code>retirement-conductor workbench serve …</code>, then copy the token printed in that terminal.
+      </p>
+      {error && <p className="rcw-pairing-error" role="alert">{error}</p>}
+    </aside>
+  );
+}
+
 export function WorkbenchClient() {
-  const searchParams = useSearchParams();
   const [data, setData] = useState<WorkbenchView | null>(null);
+  const [recordedData, setRecordedData] = useState<WorkbenchView | null>(null);
   const [view, setView] = useState<ViewName>("overview");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pairing, setPairing] = useState<Pairing | null>(null);
+  const [pairingOpen, setPairingOpen] = useState(false);
+  const [pairingBusy, setPairingBusy] = useState(false);
+  const [pairingError, setPairingError] = useState<string | null>(null);
+  const [apiBaseInput, setApiBaseInput] = useState(DEFAULT_API_BASE);
+  const [tokenInput, setTokenInput] = useState("");
+  const tokenRef = useRef<HTMLInputElement>(null);
+  const pairingTriggerRef = useRef<HTMLButtonElement>(null);
 
-  async function load() {
+  async function pairRuntime(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPairingBusy(true);
+    setPairingError(null);
     try {
-      setData(await fetchWorkbench());
+      const nextPairing = {
+        apiBase: normalizeApiBase(apiBaseInput.trim()),
+        token: tokenInput.trim(),
+      };
+      const nextData = await connectWorkbench(nextPairing);
+      sessionStorage.setItem(PAIRING_STORAGE_KEY, JSON.stringify(nextPairing));
+      setPairing(nextPairing);
+      setData(nextData);
       setError(null);
+      setPairingOpen(false);
+      setTokenInput("");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The local runtime is unavailable.");
+      setPairingError(connectionMessage(cause));
+    } finally {
+      setPairingBusy(false);
     }
   }
 
   useEffect(() => {
     let active = true;
-    fetchInitialWorkbench()
-      .then((payload) => {
-        if (active) setData(payload);
-      })
-      .catch((cause: unknown) => {
-        if (active) {
-          setError(
-            cause instanceof Error
-              ? cause.message
-              : "The local runtime is unavailable.",
-          );
+    void (async () => {
+      try {
+        const recorded = await fetchRecordedWorkbench();
+        if (!active) return;
+        setRecordedData(recorded);
+        setData(recorded);
+
+        const saved = sessionStorage.getItem(PAIRING_STORAGE_KEY);
+        if (!saved) return;
+        try {
+          const parsed = JSON.parse(saved) as Pairing;
+          const savedPairing = {
+            apiBase: normalizeApiBase(parsed.apiBase),
+            token: parsed.token,
+          };
+          const liveData = await connectWorkbench(savedPairing);
+          if (!active) return;
+          setPairing(savedPairing);
+          setData(liveData);
+        } catch {
+          sessionStorage.removeItem(PAIRING_STORAGE_KEY);
         }
-      });
+      } catch (cause) {
+        if (active) setError(connectionMessage(cause));
+      }
+    })();
     return () => {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!pairingOpen) return;
+    tokenRef.current?.focus();
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setPairingOpen(false);
+        pairingTriggerRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [pairingOpen]);
+
+  function closePairing() {
+    setPairingOpen(false);
+    requestAnimationFrame(() => pairingTriggerRef.current?.focus());
+  }
+
+  function disconnectRuntime() {
+    sessionStorage.removeItem(PAIRING_STORAGE_KEY);
+    setPairing(null);
+    setError(null);
+    if (recordedData) setData(recordedData);
+  }
 
   async function runPrimaryAction() {
     if (!data) return;
@@ -379,11 +566,11 @@ export function WorkbenchClient() {
       setView(action.view ?? "overview");
       return;
     }
-    if (!action.operation || !action.enabled) return;
+    if (!action.operation || !action.enabled || !pairing) return;
     setBusy(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE}/api/workbench/action`, {
+      const response = await pairedFetch("/api/workbench/action", pairing, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -391,11 +578,10 @@ export function WorkbenchClient() {
         },
         body: JSON.stringify({ operation: action.operation }),
       });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.message ?? payload.error ?? "Operation refused.");
+      const payload = await responsePayload(response);
       setData(payload.view);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Operation refused.");
+      setError(connectionMessage(cause));
     } finally {
       setBusy(false);
     }
@@ -405,22 +591,17 @@ export function WorkbenchClient() {
     return (
       <main className="rcw-connect">
         <p>Retirement Workbench</p>
-        <h1>{error ? "The local campaign is not connected." : "Reading canonical state…"}</h1>
+        <h1>{error ? "The campaign evidence could not be read." : "Reading canonical state…"}</h1>
         {error && (
           <>
             <p>{error}</p>
-            <button type="button" onClick={() => void load()}>
-              Try again
+            <button type="button" onClick={() => window.location.reload()}>
+              Reload evidence
             </button>
           </>
         )}
       </main>
     );
-  }
-
-  const prototypeVariant = searchParams.get("variant");
-  if (isPrototypeVariant(prototypeVariant)) {
-    return <PrototypeWorkbench data={data} variant={prototypeVariant} />;
   }
 
   return (
@@ -442,16 +623,34 @@ export function WorkbenchClient() {
           <button
             type="button"
             className="rcw-mode rcw-mode-button"
-            onClick={() => void load()}
+            ref={pairingTriggerRef}
+            onClick={() => {
+              setPairingError(null);
+              setPairingOpen(true);
+            }}
           >
-            Recorded evidence · connect live
+            Recorded evidence · pair local
           </button>
         ) : (
-          <span className="rcw-mode">
-            {data.mode === "live-local" ? "Live local" : "Read only"}
-          </span>
+          <button type="button" className="rcw-mode rcw-mode-button" onClick={disconnectRuntime}>
+            {data.mode === "live-local" ? "Live local" : "Paired read only"} · disconnect
+          </button>
         )}
       </header>
+
+      {pairingOpen && (
+        <PairingPanel
+          apiBase={apiBaseInput}
+          token={tokenInput}
+          busy={pairingBusy}
+          error={pairingError}
+          tokenRef={tokenRef}
+          onApiBaseChange={setApiBaseInput}
+          onTokenChange={setTokenInput}
+          onClose={closePairing}
+          onSubmit={pairRuntime}
+        />
+      )}
 
       <aside className="rcw-stages" aria-label="Campaign stages">
         <ol>

@@ -15,8 +15,9 @@ operator surface for one real campaign. It renders canonical state rather than
 reimplementing policy, keeps details behind focused Consumers, Change,
 Evidence, and Activity views, and exposes only explicitly enabled inventory
 and reconciliation operations. The public route shows labeled recorded
-evidence when no local runtime is connected; the local route can operate the
-same campaign engine used by the CLI and MCP server.
+evidence until the operator explicitly pairs it, using a process-scoped token,
+to the loopback runtime over the same campaign engine used by the CLI and MCP
+server.
 
 ## The agent demo
 

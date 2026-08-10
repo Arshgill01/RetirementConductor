@@ -598,6 +598,125 @@ button {
   line-height: 1.6;
 }
 
+.rcw-pairing {
+  position: fixed;
+  z-index: 20;
+  inset: 0 0 0 auto;
+  width: min(520px, 100%);
+  padding: 38px 42px;
+  overflow-y: auto;
+  border-left: 1px solid var(--rcw-rule);
+  background: var(--rcw-paper);
+  box-shadow: -40px 0 80px rgb(19 20 17 / 12%);
+}
+
+.rcw-pairing-dismiss {
+  display: block;
+  margin: 0 0 14vh auto;
+  padding: 0 0 4px;
+  border: 0;
+  border-bottom: 1px solid var(--rcw-rule);
+  background: transparent;
+  color: var(--rcw-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rcw-pairing > p:first-of-type,
+.rcw-pairing form label {
+  color: var(--rcw-muted);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.rcw-pairing h2 {
+  margin: 16px 0 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.rcw-pairing-intro {
+  max-width: 46ch;
+  margin: 24px 0 36px;
+  color: var(--rcw-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.rcw-pairing form {
+  display: grid;
+  gap: 10px;
+}
+
+.rcw-pairing form label:not(:first-child) {
+  margin-top: 14px;
+}
+
+.rcw-pairing input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid var(--rcw-rule);
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--rcw-ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.rcw-pairing input:focus {
+  border-color: var(--rcw-ink);
+  box-shadow: 0 1px 0 var(--rcw-ink);
+}
+
+.rcw-pairing form button {
+  width: max-content;
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 0 0 4px;
+  border: 0;
+  border-bottom: 1px solid var(--rcw-ink);
+  background: transparent;
+  color: var(--rcw-ink);
+  cursor: pointer;
+}
+
+.rcw-pairing form button::after {
+  content: " →";
+}
+
+.rcw-pairing form button:disabled {
+  color: var(--rcw-muted);
+  cursor: not-allowed;
+}
+
+.rcw-pairing-command,
+.rcw-pairing-error {
+  margin: 32px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--rcw-faint);
+  color: var(--rcw-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.rcw-pairing-command code {
+  color: var(--rcw-ink);
+  font: inherit;
+}
+
+.rcw-pairing-error {
+  border-color: var(--rcw-coral);
+  color: var(--rcw-coral);
+}
+
 button:focus-visible {
   outline: 2px solid var(--rcw-ink);
   outline-offset: 5px;
@@ -745,7 +864,36 @@ button:focus-visible {
   }
 
   .rcw-lineage-grid {
-    grid-template-columns: 1fr 30px 1.25fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 32px;
+  }
+
+  .rcw-node-source {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rcw-consumer-group {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .rcw-branch-known,
+  .rcw-branch-new {
+    display: none;
+  }
+
+  .rcw-new-consumer {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding-top: 24px;
+    border-top: 1px dashed var(--rcw-ink);
+  }
+
+  .rcw-consumer-row strong,
+  .rcw-new-consumer strong {
+    font-size: 11px;
   }
 
   .rcw-action-row {
@@ -765,6 +913,14 @@ button:focus-visible {
   .rcw-activity li {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .rcw-pairing {
+    padding: 24px 20px;
+  }
+
+  .rcw-pairing-dismiss {
+    margin-bottom: 10vh;
   }
 }
 

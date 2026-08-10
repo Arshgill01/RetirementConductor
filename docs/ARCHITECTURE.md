@@ -305,10 +305,12 @@ The Workbench API is a loopback-only, single-campaign adapter over the same
 path-bound store and command runtime. Reads are always available. Inventory
 and reconciliation are disabled unless the operator starts the server with an
 explicit action flag, and requests require an exact action header from an
-allowlisted loopback browser origin. The browser cannot record authorization,
-apply a Git/dbt plan, issue a Retirement Lease, or execute the producer gate.
-This is a local operator surface, not the shared multi-operator API service
-deferred below.
+allowlisted browser origin plus a process-scoped bearer token. The hosted page
+loads recorded evidence by default and can explicitly pair to this loopback
+adapter; DataHub credentials, the campaign store, and operation execution
+remain local. The browser cannot record authorization, apply a Git/dbt plan,
+issue a Retirement Lease, or execute the producer gate. This is a local
+operator surface, not the shared multi-operator API service deferred below.
 
 Public rendering
 removes native identities and sensitive source detail before HTML generation;
