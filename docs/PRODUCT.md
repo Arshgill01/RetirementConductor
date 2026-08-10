@@ -119,7 +119,7 @@ DataHub inventory
   + dbt-native validation
   + fresh DataHub reconciliation
   + stable DataHub summary
-  + producer-side gate
+  + fresh check-and-retire command
 ```
 
 This is one complete product outcome. It does not depend on support for every
@@ -149,12 +149,13 @@ publication, and outcome evidence. The point-in-time static arm committed and
 caused the independent Spark legacy workload to fail with SQLSTATE `42703`.
 
 The product claim is therefore simpler: fresh, failure-closed verification is
-the safety requirement. A Retirement Lease is optional when an organization
-needs durable one-use coordination, crash/lost-response recovery, or causal
-audit across handoffs; it is not a material safety advantage over competent
-fresh CI for the bounded case. Organizations that can run the same evidence
-checks immediately before a one-shot schema action should prefer that simpler
-workflow.
+the safety requirement. The default producer command now prepares its binding,
+rereads every required source, records durable intent, and executes or refuses
+inside one trusted invocation. The internal plan and ledger preserve recovery
+and audit evidence without making an operator carry a separate lease. The old
+two-step plan/gate surface and watcher remain advanced compatibility tools for
+demonstrated handoff needs; they are not a material safety advantage over
+competent fresh CI for the bounded case.
 
 ## Agent and advisory surfaces
 
@@ -162,8 +163,10 @@ Codex can operate the same campaign engine through a project-scoped MCP server
 and repository skill. The model selects bounded operations and explains
 results; it cannot record approval, accept native validation, alter policy, or
 override the producer gate. Sixteen MCP tools cover campaign inspection,
-Git/dbt planning and execution, publication, Retirement Lease status, one-shot
-fresh observation, and the final separately confirmed gate.
+Git/dbt planning and execution, publication, optional lease status, one-shot
+fresh observation, and the separately confirmed compatibility gate. The
+privileged PostgreSQL `producer retire` command remains outside the browser,
+skill, and general agent credential boundary.
 
 Planning retains bounded DataHub schema, lineage, glossary, query, quality,
 ownership, and freshness context, but nested model selection is not part of
@@ -197,7 +200,7 @@ Build:
 - evidence envelopes and provenance-aware receipts;
 - adapter orchestration and identity binding;
 - source-version, scope, and authorization preconditions;
-- reconciliation and producer-side refusal;
+- reconciliation and a fresh producer-side action or refusal;
 - shared operator view and DataHub summary.
 
 Borrow:
@@ -225,7 +228,8 @@ reconciled completion criterion:
 - failure-closed transitions under graph and source drift;
 - explicit blind spots instead of false completeness;
 - a concrete Git/dbt boundary that preserves native validation;
-- a gate that can prevent the producing change.
+- one privileged final command that can perform or prevent the producing
+  change from fresh evidence.
 
 This becomes shallow if it only inventories, reports, scores, notifies, or
 stores receipts without changing and reconciling consumer state.

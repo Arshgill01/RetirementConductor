@@ -516,6 +516,14 @@ counts, replacement preservation, resolution path, and its own receipt digest.
 The reference action is restricted to disposable loopback PostgreSQL and does
 not imply production warehouse authorization.
 
+The default `producer retire` operation creates this short-lived plan
+internally and consumes it in the same trusted process. The runtime, not the
+operator or model, supplies the preparation, expiry, and execution timestamps.
+The operation returns the ordinary gate receipt plus
+`operation=FRESH_CHECK_AND_RETIRE`; the persisted plan remains an audit and
+recovery artifact, not a separately presented safety claim. `producer plan`
+and `gate` retain the same contract for compatibility and explicit recovery.
+
 ## Retirement Lease observation
 
 The latest producer plan projects to exactly one of:

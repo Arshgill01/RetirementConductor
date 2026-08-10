@@ -92,8 +92,8 @@ def test_workbench_distills_late_consumer_without_inventing_identity() -> None:
         == "current"
     )
     assert (
-        next(stage for stage in view["stages"] if stage["key"] == "lease")["status"]
-        == "invalidated"
+        next(stage for stage in view["stages"] if stage["key"] == "retire")["status"]
+        == "blocked"
     )
     assert view["change"]["paths"] == ["models/orders_isolated_model.sql"]
     assert view["change"]["receipt"]["adapter"] == "git-dbt"

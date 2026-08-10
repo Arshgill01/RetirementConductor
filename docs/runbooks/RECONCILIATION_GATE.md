@@ -25,7 +25,7 @@ repository, artifact tree, trusted run identity, and sentinel root. It then:
 3. runs dbt parse, seed, build, and test in the sandbox;
 4. refreshes and reconciles equivalent evidence;
 5. publishes and verifies one stable DataHub summary;
-6. issues and executes one short-lived producer plan;
+6. prepares, freshly verifies, and executes one bounded producer action;
 7. refuses replay and every drift, tamper, provenance, or availability probe;
 8. introduces a second consumer and verifies that readiness reopens;
 9. verifies that the 31-consumer rich graph remains `UNSAFE`; and
@@ -82,15 +82,15 @@ consumers must remain visible.
 
 The orchestrator supplies a non-secret trusted run identity and provider. The
 writer identity, clean producer commit, marker digest, canonical manifest,
-publication readback, evidence bindings, and action path are all included in
-one short-lived plan:
+publication readback, evidence bindings, and action path are all checked in one
+trusted invocation:
 
 ```bash
 export RETIREMENT_CONDUCTOR_TRUSTED_CONTEXT=true
 export RETIREMENT_CONDUCTOR_TRUSTED_RUN_ID=local-disposable-run
 export RETIREMENT_CONDUCTOR_TRUST_PROVIDER=local-disposable-ci
 
-retirement-conductor producer plan \
+retirement-conductor producer retire \
   --campaign "$RC_CAMPAIGN" \
   --store "$RC_STORE" \
   --writer-id "$RC_WRITER" \
@@ -98,23 +98,18 @@ retirement-conductor producer plan \
   --producer-repository . \
   --producer-source-marker fixtures/producer/retire-order-status.json \
   --sentinel-root "$RC_SENTINELS" \
-  --expires-at 2026-07-30T13:30:00Z
-
-retirement-conductor gate \
-  --campaign "$RC_CAMPAIGN" \
-  --store "$RC_STORE" \
-  --writer-id "$RC_WRITER" \
-  --artifact-dir "$RC_ARTIFACTS" \
-  --producer-repository . \
-  --producer-source-marker fixtures/producer/retire-order-status.json \
-  --sentinel-root "$RC_SENTINELS"
+  --action sentinel
 ```
 
-Use an expiry appropriate to the current trusted invocation; never reuse the
-example timestamp. Plan preparation durably issues one exact plan for the
-current canonical manifest. Gate execution records intent before the sentinel
-write and consumes that manifest binding. Repeating the gate must exit non-zero
-with `GATE_PLAN_REPLAYED`.
+The command creates its five-minute plan binding internally, performs every
+fresh source check, records intent before the action, and consumes the exact
+manifest binding. Repeating the command must exit non-zero because the action
+has already changed the producer state. Operators do not supply timestamps or
+carry a separate lease in the default path.
+
+`producer plan` and `gate` remain available for explicit recovery and legacy
+handoff workflows. They are advanced compatibility commands, not the default
+safety story.
 
 ## Required refusals
 
@@ -132,7 +127,9 @@ or become unavailable:
 
 Do not repair a refusal by editing the plan or manifest. Refresh the relevant
 source, reconcile the campaign, publish and verify the new canonical manifest,
-then prepare a new plan only when policy permits it.
+then rerun the one-shot producer command only when policy permits it. Never
+retry an `OUTCOME_UNKNOWN` PostgreSQL action; use `producer resolve-postgres`
+to reread native state first.
 
 ## Final inspection
 

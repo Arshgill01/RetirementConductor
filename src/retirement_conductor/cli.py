@@ -420,11 +420,23 @@ def build_parser() -> argparse.ArgumentParser:
 
     producer = subparsers.add_parser(
         "producer",
-        help="prepare an exact short-lived producer retirement plan",
+        help="freshly verify and perform a producer retirement action",
     )
     producer_subparsers = producer.add_subparsers(
         dest="producer_command",
         required=True,
+    )
+    producer_retire = producer_subparsers.add_parser(
+        "retire",
+        help="check live state and retire in one trusted invocation",
+    )
+    _add_live_campaign_arguments(producer_retire)
+    _add_producer_path_arguments(producer_retire)
+    producer_retire.add_argument(
+        "--action",
+        choices=("sentinel", "postgres"),
+        required=True,
+        help="explicitly select the bounded producer action",
     )
     producer_plan = producer_subparsers.add_parser("plan")
     _add_live_campaign_arguments(producer_plan)
@@ -442,7 +454,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     gate = subparsers.add_parser(
         "gate",
-        help="verify and consume one exact producer retirement plan",
+        help="advanced: consume a separately prepared producer plan",
     )
     _add_live_campaign_arguments(gate)
     _add_producer_path_arguments(gate)
@@ -1132,6 +1144,30 @@ def main(argv: Sequence[str] | None = None) -> int:
             campaign_id = _selected_campaign_id(args)
             manifest = _load_manifest_artifact(args.manifest, campaign_id)
             _render_campaign_command(args, manifest)
+            return 0
+        if args.command == "producer" and args.producer_command == "retire":
+            with CampaignStore(args.store, writer_id=args.writer_id) as store:
+                manifest = store.materialize(args.campaign_id)
+                ready = manifest["decision"] == Decision.READY_TO_RETIRE
+                postgres_action = args.action == "postgres"
+                producer_workflow = _producer_gate_workflow(
+                    args,
+                    store,
+                    with_datahub=ready,
+                    with_git_dbt=ready,
+                    with_postgres=postgres_action,
+                    require_mutation_credential=postgres_action,
+                )
+                result = producer_workflow.retire(
+                    args.campaign_id,
+                    context=TrustedProducerContext.from_environment(),
+                    action_type=(
+                        POSTGRES_ACTION_TYPE
+                        if postgres_action
+                        else "write_public_safe_sentinel"
+                    ),
+                )
+            _render(result)
             return 0
         if args.command == "producer" and args.producer_command == "plan":
             with CampaignStore(args.store, writer_id=args.writer_id) as store:

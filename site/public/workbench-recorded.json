@@ -235,7 +235,7 @@
     "dh-c474f47154490fd18206"
   ],
   "primary_action": {
-    "description": "Resolve the newly observed consumer before another lease.",
+    "description": "Resolve the newly observed consumer before retirement.",
     "enabled": true,
     "kind": "navigate",
     "label": "Review new consumer",
@@ -251,7 +251,7 @@
   "stages": [
     {
       "key": "inventory",
-      "label": "Inventory",
+      "label": "Discover",
       "number": "01",
       "occurred_at": "2026-08-09T11:07:05.524623Z",
       "status": "complete"
@@ -265,38 +265,38 @@
     },
     {
       "key": "authorize",
-      "label": "Authorize",
+      "label": "Approve",
       "number": "03",
       "occurred_at": "2026-08-09T11:12:48.485272Z",
       "status": "complete"
     },
     {
       "key": "apply",
-      "label": "Apply",
+      "label": "Change",
       "number": "04",
       "occurred_at": "2026-08-09T11:13:59.737404Z",
       "status": "complete"
     },
     {
       "key": "validate",
-      "label": "Validate",
+      "label": "Test",
       "number": "05",
       "occurred_at": "2026-08-09T11:14:16.661358Z",
       "status": "complete"
     },
     {
       "key": "reconcile",
-      "label": "Reconcile",
+      "label": "Recheck",
       "number": "06",
       "occurred_at": "2026-08-09T11:22:14.476075Z",
       "status": "current"
     },
     {
-      "key": "lease",
-      "label": "Lease",
+      "key": "retire",
+      "label": "Retire",
       "number": "07",
       "occurred_at": null,
-      "status": "invalidated"
+      "status": "blocked"
     }
   ],
   "summary": {

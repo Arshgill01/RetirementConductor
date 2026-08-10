@@ -327,7 +327,7 @@ approval for the current plan and an exact operator-confirmed plan digest.
 Neither confirmation nor presentation can expand the plan's authorized target
 set.
 
-The producer-side gate:
+The default producer-side invocation:
 
 - reloads current campaign state;
 - requires a fresh reconciliation within policy;
@@ -335,17 +335,22 @@ The producer-side gate:
 - rereads DataHub, Git/dbt, Superset native identity/SQL/forced execution,
   producer source and schema, validators, authorization, and publication
   bindings immediately before action;
-- requires a short-lived producer plan that this campaign writer durably
-  issued for the exact canonical manifest;
+- internally issues a short-lived plan for the exact canonical manifest in the
+  same trusted invocation; operators do not need to carry a lease;
 - records durable intent before the producer action and records its outcome;
 - exits zero only for `READY_TO_RETIRE`;
-- consumes the manifest and plan binding so a prior green result cannot be
+- consumes the manifest and internal plan binding so a prior green result cannot be
   replayed or recomputed into another authorization;
 - rejects a known consumed plan before repeating external checks, while an
   atomic later claim closes concurrent attempts;
 - obtains a separately privileged PostgreSQL mutation client only after
   durable intent and classifies lost responses by native schema reread; and
 - does not itself hold general mutation credentials.
+
+The older two-step `producer plan` and `gate` commands expose the same internal
+artifacts for compatibility and explicit recovery. The optional watcher can
+observe and invalidate such issued plans. Neither is required by the default
+fresh check-and-retire path.
 
 ## Consistency and concurrency
 

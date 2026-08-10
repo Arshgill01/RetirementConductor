@@ -189,10 +189,12 @@ button {
   background: var(--rcw-acid);
 }
 
-.rcw-stages li[data-status="invalidated"] strong {
+.rcw-stages li[data-status="blocked"] strong {
   color: var(--rcw-coral);
-  text-decoration: line-through;
-  text-decoration-thickness: 1px;
+}
+
+.rcw-stages li[data-status="blocked"] i {
+  background: var(--rcw-coral);
 }
 
 .rcw-canvas {

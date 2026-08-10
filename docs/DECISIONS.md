@@ -1027,3 +1027,29 @@ the health and campaign identifiers agree. Authorization, apply, receipt
 acceptance, lease issuance, and producer execution remain absent.
 
 Status: accepted for the single-operator hosted-to-local pairing path.
+
+## D-056 — make fresh check-and-retire the default producer surface
+
+Date: 2026-08-10
+
+Decision: replace the operator-facing two-step lease ceremony with one
+`producer retire` invocation. The trusted runtime creates the short-lived plan,
+freshly verifies DataHub, Git/dbt, Superset, publication, approval, and producer
+schema state, records durable intent, then performs or refuses the explicitly
+selected action. Preserve the plan, gate ledger, watcher, and two-step commands
+as internal, recovery, and compatibility surfaces.
+
+Why: CP-03 and CP-05 found no material safety advantage over a competent fresh
+CI workflow carrying the same action-time checks. Keeping the lease as a
+required operator concept would add machinery without earned value. The plan
+and intent ledger still provide real replay prevention and outcome-unknown
+recovery, so deleting them would discard proven behavior.
+
+Consequences: the default command requires an explicit `sentinel` or
+`postgres` action and accepts no operator-supplied timestamps. PostgreSQL
+credentials remain separately privileged and outside Codex, MCP, and the
+Workbench. Public positioning must lead with fresh verification and the real
+producer action, not lease issuance or invalidation.
+
+Status: accepted after the CP-05 `NO_MATERIAL_ADVANTAGE` result; covered by
+RC-025 and the post-CP-05 simplification acceptance.

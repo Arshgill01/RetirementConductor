@@ -11,8 +11,9 @@ Superset path. The definitive consequential run now independently refreshes
 Superset at final gate time and executes one allowlisted PostgreSQL producer
 action behind durable one-use intent. The unchanged comparison classified the
 Retirement Lease `NO_MATERIAL_ADVANTAGE` against competent fresh action-time CI
-and recommends `SIMPLIFY`; lease machinery is retained only as optional
-coordination, recovery, and audit infrastructure at that evidence strength.
+and recommends `SIMPLIFY`. The default producer path now performs fresh checks
+and the selected action in one trusted invocation; the internal plan ledger and
+lease watcher remain optional compatibility, recovery, and audit machinery.
 
 ## Objective
 
@@ -25,7 +26,7 @@ retirement specification
   → source-native validation
   → fresh graph reconciliation
   → durable campaign summary
-  → producer-side readiness gate
+  → fresh producer action or refusal
 ```
 
 The result must remain useful when the final answer is refusal. Honest
@@ -50,7 +51,8 @@ The first supported workflow is complete only when a user can:
 10. Write a stable campaign summary to DataHub and read it back.
 11. Produce a deterministic manifest and human-readable report from the same
     state.
-12. Return a non-zero gate result unless policy yields `READY_TO_RETIRE`.
+12. Return non-zero unless a fresh trusted invocation still yields
+    `READY_TO_RETIRE`.
 13. Prove both sides live locally: an isolated all-closed disposable campaign permits
     a harmless producer sentinel, and a rich graph with unresolved consumers
     refuses it.

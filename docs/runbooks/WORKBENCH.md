@@ -15,8 +15,8 @@ campaign stage, a focused lineage fragment, and one next action.
 - refresh from canonical state after the operation completes.
 
 It cannot record human authorization, apply a Git/dbt plan, accept native
-validation, issue a Retirement Lease, or execute the producer gate. Those
-boundaries remain in the existing CLI/MCP runtime.
+validation, or execute the final producer action. Those boundaries remain in
+the existing CLI/MCP runtime and separately privileged producer invocation.
 
 ## Start a real local campaign view
 
@@ -54,8 +54,9 @@ current tab and becomes useless when the local process stops. Runtime actions
 also require the explicit action confirmation header to match the request.
 
 A successful HTTP response is still not retirement authorization; the
-canonical campaign decision and producer gate remain the authority. The
-browser has no authorization, apply, receipt-acceptance, lease, or gate route.
+canonical campaign decision and fresh producer invocation remain the
+authority. The browser has no authorization, apply, receipt-acceptance, or
+producer-action route.
 
 ## Recorded public evidence
 

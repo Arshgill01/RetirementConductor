@@ -7,7 +7,7 @@ export type Stage = {
   key: string;
   label: string;
   number: string;
-  status: "complete" | "current" | "pending" | "invalidated";
+  status: "complete" | "current" | "pending" | "blocked";
   occurred_at: string | null;
 };
 

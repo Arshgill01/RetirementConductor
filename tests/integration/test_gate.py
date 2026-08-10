@@ -342,6 +342,114 @@ def _stub_verification() -> dict[str, str]:
     }
 
 
+def test_fresh_retire_prepares_and_executes_inside_one_invocation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        workflow = _workflow(store, tmp_path)
+        calls: list[tuple[str, dict[str, Any]]] = []
+
+        def prepare(
+            campaign_id: str,
+            **kwargs: Any,
+        ) -> dict[str, Any]:
+            calls.append(("prepare", {"campaign_id": campaign_id, **kwargs}))
+            return {"plan": {"plan_digest": f"sha256:{'a' * 64}"}}
+
+        def execute(
+            campaign_id: str,
+            **kwargs: Any,
+        ) -> dict[str, Any]:
+            calls.append(("execute", {"campaign_id": campaign_id, **kwargs}))
+            return {
+                "result": "EXECUTED",
+                "decision": "READY_TO_RETIRE",
+                "manifest_digest": f"sha256:{'b' * 64}",
+                "gate_receipt": {"receipt_digest": f"sha256:{'c' * 64}"},
+            }
+
+        times = iter(("2026-01-01T12:00:00Z", "2026-01-01T12:00:01Z"))
+        monkeypatch.setattr("retirement_conductor.gate.utc_now", lambda: next(times))
+        monkeypatch.setattr(workflow, "prepare", prepare)
+        monkeypatch.setattr(workflow, "execute", execute)
+
+        result = workflow.retire(
+            CAMPAIGN_ID,
+            context=_context(),
+            action_type="write_public_safe_sentinel",
+        )
+
+        assert result["result"] == "EXECUTED"
+        assert result["operation"] == "FRESH_CHECK_AND_RETIRE"
+        assert result["producer_plan_digest"] == f"sha256:{'a' * 64}"
+        assert result["internal_plan_reused"] is False
+        assert [name for name, _details in calls] == ["prepare", "execute"]
+        assert calls[0][1]["prepared_at"] == "2026-01-01T12:00:00Z"
+        assert calls[0][1]["expires_at"] == "2026-01-01T12:05:00Z"
+        assert calls[1][1]["executed_at"] == "2026-01-01T12:00:01Z"
+
+
+def test_fresh_retire_refuses_an_invalid_internal_window(tmp_path: Path) -> None:
+    with _ready_store(tmp_path) as store:
+        workflow = _workflow(store, tmp_path)
+
+        with pytest.raises(Refusal, match="GATE_PLAN_INVALID"):
+            workflow.retire(
+                CAMPAIGN_ID,
+                context=_context(),
+                action_type="write_public_safe_sentinel",
+                plan_lifetime_seconds=901,
+            )
+
+
+def test_fresh_retire_reuses_an_unconsumed_internal_plan(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _ready_store(tmp_path) as store:
+        workflow = _workflow(store, tmp_path)
+        plan = _plan(store, tmp_path)
+
+        def unexpected_prepare(*_args: object, **_kwargs: object) -> None:
+            pytest.fail("an existing plan for the same manifest must be reused")
+
+        def execute(
+            campaign_id: str,
+            **kwargs: Any,
+        ) -> dict[str, Any]:
+            assert campaign_id == CAMPAIGN_ID
+            assert kwargs["executed_at"] == "2026-01-01T12:05:00Z"
+            return {
+                "result": "EXECUTED",
+                "decision": "READY_TO_RETIRE",
+                "manifest_digest": plan["manifest"]["digest"],
+                "gate_receipt": {"receipt_digest": f"sha256:{'c' * 64}"},
+            }
+
+        monkeypatch.setattr(workflow, "prepare", unexpected_prepare)
+        monkeypatch.setattr(workflow, "execute", execute)
+        monkeypatch.setattr(
+            "retirement_conductor.gate.utc_now",
+            lambda: "2026-01-01T12:05:00Z",
+        )
+
+        result = workflow.retire(
+            CAMPAIGN_ID,
+            context=_context(),
+            action_type="write_public_safe_sentinel",
+        )
+
+        assert result["internal_plan_reused"] is True
+        assert result["producer_plan_digest"] == plan["plan_digest"]
+        persisted = json.loads(
+            (tmp_path / "artifacts" / CAMPAIGN_ID / "producer" / "plan.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        assert persisted == plan
+
+
 def test_gate_accepts_digest_bound_stored_specification(tmp_path: Path) -> None:
     with _ready_store(tmp_path) as store:
         workflow = _workflow(store, tmp_path)

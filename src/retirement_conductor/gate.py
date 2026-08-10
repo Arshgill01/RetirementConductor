@@ -1,4 +1,4 @@
-"""Fail-closed producer plan preparation and one-time gate execution."""
+"""Fail-closed producer retirement with durable recovery evidence."""
 
 from __future__ import annotations
 
@@ -112,7 +112,7 @@ class TrustedProducerContext:
 
 
 class ProducerGateWorkflow:
-    """Bind and consume one exact harmless producer action."""
+    """Freshly verify and consume one exact producer action."""
 
     def __init__(
         self,
@@ -142,6 +142,75 @@ class ProducerGateWorkflow:
         self.mutation_client_factory = mutation_client_factory
         self.superset_settings = superset_settings
         self.superset_client = superset_client
+
+    def retire(
+        self,
+        campaign_id: str,
+        *,
+        context: TrustedProducerContext,
+        action_type: str,
+        plan_lifetime_seconds: int = 300,
+    ) -> dict[str, Any]:
+        """Prepare, freshly verify, and execute in one trusted invocation.
+
+        The persisted plan and intent ledger remain internal recovery and audit
+        artifacts. Operators do not need to issue and later present a separate
+        retirement lease for the default workflow.
+        """
+
+        if not 0 < plan_lifetime_seconds <= int(MAXIMUM_PLAN_LIFETIME.total_seconds()):
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                (
+                    "The internal producer plan lifetime must be between "
+                    "1 and 900 seconds."
+                ),
+            )
+        manifest = self.store.materialize(campaign_id)
+        plan = self.store.gate_plan_for_manifest(
+            campaign_id,
+            str(manifest["manifest_digest"]),
+        )
+        plan_reused = plan is not None
+        if plan is None:
+            prepared_at = utc_now()
+            expiration = parse_timestamp(prepared_at) + timedelta(
+                seconds=plan_lifetime_seconds
+            )
+            expires_at = expiration.isoformat().replace("+00:00", "Z")
+            prepared = self.prepare(
+                campaign_id,
+                context=context,
+                expires_at=expires_at,
+                prepared_at=prepared_at,
+                action_type=action_type,
+            )
+            plan = prepared["plan"]
+        elif (
+            not isinstance(plan.get("action"), Mapping)
+            or str(plan["action"].get("type")) != action_type
+        ):
+            raise Refusal(
+                RefusalCode.GATE_PLAN_INVALID,
+                "The current manifest is already bound to another producer action.",
+            )
+        else:
+            write_versioned_artifact(
+                self._producer_artifact_root(campaign_id),
+                "plan",
+                plan,
+            )
+        executed = self.execute(
+            campaign_id,
+            context=context,
+            executed_at=utc_now(),
+        )
+        return {
+            **executed,
+            "operation": "FRESH_CHECK_AND_RETIRE",
+            "producer_plan_digest": plan["plan_digest"],
+            "internal_plan_reused": plan_reused,
+        }
 
     def prepare(
         self,

@@ -9,13 +9,13 @@ from retirement_conductor.operator import build_campaign_view
 from retirement_conductor.vocabulary import Decision
 
 _STAGES: tuple[tuple[str, str], ...] = (
-    ("inventory", "Inventory"),
+    ("inventory", "Discover"),
     ("plan", "Plan"),
-    ("authorize", "Authorize"),
-    ("apply", "Apply"),
-    ("validate", "Validate"),
-    ("reconcile", "Reconcile"),
-    ("lease", "Lease"),
+    ("authorize", "Approve"),
+    ("apply", "Change"),
+    ("validate", "Test"),
+    ("reconcile", "Recheck"),
+    ("retire", "Retire"),
 )
 
 _STAGE_EVENTS: dict[str, frozenset[str]] = {
@@ -25,7 +25,7 @@ _STAGE_EVENTS: dict[str, frozenset[str]] = {
     "apply": frozenset({"MIGRATION_STARTED"}),
     "validate": frozenset({"RECEIPT_ACCEPTED"}),
     "reconcile": frozenset({"RECONCILIATION_RECORDED"}),
-    "lease": frozenset(),
+    "retire": frozenset(),
 }
 
 
@@ -102,7 +102,7 @@ def _current_stage(
         return "validate"
     if "RECONCILIATION_RECORDED" not in types:
         return "reconcile"
-    return "lease"
+    return "retire"
 
 
 def _stages(
@@ -121,12 +121,10 @@ def _stages(
         completed = bool(types & _STAGE_EVENTS[key])
         if key == "plan":
             completed = _has_plan(events)
-        if key == "lease":
-            completed = str(view["decision"]) == Decision.READY_TO_RETIRE
         if key == current:
             status = "current"
-        elif key == "lease" and reversed_readiness:
-            status = "invalidated"
+        elif key == "retire" and reversed_readiness:
+            status = "blocked"
         elif completed or index < current_index:
             status = "complete"
         else:
@@ -199,7 +197,7 @@ def _primary_action(
             "kind": "navigate",
             "view": "consumers",
             "label": "Review new consumer",
-            "description": "Resolve the newly observed consumer before another lease.",
+            "description": "Resolve the newly observed consumer before retirement.",
         }
     return {
         "kind": "navigate",
