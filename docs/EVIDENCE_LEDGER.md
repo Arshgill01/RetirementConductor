@@ -2344,7 +2344,10 @@ Result: lint, production build, and six rendered-route tests passed
 The browser loaded every focused view, paired the hosted-capable page to the
 real loopback campaign in read-only mode, and passed desktop and 390-pixel
 mobile inspection with no recorded page or console errors. Updated desktop and
-mobile screenshots are tracked with the site.
+mobile screenshots are tracked with the site. Sites production version 5 then
+deployed the same tested source tree. A fresh production browser read verified
+all seven simplified stages and the exact late-consumer `UNSAFE` state with no
+recorded page or console errors.
 
 `npm audit` separately reported two high entries mapping to the same
 development-only `image-size` 2.0.2 parser through vinext. No fixed compatible

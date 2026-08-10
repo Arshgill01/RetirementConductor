@@ -14,6 +14,10 @@ contract; `PLAN.md` defines proof order.
   internal short-lived binding, freshly checks every required system, records
   intent, and performs or refuses one explicitly selected action. Separate
   lease issuance is no longer the default or headline claim.
+- Hosted Workbench production version 5 now serves the simplified stage
+  language from the tested site tree. A fresh production browser read showed
+  all seven stages, the exact late-consumer `UNSAFE` decision, and no recorded
+  page or console errors.
 - Definitive consequential behavior commit: `e9d7d97`; live-local public
   evidence index:
   `sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.

@@ -47,8 +47,8 @@ form entry begins.
 - [x] Installed MCP handshake exposes the expected tools.
 - [x] Site lint, production build, and rendered-route tests pass.
 - [x] Workbench recorded and paired-mode browser behavior is rechecked.
-- [ ] Main is clean, committed, and pushed.
-- [ ] Hosted Workbench is updated from the tested source.
+- [x] Main is clean, committed, and pushed.
+- [x] Hosted Workbench is updated from the tested source.
 
 ## Intentionally after this checklist
 
