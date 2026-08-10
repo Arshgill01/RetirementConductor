@@ -1,0 +1,73 @@
+{
+  "campaign": {
+    "blocker_codes_after": [
+      "POLICY_CONSUMER_STALE"
+    ],
+    "consumer_count": 2,
+    "decision_after_superset_removal": "UNSAFE",
+    "decision_before_superset_removal": "READY_TO_RETIRE",
+    "multiple_native_migrations_recorded": 2,
+    "receipt_count_at_ready": 2
+  },
+  "campaign_id": "ret-orders-heterogeneous",
+  "datahub": {
+    "after_connector": {
+      "exit_code": 0,
+      "log_digest": "sha256:c7a4a75133f070e9cd7e53f9c4fde46451ae442731ebd866229ccbd82b76a570",
+      "pipeline_finished_successfully": true,
+      "report_interpretation": "Connector exit status is necessary but not closure evidence; the acceptance directly rereads the stored lineage aspect.",
+      "reported_records_written": 8
+    },
+    "before_connector": {
+      "exit_code": 0,
+      "log_digest": "sha256:a7df41a35172cbae5d4dae84947e847b89918fec800a05d06015e8304e9583c8",
+      "pipeline_finished_successfully": true,
+      "report_interpretation": "Connector exit status is necessary but not closure evidence; the acceptance directly rereads the stored lineage aspect.",
+      "reported_records_written": 8
+    },
+    "dbt_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_heterogeneous_model,PROD)",
+    "replacement_field_reread": [
+      "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:postgres,ws04 orders postgresql.public.orders,PROD),amount)",
+      "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:postgres,ws04 orders postgresql.public.orders,PROD),id)",
+      "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:postgres,ws04 orders postgresql.public.orders,PROD),order_status)"
+    ],
+    "seed_digest": "sha256:8ec837ff2bb898586fe88663250500bc44138cc47e38b4d7428372141e9f7fc2",
+    "superset_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:superset,WS04 Orders PostgreSQL.public.ws04_status_by_order,PROD)",
+    "target_urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04 orders postgresql.public.orders,PROD)",
+    "version": "1.6.0"
+  },
+  "evidence_digest": "sha256:e043a644780542acc46ff6d99523729a645406927225fe55270a06e85f45b03d",
+  "evidence_mode": "live local",
+  "git_dbt": {
+    "apply_digest": "sha256:375ce36565e3ea2b1a61efba5d52692ac4810deb088091066a8e2ffb04452283",
+    "plan_digest": "sha256:389f28bb8b4bd38d846a1b5b28f076b2f47d55c36e02ad7f4a8eba06800c5572",
+    "receipt_digest": "sha256:320dba265bb2286e29ffaf50b31e9fc78caeea7488c0db91aeb1195bd78f87dc",
+    "validation_digest": "sha256:a19915a58a6b81ff77845e7b411c1317f6399c8a9abf2f249a85aea02e816866",
+    "validator": "dbt parse + seed + build + test on DuckDB"
+  },
+  "limitations": [
+    "Evidence is live-local against disposable services, not production coverage.",
+    "The dbt DataHub edge is a public-safe seeded exact-field fixture.",
+    "Superset table lineage is connector-supported; its parsed field edge is treated only as corroboration for direct native SQL.",
+    "The campaign used one external authorization principal label; no independent operator claim is made."
+  ],
+  "result": "HETEROGENEOUS_CAMPAIGN_PASSED",
+  "schema_version": "1.0.0",
+  "superset": {
+    "apply_digest": "sha256:580b761971a7935379858f51f2165be056848c14212a56a2b3320aa523216789",
+    "compensation_digest": "sha256:599cf4b1e097671bba9c709f07edfffe109c5b333355cb9d6e962e761cc5de86",
+    "native_identity": {
+      "chart_id": 1,
+      "chart_uuid": "c0a07c3b-2f73-4066-8f5e-6d9eb99f8a11",
+      "database_id": 1,
+      "database_uuid": "441e07c8-4a86-4931-a2d0-5324cce29ddc",
+      "dataset_id": 1,
+      "dataset_uuid": "c40f2cbb-6683-4278-b6df-790a5ac1611d"
+    },
+    "plan_digest": "sha256:386db4fa39bca71d6966742c3f1339c062ced01dd547fb87ae9f7e1426b1a3cb",
+    "receipt_digest": "sha256:84dafeef512f0ec20ea0052458c967bf6544f81ba243849f32f42f2013ea4b85",
+    "semantic_parity": true,
+    "validation_digest": "sha256:108d417e23cc243b1bd7fe34d1f12f4f72489a20fff17dff912b88cf1e7f6200",
+    "version": "6.0.0"
+  }
+}

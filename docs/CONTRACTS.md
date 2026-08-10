@@ -211,10 +211,11 @@ apply.
 ## Native execution and external receipts
 
 The automated Git/dbt boundary implements this lifecycle without hiding
-source-specific semantics. A future native executor must satisfy the same
-safety properties before entering the supported product; DataHub-observed
-non-repository consumers remain opaque or externally receipted in the current
-scope.
+source-specific semantics. The experimental Superset boundary now satisfies
+the lifecycle through campaign reconciliation and deterministic readiness, but
+not the final gate-time native refresh. It therefore remains campaign-integrated
+experimental evidence rather than a second complete producer-gated path. Other
+DataHub-observed consumers remain opaque or externally receipted.
 
 ### `preflight`
 
@@ -446,6 +447,11 @@ replaces the evidence envelope, appends the snapshot digest, and resets
 reconciliation. It cannot import a closure disposition. Any prior source not
 reread as part of the extension must be marked `STALE` rather than carried
 forward as fresh.
+
+More than one exact native mutation may append `MIGRATION_STARTED` while the
+campaign is already `MIGRATING`. Each operation still requires its own native
+identity claim, current plan, authorization, source precondition, target set,
+and receipt. Re-entering `MIGRATING` grants no authority by itself.
 
 Consumer dispositions:
 

@@ -1,0 +1,10 @@
+{
+  "arm": "static-signoff",
+  "behavior_on_new_evidence": "NONE",
+  "decision": "READY_TO_RETIRE",
+  "evidence_envelope_digest": "sha256:89ed41a4a4f986fbd2b2f79341497134ad38962089845dd70fe2795db46a62b2",
+  "manifest_digest": "sha256:9894caaabc9af95dbcdd6bf105bc794eda96958b8c9f1d17efba1c91fd3b3f07",
+  "producer_check": "READ_PERSISTED_SIGNOFF_ONLY",
+  "schema_version": "1.0.0",
+  "signoff_digest": "sha256:12f60bc6632c07ea82d7bf73c15abc1b8b794d6b45c0c53e67b792ba34b704cc"
+}

@@ -48,9 +48,16 @@ contract; `PLAN.md` defines proof order.
   continuous reconciliation invalidated an already
   issued Retirement Lease from a fresh late DataHub field edge; and a bounded
   Superset 6.0.0 experiment proved one native mutation, validation,
-  reingestion, compensation, and owner-drift refusal. The first two are
-  integrated product capabilities. Superset remains explicitly experimental
-  and cannot affect canonical campaign readiness or the producer gate.
+  reingestion, compensation, and owner-drift refusal. Superset is now
+  campaign-integrated and can affect canonical readiness beside Git/dbt; it
+  remains experimental because gate-time native refresh is Git/dbt-specific.
+- Post-goal winning proof: the frozen static-signoff comparison retained stale
+  green under the same inspected late-consumer intervention that invalidated a
+  Retirement Lease and refused the producer action. A separate live-local
+  heterogeneous campaign accepted exact Git/dbt and Superset receipts, became
+  `READY_TO_RETIRE`, and returned to `UNSAFE` after authorized Superset
+  compensation. The independent operator packet is prepared, but RC-018
+  remains honestly `NOT_RUN` until a real practitioner completes it.
 - Definitive TE-04 acceptance: one persistent Codex task using the retained
   skill, DataHub MCP, and Retirement Conductor MCP planned one exact target,
   stopped for external authorization, applied and natively validated it, then

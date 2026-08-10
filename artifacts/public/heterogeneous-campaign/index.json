@@ -1,0 +1,15 @@
+{
+  "evidence_digest": "sha256:e043a644780542acc46ff6d99523729a645406927225fe55270a06e85f45b03d",
+  "files": [
+    "evidence.json"
+  ],
+  "index_digest": "sha256:681c987ff62e7d93b7ccb8b59e0837934dd929337702f237353b8395d189304b",
+  "limitations": [
+    "Evidence is live-local against disposable services, not production coverage.",
+    "The dbt DataHub edge is a public-safe seeded exact-field fixture.",
+    "Superset table lineage is connector-supported; its parsed field edge is treated only as corroboration for direct native SQL.",
+    "The campaign used one external authorization principal label; no independent operator claim is made."
+  ],
+  "result": "HETEROGENEOUS_CAMPAIGN_PASSED",
+  "schema_version": "1.0.0"
+}
