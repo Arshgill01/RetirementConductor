@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import json
 import secrets
+import sqlite3
 from collections.abc import Callable, Mapping, Sequence
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from threading import Lock
+from threading import Lock, RLock
 from typing import Any
 from urllib.parse import urlparse
 
@@ -37,16 +38,30 @@ class WorkbenchApplication:
         self.actions_enabled = actions_enabled
         self.action_runner = action_runner
         self._action_lock = Lock()
+        self._runtime_lock = RLock()
 
     def view(self) -> dict[str, Any]:
-        with CampaignStore(self.store, writer_id=self.writer_id) as store:
-            manifest = store.materialize(self.campaign_id)
-            events = store.events(self.campaign_id)
-        return build_workbench_view(
-            manifest,
-            events,
-            actions_enabled=self.actions_enabled,
-        )
+        try:
+            with self._runtime_lock:
+                with CampaignStore(self.store, writer_id=self.writer_id) as store:
+                    manifest = store.materialize(self.campaign_id)
+                    events = store.events(self.campaign_id)
+                return build_workbench_view(
+                    manifest,
+                    events,
+                    actions_enabled=self.actions_enabled,
+                )
+        except sqlite3.Error as error:
+            raise Refusal(
+                "RUNTIME_STORE_LOCKED",
+                "The campaign store is temporarily unavailable. Retry after the "
+                "current writer finishes.",
+            ) from error
+        except ValueError as error:
+            raise Refusal(
+                "INTEGRITY_EVENT_CHAIN_MISMATCH",
+                "The campaign manifest and event history failed verification.",
+            ) from error
 
     def run(self, operation: str) -> dict[str, Any]:
         if not self.actions_enabled:
@@ -66,15 +81,19 @@ class WorkbenchApplication:
                 "finishes.",
             )
         try:
-            result = dict(self.action_runner(operation))
+            with self._runtime_lock:
+                result = dict(self.action_runner(operation))
+                if int(result.get("command_exit_code", 0)) != 0:
+                    raise Refusal(
+                        str(result.get("refusal_code") or "RUNTIME_COMMAND_FAILED"),
+                        str(
+                            result.get("message")
+                            or "The campaign operation was refused."
+                        ),
+                    )
+                return {"result": result, "view": self.view()}
         finally:
             self._action_lock.release()
-        if int(result.get("command_exit_code", 0)) != 0:
-            raise Refusal(
-                str(result.get("refusal_code") or "RUNTIME_COMMAND_FAILED"),
-                str(result.get("message") or "The campaign operation was refused."),
-            )
-        return {"result": result, "view": self.view()}
 
 
 def _handler(

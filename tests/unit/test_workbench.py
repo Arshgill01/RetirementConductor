@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from pathlib import Path
 from threading import Event, Thread
 from typing import Any
@@ -9,6 +10,7 @@ from urllib.request import Request, urlopen
 
 import pytest
 
+import retirement_conductor.workbench_server as workbench_server
 from retirement_conductor.errors import Refusal
 from retirement_conductor.workbench import build_workbench_view
 from retirement_conductor.workbench_server import (
@@ -170,6 +172,28 @@ def test_workbench_allows_only_one_runtime_action_at_a_time(tmp_path: Path) -> N
     finally:
         release.set()
         first.join(timeout=2)
+
+
+def test_workbench_maps_sqlite_contention_to_stable_refusal(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    def locked_store(*_args: object, **_kwargs: object) -> None:
+        raise sqlite3.OperationalError("database is locked")
+
+    monkeypatch.setattr(workbench_server, "CampaignStore", locked_store)
+    application = WorkbenchApplication(
+        store=tmp_path / "campaign.sqlite",
+        writer_id="workbench-test",
+        campaign_id="campaign-one",
+        actions_enabled=False,
+        action_runner=lambda _operation: {"result": "SHOULD_NOT_RUN"},
+    )
+
+    with pytest.raises(Refusal, match="temporarily unavailable") as refusal:
+        application.view()
+
+    assert refusal.value.code == "RUNTIME_STORE_LOCKED"
 
 
 @pytest.mark.parametrize(
