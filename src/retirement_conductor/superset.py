@@ -107,6 +107,23 @@ class SupersetClient:
         value = cast(dict[str, Any], self._request("GET", f"/api/v1/chart/{chart_id}"))
         return self._result(value)
 
+    def get_database(self, database_id: int) -> dict[str, Any]:
+        value = cast(
+            dict[str, Any],
+            self._request("GET", f"/api/v1/database/{database_id}"),
+        )
+        return self._result(value)
+
+    def server_version(self) -> str:
+        value = cast(dict[str, Any], self._request("GET", "/static/version_info.json"))
+        version = value.get("version")
+        if not isinstance(version, str) or not version.strip():
+            raise Refusal(
+                RefusalCode.RUNTIME_STATE_DRIFT,
+                "Superset returned an unexpected server-version response.",
+            )
+        return version.strip()
+
     def execute_chart(self, chart_id: int) -> dict[str, Any]:
         value = cast(
             dict[str, Any],

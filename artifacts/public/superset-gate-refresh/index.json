@@ -1,0 +1,20 @@
+{
+  "connector_version": "1.6.0",
+  "evidence_digest": "sha256:c2a6420f067db45ba5598c8b5deacd610b29be4e0c0e354d484e883eeb0c8e77",
+  "files": [
+    "evidence.json",
+    "README.md"
+  ],
+  "index_digest": "sha256:09f68d7603412f0afe6bfb3404b75e84ae1b1080aca4b17d2558483a4fbcd171",
+  "limitations": [
+    "Evidence is live-local against a disposable service, not production.",
+    "CP-02 returns evidence only; CP-05 owns deterministic gate integration.",
+    "DataHub's separate fresh graph inventory remains mandatory.",
+    "One unexpected-shape case uses a response-boundary fault injector."
+  ],
+  "refusal_case_count": 21,
+  "result": "KEEP",
+  "schema_version": "1.0.0",
+  "superset_version": "6.0.0",
+  "verification_mutation_call_count": 0
+}

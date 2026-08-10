@@ -1,0 +1,732 @@
+{
+  "accepted": {
+    "binding_digest": "sha256:e47351bfc2e5314110005c489d03b6a7e311ba5c3ef59b9ecad69f002f82404e",
+    "plan_digest": "sha256:9f9de7894f038de8c2fa9b5ee470437b92689a9a05e407ad1923cd136c6b1640",
+    "post_apply_fingerprint": "sha256:854827d92fe5b67b193a615c8ee07f457ae7902d33354ccd364e867be56e7fec",
+    "receipt_digest": "sha256:e2c78d625ef0203e0ed237d5c723733efa7a76bb6a0ad65ce84c9bb3c0faeb98",
+    "validation_digest": "sha256:f930af2e415723e8efeb3a71e9252bbd951dcebca90086d2404ffd530cbc7396"
+  },
+  "compensation": {
+    "digest": "sha256:dfed55b8ee641cd1e8edd2388848c9b2818606618ac69376d856597b78099aec",
+    "result": "RESTORED"
+  },
+  "datahub_relationship": {
+    "binding": "current DataHub membership and exact Superset identity join the accepted receipt to this native observation",
+    "graph_authority": "DataHub membership and cross-system identity",
+    "limitation": "The official connector is table-lineage capable; any exact field edge remains corroborative and cannot replace native SQL.",
+    "native_authority": "Superset SQL and forced execution",
+    "native_identity_digest": "sha256:10445425980c32f9e318ed6d9b2134a57680698546b393930e2c07eef7d6eb35"
+  },
+  "evidence_digest": "sha256:c2a6420f067db45ba5598c8b5deacd610b29be4e0c0e354d484e883eeb0c8e77",
+  "evidence_mode": "live local",
+  "limitations": [
+    "Evidence is live-local against a disposable service, not production.",
+    "CP-02 returns evidence only; CP-05 owns deterministic gate integration.",
+    "DataHub's separate fresh graph inventory remains mandatory.",
+    "One unexpected-shape case uses a response-boundary fault injector."
+  ],
+  "refusal_case_count": 21,
+  "refusal_matrix": [
+    {
+      "case": "dataset_sql_changed",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "legacy_field_reintroduced",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "replacement_mapping_changed",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "chart_moved_to_another_dataset",
+      "category": "identity_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "IDENTITY_NATIVE_OBJECT_RECREATED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "chart_context_and_semantic_output_changed",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "dataset_uuid_mismatch",
+      "category": "identity_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "IDENTITY_NATIVE_OBJECT_RECREATED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "chart_uuid_mismatch",
+      "category": "identity_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "IDENTITY_NATIVE_OBJECT_RECREATED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "database_uuid_mismatch",
+      "category": "identity_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "IDENTITY_NATIVE_OBJECT_RECREATED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "intervening_owner_edit",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "chart_deleted",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_NOT_FOUND",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "dataset_deleted",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_NOT_FOUND",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "database_deleted",
+      "category": "source_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_NOT_FOUND",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "authentication_failure",
+      "category": "source_unavailable",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_DATAHUB_PERMISSION_DENIED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "read_permission_removed",
+      "category": "source_unavailable",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_DATAHUB_PERMISSION_DENIED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "superset_outage",
+      "category": "source_unavailable",
+      "evidence_mode": "live native drift",
+      "refusal_code": "SOURCE_NOT_FOUND",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "superset_timeout",
+      "category": "source_unavailable",
+      "evidence_mode": "live native drift",
+      "refusal_code": "RECONCILIATION_REFRESH_TIMEOUT",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "unexpected_response_shape",
+      "category": "source_unavailable",
+      "evidence_mode": "live-local response fault injection",
+      "refusal_code": "RUNTIME_STATE_DRIFT",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "accepted_receipt_tampered",
+      "category": "evidence_mismatch",
+      "evidence_mode": "artifact integrity fault injection",
+      "refusal_code": "INTEGRITY_DIGEST_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "semantic_artifact_tampered",
+      "category": "evidence_mismatch",
+      "evidence_mode": "artifact integrity fault injection",
+      "refusal_code": "INTEGRITY_DIGEST_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "server_version_drift",
+      "category": "source_mismatch",
+      "evidence_mode": "live-local response fault injection",
+      "refusal_code": "SOURCE_RECEIPT_VERSION_MISMATCH",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    },
+    {
+      "case": "stale_observation",
+      "category": "evidence_mismatch",
+      "evidence_mode": "live native drift",
+      "refusal_code": "EVIDENCE_RECEIPT_EXPIRED",
+      "restored_before_next_case": true,
+      "result": "REFUSED",
+      "verification_mutation_calls": 0
+    }
+  ],
+  "result": "KEEP",
+  "schema_version": "1.0.0",
+  "sensitive_values_recorded": false,
+  "superset": {
+    "adapter_version": "0.1.0",
+    "endpoint_scope": "loopback disposable Superset",
+    "image": "apache/superset:6.0.0-dev@sha256:100af35c5a3c96384d4092ae4bd7fffb8c23d361e9a5a8b94312c50426aa1144",
+    "read_only_mutation_probe": {
+      "code": "SOURCE_DATAHUB_PERMISSION_DENIED",
+      "http_status": 403
+    },
+    "read_only_principal": "local-read-only-verifier",
+    "version": "6.0.0"
+  },
+  "unchanged_control": {
+    "all_binding_matches": true,
+    "direct_native_reread": true,
+    "final_observation_digest": "sha256:ea410947597b17a69c18bd6ed257074df29b3d4ffb0ef2614f210c07f79ec04b",
+    "forced_saved_chart_execution": true,
+    "native_state_after_digest": "sha256:cff67cd36ac3231b740c9f5cde8ec5427b107c8b43b7078cd33c5b53d18141c0",
+    "native_state_after_matrix_digest": "sha256:cff67cd36ac3231b740c9f5cde8ec5427b107c8b43b7078cd33c5b53d18141c0",
+    "native_state_before_digest": "sha256:cff67cd36ac3231b740c9f5cde8ec5427b107c8b43b7078cd33c5b53d18141c0",
+    "observation_digest": "sha256:698c8adbd230c946665edb729f383b14420d2bb2e1524466ca7a1b30e3ce3e8f",
+    "repeated_observation_digest": "sha256:2b3ac16ac7250f52fff824dbeb4b3426d9be310232f565157017355e80967f7d",
+    "verification_get_calls": [
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/database/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/static/version_info.json"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1/data/"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/security/csrf_token/"
+      },
+      {
+        "method": "GET",
+        "operation": "/health"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/dataset/1"
+      },
+      {
+        "method": "GET",
+        "operation": "/api/v1/chart/1"
+      }
+    ],
+    "verification_mutation_call_count": 0
+  }
+}

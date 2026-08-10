@@ -127,6 +127,32 @@ def seed(settings: SupersetSettings, source_database_uri: str, output: Path) -> 
         sort_keys=True,
         separators=(",", ":"),
     )
+    query_context = json.dumps(
+        {
+            "datasource": {"id": dataset_id, "type": "table"},
+            "force": True,
+            "queries": [
+                {
+                    "annotation_layers": [],
+                    "applied_time_extras": {},
+                    "columns": ["id", "status", "amount"],
+                    "extras": {"having": "", "where": ""},
+                    "filters": [],
+                    "metrics": [],
+                    "orderby": [["id", True]],
+                    "order_desc": False,
+                    "row_limit": 1000,
+                    "row_offset": 0,
+                    "series_limit": 0,
+                    "time_range": "No filter",
+                }
+            ],
+            "result_format": "json",
+            "result_type": "full",
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
     chart_id = exact_or_create(
         client,
         endpoint="/api/v1/chart/",
@@ -140,6 +166,8 @@ def seed(settings: SupersetSettings, source_database_uri: str, output: Path) -> 
             "owners": [1],
             "dashboards": [dashboard_id],
             "params": params,
+            "query_context": query_context,
+            "query_context_generation": False,
         },
     )
 
