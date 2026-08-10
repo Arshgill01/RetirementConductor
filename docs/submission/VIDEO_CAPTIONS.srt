@@ -6,15 +6,15 @@ until a model, dashboard, or Spark job still reads it.
 
 2
 00:00:11,000 --> 00:00:22,000
-Repository search found one consumer in our live scope test.
+In our live scope test, repository search found one consumer.
 DataHub field lineage found thirty-one, across seven complete pages.
 The hard part is knowing what must move before DROP COLUMN.
 
 3
 00:00:22,000 --> 00:00:33,000
 Retirement Conductor is the workflow around that deletion.
-It finds consumers, changes only what it is allowed to change,
-runs their real tests, checks the graph again, and deletes—or stops.
+It finds consumers, changes only what is allowed, runs their real tests,
+checks the graph again, and then deletes the old column—or stops.
 
 4
 00:00:33,000 --> 00:00:53,000
@@ -25,12 +25,12 @@ it finds the exact dbt model and proposes a one-file change.
 5
 00:00:53,000 --> 00:01:04,000
 Before changing code, it stops.
-I review the file, validators, and digest,
-then authorize that exact plan outside the agent.
+I review the file, validators, and digest, then authorize that exact plan
+outside the agent. The agent cannot approve itself.
 
 6
 00:01:04,000 --> 00:01:22,000
-The pull request changes one line.
+The same task applies the authorized change. The pull request changes one line.
 dbt parse, build, test, and semantic checks pass.
 The result is rechecked, published to DataHub, and read back.
 
@@ -38,27 +38,25 @@ The result is rechecked, published to DataHub, and read back.
 00:01:22,000 --> 00:01:47,000
 Migrating the consumer is not the finish line.
 In a separate consequential run of the same protocol,
-a privileged command checks everything again and executes one real
-PostgreSQL DROP COLUMN.
-The old field is gone, the replacement survives,
-Spark succeeds, and replay is refused.
+a privileged command checks everything and executes a real PostgreSQL DROP COLUMN.
+The old field is gone, Spark succeeds, and replay is refused.
 
 8
-00:01:47,000 --> 00:02:08,000
+00:01:47,000 --> 00:02:17,000
 After approval, an ad hoc Spark job appears in DataHub,
 still reading legacy_status. The execution-time answer flips to unsafe.
 The final command commits nothing, and the old column stays.
+That is not dashboard theatre.
 
 9
-00:02:08,000 --> 00:02:32,000
-That is not dashboard theatre. In the static-signoff control,
-nobody rechecks the graph. The column is dropped,
-and Spark fails with SQLSTATE 42703: column does not exist.
-Retirement Conductor prevents that exact failure.
+00:02:17,000 --> 00:02:32,000
+In the matched static-signoff control, nobody rechecks the graph.
+The column is dropped, and Spark fails with SQL state 42703:
+column does not exist. Retirement Conductor prevents that exact failure.
 
 10
 00:02:32,000 --> 00:02:57,000
-The Workbench is the readable view of that consequential campaign:
+The Workbench makes the consequential campaign readable:
 consumers, exact change, native tests, freshness, and why the decision changed.
 DataHub is not decoration, and the model does not decide safety.
 Retirement Conductor delivers a verified database change—or a safe refusal.
