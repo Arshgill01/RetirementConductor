@@ -1,5 +1,10 @@
 # Consequential foundation integration audit
 
+Handoff status: integrated and exercised by CP-05 on commit `e9d7d97`. CP-01
+is behind durable gate intent, CP-02 contributes independent final gate-time
+evidence, CP-04 is independent consequence evidence, and the CP-03 frozen
+corpus/oracle/thresholds/classifications remain unchanged.
+
 **Planning base:** `b8a839acd0b411d905fa0ed142838cd76ab618f4`
 
 **Integrated behavior head:** `155a1e0`

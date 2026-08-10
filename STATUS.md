@@ -9,6 +9,12 @@ contract; `PLAN.md` defines proof order.
 - Execution state: complete for the credential-independent engineering goal in
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
+- Definitive consequential behavior commit: `e9d7d97`; live-local public
+  evidence index:
+  `sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
+  The unchanged CP-03 rule returned `NO_MATERIAL_ADVANTAGE` and `SIMPLIFY`;
+  competent fresh CI matched the bounded late-consumer safety result with
+  equivalent action-time evidence and less persistent machinery.
 - Current definitive behavior commit: `2635240`; initial public TE-04 evidence
   commit: `6eeea35`; the integration audit corrected the package-versus-adapter
   version label without changing run outcomes or bindings
@@ -21,12 +27,15 @@ contract; `PLAN.md` defines proof order.
 - Next acceptance target: finish the public video and Devpost entry. Optional
   independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
-- Last integrated repository validation: 261 tests, Ruff, formatting, strict
-  mypy over 97 source files, 204-file repository and 175-link validation,
-  426-file secret review, 90-file public-artifact review, reproducible source
-  and wheel builds,
-  and `git diff --check` passed. Four clean Python installs, upgrade/rollback,
-  removal, and the installed-wheel live-local reference passed. A separate
+- Last integrated repository validation: 323 tests passed and one opt-in live
+  PostgreSQL test was skipped, with Ruff, formatting, strict mypy over 106
+  source files, 204-file/104-Markdown/185-link repository validation, 502-file
+  secret review, 120-file public-artifact review, reproducible source and
+  wheel builds, and `git diff --check` passed. Four clean Python installs,
+  upgrade/rollback, removal, and the installed-wheel live-local reference
+  passed. The skipped PostgreSQL case was exercised by the definitive
+  installed-wheel run rather than silently claimed from the default suite. A
+  separate
   clean Python 3.13 install of the `agent` extra completed a real MCP handshake
   and exposed exactly 16 tools from the packaged wheel.
 - Agent-path validation: behavior commit `0d70db9` produced an ephemeral Codex
@@ -53,15 +62,28 @@ contract; `PLAN.md` defines proof order.
   issued Retirement Lease from a fresh late DataHub field edge; and a bounded
   Superset 6.0.0 experiment proved one native mutation, validation,
   reingestion, compensation, and owner-drift refusal. Superset is now
-  campaign-integrated and can affect canonical readiness beside Git/dbt; it
-  remains experimental because gate-time native refresh is Git/dbt-specific.
+  campaign-integrated, affects canonical readiness beside Git/dbt, and is
+  independently reread by the final gate through a read/execute-only
+  principal; production Superset support remains unclaimed.
 - Post-goal winning proof: the frozen static-signoff comparison retained stale
   green under the same inspected late-consumer intervention that invalidated a
-  Retirement Lease and refused the producer action. A separate live-local
+  Retirement Lease and refused the producer action. The later fair comparison
+  showed that competent fresh CI also refused safely, so the lease is no longer
+  claimed as a material safety advantage. A separate live-local
   heterogeneous campaign accepted exact Git/dbt and Superset receipts, became
   `READY_TO_RETIRE`, and returned to `UNSAFE` after authorized Superset
   compensation. The independent operator packet is prepared, but RC-018
   remains honestly `NOT_RUN` until a real practitioner completes it.
+- Definitive consequential execution: an installed-wheel producer command
+  performed exactly one PostgreSQL drop behind durable intent, native schema
+  reread, and one-use replay refusal. A late DataHub-ingested Spark consumer
+  produced zero mutations in both Retirement Conductor and fair fresh CI. The
+  static arm committed once and the legacy Spark workload failed with SQLSTATE
+  `42703`; the replacement workload remained healthy. Superset drift,
+  producer-schema drift, DataHub outage, tampering, expiry, permission loss,
+  crash-before-client, and lost-response recovery all failed closed. All
+  services and mutations were disposable loopback-local; RC-018 remains
+  `NOT_RUN`.
 - Definitive TE-04 acceptance: one persistent Codex task using the retained
   skill, DataHub MCP, and Retirement Conductor MCP planned one exact target,
   stopped for external authorization, applied and natively validated it, then

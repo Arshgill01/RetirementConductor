@@ -1,0 +1,98 @@
+{
+  "action_outcome_digest": "sha256:3871b1d3d11e9d55bd1bfe4b7d7644aad4d0aa3edb9e758648eb4669ce25cb33",
+  "action_plan_digest": "sha256:348936abd2b53f27515f04ad5b44e358e35d4f62d43f8e418865f1b26ac13d85",
+  "arm": "point-in-time-static",
+  "arm_digest": "sha256:1d2abf1f0fda78d73e98c36c52fa9a41f3b0c9250acfec45d2cf25b3f793af2b",
+  "bootstrap": {
+    "connector": {
+      "exit_code": 0,
+      "log_digest": "sha256:661e47b053693421f65f1d7759dee2af1b5753c5a7d409d5a4d566a05c02c12e",
+      "pipeline_finished_successfully": true,
+      "reported_records_written": 8
+    },
+    "graph_settle": {
+      "attempts": 2,
+      "duration_seconds": 12.362,
+      "expected_consumer_ids": [
+        "dh-a2cd0de5e5bbeaafe292",
+        "dh-c843ad9615fee35f0e06",
+        "dh-d3d9c538652fd85af139",
+        "dh-ebdcf5ec0c7ab6e87b49"
+      ],
+      "observed_consumer_ids": [
+        "dh-a2cd0de5e5bbeaafe292",
+        "dh-c843ad9615fee35f0e06",
+        "dh-d3d9c538652fd85af139",
+        "dh-ebdcf5ec0c7ab6e87b49"
+      ]
+    },
+    "refresh": {
+      "captured_at": "2026-08-10T14:11:46.980621Z",
+      "dbt_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_definitive_model,PROD)",
+      "direct_reread_required": true,
+      "gms_url": "http://127.0.0.1:18080",
+      "ingestion_run_id": "cp05-86cfdbb6b655d60f",
+      "late_spark_consumer_urn": null,
+      "late_spark_ingested": false,
+      "mode": "live-local",
+      "refresh_digest": "sha256:14982107fcf6017cd11dbf9a5a8b26f846d5c12bb0dc62754fded24e62ad1386",
+      "schema_version": "1.0.0",
+      "source_updated_at": "2026-08-10T14:11:46.980621Z",
+      "target_urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04-feasibility.ws04 orders postgresql.retirement_lab.orders,PROD)",
+      "target_urns": [
+        "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04-feasibility.ws04 orders postgresql.retirement_lab.orders,PROD)"
+      ]
+    }
+  },
+  "destructive_statements_committed": 1,
+  "initial_signoff_green": true,
+  "late_consumer_direct_reread_digest": "sha256:f2102f794e366b6dc81c3bba3c3cca9cc0e2e3a28c4f6920ef980843765394ff",
+  "late_refresh_digest": "sha256:6489dba1ee183fba81e67f4b217506054cf2bbb7dd301b91075a20737caf1c1d",
+  "legacy_workload_after": {
+    "duration_ms": 14579,
+    "exit_code": 42,
+    "missing_field": "legacy_status",
+    "native_error_class": "org.postgresql.util.PSQLException",
+    "outcome": "LEGACY_COLUMN_MISSING",
+    "sqlstate": "42703"
+  },
+  "legacy_workload_before": {
+    "duration_ms": 24491,
+    "exit_code": 0,
+    "outcome": "SUCCEEDED",
+    "row_count": 128,
+    "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+    "spark_version": "3.5.3"
+  },
+  "replacement_workload_after": {
+    "duration_ms": 22098,
+    "exit_code": 0,
+    "outcome": "SUCCEEDED",
+    "row_count": 128,
+    "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+    "spark_version": "3.5.3"
+  },
+  "replacement_workload_before": {
+    "duration_ms": 22038,
+    "exit_code": 0,
+    "outcome": "SUCCEEDED",
+    "row_count": 128,
+    "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+    "spark_version": "3.5.3"
+  },
+  "result": "UNSAFE_COMMIT_WITH_NATIVE_BREAKAGE",
+  "schema_after": {
+    "legacy_column_present": false,
+    "observation_digest": "sha256:70121bcfdb9ced1227a9f9ab964f7b7974dcbed9c413f9db487634ed1226aae7",
+    "replacement_column_present": true,
+    "schema_fingerprint": "sha256:3f1eeed32b0502414c65f1c2e516e60b202152518efeee91b7473cdf1e3a90c2",
+    "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+  },
+  "schema_before": {
+    "legacy_column_present": true,
+    "observation_digest": "sha256:05f97a2fcba9c078a11f982a024bff6c0dc612346d26514cfc183ff467110aa2",
+    "replacement_column_present": true,
+    "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+    "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+  }
+}

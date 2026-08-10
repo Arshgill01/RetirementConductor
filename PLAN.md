@@ -7,9 +7,12 @@ The continuous execution and completion rules are defined in
 
 Post-goal extensions now include a frozen static-signoff versus Retirement
 Lease comparison, an independent-operator packet, and a campaign-integrated
-experimental Superset path. The Superset result affects canonical readiness
-but does not broaden the complete producer-gated claim until gate-time native
-refresh is implemented and accepted.
+Superset path. The definitive consequential run now independently refreshes
+Superset at final gate time and executes one allowlisted PostgreSQL producer
+action behind durable one-use intent. The unchanged comparison classified the
+Retirement Lease `NO_MATERIAL_ADVANTAGE` against competent fresh action-time CI
+and recommends `SIMPLIFY`; lease machinery is retained only as optional
+coordination, recovery, and audit infrastructure at that evidence strength.
 
 ## Objective
 

@@ -10,6 +10,26 @@ explains the complete product, evidence, safety boundary, official and
 synthetic data benchmark, limitations, and copyable end-to-end verification
 commands. Its standalone source is tracked under [`site/`](site/).
 
+## Definitive consequential result
+
+The frozen native comparison is complete. Retirement Conductor dropped one
+allowlisted PostgreSQL column exactly once after fresh DataHub, Git/dbt,
+Superset, publication, approval, and producer-schema checks; replay refused;
+and the replacement Spark workload remained healthy. A late Spark consumer
+invalidated the preserved authority and left the column present. The identical
+point-in-time static action committed and caused native SQLSTATE `42703`, while
+a competent fresh-CI arm found the late consumer and refused with the same
+action-time evidence as Retirement Conductor.
+
+The unchanged CP-03 decision rule classifies the result
+`NO_MATERIAL_ADVANTAGE` and recommends `SIMPLIFY`. The Retirement Lease remains
+available when durable one-use authority, recovery, or causal audit is useful,
+but it is not claimed as a material safety advantage over competent fresh
+action-time CI for this bounded workflow. Inspect the
+[self-verifying public bundle](artifacts/public/definitive-consequential-run/index.json)
+or follow the
+[definitive consequential runbook](docs/runbooks/DEFINITIVE_CONSEQUENTIAL.md).
+
 ## The agent demo
 
 Retirement Conductor now exposes the same campaign engine as a project-scoped
@@ -65,8 +85,10 @@ authority into a model:
   execution with semantic parity, fresh DataHub reingestion, a canonical
   receipt, and safe compensation. A two-consumer live campaign became
   `READY_TO_RETIRE`, then `UNSAFE` when Superset was restored. The extension is
-  campaign-integrated but remains experimental because gate-time native refresh
-  is still Git/dbt-specific.
+  campaign-integrated and independently refreshed by the final gate through a
+  least-privilege read/execute principal. It remains live-local experimental
+  scope because production credentials, dialects, and independent operation
+  are unproved.
 
 See the historical [semantic PR runbook](docs/runbooks/SEMANTIC_PR.md),
 [continuous reconciliation runbook](docs/runbooks/CONTINUOUS_RECONCILIATION.md),
@@ -230,12 +252,14 @@ The first production-shaped vertical is:
 - a durable local campaign record plus a DataHub summary;
 - a command that exits non-zero when producer retirement is not permitted.
 
-Git/dbt remains the sole fully producer-gated native mutation boundary. A
-loopback-only Superset extension can now plan, authorize, apply, validate,
-reconcile, compensate, and affect canonical readiness through
-`adapter superset`; it is experimental until the final gate independently
-refreshes its native and DataHub bindings. Other asset types remain blockers or
-externally receipted consumers.
+Git/dbt remains the sole supported production-shaped automated consumer
+mutation boundary. A loopback-only Superset extension can plan, authorize,
+apply, validate, reconcile, compensate, affect canonical readiness, and be
+independently reread by the final gate; it remains experimental outside the
+recorded local boundary. The producer gate also has a separately privileged,
+one-target PostgreSQL reference action with durable intent and native
+outcome-unknown resolution. Other asset types remain blockers or externally
+receipted consumers.
 
 ## Product rules
 

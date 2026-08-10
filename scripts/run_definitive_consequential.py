@@ -795,13 +795,9 @@ def reconcile_campaign(
         try:
             snapshot = boundary.inventory(
                 specification,
-                artifact_root=(
-                    artifact_root / CAMPAIGN_ID / "reconciliation/datahub"
-                ),
+                artifact_root=(artifact_root / CAMPAIGN_ID / "reconciliation/datahub"),
             )
-            current_ids = sorted(
-                str(item["id"]) for item in snapshot["consumers"]
-            )
+            current_ids = sorted(str(item["id"]) for item in snapshot["consumers"])
         except (OSError, Refusal):
             snapshot = None
             current_ids = []
@@ -1307,8 +1303,7 @@ def bootstrap_arm(
                     ),
                 )
                 observed_consumers = {
-                    str(consumer["id"])
-                    for consumer in snapshot["consumers"]
+                    str(consumer["id"]) for consumer in snapshot["consumers"]
                 }
             except (OSError, Refusal, RunFailure):
                 observed_consumers = set()
@@ -1316,9 +1311,7 @@ def bootstrap_arm(
                 break
             time.sleep(1)
         else:
-            raise RunFailure(
-                "the exact four-consumer DataHub baseline did not settle"
-            )
+            raise RunFailure("the exact four-consumer DataHub baseline did not settle")
         graph_settle = {
             "attempts": graph_attempts,
             "duration_seconds": round(time.monotonic() - graph_started, 3),
@@ -1629,8 +1622,7 @@ def run_fresh_ci_late(environment: Mapping[str, str]) -> dict[str, Any]:
                     ),
                 )
                 ci_ids = sorted(
-                    str(consumer["id"])
-                    for consumer in ci_snapshot["consumers"]
+                    str(consumer["id"]) for consumer in ci_snapshot["consumers"]
                 )
             except (OSError, Refusal):
                 ci_snapshot = None

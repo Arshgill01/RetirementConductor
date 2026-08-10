@@ -1,8 +1,9 @@
 # PostgreSQL producer action runbook
 
 This runbook exercises CP-01's exact producer action against a disposable,
-loopback-only PostgreSQL service. It is not connected to the shared producer
-gate on this branch.
+loopback-only PostgreSQL service. The definitive consequential path also
+invokes it through the shared producer gate after durable one-use intent; see
+[`DEFINITIVE_CONSEQUENTIAL.md`](DEFINITIVE_CONSEQUENTIAL.md).
 
 ## Safety boundary
 

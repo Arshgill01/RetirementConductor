@@ -1,0 +1,55 @@
+{
+  "captured_at": "2026-08-10T14:38:42.340099Z",
+  "credential_values_recorded": false,
+  "evidence_mode": "live-local",
+  "foundation_commits": {
+    "cp01": [
+      "d1720b1",
+      "836431a"
+    ],
+    "cp02": [
+      "847a4b8"
+    ],
+    "cp03": [
+      "94dceed"
+    ],
+    "cp04": [
+      "155a1e0"
+    ]
+  },
+  "host_paths_recorded": false,
+  "images": {
+    "datahub_gms": "acryldata/datahub-gms:v1.6.0",
+    "postgres": "postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b",
+    "spark": "apache/spark:3.5.3-scala2.12-java17-python3-ubuntu@sha256:a1f2c9dcecb36c0f5c342be340b368883cfaa1d7ab23e6e222c8a93157b73a74",
+    "superset": "apache/superset:6.0.0-dev@sha256:100af35c5a3c96384d4092ae4bd7fffb8c23d361e9a5a8b94312c50426aa1144"
+  },
+  "implementation_commit": "e9d7d97af23668af3d60e75153b5616d840dd8c7",
+  "independent_operation": "NOT_RUN",
+  "installed_cli": {
+    "package_version": "0.2.0",
+    "producer_cli_from_installed_wheel": true,
+    "wheel_digest": "sha256:56c5f202376221b75b4f74f4462983e415f5c5a61b55e1781984c19893e6bec7"
+  },
+  "mcp_identity": {
+    "listener": "127.0.0.1:8000",
+    "package_version": "0.6.0",
+    "source_clean": true,
+    "source_commit": "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9"
+  },
+  "planning_base_commit": "7a7908f61ba217048b1292eb8c36a70a9e61276b",
+  "row_values_recorded": false,
+  "run_metadata_digest": "sha256:15d5642b1b7e20b0d718314a15b580b557b8b41557f3fe219e903647e6b1923b",
+  "schema_version": "1.0.0",
+  "source_tree_diff_digest": "sha256:12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+  "versions": {
+    "datahub": "1.6.0",
+    "datahub_mcp": "0.6.0",
+    "datahub_mcp_commit": "9a6946daa7d30eb481c82dd8ee5e15ae6526a3c9",
+    "jdbc": "42.7.4",
+    "postgres": "16",
+    "postgres_client": "psql (PostgreSQL) 18.4 (Ubuntu 18.4-0ubuntu0.26.04.1)",
+    "spark": "3.5.3",
+    "superset": "6.0.0"
+  }
+}

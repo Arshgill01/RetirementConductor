@@ -128,7 +128,33 @@ consumer platform.
 There is no required second native mutation path. Instead, a reproducible
 DataHub evidence-quality benchmark proves that the conductor handles rich,
 late, stale, partial, ambiguous, table-only, and quality-failing context
-without creating false readiness. Git/dbt remains the sole automated executor.
+without creating false readiness. Git/dbt remains the sole supported
+production-shaped automated consumer executor.
+
+The consequential reference path adds a separately privileged, loopback-only
+PostgreSQL producer action after the consumer campaign closes. It records
+one-use intent before obtaining the mutation client, executes one exact
+allowlisted `DROP COLUMN` without `CASCADE`, rereads the native schema, and
+retains `OUTCOME_UNKNOWN` authority until an explicit native reread resolves
+the result. This proves the producer boundary without claiming production
+warehouse support.
+
+## Definitive comparison and simplification
+
+The frozen CP-03 comparison and the live native action agree on
+`NO_MATERIAL_ADVANTAGE` / `SIMPLIFY`. Retirement Conductor and competent fresh
+CI both refused the identical late-consumer intervention with equivalent
+action-time DataHub, Git/dbt, Superset, approval, producer-schema,
+publication, and outcome evidence. The point-in-time static arm committed and
+caused the independent Spark legacy workload to fail with SQLSTATE `42703`.
+
+The product claim is therefore simpler: fresh, failure-closed verification is
+the safety requirement. A Retirement Lease is optional when an organization
+needs durable one-use coordination, crash/lost-response recovery, or causal
+audit across handoffs; it is not a material safety advantage over competent
+fresh CI for the bounded case. Organizations that can run the same evidence
+checks immediately before a one-shot schema action should prefer that simpler
+workflow.
 
 ## Agent and advisory surfaces
 
@@ -157,9 +183,11 @@ experiment. It now uses canonical campaign state, digest-bound approval,
 consumer receipts, reconciliation, deterministic readiness, compensation, and
 an operator CLI. One live campaign accepted both Git/dbt and Superset receipts,
 became `READY_TO_RETIRE`, and returned to `UNSAFE` when the Superset change was
-restored. It remains experimental: the final producer gate does not yet perform
-an independent gate-time Superset native refresh, and no independent operator
-need has been observed.
+restored. The final producer gate now authenticates a distinct read/execute-only
+principal, rereads exact database/dataset/chart identities and SQL, forces
+saved-chart execution, and rejects native drift before producer mutation. It
+remains live-local experimental scope: additional dialects, production
+credentials, and independent operator need have not been observed.
 
 ## Build, borrow, and delegate
 

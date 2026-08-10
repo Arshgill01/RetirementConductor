@@ -2095,5 +2095,96 @@ remaining independent-human boundary is executable without being fabricated.
 
 What this does not prove: production coverage, broad customer demand,
 independent operability, or a second complete producer-gated executor. The
-final gate still independently refreshes only DataHub and Git/dbt, so Superset
-remains campaign-integrated experimental scope.
+final gate at that evidence checkpoint independently refreshed only DataHub and
+Git/dbt. The later definitive consequential evidence below closes that
+gate-time Superset blocker while retaining experimental production scope.
+
+## Definitive consequential native comparison
+
+Implementation commit: `e9d7d97af23668af3d60e75153b5616d840dd8c7`.
+Planning base: `7a7908f61ba217048b1292eb8c36a70a9e61276b`.
+Evidence mode: author-operated live-local disposable PostgreSQL 16, Superset
+6.0.0, Spark 3.5.3, DataHub Core 1.6.0, pinned DataHub MCP 0.6.0 at
+`9a6946d`, native Git/dbt, and an installed Retirement Conductor 0.2.0 wheel.
+The public index is
+[`artifacts/public/definitive-consequential-run/index.json`](../artifacts/public/definitive-consequential-run/index.json),
+digest
+`sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
+
+Frozen inputs remained unchanged: 13 CP-03 scenarios at frozen digest
+`sha256:1f8a357a3ba57ecaaa3ee01049633122337df3b9d50e61a1357907d6c066b577`
+and oracle
+`sha256:c6bffbbb3cac81d38a0a51fbb86b087a240d057477a0062a29790a84ad1dcba8`.
+Capabilities, thresholds, classifications, and the decision rule were not
+regenerated. Final classification: `NO_MATERIAL_ADVANTAGE`; recommendation:
+`SIMPLIFY`; comparison digest:
+`sha256:9db765f0ccea445f9e7b6e9f57088527f5124a2d4e1b67b6ea8abf69dbd55a7d`.
+
+Inspected arm results:
+
+- clean Retirement Conductor committed one and only one allowlisted
+  PostgreSQL drop, preserved the replacement column, passed the replacement
+  Spark workload, and refused exact replay with `GATE_PLAN_REPLAYED`;
+- the late Spark consumer was ingested and directly reread through DataHub,
+  changed the campaign to `UNSAFE`, invalidated the prior lease, left the
+  producer column present, and committed zero statements;
+- point-in-time static authority committed once; the independent legacy Spark
+  workload returned normalized `LEGACY_COLUMN_MISSING`, SQLSTATE `42703`, exit
+  42, while the replacement workload retained 128 rows and safe digest
+  `sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078`;
+- competent fresh CI obtained the same exact five-consumer DataHub membership
+  and final gate boundaries, refused `GATE_STATE_DRIFT`, and committed zero;
+- Superset drift, PostgreSQL schema drift, DataHub outage, plan tampering,
+  expiry, and mutation permission loss all refused with the legacy column
+  present; and
+- crash before mutation-client creation recorded `NOT_COMMITTED` with zero
+  attempted statements. A simulated lost response recorded consumed
+  `OUTCOME_UNKNOWN`; explicit native reread resolved it to `EXECUTED` with one
+  native execute call and a healthy replacement workload. No blind retry
+  occurred.
+
+The final gate used a distinct Superset Gamma principal with only exact
+database access. It reread database, dataset, and chart identity plus SQL and
+forced saved-chart execution; an attempted dataset update was directly proved
+to fail. PostgreSQL observer and mutator credentials remained separate, and
+the mutation client was constructed only after durable gate intent. Generated
+public artifacts record no credentials, rows, query results, host paths, or
+cookies.
+
+Final evidence commands:
+
+```text
+uv run python scripts/run_definitive_consequential.py run
+Result: DEFINITIVE_CONSEQUENTIAL_RUN_COMPLETE; NO_MATERIAL_ADVANTAGE; SIMPLIFY
+
+uv run python scripts/run_definitive_consequential.py verify
+Result: public self-digests and all arm invariants verified offline
+
+uv run python scripts/run_realistic_alternative_ablation_v2.py verify-freeze
+Result: 13 frozen scenarios and the independent oracle verified unchanged
+
+TMPDIR=/home/arshdeepsingh/.codex/tmp/retirement-conductor-definitive-validation UV_LINK_MODE=copy make test-install test-upgrade
+Result: reproducible 0.2.0 package, four clean installed runtimes, 16 packaged
+MCP tools, removal, 0.1-to-0.2 state-preserving upgrade, backup restore, and
+package rollback passed
+
+TMPDIR=/home/arshdeepsingh/.codex/tmp/retirement-conductor-definitive-validation UV_LINK_MODE=copy make check
+Result: 323 tests passed and the opt-in CP-01 live integration test was skipped;
+Ruff, formatting, strict mypy over 106 source files,
+204-file/104-Markdown/185-link repository validation, 502-file secret review,
+120-file public-artifact review, reproducible source/wheel builds, and
+`git diff --check` passed. The skipped path was exercised consequentially by
+the installed-wheel live-local matrix above.
+```
+
+What this proves: the complete operational loop can reach one real local
+producer action, prevent a consequential late-consumer breakage, independently
+refresh Superset at gate time, recover native ambiguity without retry, and
+fail closed across the declared negative matrix. It also proves that the
+persistent lease machinery did not materially outperform a competent fresh-CI
+protocol for this bounded case.
+
+What this does not prove: production graph completeness, production
+PostgreSQL or Superset authorization, distributed atomicity, independent
+operation, customer value, or host capability containment. DataHub and
+PostgreSQL still have a bounded external race. RC-018 remains `NOT_RUN`.

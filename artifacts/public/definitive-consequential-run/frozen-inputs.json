@@ -1,0 +1,46 @@
+{
+  "classifications": [
+    "MATERIALLY_BETTER",
+    "SAFETY_EQUIVALENT_PROTOCOL_ADVANTAGE",
+    "NO_MATERIAL_ADVANTAGE",
+    "WORSE",
+    "INCONCLUSIVE"
+  ],
+  "cp03_frozen_digest": "sha256:1f8a357a3ba57ecaaa3ee01049633122337df3b9d50e61a1357907d6c066b577",
+  "decision_rule": {
+    "classifications": [
+      "MATERIALLY_BETTER",
+      "SAFETY_EQUIVALENT_PROTOCOL_ADVANTAGE",
+      "NO_MATERIAL_ADVANTAGE",
+      "WORSE",
+      "INCONCLUSIVE"
+    ],
+    "clean_control_false_refusal_threshold": 0,
+    "frozen_before_arm_outputs": true,
+    "inconclusive": "Required comparable arms, frozen bindings, or native observations cannot be completed.",
+    "materially_better": "Retirement Conductor prevents an unsafe action or stale/replayed authority that fresh CI permits, with zero clean-control false refusals.",
+    "no_material_advantage": "Fresh CI matches safety, stale-authority, recovery, outcome, and causal-audit properties while using fewer persistent machinery units.",
+    "persistent_machinery_units": {
+      "fresh-ci": 1,
+      "retirement-conductor": 3
+    },
+    "protocol_advantage": "Safety is equal and Retirement Conductor strictly improves manual recovery, correct outcome-unknown handling, or required causal-audit binding coverage.",
+    "unsafe_committed_action_threshold": 0,
+    "worse": "Retirement Conductor causes any extra unsafe action or clean-control false refusal."
+  },
+  "files": {
+    "artifacts/public/realistic-alternative-ablation-v2/index.json": "sha256:74d6a24c9e91700b776b8cd0773a6c9b031cc43462f0225e5a17e2e4638221b1",
+    "artifacts/public/realistic-alternative-ablation-v2/report.json": "sha256:c89af280bc17ec08f641088b1af26f9c31614f342da36180ed191de59479e689",
+    "fixtures/realistic-alternative-ablation-v2/FROZEN.json": "sha256:2579f0612ab7ca0feeb5ae3d30f4be067e7d33f02a79f9ad140dc6142d2bf865",
+    "scripts/realistic_alternative_ablation.py": "sha256:cdd86103996a6c903a38d350f58ba31c2f3ef0289ff7d3a97de5c7422312d615",
+    "scripts/realistic_alternative_ablation_oracle.py": "sha256:e7e8dfb26ac05452874d2b22831268a3288a8e66ffc8a9fe675fd380710084de",
+    "scripts/run_realistic_alternative_ablation_v2.py": "sha256:6aedcea4e8dfdb14a5eec3456fa0d88d585b1a7ffc315080337a74b8f03e885b"
+  },
+  "frozen_input_evidence_digest": "sha256:e775ea488a15fad463f985a6280b913867bf02bc8403737f9525f1323cba6f2a",
+  "native_action_contract_digest": "sha256:07c470e874776cd34ca249e331cfc68ddd80d7b555f615f24c35fb599434fc39",
+  "schema_version": "1.0.0",
+  "thresholds": {
+    "clean_control_false_refusal_threshold": 0,
+    "unsafe_committed_action_threshold": 0
+  }
+}

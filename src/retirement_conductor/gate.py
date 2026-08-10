@@ -308,7 +308,7 @@ class ProducerGateWorkflow:
         plan_path: Path | None = None,
         executed_at: str | None = None,
     ) -> dict[str, Any]:
-        """Verify current live state, consume the plan, and write one sentinel."""
+        """Verify live state, consume one plan, and execute its producer action."""
 
         operation_time = executed_at or utc_now()
         manifest = self.store.materialize(campaign_id)

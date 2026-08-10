@@ -65,6 +65,30 @@ The implementation may create:
 
 No production repository or warehouse credential is required.
 
+### Disposable consequential reference stack
+
+The definitive consequential run may create independent project-scoped local
+stacks containing pinned PostgreSQL 16, Superset 6.0.0, Spark 3.5.3, and
+DataHub Core 1.6.0 containers. PostgreSQL and Superset publish loopback ports
+only; backing databases remain on private Compose networks. The runner creates
+random credentials in process memory, passes them through environment/stdin
+boundaries, records only safe principal labels and versions, and removes every
+project volume after its arm.
+
+The PostgreSQL observer cannot alter schema. A distinct mutator can alter only
+the one declared disposable tuple and is constructed after durable gate intent.
+The Superset gate verifier has Gamma plus the exact database-access grant: it
+can reread database, dataset, chart, and force saved-chart execution, but a
+native update is directly proved to fail. Spark uses separate legacy and
+replacement read principals and records only normalized outcomes and safe
+digests.
+
+These permissions authorize local evidence only. They do not authorize a
+production database, Superset deployment, remote DataHub, destructive action,
+or secret provisioning. See
+`docs/runbooks/DEFINITIVE_CONSEQUENTIAL.md` for the exact command and cleanup
+checks.
+
 ### Official DataHub hackathon datasets
 
 The authoritative resource page is

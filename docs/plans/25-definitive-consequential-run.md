@@ -1,5 +1,12 @@
 # CP-05 — definitive consequential integration and comparison
 
+Execution status: complete on implementation commit `e9d7d97`. The
+self-verifying public index is
+`artifacts/public/definitive-consequential-run/index.json`, digest
+`sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
+The unchanged decision rule returned `NO_MATERIAL_ADVANTAGE` and `SIMPLIFY`.
+Canonical interpretation and limitations are recorded in D-052 and D-053.
+
 ## Launch condition
 
 Do not start this task until CP-01 through CP-04 each have a clean tested

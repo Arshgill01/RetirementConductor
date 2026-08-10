@@ -1,0 +1,17 @@
+{
+  "classification": "NO_MATERIAL_ADVANTAGE",
+  "comparison_digest": "sha256:9db765f0ccea445f9e7b6e9f57088527f5124a2d4e1b67b6ea8abf69dbd55a7d",
+  "decision": "Fresh CI matched every frozen safety, recovery, outcome, and causal-audit property with less persistent machinery. The live native action and workload did not overturn the frozen result.",
+  "frozen_cp03_index_digest": "sha256:48c42ea6d12c2241b9c0405fdca8760dfe96bc5aaee2107ee67a624a7150d1ae",
+  "native_result": {
+    "fresh_ci_boundary_equivalent": true,
+    "fresh_ci_late_commit_count": 0,
+    "retirement_conductor_boundary_equivalent": true,
+    "retirement_conductor_clean_commit_count": 1,
+    "retirement_conductor_late_commit_count": 0,
+    "static_late_commit_count": 1,
+    "static_legacy_workload_outcome": "LEGACY_COLUMN_MISSING"
+  },
+  "recommendation": "SIMPLIFY",
+  "schema_version": "1.0.0"
+}

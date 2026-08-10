@@ -212,10 +212,11 @@ apply.
 
 The automated Git/dbt boundary implements this lifecycle without hiding
 source-specific semantics. The experimental Superset boundary now satisfies
-the lifecycle through campaign reconciliation and deterministic readiness, but
-not the final gate-time native refresh. It therefore remains campaign-integrated
-experimental evidence rather than a second complete producer-gated path. Other
-DataHub-observed consumers remain opaque or externally receipted.
+the lifecycle through campaign reconciliation and deterministic readiness and
+is independently reread by the final gate through a distinct read/execute-only
+principal. It remains live-local experimental evidence rather than a supported
+production executor. Other DataHub-observed consumers remain opaque or
+externally receipted.
 
 ### `preflight`
 
@@ -484,6 +485,37 @@ consistent, but every transient refusal remains evidence and the write is not
 repeated merely to obtain visibility. A successful write response is never a
 substitute for exact read-back.
 
+## Consequential producer plan and outcome
+
+`producer-plan-v2` binds the exact campaign manifest, trusted run, writer,
+expiry, publication, accepted receipt digests, Git/dbt gate binding, Superset
+gate binding, producer repository fingerprint, and one PostgreSQL action
+digest. The PostgreSQL action is valid only for the configured database,
+schema, table, legacy field, and replacement field tuple observed before plan
+issue. It never permits `CASCADE` or a second action.
+
+Execution must:
+
+1. reject a previously consumed plan from the durable ledger before repeating
+   external verification;
+2. freshly verify DataHub membership, Git/dbt state and validation, Superset
+   identity/SQL/forced chart execution, approvals, publication, producer
+   source, and PostgreSQL schema fingerprint;
+3. durably record one intent before constructing the separately privileged
+   mutation client;
+4. execute at most one exact native statement;
+5. reread PostgreSQL schema and classify `COMMITTED`, `NOT_COMMITTED`, or
+   `OUTCOME_UNKNOWN`; and
+6. refuse all replay. An `OUTCOME_UNKNOWN` plan stays consumed until an
+   explicit resolve operation rereads native state. It is never retried
+   blindly.
+
+`gate-receipt-v2` records the plan and attempt digests, final verification
+digest, native before/after fingerprints, attempted and committed statement
+counts, replacement preservation, resolution path, and its own receipt digest.
+The reference action is restricted to disposable loopback PostgreSQL and does
+not imply production warehouse authorization.
+
 ## Retirement Lease observation
 
 The latest producer plan projects to exactly one of:
@@ -537,6 +569,10 @@ Immediately before that result, the gate must also verify:
   not drifted;
 - the reconciliation envelope remains fresh under the recorded clock policy;
 - the stable DataHub publication still reads back the expected digests.
+- every accepted Superset receipt still maps to the exact native identities,
+  SQL fingerprint, read-only principal, and forced saved-chart semantic result;
+- the PostgreSQL producer action still observes the issued before-schema
+  fingerprint and compatible replacement column.
 
 An unavailable check refuses. The producer workflow consumes the result in
 the same trusted invocation and records that attempt. The campaign writer

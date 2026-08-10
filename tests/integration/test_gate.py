@@ -16,6 +16,7 @@ from retirement_conductor.gate import (
     TrustedProducerContext,
 )
 from retirement_conductor.postgres_producer import (
+    POSTGRES_LEGACY_COLUMN_MISSING,
     MutationTransportLost,
     PostgresActionOutcome,
     PostgresProducerAction,
@@ -31,7 +32,6 @@ from retirement_conductor.specification import load_specification
 from retirement_conductor.store import CampaignStore
 from retirement_conductor.superset_config import SupersetSettings
 from retirement_conductor.superset_gate import SupersetGateVerifier
-from retirement_conductor.vocabulary import RefusalCode
 
 ROOT = Path(__file__).resolve().parents[2]
 CAMPAIGN_ID = "ret-orders-legacy-status"
@@ -801,7 +801,7 @@ def test_postgres_gate_claims_intent_before_one_action_and_refuses_replay(
             verification_calls += 1
             if verification_calls > 1:
                 raise Refusal(
-                    RefusalCode.POSTGRES_LEGACY_COLUMN_MISSING,
+                    POSTGRES_LEGACY_COLUMN_MISSING,
                     "the committed action changed native state",
                 )
             return _postgres_verification()

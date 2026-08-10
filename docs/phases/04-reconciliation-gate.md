@@ -144,4 +144,5 @@ Inspect:
 - R-32 evidence granularity;
 - R-33 executable-input drift;
 - R-34 gate provenance and availability;
-- R-35 gate-to-action race.
+- R-35 gate-to-action race;
+- R-46 persistent lease value versus equivalent fresh CI.

@@ -266,7 +266,11 @@ claim. A non-repository consumer never closes from graph change alone.
 
 ### Retirement Lease watcher
 
-The one-shot watcher operates only on an issued producer plan. Under the
+The one-shot watcher is optional coordination infrastructure over an issued
+producer plan. Competent fresh action-time CI matched its bounded safety result
+in the definitive comparison, so the architecture does not require a
+long-lived lease service where the same checks can run immediately before a
+one-shot action. Under the
 campaign store's existing operation lock it records a no-authority observation
 event, resumes or performs fresh reconciliation, republishes the canonical
 summary, verifies read-back, and emits a digest-bound watch receipt with a
@@ -309,14 +313,19 @@ The producer-side gate:
 - reloads current campaign state;
 - requires a fresh reconciliation within policy;
 - verifies manifest and receipt digests;
-- rereads DataHub, Git/dbt, producer source, validator, authorization, and
-  publication bindings immediately before action;
+- rereads DataHub, Git/dbt, Superset native identity/SQL/forced execution,
+  producer source and schema, validators, authorization, and publication
+  bindings immediately before action;
 - requires a short-lived producer plan that this campaign writer durably
   issued for the exact canonical manifest;
 - records durable intent before the producer action and records its outcome;
 - exits zero only for `READY_TO_RETIRE`;
 - consumes the manifest and plan binding so a prior green result cannot be
   replayed or recomputed into another authorization;
+- rejects a known consumed plan before repeating external checks, while an
+  atomic later claim closes concurrent attempts;
+- obtains a separately privileged PostgreSQL mutation client only after
+  durable intent and classifies lost responses by native schema reread; and
 - does not itself hold general mutation credentials.
 
 ## Consistency and concurrency

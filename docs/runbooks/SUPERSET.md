@@ -2,8 +2,10 @@
 
 This runbook exercises one bounded virtual-dataset migration against Apache
 Superset 6.0.0 and disposable DataHub Core. Superset is now registered with the
-campaign engine and CLI, but remains experimental because the final producer
-gate does not yet perform a gate-time Superset native refresh.
+campaign engine and CLI and the definitive producer gate performs an
+independent read-only native refresh. It remains experimental because the
+accepted boundary is disposable live-local evidence, not production RBAC,
+dialect, or independent-operation evidence.
 
 ## Boundary
 
@@ -71,6 +73,13 @@ the pinned live proof the SQL parser also emitted a fine-grained edge. That
 edge is corroboration for this one SQL statement, not a general connector
 guarantee. Direct native dataset SQL remains authoritative for exact field
 dependence.
+
+For the final gate, use a distinct principal with only Gamma plus the exact
+database-access permission. The gate must reread the database, dataset, and
+chart identities and SQL, force saved-chart execution, and prove that the
+principal cannot update the dataset. The complete integrated setup and drift
+matrix are in
+[`DEFINITIVE_CONSEQUENTIAL.md`](DEFINITIVE_CONSEQUENTIAL.md).
 
 ## Plan, approval, apply, and validate
 

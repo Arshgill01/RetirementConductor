@@ -1,0 +1,117 @@
+{
+  "arm": "retirement-conductor-negative-matrix",
+  "arm_digest": "sha256:d56c17ae9099842648d64ede852fd4dc9d27f58b0289f159325dcac747b6e0bc",
+  "bootstrap": {
+    "connector": {
+      "exit_code": 0,
+      "log_digest": "sha256:ef9f039973fe289e821c396a313dbddea04262b42e10d5a58f2182f2c8960b88",
+      "pipeline_finished_successfully": true,
+      "reported_records_written": 8
+    },
+    "graph_settle": {
+      "attempts": 2,
+      "duration_seconds": 9.479,
+      "expected_consumer_ids": [
+        "dh-a2cd0de5e5bbeaafe292",
+        "dh-c843ad9615fee35f0e06",
+        "dh-d3d9c538652fd85af139",
+        "dh-ebdcf5ec0c7ab6e87b49"
+      ],
+      "observed_consumer_ids": [
+        "dh-a2cd0de5e5bbeaafe292",
+        "dh-c843ad9615fee35f0e06",
+        "dh-d3d9c538652fd85af139",
+        "dh-ebdcf5ec0c7ab6e87b49"
+      ]
+    },
+    "refresh": {
+      "captured_at": "2026-08-10T14:25:36.534739Z",
+      "dbt_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_definitive_model,PROD)",
+      "direct_reread_required": true,
+      "gms_url": "http://127.0.0.1:18080",
+      "ingestion_run_id": "cp05-a6e9db95907db272",
+      "late_spark_consumer_urn": null,
+      "late_spark_ingested": false,
+      "mode": "live-local",
+      "refresh_digest": "sha256:4a0643b384a38d4626dc7e29bbb1814352efb78b4e11f154eb11ed5855ba45c4",
+      "schema_version": "1.0.0",
+      "source_updated_at": "2026-08-10T14:25:36.534739Z",
+      "target_urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04-feasibility.ws04 orders postgresql.retirement_lab.orders,PROD)",
+      "target_urns": [
+        "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04-feasibility.ws04 orders postgresql.retirement_lab.orders,PROD)"
+      ]
+    }
+  },
+  "case_count": 6,
+  "cases": [
+    {
+      "case": "superset_native_drift_after_reconciliation",
+      "refusal_code": "SOURCE_FINGERPRINT_MISMATCH",
+      "schema": {
+        "legacy_column_present": true,
+        "observation_digest": "sha256:05f97a2fcba9c078a11f982a024bff6c0dc612346d26514cfc183ff467110aa2",
+        "replacement_column_present": true,
+        "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+        "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+      }
+    },
+    {
+      "case": "producer_schema_drift_after_lease",
+      "refusal_code": "POSTGRES_SCHEMA_FINGERPRINT_DRIFT",
+      "schema": {
+        "legacy_column_present": true,
+        "observation_digest": "sha256:fbd7ea5bea7a3097e1783ea43de9af1efba2e815ba7c3df87e537868182d73bc",
+        "replacement_column_present": true,
+        "schema_fingerprint": "sha256:1f23b8f4c4eb505276a0835c03adf308b57ccd145093c0b4f8e6f01d0eec01fc",
+        "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+      }
+    },
+    {
+      "case": "datahub_outage_at_gate",
+      "refusal_code": "SOURCE_DATAHUB_UNAVAILABLE",
+      "schema": {
+        "legacy_column_present": true,
+        "observation_digest": "sha256:05f97a2fcba9c078a11f982a024bff6c0dc612346d26514cfc183ff467110aa2",
+        "replacement_column_present": true,
+        "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+        "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+      }
+    },
+    {
+      "case": "producer_plan_artifact_tampering",
+      "refusal_code": "INTEGRITY_DIGEST_MISMATCH",
+      "schema": {
+        "legacy_column_present": true,
+        "observation_digest": "sha256:05f97a2fcba9c078a11f982a024bff6c0dc612346d26514cfc183ff467110aa2",
+        "replacement_column_present": true,
+        "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+        "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+      }
+    },
+    {
+      "case": "expired_lease",
+      "refusal_code": "GATE_PLAN_EXPIRED",
+      "schema": {
+        "legacy_column_present": true,
+        "observation_digest": "sha256:05f97a2fcba9c078a11f982a024bff6c0dc612346d26514cfc183ff467110aa2",
+        "replacement_column_present": true,
+        "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+        "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+      }
+    },
+    {
+      "case": "postgres_permission_loss",
+      "gate_status": "NOT_COMMITTED",
+      "refusal_code": "POSTGRES_MUTATION_PERMISSION_DENIED",
+      "schema": {
+        "legacy_column_present": true,
+        "observation_digest": "sha256:1b642bd2c4cd8ce17a81188a70e9c956f86dac35b67d3bcdd976f376aef8706d",
+        "replacement_column_present": true,
+        "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+        "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+      }
+    }
+  ],
+  "destructive_statements_committed": 0,
+  "result": "ALL_REFUSED_WITH_COLUMN_PRESENT"
+}

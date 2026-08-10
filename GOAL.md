@@ -48,11 +48,21 @@ external receipt, a verified removal, or a proved non-applicability record.
 
 Post-goal evidence has since added one deliberately narrower extension without
 changing this completed baseline: a loopback-only Superset executor can now
-join canonical campaign state and affect readiness beside Git/dbt. The live
-heterogeneous acceptance is not yet a second complete producer-gated path;
-gate-time native refresh remains Git/dbt-specific. The original objective and
-phase completion claims therefore remain valid rather than being retroactively
-broadened.
+join canonical campaign state, affect readiness beside Git/dbt, and be
+independently reread by the final gate. A separately privileged loopback-only
+PostgreSQL producer action now records one-use intent before mutation and
+resolves ambiguous outcomes through native reread. These are consequential
+live-local reference boundaries, not a retroactive expansion of the supported
+production consumer-mutation scope.
+
+The definitive native comparison preserved the frozen CP-03 corpus, oracle,
+thresholds, capabilities, and labels. Its result is
+`NO_MATERIAL_ADVANTAGE` / `SIMPLIFY`: competent fresh action-time CI matched
+the bounded safety properties with less persistent machinery. The Retirement
+Lease is therefore an optional durable coordination, recovery, and causal-audit
+mechanism rather than a claimed material safety advantage. This unfavorable
+comparison does not weaken the controlling product invariant or authorize
+removing failure-closed gate behavior.
 
 ## Instruction order
 

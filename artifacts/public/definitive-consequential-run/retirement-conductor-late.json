@@ -1,0 +1,86 @@
+{
+  "arm": "retirement-conductor-late",
+  "arm_digest": "sha256:39d86eaa3037a89f918a82d5428e1a389b7567bb2423b4a2af4d3ab5fae7b6d1",
+  "bootstrap": {
+    "connector": {
+      "exit_code": 0,
+      "log_digest": "sha256:e99a60cec9496a4c16264e7964ff992aed9899926689d542956b678427503708",
+      "pipeline_finished_successfully": true,
+      "reported_records_written": 8
+    },
+    "graph_settle": {
+      "attempts": 1,
+      "duration_seconds": 11.832,
+      "expected_consumer_ids": [
+        "dh-a2cd0de5e5bbeaafe292",
+        "dh-c843ad9615fee35f0e06",
+        "dh-d3d9c538652fd85af139",
+        "dh-ebdcf5ec0c7ab6e87b49"
+      ],
+      "observed_consumer_ids": [
+        "dh-a2cd0de5e5bbeaafe292",
+        "dh-c843ad9615fee35f0e06",
+        "dh-d3d9c538652fd85af139",
+        "dh-ebdcf5ec0c7ab6e87b49"
+      ]
+    },
+    "refresh": {
+      "captured_at": "2026-08-10T14:04:32.157440Z",
+      "dbt_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,retirement_conductor.analytics.consumers.orders_definitive_model,PROD)",
+      "direct_reread_required": true,
+      "gms_url": "http://127.0.0.1:18080",
+      "ingestion_run_id": "cp05-2312f8fd985c1ffc",
+      "late_spark_consumer_urn": null,
+      "late_spark_ingested": false,
+      "mode": "live-local",
+      "refresh_digest": "sha256:0c9f55cbacc0b986f93033b28450c78236cbb3151915709fd7a7b79368a63c6d",
+      "schema_version": "1.0.0",
+      "source_updated_at": "2026-08-10T14:04:32.157440Z",
+      "target_urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04-feasibility.ws04 orders postgresql.retirement_lab.orders,PROD)",
+      "target_urns": [
+        "urn:li:dataset:(urn:li:dataPlatform:postgres,ws04-feasibility.ws04 orders postgresql.retirement_lab.orders,PROD)"
+      ]
+    }
+  },
+  "decision": "UNSAFE",
+  "destructive_statements_committed": 0,
+  "late_consumer_direct_reread_digest": "sha256:f2102f794e366b6dc81c3bba3c3cca9cc0e2e3a28c4f6920ef980843765394ff",
+  "late_consumer_urn": "urn:li:dataset:(urn:li:dataPlatform:spark,retirement_conductor.analytics.consumers.orders_legacy_spark_workload,PROD)",
+  "late_reconciliation_settle": {
+    "attempts": 1,
+    "duration_seconds": 8.893,
+    "expected_consumer_ids": [
+      "dh-3d6353d3faa76248a374",
+      "dh-a2cd0de5e5bbeaafe292",
+      "dh-c843ad9615fee35f0e06",
+      "dh-d3d9c538652fd85af139",
+      "dh-ebdcf5ec0c7ab6e87b49"
+    ],
+    "observed_consumer_ids": [
+      "dh-3d6353d3faa76248a374",
+      "dh-a2cd0de5e5bbeaafe292",
+      "dh-c843ad9615fee35f0e06",
+      "dh-d3d9c538652fd85af139",
+      "dh-ebdcf5ec0c7ab6e87b49"
+    ]
+  },
+  "late_refresh_digest": "sha256:6c8c305959a33866b99e307f77101cf7ad2f9ce3ec6d711932f7279f41ff031a",
+  "lease_status": "INVALIDATED",
+  "legacy_workload_before": {
+    "duration_ms": 23664,
+    "exit_code": 0,
+    "outcome": "SUCCEEDED",
+    "row_count": 128,
+    "safe_output_digest": "sha256:9f977475388edb756d84c140c02b315f82e669615047f0861c1e84b35657a078",
+    "spark_version": "3.5.3"
+  },
+  "refusal_code": "GATE_DECISION_NOT_READY",
+  "result": "REFUSED_BEFORE_ACTION",
+  "schema_after": {
+    "legacy_column_present": true,
+    "observation_digest": "sha256:05f97a2fcba9c078a11f982a024bff6c0dc612346d26514cfc183ff467110aa2",
+    "replacement_column_present": true,
+    "schema_fingerprint": "sha256:26f9c6d1d5af7909779c30b187e18a78fffb7c32c75300f2738401174affd69a",
+    "table_identity_digest": "sha256:fc4a5bbcc9d32cf636b75dcc0e3eb042e1c836d9b9de77a2f0471c97cab5a4c8"
+  }
+}

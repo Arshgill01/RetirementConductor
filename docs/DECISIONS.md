@@ -917,5 +917,62 @@ and two exact receipts. It became `READY_TO_RETIRE`; authorized Superset
 compensation made its consumer `STALE` and the same campaign `UNSAFE`.
 
 Status: accepted as campaign-integrated experimental evidence at
-`artifacts/public/heterogeneous-campaign/`. Independent operator value and
-gate-time Superset refresh remain open.
+`artifacts/public/heterogeneous-campaign/`. D-053 later closes the gate-time
+refresh blocker; independent operator and production evidence remain open.
+
+## D-052 — accept no material lease advantage and simplify the claim
+
+Date: 2026-08-10
+
+Decision: accept the frozen CP-03 classification `NO_MATERIAL_ADVANTAGE` and
+recommendation `SIMPLIFY`. Keep the Retirement Lease and watcher as optional
+durable one-use coordination, recovery, and causal-audit machinery. Do not
+claim that they provide a material safety advantage over competent fresh
+action-time CI for the bounded field-retirement workflow.
+
+Why: the definitive native run held the destructive PostgreSQL action and
+DataHub, Git/dbt, Superset, approval, producer-schema, publication, workload,
+and outcome observations constant. Both Retirement Conductor and fresh CI
+found the late Spark consumer and committed zero actions. The static arm
+committed once and caused SQLSTATE `42703`, proving that freshness matters but
+not that a persistent lease is necessary. CP-03 kept all 13 scenarios,
+capabilities, thresholds, oracle, and labels unchanged and found that fresh CI
+matched every meaningful property with less machinery.
+
+Consequences: D-050 remains valid evidence against reusable point-in-time
+sign-off, but its “core product boundary” conclusion is superseded at the
+stronger comparison level. Deployments that can run equivalent checks
+immediately before a one-shot action should prefer fresh CI. Lease machinery
+remains justified only by demonstrated coordination, recovery, or audit needs;
+it must not become a prerequisite by default.
+
+Status: accepted from
+`artifacts/public/definitive-consequential-run/comparison.json`, comparison
+digest `sha256:9db765f0ccea445f9e7b6e9f57088527f5124a2d4e1b67b6ea8abf69dbd55a7d`.
+
+## D-053 — keep consequential native boundaries live-local and least privilege
+
+Date: 2026-08-10
+
+Decision: promote the CP-01 PostgreSQL action to the supported disposable
+reference producer boundary and complete CP-02 gate-time verification through
+an exact read/execute-only Superset principal. Keep Git/dbt as the sole
+supported production-shaped automated consumer executor. Do not infer broad
+PostgreSQL warehouse or Superset production support from the local result.
+
+Why: the installed-wheel gate recorded intent before constructing the mutation
+client, committed exactly one allowlisted drop, reread native schema, refused
+replay, and recovered a lost response without a second execute. Superset
+independently reread database/dataset/chart identity, SQL, and forced saved
+chart execution; drift refused with the producer column present. The negative
+matrix also refused producer schema drift, DataHub outage, tampering, expiry,
+and mutation permission loss. The Spark workload supplied consequence evidence
+independent of the gate.
+
+Consequences: D-051's gate-time-refresh blocker is closed, while its production
+and independent-operator limitations remain. PostgreSQL mutation credentials
+stay outside the general agent, skill, MCP, and campaign process. The external
+race between DataHub and PostgreSQL is bounded, not eliminated.
+
+Status: accepted from implementation commit `e9d7d97` and public index
+`sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.

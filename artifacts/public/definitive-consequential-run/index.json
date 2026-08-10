@@ -1,0 +1,65 @@
+{
+  "classification": "NO_MATERIAL_ADVANTAGE",
+  "files": [
+    {
+      "digest": "sha256:86fc4024d81ea4a7e9a8812d00ec2a8a4392bc03d4522ca330d7701a7f769f93",
+      "path": "README.md",
+      "size_bytes": 483
+    },
+    {
+      "digest": "sha256:11722067a572b2f4fb681facff20d34d5297bddcc4b1430eb3c8d7cf89576988",
+      "path": "comparison.json",
+      "size_bytes": 871
+    },
+    {
+      "digest": "sha256:c03542f64ecb5965c2e1a69a2680c1b1b8525b0c7e13d412590fa579afa1d907",
+      "path": "fresh-ci-equivalent.json",
+      "size_bytes": 3457
+    },
+    {
+      "digest": "sha256:96bd65048c42c091dcd98a9d906872c998d2c9086c687bee604a056e92476dfa",
+      "path": "frozen-inputs.json",
+      "size_bytes": 2600
+    },
+    {
+      "digest": "sha256:2dbac1b25e919921cefb45320fbe3928526fbd66efdda7f16e8a03246dbad470",
+      "path": "point-in-time-static.json",
+      "size_bytes": 4139
+    },
+    {
+      "digest": "sha256:dc9c5b05bbf7fb4ccb419e136a0f7a5d83b385ae9e59e3c17ecd9acf6885aeda",
+      "path": "retirement-conductor-clean.json",
+      "size_bytes": 6256
+    },
+    {
+      "digest": "sha256:98e1ecee523dc4b6871dd2a371bf8480c0418fbae87cf0b3252587be87cfb512",
+      "path": "retirement-conductor-late.json",
+      "size_bytes": 3451
+    },
+    {
+      "digest": "sha256:08a9dd379d26bfb59a5b703fee9151a03990ff1f8f10b02bdcbcfa1baa44ee2a",
+      "path": "retirement-conductor-negative-matrix.json",
+      "size_bytes": 5153
+    },
+    {
+      "digest": "sha256:ffaf06b2dfa6fb897fb96ad1e3a368182e182ce65116c5bf82147fe5fb6145cb",
+      "path": "retirement-conductor-recovery-matrix.json",
+      "size_bytes": 3211
+    },
+    {
+      "digest": "sha256:58ee7c3b88b1862ad431105cf221d143138c752d653149dcac38ec13c48112bc",
+      "path": "run-metadata.json",
+      "size_bytes": 1915
+    }
+  ],
+  "index_digest": "sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e",
+  "limitations": [
+    "All native mutations were confined to disposable loopback services.",
+    "The run is author-operated and does not satisfy RC-018.",
+    "Fresh CI and Retirement Conductor share verifier code in the live harness; CP-03 owns the frozen machinery comparison.",
+    "DataHub and PostgreSQL cannot share one atomic transaction; the final race remains bounded, not eliminated."
+  ],
+  "recommendation": "SIMPLIFY",
+  "result": "DEFINITIVE_CONSEQUENTIAL_RUN_COMPLETE",
+  "schema_version": "1.0.0"
+}
