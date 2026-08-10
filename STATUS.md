@@ -12,15 +12,19 @@ contract; `PLAN.md` defines proof order.
 - Current definitive behavior commit: `2635240`; initial public TE-04 evidence
   commit: `6eeea35`; the integration audit corrected the package-versus-adapter
   version label without changing run outcomes or bindings
+- Current post-goal winning-proof behavior commit: `87bbf41`; it adds the
+  revocable-permission comparison, prepared independent-operator protocol, and
+  campaign-integrated experimental Superset evidence
 - Earlier complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
 - Next acceptance target: finish the public video and Devpost entry. Optional
   independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
-- Last integrated repository validation: 256 tests, Ruff, formatting, strict
-  mypy over 92 source files, 204-file repository validation, 407-file secret
-  review, 83-file public-artifact review, reproducible source and wheel builds,
+- Last integrated repository validation: 261 tests, Ruff, formatting, strict
+  mypy over 97 source files, 204-file repository and 175-link validation,
+  426-file secret review, 90-file public-artifact review, reproducible source
+  and wheel builds,
   and `git diff --check` passed. Four clean Python installs, upgrade/rollback,
   removal, and the installed-wheel live-local reference passed. A separate
   clean Python 3.13 install of the `agent` extra completed a real MCP handshake
