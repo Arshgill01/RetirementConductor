@@ -52,8 +52,9 @@ form entry begins.
 
 ## Intentionally after this checklist
 
-- Deck structure and slide design.
-- Final demo route and narration.
-- Screen recording and edit.
-- Devpost field entry and submission.
-- Independent operator run if a real practitioner is available.
+- [x] Deck structure and slide design.
+- [x] Final demo route, narration, prompts, and recording checklist.
+- [ ] Fresh recording rehearsal and accepted Codex take.
+- [ ] Screen recording and edit.
+- [ ] Devpost field entry and submission.
+- [ ] Independent operator run if a real practitioner is available.

@@ -16,9 +16,10 @@ SERVER_INSTRUCTIONS = (
     "campaign. Never treat empty evidence as absence. Never apply until the user "
     "reviews the exact plan and a human records authorization outside this server; "
     "pass the exact plan digest. After validation, reconcile, publish, and verify "
-    "read-back. Inspect or freshly reconcile an issued Retirement Lease before "
-    "execution. Never call the producer gate for a non-ready campaign. A refusal "
-    "or readiness reversal is a successful safety result and must not be bypassed."
+    "read-back, then stop and hand the campaign to the separately privileged "
+    "producer retire CLI. Do not call the two-step lease or compatibility gate in "
+    "the default workflow. A refusal or readiness reversal is a successful safety "
+    "result and must not be bypassed."
 )
 
 

@@ -24,11 +24,12 @@ not recompute policy or treat model judgment as authorization.
    source revokes readiness.
 9. Publish once, then verify agent-visible read-back without repeating the
    write merely to obtain visibility.
-10. Call the producer gate only for a currently ready campaign and only after
-    the user explicitly requests the producer action.
-11. Treat an observed Retirement Lease as single-use evidence. A watch run
-    invalidates that lease even when the campaign remains ready; issue a fresh
-    lease before any later gate attempt.
+10. After verified publication, stop and hand the ready campaign to the
+    separately privileged `producer retire` invocation. The agent does not own
+    PostgreSQL credentials or the final database action.
+11. Treat the Retirement Lease and compatibility gate tools as advanced
+    recovery or explicit handoff surfaces, not the default workflow. Use them
+    only when the operator specifically requests that older two-step protocol.
 12. Treat refusal as a successful safety result. Explain it and stop until the
     named evidence or authorization changes.
 
@@ -107,29 +108,35 @@ If reconciliation succeeds, call `publish_retirement_summary` once and then
 `verify_retirement_summary`. Do not issue a second write merely because
 read-back is delayed.
 
-### 8. Prepare and execute the producer action
+### 8. Hand off the producer action
 
 Call `inspect_retirement_campaign` immediately before the producer workflow.
-Proceed only if the exact decision is `READY_TO_RETIRE`, publication read-back
-is verified, and the user explicitly requests execution.
+Return a handoff only if the exact decision is `READY_TO_RETIRE` and
+publication read-back is verified. Tell the operator to run the separately
+privileged command outside the agent:
 
-Call `prepare_producer_retirement_plan`, show the exact plan binding and
-expiry, then call `inspect_retirement_lease`. Proceed only while the exact
-lease is `ISSUED`. Obtain the MCP client's destructive-action confirmation
-before calling `execute_retirement_gate`.
+```text
+retirement-conductor producer retire --campaign <campaign> --action <action>
+```
 
-Never reuse a previous green result or producer plan. A refusal does not
-authorize a different plan.
+Do not invent the action, credentials, repository, source marker, trusted run
+identity, or remaining runtime arguments. The privileged operator supplies
+them. That command creates its short-lived binding internally, freshly rereads
+the required systems, records durable intent, and performs or refuses the
+action in one invocation.
+
+Do not call `prepare_producer_retirement_plan` or `execute_retirement_gate` in
+the default path. Those tools remain only for an explicitly requested legacy
+handoff or recovery workflow. Never reuse a previous green result or producer
+plan.
 
 ### 9. Recheck after any graph or source change
 
-If an issued lease exists and the user says a consumer, branch, schema,
-policy, validator, or source may have changed, call
-`reconcile_retirement_lease_now`. It performs one fresh reconciliation,
-publication, and read-back and invalidates the observed lease. If no lease
-exists, call `reconcile_retirement_campaign` instead. Issue another lease only
-after the campaign is still ready and its publication is verified. Report a
-reversed decision plainly:
+If a consumer, branch, schema, policy, validator, or source may have changed,
+call `reconcile_retirement_campaign`, republish, and verify the new read-back.
+If the operator explicitly chose the legacy two-step protocol and an issued
+lease exists, `reconcile_retirement_lease_now` performs the same fresh check
+and invalidates that observed lease. Report a reversed decision plainly:
 
 > Fresh evidence invalidated the earlier readiness result. The producer action
 > is now refused.
@@ -147,7 +154,9 @@ Refuse requests to:
 - use table lineage as field closure;
 - close a consumer from ownership metadata;
 - reuse an earlier producer plan;
-- call the gate while the campaign is blocked or unsafe.
+- call the gate while the campaign is blocked or unsafe;
+- move producer credentials into the agent or execute the privileged
+  `producer retire` command through MCP.
 
 Use `explain_retirement_campaign` to provide stable refusal codes and safe next
 actions. Never soften a refusal to make the demo positive.
@@ -161,7 +170,8 @@ State:
 3. total, closed, and open consumers;
 4. native action and validation receipt, if any;
 5. current decision and manifest digest;
-6. whether the producer action executed or was refused;
+6. whether the campaign is ready for the external producer invocation or was
+   refused;
 7. the single safest next action.
 
 Read [references/tool-sequence.md](references/tool-sequence.md) when selecting

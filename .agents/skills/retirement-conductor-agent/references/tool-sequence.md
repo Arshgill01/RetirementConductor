@@ -24,16 +24,15 @@
 | Reconcile | `reconcile_retirement_campaign` | reread source and graph; revoke on drift |
 | Publish | `publish_retirement_summary` | write one stable DataHub summary |
 | Verify | `verify_retirement_summary` | read exact summary back |
-| Retirement Lease | `prepare_producer_retirement_plan` | issue one exact lease valid for at most 15 minutes |
-| Lease status | `inspect_retirement_lease` | project `ISSUED`, `EXPIRED`, `CONSUMED`, or `INVALIDATED` without changing state |
-| Watch | `reconcile_retirement_lease_now` | optionally reread, reconcile, publish, and invalidate the observed lease |
-| Gate | `execute_retirement_gate` | consume the current lease and execute only if ready |
+| Handoff | external `producer retire` CLI | privileged process freshly verifies and executes or refuses in one invocation |
 
 Use direct DataHub MCP search, entity, schema, lineage, path, query, and
-document tools before and around this sequence for agent-visible context.
-Do not call Watch between a final lease issue and its gate unless the intent is
-to invalidate that lease. After any watch result, issue a fresh lease only if
-the canonical campaign is still ready.
+document tools before and around this sequence for agent-visible context. The
+default agent sequence stops after verified publication and returns the
+campaign identifier to the operator. `prepare_producer_retirement_plan`,
+`inspect_retirement_lease`, `reconcile_retirement_lease_now`, and
+`execute_retirement_gate` remain available only for explicitly requested
+legacy handoff and recovery workflows. They are not the default demo path.
 
 ## Authority boundary
 
@@ -55,7 +54,8 @@ the canonical campaign is still ready.
   unavailable or inconclusive.
 - `UNSAFE`: a known active, failed, stale, late, or opaque consumer remains.
 
-The gate exits zero only for `READY_TO_RETIRE`.
+The external producer invocation executes only for `READY_TO_RETIRE`, and it
+still performs its own action-time checks.
 
 ## Common refusal families
 
@@ -78,13 +78,14 @@ The gate exits zero only for `READY_TO_RETIRE`.
 
 Request one exact compatible replacement. Expect exact DataHub/dbt identity,
 one-file plan, external human authorization, native dbt receipt, fresh
-equivalent reconciliation, verified publication, and one producer sentinel.
+equivalent reconciliation, verified publication, and an external privileged
+producer action.
 
 ### Late consumer
 
 Add one new downstream consumer after the ready reconciliation. Expect the
 same campaign to become `UNSAFE`, include `RECONCILIATION_NEW_CONSUMER`, and
-refuse another gate action.
+refuse the external producer action before mutation.
 
 ### Hostile instructions
 

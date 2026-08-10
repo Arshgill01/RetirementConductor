@@ -64,6 +64,18 @@ test("workbench ships one accepted design and explicit paired-local transport", 
   assert.doesNotMatch(page, /workbench-prototypes/);
 });
 
+test("pitch route renders the three recording slides", async () => {
+  const response = await renderPath("/pitch");
+  const html = await response.text();
+
+  assert.equal(response.status, 200);
+  assert.match(html, /Replace a legacy field/);
+  assert.match(html, /DataHub found/);
+  assert.match(html, /Change what you can prove/);
+  assert.match(html, /Remove/);
+  assert.match(html, /or refuse/);
+});
+
 test("standalone HTML contains the current product, evidence, and limits", async () => {
   const html = await readFile(publicHtmlUrl, "utf8");
 

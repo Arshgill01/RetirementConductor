@@ -44,36 +44,34 @@ same skill automatically from `.agents/skills/`.
 
 ## The three-minute judge path
 
-Use Codex as the product interface and keep the evidence bundle open beside it:
+Use Codex for the consumer workflow, then stop after verified DataHub
+publication. The separately privileged terminal performs the default
+`producer retire` action. Do not present the compatibility lease/gate tools or
+the old harmless sentinel as the current product climax.
 
-1. **0:00–0:20 — Promise.** A catalog can find consumers; Retirement
-   Conductor changes an authorized consumer, proves it still works, and revokes
-   permission when fresh evidence changes.
-2. **0:20–0:55 — DataHub to exact plan.** Show the agent inspecting the exact
-   field and producing the one-file `migration.patch` plus plan digest.
-3. **0:55–1:15 — Human boundary.** Show
-   `HUMAN_AUTHORIZATION_REQUIRED`. Explain that the product agent exposes no
-   authorization-recording tool; the operator authorizes the exact digest and
-   target outside the agent.
-4. **1:15–1:45 — Real work.** Show apply, dbt parse/seed/build/test, and the
-   digest-bound Change Receipt.
-5. **1:45–2:10 — Bounded green path.** Show fresh reconciliation, DataHub
-   publication/read-back, the short-lived Retirement Lease, and the harmless
-   sentinel gate result.
-6. **2:10–2:40 — Wow moment.** Add the late Spark consumer and ask the agent to
-   reconcile again. The same campaign reverses from `READY_TO_RETIRE` to
-   `UNSAFE` with `RECONCILIATION_NEW_CONSUMER` and
-   `POLICY_CONSUMER_OPAQUE`. No second lease is prepared and the gate is not
-   called.
-7. **2:40–3:00 — Close.** Show the Evidence & Trust Center and state the exact
-   recovery: migrate or verify the new consumer, obtain native evidence,
-   reconcile equivalent fresh scope, then issue a new lease.
+The exact edit, narration, prompts, terminal evidence, and rejection criteria
+are in:
 
-Presentation names used in the three-minute demo map directly to existing
-artifacts: a native consumer receipt is a **Change Receipt**, the short-lived
-producer plan is a **Retirement Lease**, and the existing public technical
-dossier is the **Evidence & Trust Center**. These labels do not create a second
-policy or artifact format.
+- [three-minute video script](../submission/VIDEO_SCRIPT.md); and
+- [recording runbook](../submission/RECORDING_RUNBOOK.md).
+
+The primary sequence is now:
+
+```text
+DataHub inspection
+  → exact Git/dbt plan
+  → external human authorization
+  → apply and native validation
+  → fresh reconciliation
+  → DataHub publication and read-back
+  → agent stops
+  → external producer retire command freshly executes or refuses
+```
+
+The recorded complete agent run below remains valid historical evidence for
+the MCP orchestration and late-consumer reversal. It predates the simplified
+default producer command, so do not use its Retirement Lease or sentinel as
+the final video narrative.
 
 Run the retained-live-state trace with:
 
@@ -165,15 +163,14 @@ DataHub search/schema/lineage context
   → reconcile_retirement_campaign
   → publish_retirement_summary
   → verify_retirement_summary
-  → prepare_producer_retirement_plan
-  → inspect_retirement_lease
-  → execute_retirement_gate
+  → inspect_retirement_campaign
+  → stop and return the external producer handoff
 ```
 
-For the late-consumer path, call `reconcile_retirement_lease_now` against an
-issued lease. The watch records fresh evidence, republishes the decision, and
-invalidates that lease even when readiness is unchanged. A still-ready
-campaign therefore needs a new lease before a later gate attempt.
+For the late-consumer path, call `reconcile_retirement_campaign`, republish,
+and verify the new read-back. The external `producer retire` invocation then
+performs the action-time recheck and refuses the unsafe campaign before
+mutation.
 
 Stop after `get_human_authorization_instructions`. A chat response such as
 “approved” does not create durable authorization. Continue only after the

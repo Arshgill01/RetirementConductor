@@ -94,6 +94,8 @@ def test_mcp_server_advertises_focused_annotated_tools() -> None:
             assert "human records authorization outside this server" in (
                 SERVER_INSTRUCTIONS
             )
+            assert "separately privileged producer retire CLI" in (SERVER_INSTRUCTIONS)
+            assert "Do not call the two-step lease" in SERVER_INSTRUCTIONS
             assert (
                 "plan"
                 not in by_name["execute_retirement_gate"].input_schema["properties"]

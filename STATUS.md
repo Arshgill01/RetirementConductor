@@ -14,10 +14,11 @@ contract; `PLAN.md` defines proof order.
   internal short-lived binding, freshly checks every required system, records
   intent, and performs or refuses one explicitly selected action. Separate
   lease issuance is no longer the default or headline claim.
-- Hosted Workbench production version 5 now serves the simplified stage
-  language from the tested site tree. A fresh production browser read showed
-  all seven stages, the exact late-consumer `UNSAFE` decision, and no recorded
-  page or console errors.
+- The hosted site serves the simplified Workbench and the tested three-slide
+  recording deck. The pitch route supports direct slide links, keyboard
+  navigation, hidden presenter controls, reduced motion, and a 16:9 recording
+  layout. The Workbench still shows all seven stages and the exact
+  late-consumer `UNSAFE` decision.
 - Definitive consequential behavior commit: `e9d7d97`; live-local public
   evidence index:
   `sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
@@ -33,19 +34,20 @@ contract; `PLAN.md` defines proof order.
 - Earlier complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: prepare the deck and public video, then enter the
-  completed story in Devpost. Optional
+- Next acceptance target: capture one accepted Codex consumer-workflow take,
+  capture the fresh consequential producer run, edit the public video under
+  three minutes, then enter the completed story in Devpost. Optional
   independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
 - Last integrated repository validation: 338 tests passed and one opt-in live
   PostgreSQL test was skipped, with Ruff, formatting, strict mypy over 110
-  source files, 204-file/111-Markdown/166-link repository validation, 522-file
+  source files, 204-file/113-Markdown/171-link repository validation, 528-file
   secret review, 124-file public-artifact review, reproducible source and
   wheel builds, and `git diff --check` passed. Four clean Python installs,
   confirmed removal, and an installed-wheel 16-tool MCP handshake passed. The
   skipped PostgreSQL case was exercised by the definitive
   installed-wheel run rather than silently claimed from the default suite. A
-  separate site lint, production build, six rendered-route tests, desktop and
+  separate site lint, production build, seven rendered-route tests, desktop and
   mobile browser checks, all detail views, and real read-only loopback pairing
   also passed without browser console or page errors.
 - Agent-path validation: behavior commit `0d70db9` produced an ephemeral Codex
