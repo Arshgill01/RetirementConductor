@@ -46,6 +46,14 @@ claims that. Git/dbt is the only automated mutation boundary. Other DataHub
 consumers remain exact, explainable blockers until they have an accepted
 external receipt, a verified removal, or a proved non-applicability record.
 
+Post-goal evidence has since added one deliberately narrower extension without
+changing this completed baseline: a loopback-only Superset executor can now
+join canonical campaign state and affect readiness beside Git/dbt. The live
+heterogeneous acceptance is not yet a second complete producer-gated path;
+gate-time native refresh remains Git/dbt-specific. The original objective and
+phase completion claims therefore remain valid rather than being retroactively
+broadened.
+
 ## Instruction order
 
 Before non-trivial work, read:

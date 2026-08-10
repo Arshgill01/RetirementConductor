@@ -1,9 +1,9 @@
 # Disposable Superset native executor
 
 This runbook exercises one bounded virtual-dataset migration against Apache
-Superset 6.0.0 and disposable DataHub Core. It is a workstream proof, not a
-registered production executor. The controlling product remains Git/dbt-only
-until the integration owner accepts the scope change.
+Superset 6.0.0 and disposable DataHub Core. Superset is now registered with the
+campaign engine and CLI, but remains experimental because the final producer
+gate does not yet perform a gate-time Superset native refresh.
 
 ## Boundary
 
@@ -74,9 +74,11 @@ dependence.
 
 ## Plan, approval, apply, and validate
 
-Call `SupersetAdapter.preflight` with the direct DataHub dataset entity and the
-seeded dataset/chart IDs. Inspect the emitted preflight and plan JSON. A separate
-operator must create a versioned approval bound to all of the following:
+Use `retirement-conductor adapter superset plan` with a JSON array containing
+the direct DataHub dataset entity and the seeded dataset/chart IDs. The
+`authorize`, `apply`, `validate`, `reconcile`, and `compensate` subcommands use
+the same campaign store and artifact directory as Git/dbt. Inspect the emitted
+preflight and plan JSON. A separate operator approval is bound to:
 
 - campaign ID;
 - exact plan digest and source version;
@@ -124,6 +126,16 @@ Finally run:
 uv run pytest -q tests/unit/test_superset.py tests/unit/test_superset_config.py
 make check
 ```
+
+The full live heterogeneous acceptance is:
+
+```bash
+make git-dbt-tool
+make heterogeneous-campaign-acceptance
+```
+
+It requires the disposable services and the documented Superset environment.
+Its public evidence is under `artifacts/public/heterogeneous-campaign/`.
 
 ## Teardown
 

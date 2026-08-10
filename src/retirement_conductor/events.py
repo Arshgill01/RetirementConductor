@@ -309,7 +309,8 @@ def _apply_event(projection: CampaignProjection, event: dict[str, Any]) -> None:
     elif event_type == "NATIVE_IDENTITY_CLAIMED":
         pass
     elif event_type == "MIGRATION_STARTED":
-        require_campaign_transition(projection.state, CampaignState.MIGRATING)
+        if projection.state != CampaignState.MIGRATING:
+            require_campaign_transition(projection.state, CampaignState.MIGRATING)
         projection.state = CampaignState.MIGRATING
     elif event_type == "CONSUMER_DISPOSITION_CHANGED":
         consumer = projection.consumers[str(payload["consumer_id"])]

@@ -12,15 +12,19 @@ contract; `PLAN.md` defines proof order.
 - Current definitive behavior commit: `2635240`; initial public TE-04 evidence
   commit: `6eeea35`; the integration audit corrected the package-versus-adapter
   version label without changing run outcomes or bindings
+- Current post-goal winning-proof behavior commit: `87bbf41`; it adds the
+  revocable-permission comparison, prepared independent-operator protocol, and
+  campaign-integrated experimental Superset evidence
 - Earlier complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
 - Next acceptance target: finish the public video and Devpost entry. Optional
   independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
-- Last integrated repository validation: 256 tests, Ruff, formatting, strict
-  mypy over 92 source files, 204-file repository validation, 407-file secret
-  review, 83-file public-artifact review, reproducible source and wheel builds,
+- Last integrated repository validation: 261 tests, Ruff, formatting, strict
+  mypy over 97 source files, 204-file repository and 175-link validation,
+  426-file secret review, 90-file public-artifact review, reproducible source
+  and wheel builds,
   and `git diff --check` passed. Four clean Python installs, upgrade/rollback,
   removal, and the installed-wheel live-local reference passed. A separate
   clean Python 3.13 install of the `agent` extra completed a real MCP handshake
@@ -48,9 +52,16 @@ contract; `PLAN.md` defines proof order.
   continuous reconciliation invalidated an already
   issued Retirement Lease from a fresh late DataHub field edge; and a bounded
   Superset 6.0.0 experiment proved one native mutation, validation,
-  reingestion, compensation, and owner-drift refusal. The first two are
-  integrated product capabilities. Superset remains explicitly experimental
-  and cannot affect canonical campaign readiness or the producer gate.
+  reingestion, compensation, and owner-drift refusal. Superset is now
+  campaign-integrated and can affect canonical readiness beside Git/dbt; it
+  remains experimental because gate-time native refresh is Git/dbt-specific.
+- Post-goal winning proof: the frozen static-signoff comparison retained stale
+  green under the same inspected late-consumer intervention that invalidated a
+  Retirement Lease and refused the producer action. A separate live-local
+  heterogeneous campaign accepted exact Git/dbt and Superset receipts, became
+  `READY_TO_RETIRE`, and returned to `UNSAFE` after authorized Superset
+  compensation. The independent operator packet is prepared, but RC-018
+  remains honestly `NOT_RUN` until a real practitioner completes it.
 - Definitive TE-04 acceptance: one persistent Codex task using the retained
   skill, DataHub MCP, and Retirement Conductor MCP planned one exact target,
   stopped for external authorization, applied and natively validated it, then

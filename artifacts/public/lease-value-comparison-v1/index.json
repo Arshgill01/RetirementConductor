@@ -1,0 +1,16 @@
+{
+  "experiment_id": "lease-value-comparison-v1",
+  "files": [
+    "report.json",
+    "static-signoff.json"
+  ],
+  "index_digest": "sha256:3d4357f62df95eb087bbf7bdf84143186bde4ec0ff63200910fbfa6df1ac1007",
+  "limitations": [
+    "The static arm is an intentionally minimal executable sign-off contract, not a claim about every catalog or ticketing product.",
+    "The intervention and revocable-lease outcome reuse an inspected live-local DataHub/Git/dbt run rather than rerunning infrastructure.",
+    "The producer action is a harmless sentinel, not a warehouse mutation."
+  ],
+  "report_digest": "sha256:267ad05d9971785b27e430ca8e002ae9473bf68c3edd7d28b0ec0dc7c30e1dcd",
+  "result": "REVOCABLE_LEASE_ADDS_DECISIVE_SAFETY_VALUE",
+  "schema_version": "1.0.0"
+}

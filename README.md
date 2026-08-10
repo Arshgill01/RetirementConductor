@@ -60,11 +60,13 @@ authority into a model:
   `INVALIDATED` Retirement Leases. Live Core evidence discovered an exact late
   field consumer, reversed the campaign, invalidated the preserved lease, and
   refused that exact old plan without another sentinel;
-- a disposable Superset 6.0.0 experiment proved one allowlisted native API
-  mutation, forced chart execution with semantic parity, fresh DataHub
-  reingestion, and safe compensation. It remains a standalone feasibility
-  proof and cannot change campaign readiness; Git/dbt is still the sole
-  supported automated executor.
+- a disposable Superset 6.0.0 path now binds the same campaign engine and CLI:
+  exact UUID identity, one allowlisted native API mutation, forced chart
+  execution with semantic parity, fresh DataHub reingestion, a canonical
+  receipt, and safe compensation. A two-consumer live campaign became
+  `READY_TO_RETIRE`, then `UNSAFE` when Superset was restored. The extension is
+  campaign-integrated but remains experimental because gate-time native refresh
+  is still Git/dbt-specific.
 
 See the historical [semantic PR runbook](docs/runbooks/SEMANTIC_PR.md),
 [continuous reconciliation runbook](docs/runbooks/CONTINUOUS_RECONCILIATION.md),
@@ -228,9 +230,12 @@ The first production-shaped vertical is:
 - a durable local campaign record plus a DataHub summary;
 - a command that exits non-zero when producer retirement is not permitted.
 
-Git/dbt is the sole automated native mutation boundary. Other DataHub-observed
-asset types remain blockers or externally receipted consumers; additional
-native adapters are explicitly outside the current build boundary.
+Git/dbt remains the sole fully producer-gated native mutation boundary. A
+loopback-only Superset extension can now plan, authorize, apply, validate,
+reconcile, compensate, and affect canonical readiness through
+`adapter superset`; it is experimental until the final gate independently
+refreshes its native and DataHub bindings. Other asset types remain blockers or
+externally receipted consumers.
 
 ## Product rules
 

@@ -1,0 +1,47 @@
+{
+  "checks": {
+    "lease_gate_refused": true,
+    "lease_invalidated": true,
+    "lease_producer_action_prevented": true,
+    "source_receipt_bound": true,
+    "static_signoff_stale_green_retained": true
+  },
+  "experiment_id": "lease-value-comparison-v1",
+  "interpretation": "The static contract retained a pre-intervention green decision. The revocable lease observed the same late consumer, changed the campaign to UNSAFE, invalidated permission, and refused the preserved producer plan with zero actions.",
+  "limitations": [
+    "The static arm is an intentionally minimal executable sign-off contract, not a claim about every catalog or ticketing product.",
+    "The intervention and revocable-lease outcome reuse an inspected live-local DataHub/Git/dbt run rather than rerunning infrastructure.",
+    "The producer action is a harmless sentinel, not a warehouse mutation."
+  ],
+  "protocol_digest": "sha256:dca6718926868193201d6f3dfa6ea246e4a9e4eb5f56c0c6e0b2819bbaabc82e",
+  "report_digest": "sha256:267ad05d9971785b27e430ca8e002ae9473bf68c3edd7d28b0ec0dc7c30e1dcd",
+  "result": "REVOCABLE_LEASE_ADDS_DECISIVE_SAFETY_VALUE",
+  "revocable_lease": {
+    "automatic_refusal_available": true,
+    "decision_after": "UNSAFE",
+    "decision_before": "READY_TO_RETIRE",
+    "gate_refusal": "GATE_DECISION_NOT_READY",
+    "lease_status_after": "INVALIDATED",
+    "lease_status_before": "ISSUED",
+    "producer_action_count_delta": 0,
+    "stale_green_retained": false
+  },
+  "same_intervention": {
+    "required_confidence_basis": "datahub_upstream_lineage_aspect",
+    "type": "late exact-field consumer"
+  },
+  "schema_version": "1.0.0",
+  "source": {
+    "campaign_evidence_digest": "sha256:09b66f9c715d7867ffdadf75c54936a5eb844e42fdc71355d51329ef37a3a5bb",
+    "evidence_mode": "live local",
+    "late_consumer_reread_digest": "sha256:a28e09a0e3905749c41c9bfa5b85b925d4d817d0c33ee389a0692937807c2440",
+    "watch_receipt_digest": "sha256:56db58f8c08c547558e0bb032da7ee76b5a03c22bd4ecc41202ab30b254039e7"
+  },
+  "static_signoff": {
+    "automatic_refusal_available": false,
+    "decision_exposed_to_producer": "READY_TO_RETIRE",
+    "signoff_digest_after": "sha256:12f60bc6632c07ea82d7bf73c15abc1b8b794d6b45c0c53e67b792ba34b704cc",
+    "signoff_digest_before": "sha256:12f60bc6632c07ea82d7bf73c15abc1b8b794d6b45c0c53e67b792ba34b704cc",
+    "stale_green_retained": true
+  }
+}
