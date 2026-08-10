@@ -30,6 +30,15 @@ action-time CI for this bounded workflow. Inspect the
 or follow the
 [definitive consequential runbook](docs/runbooks/DEFINITIVE_CONSEQUENTIAL.md).
 
+The [Retirement Workbench](docs/runbooks/WORKBENCH.md) is the complementary
+operator surface for one real campaign. It renders canonical state rather than
+reimplementing policy, keeps details behind focused Consumers, Change,
+Evidence, and Activity views, and exposes only explicitly enabled inventory
+and reconciliation operations. The public route shows labeled recorded
+evidence until the operator explicitly pairs it, using a process-scoped token,
+to the loopback runtime over the same campaign engine used by the CLI and MCP
+server.
+
 ## The agent demo
 
 Retirement Conductor now exposes the same campaign engine as a project-scoped
@@ -291,6 +300,7 @@ Deterministic policy decides.
 - [Security model](docs/SECURITY_MODEL.md)
 - [Deployment runbook](docs/runbooks/DEPLOYMENT.md)
 - [Recovery runbook](docs/runbooks/RECOVERY.md)
+- [Retirement Workbench runbook](docs/runbooks/WORKBENCH.md)
 - [Compatibility matrix](docs/COMPATIBILITY.md)
 - [Independent evaluation](docs/EVALUATION.md)
 - [Maintenance policy](docs/MAINTENANCE.md)

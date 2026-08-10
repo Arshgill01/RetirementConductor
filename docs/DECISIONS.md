@@ -976,3 +976,54 @@ race between DataHub and PostgreSQL is bounded, not eliminated.
 
 Status: accepted from implementation commit `e9d7d97` and public index
 `sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
+
+## D-054 — make the Workbench a thin local view, not another control plane
+
+Date: 2026-08-09
+
+Decision: add a focused Retirement Workbench for one campaign while retaining
+the existing event store, policy engine, command runtime, and human authority
+boundary as the only product authority. The browser renders a verified
+manifest and matching canonical event history. Its loopback API exposes
+read-only state by default and only opt-in inventory and reconciliation
+operations; it has no authorization, apply, lease-issuance, or gate endpoint.
+
+Why: the complete campaign needs a judge-legible and operator-legible surface,
+but a second TypeScript state machine or browser-side SQLite boundary would
+weaken technical execution and create conflicting truth. Inventory and
+reconciliation are useful no-authority operations that can safely demonstrate
+the real engine without turning a polished screen into implied permission.
+
+Observed consequence: the retained 18-event agent campaign renders its exact
+`UNSAFE` decision, new-consumer reconciliation, accepted Git/dbt receipt,
+DataHub evidence coverage, verified publication, and invalidated lease from
+canonical records. The interface calls the new consumer a hashed observed
+identity rather than inventing its platform. The public route falls back to an
+explicitly recorded, digest-bound view when no local runtime is connected.
+
+Status: accepted for the local single-writer operator path.
+
+## D-055 — pair the hosted Workbench to loopback authority explicitly
+
+Date: 2026-08-10
+
+Decision: keep the accepted public Workbench in recorded-evidence mode until
+an operator explicitly pairs it to the loopback campaign runtime. Generate a
+new high-entropy bearer token for each server process, require it on every API
+request, allow only configured exact loopback or HTTPS origins, and retain the
+token only in the browser tab. Keep the API bound to `127.0.0.1` and preserve
+the existing two-operation allowlist and browser authority exclusions.
+
+Why: a compiled public page cannot safely or honestly contain SQLite, DataHub,
+Git/dbt, or producer credentials. A paired local companion lets the accepted
+interface operate the real canonical engine without creating a remote control
+plane or shipping privileged state to the hosted site.
+
+Observed consequence: missing and incorrect tokens refuse with HTTP 401;
+insecure remote origins and non-loopback binds refuse at startup; allowed
+private-network preflight is exact-origin scoped; concurrent actions fail
+closed; and a real retained campaign can replace the recorded projection after
+the health and campaign identifiers agree. Authorization, apply, receipt
+acceptance, lease issuance, and producer execution remain absent.
+
+Status: accepted for the single-operator hosted-to-local pairing path.

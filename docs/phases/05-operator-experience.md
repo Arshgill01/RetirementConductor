@@ -119,4 +119,5 @@ Inspect:
 - R-09 report-versus-executor drift;
 - R-13 integrity interpretation;
 - R-15 sensitive evidence;
-- R-26 blocked-campaign usability.
+- R-26 blocked-campaign usability;
+- R-46 Workbench presentation becoming a second authority boundary.

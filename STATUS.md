@@ -95,6 +95,24 @@ contract; `PLAN.md` defines proof order.
   and DataHub mutation tools remained exposed, so no capability-bounded claim
   is made. Public evidence digest:
   `sha256:35dc492254c1fd196c51c743455d71c065b1245694867f697ae94f2de61143e9`.
+- Retirement Workbench commits `d9d366f` and `68c2139` finalize the focused,
+  responsive
+  operator surface over the same canonical store and command runtime. The
+  retained 18-event campaign rendered the exact new-consumer `UNSAFE`
+  reversal, accepted Git/dbt receipt, bounded DataHub evidence, verified
+  publication, and invalidated lease without inventing consumer platform or
+  identity. The API binds one campaign to loopback, is read-only by default,
+  and exposes only explicitly enabled inventory and reconciliation. The
+  finalized hosted path pairs to that loopback API with an ephemeral bearer
+  token and exact origin allowlist; the public page does not probe localhost
+  before explicit pairing. Production version 4 was paired in normal Chrome
+  after its explicit Local Network Access grant and displayed the matching
+  canonical campaign as `PAIRED READ ONLY`. Desktop, mobile, keyboard,
+  reduced-motion, and recorded-evidence fallback were inspected. `make check`
+  passed 271 tests, Ruff, formatting, strict mypy,
+  repository/link validation, secret and public-artifact review, package
+  builds, and `git diff --check`; the site lint, production build, and six
+  rendered-route tests also passed.
 
 ## Phase ledger
 

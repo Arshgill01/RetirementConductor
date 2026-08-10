@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import secrets
 import sys
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
@@ -470,6 +471,30 @@ def build_parser() -> argparse.ArgumentParser:
         help="redact identities and sensitive source details for public export",
     )
     _add_output_format(report_build, default="text")
+
+    workbench = subparsers.add_parser(
+        "workbench",
+        help="serve the focused loopback-only campaign workbench API",
+    )
+    workbench_subparsers = workbench.add_subparsers(
+        dest="workbench_command",
+        required=True,
+    )
+    workbench_serve = workbench_subparsers.add_parser("serve")
+    _add_live_campaign_arguments(workbench_serve)
+    workbench_serve.add_argument("--host", default="127.0.0.1")
+    workbench_serve.add_argument("--port", type=int, default=8765)
+    workbench_serve.add_argument(
+        "--origin",
+        action="append",
+        default=[],
+        help="allowed exact loopback or HTTPS browser origin; may be repeated",
+    )
+    workbench_serve.add_argument(
+        "--allow-actions",
+        action="store_true",
+        help="enable the bounded inventory and reconciliation operations",
+    )
     return parser
 
 
@@ -1035,6 +1060,69 @@ def main(argv: Sequence[str] | None = None) -> int:
                 _render(result)
             else:
                 _render_report_result(result)
+            return 0
+        if args.command == "workbench" and args.workbench_command == "serve":
+            from retirement_conductor.agent import AgentCommandRuntime, AgentSettings
+            from retirement_conductor.workbench_server import (
+                WorkbenchApplication,
+                serve_workbench,
+            )
+
+            settings = AgentSettings(
+                store=args.store,
+                writer_id=args.writer_id,
+                artifact_directory=args.artifact_dir,
+                specification_root=Path("fixtures/specs").resolve(),
+                refresh_receipt=Path(
+                    os.environ.get(
+                        "RETIREMENT_CONDUCTOR_REFRESH_RECEIPT",
+                        ".retirement-conductor/datahub/seed-receipt.json",
+                    )
+                ),
+                indexing_timeout_seconds=float(
+                    os.environ.get(
+                        "RETIREMENT_CONDUCTOR_INDEXING_TIMEOUT_SECONDS",
+                        "30",
+                    )
+                ),
+            )
+            runtime = AgentCommandRuntime(settings)
+
+            def run_action(operation: str) -> Mapping[str, Any]:
+                if operation == "inventory":
+                    return runtime.inventory_campaign(args.campaign_id)
+                return runtime.reconcile_campaign(args.campaign_id)
+
+            application = WorkbenchApplication(
+                store=args.store,
+                writer_id=args.writer_id,
+                campaign_id=args.campaign_id,
+                actions_enabled=args.allow_actions,
+                action_runner=run_action,
+            )
+            origins = args.origin or [
+                "http://127.0.0.1:3000",
+                "http://localhost:3000",
+                "https://retirement-conductor.arshgill01.chatgpt.site",
+            ]
+            pairing_token = secrets.token_urlsafe(32)
+            print(
+                f"Retirement Workbench API: http://{args.host}:{args.port} "
+                f"({application.campaign_id}; "
+                f"{'actions enabled' if args.allow_actions else 'read only'})",
+                flush=True,
+            )
+            print(
+                f"Pairing token (valid for this process): {pairing_token}",
+                flush=True,
+            )
+            serve_workbench(
+                application,
+                host=args.host,
+                port=args.port,
+                allowed_origins=origins,
+                pairing_token=pairing_token,
+            )
             return 0
         if (
             args.command == "campaign"

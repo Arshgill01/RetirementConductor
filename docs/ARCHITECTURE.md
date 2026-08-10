@@ -297,7 +297,26 @@ That model exposes:
 - canonical transition and DataHub publication history.
 
 The concise terminal view, expanded explanation, local HTML report, and
-structurally redacted public report all render this model. Public rendering
+structurally redacted public report all render this model. The Retirement
+Workbench adds a second, deliberately narrower projection for one selected
+campaign: current decision, exact cause, campaign stage, focused lineage,
+and one next action. Its Consumers, Change, Evidence, and Activity views reveal
+supporting proof one category at a time. The Workbench validates the same
+manifest and requires its event digests to exactly match canonical transition
+history; it never evaluates policy in the browser.
+
+The Workbench API is a loopback-only, single-campaign adapter over the same
+path-bound store and command runtime. Reads are always available. Inventory
+and reconciliation are disabled unless the operator starts the server with an
+explicit action flag, and requests require an exact action header from an
+allowlisted browser origin plus a process-scoped bearer token. The hosted page
+loads recorded evidence by default and can explicitly pair to this loopback
+adapter; DataHub credentials, the campaign store, and operation execution
+remain local. The browser cannot record authorization, apply a Git/dbt plan,
+issue a Retirement Lease, or execute the producer gate. This is a local
+operator surface, not the shared multi-operator API service deferred below.
+
+Public rendering
 removes native identities and sensitive source detail before HTML generation;
 it is not a post-processing scrub. Reports are deterministic, self-contained,
 and non-authoritative: the verified private manifest remains the integrity

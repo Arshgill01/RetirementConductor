@@ -2032,6 +2032,56 @@ capability containment. The author and external authorization operator were
 the same evaluator; DataHub and the harmless producer boundary were disposable
 local services.
 
+## Post-goal Retirement Workbench evidence
+
+Behavior commit: `17ec47f77599e0471ee1f3edf7bb0be01ad44168`.
+Evidence mode: the Workbench read the retained 18-event author-operated
+live-local agent campaign through a loopback API with actions disabled. The
+same route was then inspected at 1600 × 1000 and 390 × 844, and without the API
+to exercise its explicitly recorded public fallback.
+
+Observed bindings:
+
+- every Workbench read verified the canonical manifest and required the exact
+  event-digest sequence to equal manifest transition history;
+- the displayed `UNSAFE` state, added consumer ID, accepted Git/dbt receipt,
+  DataHub evidence coverage, publication read-back, and invalidated lease came
+  from those records; the view did not infer the late consumer's platform;
+- the API accepted only `127.0.0.1` and loopback browser origins, disabled
+  runtime actions by default, and rejected operations outside inventory and
+  reconciliation;
+- first-tab skip navigation reached the campaign content, visible focus and
+  native controls remained available, reduced-motion mode rendered normally,
+  and the 390-pixel layout had no page-level horizontal overflow;
+- the committed site preview screenshots are indexed in
+  [`artifacts/public/workbench/README.md`](../artifacts/public/workbench/README.md);
+- the recorded projection SHA-256 is
+  `c702bd127679965537cb821474c53900afaf2ba71aa43b882e59d718acdd0af9`
+  and it retains canonical manifest digest
+  `sha256:49aa07fa4afd1e065c0eedfbaaa7074be0827a9917e9941047183ba49a7efe28`.
+
+Acceptance on the behavior tree:
+
+```text
+make check
+Result: 262 tests passed; Ruff; formatting; strict mypy; repository/link,
+secret, and public-artifact checks; source/wheel builds; diff check passed
+
+npm --prefix site run lint
+Result: passed
+
+npm --prefix site test
+Result: production build and 5 rendered-route tests passed
+```
+
+What this proves: one polished operator route renders and navigates real
+canonical campaign evidence without adding browser policy authority, and the
+two opt-in runtime operations preserve the existing command boundary.
+
+What this does not prove: production graph coverage, a shared multi-operator
+service, independent adoption, or safe browser authorization/apply/gate
+controls. Those mutation boundaries remain intentionally absent.
+
 ## Post-goal lease-value, operator, and heterogeneous-campaign evidence
 
 Behavior and public-evidence commit: `87bbf41`. Evidence modes: paired analysis
@@ -2188,3 +2238,61 @@ What this does not prove: production graph completeness, production
 PostgreSQL or Superset authorization, distributed atomicity, independent
 operation, customer value, or host capability containment. DataHub and
 PostgreSQL still have a bounded external race. RC-018 remains `NOT_RUN`.
+
+## Finalized hosted Retirement Workbench evidence
+
+Behavior commits: `d9d366f` and `68c2139`. Site source commit:
+`1f2ecb61414f0e354c69eaa2ec27b1018a27ce44`. Evidence mode:
+author-operated public HTTPS page paired to a loopback runtime over the retained
+18-event campaign, with actions disabled.
+
+Observed bindings and refusals:
+
+- the public page loaded labeled recorded evidence without probing loopback;
+- pairing required the exact configured HTTPS origin and a fresh process token;
+- missing and incorrect tokens returned HTTP 401, insecure remote origins and
+  non-loopback binds refused, and private-network preflight did not widen the
+  allowlist;
+- normal Chrome displayed its Local Network Access prompt; only after an
+  explicit **Allow** did authenticated health and view reads complete;
+- health and view returned the same campaign ID, after which the visible mode
+  changed to `PAIRED READ ONLY` and the Evidence view remained navigable;
+- SQLite access is serialized across reads and operations; injected contention
+  returns stable `RUNTIME_STORE_LOCKED` instead of leaking a traceback;
+- rejected visual prototypes and the query-parameter variant surface were
+  removed from the production tree.
+
+Acceptance results:
+
+```text
+TMPDIR=/home/arshdeepsingh/.rc-check-workbench make check
+Result: 271 tests; Ruff; formatting; strict mypy over 100 source files;
+204-file repository and 179-link validation; 437-file secret review;
+92-file public-artifact review; source/wheel build; diff check passed
+
+npm --prefix site run lint
+Result: passed
+
+npm --prefix site test
+Result: production build and 6 rendered-route tests passed
+
+Sites production deployment
+Result: version 4 succeeded at
+https://retirement-conductor.arshgill01.chatgpt.site/workbench
+```
+
+The public pairing record is
+[`artifacts/public/workbench/pairing-acceptance.json`](../artifacts/public/workbench/pairing-acceptance.json),
+SHA-256
+`f368ddd4342ea236dcb861a91396592021b77e14acec8740137ca6a2a826cdf6`.
+
+What this proves: the accepted public design can become a real canonical
+single-campaign operator view through an explicitly authorized, token-bound
+loopback companion without moving DataHub credentials or policy authority into
+the hosted application.
+
+What this does not prove: production graph coverage, shared multi-operator
+operation, independent adoption, or browser authority over authorization,
+apply, receipt acceptance, lease issuance, or producer execution. The final
+acceptance was intentionally read-only and did not invoke inventory or
+reconciliation.
