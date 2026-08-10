@@ -2296,3 +2296,67 @@ operation, independent adoption, or browser authority over authorization,
 apply, receipt acceptance, lease issuance, or producer execution. The final
 acceptance was intentionally read-only and did not invoke inventory or
 reconciliation.
+
+## Post-CP-05 product simplification acceptance
+
+Behavior commit: `853ef5d`. Evidence mode: local repository acceptance plus
+real-browser inspection over the retained 18-event campaign. The previously
+published CP-05 native outcome remains unchanged and verifies offline at index
+digest `sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
+
+Observed behavior:
+
+- `producer retire` requires an explicit `sentinel` or `postgres` action;
+- the trusted runtime owns preparation, expiry, and execution timestamps;
+- the command prepares and consumes its internal binding in one invocation;
+- a transient pre-intent retry safely reuses the exact unconsumed binding for
+  the same manifest and action instead of minting a conflicting plan;
+- consumed, expired, wrong-action, drifted, or unsafe state continues to
+  refuse through the existing gate contract;
+- `producer plan`, `gate`, lease projection, and the watcher remain compatible
+  recovery and audit surfaces rather than the default safety claim; and
+- the Workbench renders `Discover → Plan → Approve → Change → Test → Recheck →
+  Retire`, with the late-consumer retirement visibly `blocked`.
+
+Acceptance results:
+
+```text
+uv run pytest -q tests/integration/test_gate.py tests/unit/test_producer_cli.py tests/unit/test_workbench.py
+Result: 29 tests passed
+
+uv run python scripts/run_definitive_consequential.py verify
+Result: NO_MATERIAL_ADVANTAGE / SIMPLIFY public evidence verified offline
+
+make check
+Result: 338 passed, 1 opt-in live PostgreSQL test skipped; Ruff, formatting,
+strict mypy over 110 source files, 204-file/111-Markdown/166-link repository
+validation, 522-file secret review, 124-file public-artifact review,
+reproducible source/wheel builds, and diff check passed
+
+make test-install
+Result: four clean Python installs passed; installed agent exposed 16 MCP
+tools; confirmed state and package removal passed
+
+npm --prefix site run lint && npm --prefix site test
+Result: lint, production build, and six rendered-route tests passed
+```
+
+The browser loaded every focused view, paired the hosted-capable page to the
+real loopback campaign in read-only mode, and passed desktop and 390-pixel
+mobile inspection with no recorded page or console errors. Updated desktop and
+mobile screenshots are tracked with the site.
+
+`npm audit` separately reported two high entries mapping to the same
+development-only `image-size` 2.0.2 parser through vinext. No fixed compatible
+release existed at inspection time. The parser is excluded from the deployed
+runtime and receives only reviewed repository assets; the residual build-time
+risk is recorded in `docs/DEPENDENCIES.md` and R-48.
+
+What this proves: the product actually followed the CP-05 simplification
+recommendation at its default operator surface while retaining the proven
+replay and recovery machinery internally.
+
+What this does not prove: a safety advantage over competent fresh CI,
+production warehouse support, independent adoption, complete production graph
+coverage, capability containment, or elimination of the final cross-system
+race. RC-018 remains `NOT_RUN`.

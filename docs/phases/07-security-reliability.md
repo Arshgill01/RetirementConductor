@@ -172,5 +172,6 @@ evidence is in `artifacts/public/phase07/` with summary digest
 - R-35 gate-to-action race;
 - R-36 divergent campaign writers;
 - R-37 contradictory connector evidence;
-- R-43 native SQL and intervening-owner edit safety.
-- R-45 behavioral non-use mistaken for capability containment.
+- R-43 native SQL and intervening-owner edit safety;
+- R-45 behavioral non-use mistaken for capability containment; and
+- R-48 vulnerable site build image parser.

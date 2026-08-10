@@ -1,375 +1,257 @@
 # Retirement Conductor
 
-Retirement Conductor safely replaces and retires legacy data fields by finding
-known consumers across systems, changing the consumers it is authorized to
-change, validating each change with the consumer's own tools, and refusing the
-producer-side retirement action until the evidence closes.
+> Replace an old data field without breaking what still depends on it.
 
-The public [Evidence & Trust Center](https://retirement-conductor.arshgill01.chatgpt.site)
-explains the complete product, evidence, safety boundary, official and
-synthetic data benchmark, limitations, and copyable end-to-end verification
-commands. Its standalone source is tracked under [`site/`](site/).
+Retirement Conductor finds every known consumer of a legacy field, moves the
+consumers it can safely change, tests them in their own systems, then performs
+— or blocks — the final database change using fresh DataHub evidence.
 
-## Definitive consequential result
+[Open the live Workbench](https://retirement-conductor.arshgill01.chatgpt.site/workbench)
+· [Inspect the definitive run](artifacts/public/definitive-consequential-run/README.md)
+· [Read the product definition](docs/PRODUCT.md)
 
-The frozen native comparison is complete. Retirement Conductor dropped one
-allowlisted PostgreSQL column exactly once after fresh DataHub, Git/dbt,
-Superset, publication, approval, and producer-schema checks; replay refused;
-and the replacement Spark workload remained healthy. A late Spark consumer
-invalidated the preserved authority and left the column present. The identical
-point-in-time static action committed and caused native SQLSTATE `42703`, while
-a competent fresh-CI arm found the late consumer and refused with the same
-action-time evidence as Retirement Conductor.
+![Retirement Workbench showing a late consumer that blocked retirement](site/public/workbench-desktop.png)
 
-The unchanged CP-03 decision rule classifies the result
-`NO_MATERIAL_ADVANTAGE` and recommends `SIMPLIFY`. The Retirement Lease remains
-available when durable one-use authority, recovery, or causal audit is useful,
-but it is not claimed as a material safety advantage over competent fresh
-action-time CI for this bounded workflow. Inspect the
-[self-verifying public bundle](artifacts/public/definitive-consequential-run/index.json)
-or follow the
-[definitive consequential runbook](docs/runbooks/DEFINITIVE_CONSEQUENTIAL.md).
+## The problem
 
-The [Retirement Workbench](docs/runbooks/WORKBENCH.md) is the complementary
-operator surface for one real campaign. It renders canonical state rather than
-reimplementing policy, keeps details behind focused Consumers, Change,
-Evidence, and Activity views, and exposes only explicitly enabled inventory
-and reconciliation operations. The public route shows labeled recorded
-evidence until the operator explicitly pairs it, using a process-scoped token,
-to the loopback runtime over the same campaign engine used by the CLI and MCP
-server.
+Renaming or removing a warehouse column looks simple until a dashboard,
+scheduled job, notebook, dbt model, or AI workflow still reads it.
 
-## The agent demo
+Repository search sees only part of that dependency chain. A point-in-time
+approval can also become wrong before the schema change runs. In the accepted
+live-local evidence, repository analysis found one consumer while DataHub
+returned 31 graph consumers over seven complete pages.
 
-Retirement Conductor now exposes the same campaign engine as a project-scoped
-MCP server with a Codex skill. The model can discover context, inspect state,
-plan the exact Git/dbt change, invoke native validation, reconcile fresh
-evidence, and explain a decision. It cannot authorize its own plan, and it
-cannot override the deterministic producer gate.
+Retirement Conductor turns that risky change into one controlled campaign:
 
-The strongest recorded demo is a complete model-driven run. The product agent
-inspects DataHub, creates a campaign, plans one exact dbt change, stops for
-external human authorization, applies and validates the change, reconciles
-fresh evidence, publishes and reads back the campaign summary, issues a
-short-lived Retirement Lease, and executes a harmless local sentinel. A newly
-injected Spark consumer then makes the same campaign `UNSAFE`; no second lease
-is issued and the gate is not called again.
+```mermaid
+flowchart LR
+    A[Declare the replacement] --> B[DataHub finds consumers]
+    B --> C[Change authorized consumers]
+    C --> D[Run native tests]
+    D --> E[Recheck fresh evidence]
+    E --> F{Still safe?}
+    F -->|Yes| G[Remove the old field]
+    F -->|No| H[Stop and explain why]
+    G --> I[Write the result to DataHub]
+    H --> I
+```
 
-Inspect the concrete [full-run evidence bundle](examples/agent-run/README.md)
-or its digest-bound
-[orchestration summary](artifacts/public/agent/full-run.json). The smaller
-retained-state refusal trace remains reproducible with:
+The product makes one bounded promise: **an empty result is never treated as
+proof that no consumer exists.**
+
+## What it actually does
+
+1. Resolves one legacy field and one replacement through DataHub.
+2. Records the evidence scope, freshness, pagination, permissions, and blind
+   spots behind every dependency claim.
+3. Maps authorized repository consumers to exact Git/dbt identities.
+4. Creates a reviewable change and runs dbt parse, build, test, and declared
+   semantic checks.
+5. Accepts native receipts from supported consumers and keeps everything else
+   visibly blocking.
+6. Requeries DataHub and the native systems immediately before retirement.
+7. Runs one explicitly selected, allowlisted producer action or refuses with a
+   stable reason.
+8. Publishes a durable campaign summary to DataHub and verifies the read-back.
+
+`READY_TO_RETIRE` always means ready within the recorded evidence envelope —
+never universally safe.
+
+## The honest experiment changed the product
+
+We tested the original **Retirement Lease** protocol against two alternatives
+under the same late-consumer intervention:
+
+| Arm | Producer result | Downstream result |
+|---|---|---|
+| Retirement Conductor, clean state | One PostgreSQL column drop; replay refused | Replacement Spark workload stayed healthy |
+| Retirement Conductor, late Spark consumer | No drop | Legacy column preserved |
+| Competent fresh CI, late Spark consumer | No drop | Legacy column preserved |
+| Reusable point-in-time sign-off | Column dropped | Spark failed with SQLSTATE `42703` |
+
+Competent fresh CI matched every predeclared safety property. The frozen result
+was `NO_MATERIAL_ADVANTAGE`, with the recommendation `SIMPLIFY`.
+
+So we simplified. The default producer command now performs the fresh checks
+and the action in **one trusted invocation**:
 
 ```bash
-make agent-acceptance
+retirement-conductor producer retire \
+  --campaign "$CAMPAIGN_ID" \
+  --action postgres
 ```
 
-See [the agent demo runbook](docs/runbooks/AGENT_DEMO.md) for the complete live
-path, exact human-authorization pause, adversarial prompts, and judge script.
-The public-safe
-[agent acceptance evidence](artifacts/public/agent/agent-acceptance.json)
-records the exact prompt, tool order, canonical blockers, model response, and
-raw-trace digest while keeping the private JSONL trace out of Git.
-The complete run is explicitly a user-directed author/operator run, not the
-independent operator observation required by RC-018. The audit behind this path
-also produced upstream DataHub MCP
-[PR #195](https://github.com/acryldata/mcp-server-datahub/pull/195) for correct
-lineage pagination and
-[PR #196](https://github.com/acryldata/mcp-server-datahub/pull/196) for accurate
-deployment-gate diagnostics.
+The short-lived plan and intent ledger remain internal recovery and audit
+artifacts. The older two-step `producer plan` + `gate` surface remains for
+compatibility and explicit recovery workflows, but a separately issued lease
+is no longer the headline or the default.
 
-Three additional inspected workstreams deepen that path without moving safety
-authority into a model:
+This experiment did not prove that Retirement Conductor is safer than every
+well-built CI workflow. It proved something narrower and useful: the product
+can coordinate discovery, migration, native validation, fresh cross-system
+verification, recovery, audit, and the final action as one reusable campaign.
 
-- a 135-attempt semantic ablation removed the nested Vertex/Gemini planner
-  from the supported product. Bounded DataHub context remains valuable input
-  to deterministic planning and operator review, while the historical public
-  PR/CI evidence remains available as experiment provenance;
-- a one-shot watcher now projects `ISSUED`, `EXPIRED`, `CONSUMED`, and
-  `INVALIDATED` Retirement Leases. Live Core evidence discovered an exact late
-  field consumer, reversed the campaign, invalidated the preserved lease, and
-  refused that exact old plan without another sentinel;
-- a disposable Superset 6.0.0 path now binds the same campaign engine and CLI:
-  exact UUID identity, one allowlisted native API mutation, forced chart
-  execution with semantic parity, fresh DataHub reingestion, a canonical
-  receipt, and safe compensation. A two-consumer live campaign became
-  `READY_TO_RETIRE`, then `UNSAFE` when Superset was restored. The extension is
-  campaign-integrated and independently refreshed by the final gate through a
-  least-privilege read/execute principal. It remains live-local experimental
-  scope because production credentials, dialects, and independent operation
-  are unproved.
+## Why DataHub is essential
 
-See the historical [semantic PR runbook](docs/runbooks/SEMANTIC_PR.md),
-[continuous reconciliation runbook](docs/runbooks/CONTINUOUS_RECONCILIATION.md),
-and [Superset feasibility runbook](docs/runbooks/SUPERSET.md) for exact evidence
-and limitations.
+DataHub is the live cross-system context and reconciliation surface, not a
+decorative catalog lookup.
 
-The same truth-experiment series measured the agent boundary. For the exact
-recorded Codex host and model, the project skill and Retirement Conductor MCP
-both improved correct completion and reduced operational burden, so both stay
-in the supported path. Every tested host still exposed shell and file editing,
-and DataHub advertised mutation tools; the project therefore makes no
-capability-bounded claim.
+- Field-level lineage expands the inventory beyond the repository.
+- Complete pagination, timestamps, permissions, and source limitations bound
+  every graph claim.
+- A newly ingested Spark edge can reverse `READY_TO_RETIRE` to `UNSAFE`.
+- The final check rereads DataHub instead of trusting the original inventory.
+- The campaign result is written back to one stable DataHub entity and read
+  back by a later agent.
+- Codex can inspect DataHub through its MCP server while deterministic product
+  code owns authorization, state transitions, validation acceptance, and the
+  final decision.
 
-The [definitive unified run](artifacts/public/definitive-unified-run/README.md)
-then exercised that selected architecture in one resumed Codex task. It bound
-one exact migration to [public PR #1](https://github.com/Arshgill01/retirement-conductor-definitive-acceptance/pull/1)
-and a named passing CI job, published and reread the DataHub decision, proved
-fresh-agent discovery, issued a Retirement Lease, and invalidated it after a
-new consumer appeared. The preserved gate refused with zero producer
-sentinels.
+The work also produced upstream DataHub MCP contributions:
 
-## The problem in plain language
+- [Issue #194](https://github.com/acryldata/mcp-server-datahub/issues/194) — lineage pagination could hide later consumers.
+- [PR #195](https://github.com/acryldata/mcp-server-datahub/pull/195) — paginate lineage at the GraphQL boundary.
+- [PR #196](https://github.com/acryldata/mcp-server-datahub/pull/196) — make deployment-gate diagnostics accurate.
 
-An old warehouse column can look unused in its repository while still feeding
-a dashboard, scheduled report, notebook, pipeline, or model elsewhere. A
-catalog can reveal much of that blast radius, but a list of affected assets
-does not move those consumers or prove that they still work after a change.
+The two pull requests are open and review-gated; they are not represented as
+merged.
 
-Retirement Conductor turns the change into one controlled campaign:
+## Codex is the operator, not the safety authority
+
+The repository includes a project skill and a 16-tool Retirement Conductor MCP
+server. Codex can inspect the campaign, query DataHub, plan the exact dbt
+change, pause for human approval, apply it, run native validation, reconcile,
+publish, and explain the outcome.
+
+The model cannot approve its own change or override policy. A 135-attempt
+ablation removed the nested Gemini planner because it added checks without
+improving exact minimum-plan accuracy. A separate 72-run comparison retained
+the project skill and product MCP because they improved completion and reduced
+operational burden on the recorded Codex host.
+
+The host still exposed shell, file editing, and DataHub mutation tools, so this
+project makes no capability-containment claim. The rule is simple:
 
 ```text
-Declare what is being replaced
-  → build an evidence-scoped consumer inventory
-  → migrate authorized consumers
-  → run source-native validation
-  → discover again from fresh state
-  → permit or refuse retirement
+Codex orchestrates.
+Native systems test.
+Deterministic code decides.
+Humans authorize consequential changes.
 ```
 
-Its central promise is deliberately bounded:
+## Workbench
 
-> Never confuse “nothing was returned” with “nothing depends on it.”
+The [Retirement Workbench](docs/runbooks/WORKBENCH.md) is a focused view of one
+real campaign. It renders the same verified manifest and event history used by
+the CLI and MCP server; it does not implement a second policy engine.
 
-## Why this is a product rather than one catalog feature
+It can:
 
-DataHub supplies cross-system lineage, ownership, schemas, usage context,
-queries, metadata mutation, and an agent-readable context surface. Git and dbt
-know how to change and validate the supported repository consumer. Retirement
-Conductor owns the part between them:
+- show the current decision and exact cause;
+- reveal Consumers, Change, Evidence, and Activity separately;
+- pair explicitly with a loopback runtime using a process-scoped token; and
+- run inventory or reconciliation when the local server enables those actions.
 
-- one durable campaign across unrelated consumer systems;
-- a common adapter and evidence contract;
-- source-version and scope preconditions before mutation;
-- per-consumer native validation receipts;
-- a fresh reconciliation pass that can reopen the campaign;
-- a deterministic producer-side gate;
-- an auditable explanation of what is closed, unknown, stale, or unsafe.
+It cannot authorize a change, apply code, accept validation, or remove a
+database field. Those privileges stay outside the browser. The public route
+therefore opens as clearly labeled recorded evidence until an operator pairs a
+local campaign.
 
-The system does not replace DataHub, dbt, Git, or their validators. It makes
-them participate in one completion criterion while keeping non-repository
-DataHub consumers visibly opaque until independent evidence closes them.
+## Evidence, not screenshots
 
-## Evidence already established
+The strongest retained results are executable and digest-bound:
 
-The preceding experiment exercised a live DataHub Core graph and a real
-disposable dbt project:
+| Evidence | Result |
+|---|---|
+| [Definitive consequential run](artifacts/public/definitive-consequential-run/index.json) | Real PostgreSQL drop, late-consumer refusal, native Spark consequence, Superset gate checks, and recovery |
+| [24-case retirement gauntlet](artifacts/public/retirement-gauntlet-v2/index.json) | 24/24 oracle matches, 121/121 planted-fault recall, zero false readiness |
+| [Definitive Codex run](artifacts/public/definitive-unified-run/README.md) | One exact PR/CI-backed migration, DataHub publication/read-back, and late-consumer reversal |
+| [Agent boundary ablation](artifacts/public/agent-ablation/report.json) | Keep the skill and MCP; capability boundedness remains unproved |
+| [Semantic planner ablation](artifacts/public/semantic-ablation-v2/REPORT.md) | Remove nested Gemini; keep bounded DataHub context |
+| [DataHub contribution evidence](artifacts/public/datahub-feedback/live-evidence.json) | Live reproductions for both upstream MCP fixes |
 
-- repository analysis found one consumer;
-- DataHub expanded the inventory to 35 consumers across multiple platforms;
-- DataHub therefore changed the decision from allowed to refused;
-- the repository consumer was protected by a content hash, changed, parsed,
-  built, and tested;
-- stale source and invalid replacement cases refused safely;
-- unresolved external consumers remained blocking;
-- a stable refusal summary was written to DataHub and read back through its
-  agent surface.
+Every public bundle states whether it is fixture, synthetic, live-local, or
+recorded evidence. Raw credentials, rows, private query text, and machine-local
+state are excluded.
 
-The former deterministic Looker experiment did not receive live evidence and
-is no longer part of the supported product or completion contract. Its
-historical fixture results remain labeled in the evidence ledger; the active
-work replaces that dependency with an evidence-quality benchmark over
-official DataHub hackathon datasets and deterministic synthetic truth sets.
-See [the current goal](GOAL.md).
+## Try it
 
-This repository has now independently exercised its phase 02 product path
-against a fresh disposable DataHub Core v1.6.0 instance. It resolved the exact
-field pair, retrieved all 31 advertised graph consumers over seven pages, and
-found at least 30 more consumers than the one configured repository reference.
-It updated one stable campaign document four times, read the exact content
-back, and verified that the target lifecycle remained unchanged. The result
-was deliberately `UNSAFE`: all graph consumers remain opaque until their
-native systems close them. See
-[EP-002](docs/EVIDENCE_LEDGER.md#ep-002--phase-02-datahub-evidence-boundary).
-
-Phase 03 then joined one of those fresh graph identities to one exact dbt
-manifest node and file. Two separately approved review branches each changed
-only that file; native dbt parse, seed, build, and test passed; Git rollback
-restored and revalidated the source; reapply produced one accepted live
-receipt. Stale, overbroad, incompatible, and hostile cases refused or remained
-inside the disposable validator boundary. The campaign still ended `UNSAFE`
-because 30 consumers remain opaque and reconciliation has not run. See
-[EP-003](docs/EVIDENCE_LEDGER.md#ep-003--phase-03-git-and-dbt-execution).
-
-Phase 04 completed that first vertical in two live disposable campaigns. An
-isolated one-consumer campaign reconciled equivalent fresh scope, published
-and verified its final DataHub summary, and executed one short-lived
-manifest-bound producer sentinel. Replay, drift, tampering, unavailable state,
-and untrusted provenance all refused. Adding a second consumer reopened the
-same campaign to `UNSAFE`, while the representative 31-consumer graph also
-refused the producer action. See
-[EP-004](docs/EVIDENCE_LEDGER.md#ep-004--phase-04-reconciliation-and-producer-gate).
-
-Phase 05 now renders that same canonical state through plain-language
-`inspect` and `explain` commands plus deterministic single-campaign HTML.
-The evidence covers all four final decisions, exact plan-digest confirmation,
-structurally redacted public export, desktop and 360-pixel mobile browser
-flows, 15 keyboard-reachable controls, and two axe-core audits with zero
-violations or incomplete results. The positive-looking all-closed fixture
-remains visibly `BLOCKED` because fixture evidence cannot satisfy live policy.
-See
-[EP-005](docs/EVIDENCE_LEDGER.md#ep-005--phase-05-operator-experience).
-
-Phase 06 now stress-tests that same engine over four checksum-pinned official
-DataHub datasets and deterministic synthetic truth. A live-local Core run
-directly reread schema, field lineage, owner, domain, tag, glossary, and
-quality aspects; the independent oracle matched all 14 scenarios with zero
-false readiness. The clean isolated campaign reached `READY_TO_RETIRE`, while
-partial, stale, ambiguous, table-only, incompatible, null-inflated,
-semantic-drift, late, and opaque-rich cases stayed blocked or unsafe. Three
-full runs share one time-independent semantic digest. See
-[EP-006](docs/EVIDENCE_LEDGER.md#phase-06-post-removal-confirmation).
-
-The refreshed Phase 07 boundary separates plan from apply, refuses copied
-campaign stores, verifies online backup and original-path restore, exposes redacted
-operational diagnostics, and audits dependencies, licenses, secrets, and
-public artifacts. After removal, the focused security, fault, and recovery
-suites passed 53, 47, and 40 tests. The all-group audit found no known
-vulnerability in 18 installed packages, plan-only Git/dbt remained unable to
-apply, backup/restore reproduced the manifest, and copied state refused before
-database change. See
-[the Phase 07 observations](docs/EVIDENCE_LEDGER.md#phase-07-post-removal-acceptance).
-
-The 0.2.0 release boundary then reproduced its wheel and source archive,
-installed cleanly under Python 3.11 through 3.14, preserved one campaign
-through upgrade and backup-based rollback, and removed only explicitly
-confirmed state. A clean installed wheel—not the source checkout—executed the
-complete live-local Core/Git/dbt reference: one ready sentinel, late-consumer
-reopening, and rich-graph refusal. The independent-operator artifact remains
-`NOT_RUN`, so this is engineering and integration evidence, not customer-value
-evidence.
-
-## Complete supported path
-
-The first production-shaped vertical is:
-
-- one warehouse column and one compatible replacement;
-- DataHub as the cross-system inventory and reconciliation surface;
-- one Git repository containing dbt or SQL consumers;
-- reviewable branch-based changes;
-- dbt-native validation;
-- a durable local campaign record plus a DataHub summary;
-- a command that exits non-zero when producer retirement is not permitted.
-
-Git/dbt remains the sole supported production-shaped automated consumer
-mutation boundary. A loopback-only Superset extension can plan, authorize,
-apply, validate, reconcile, compensate, affect canonical readiness, and be
-independently reread by the final gate; it remains experimental outside the
-recorded local boundary. The producer gate also has a separately privileged,
-one-target PostgreSQL reference action with durable intent and native
-outcome-unknown resolution. Other asset types remain blockers or externally
-receipted consumers.
-
-## Product rules
-
-```text
-The model proposes.
-Native tools validate.
-Deterministic policy decides.
-```
-
-- `READY_TO_RETIRE` means ready within a declared evidence envelope, never
-  universally safe.
-- Missing required evidence is `BLOCKED`.
-- A known active or failed consumer is `UNSAFE`.
-- Semantic or ownership judgment that cannot be automated is
-  `REVIEW_REQUIRED`.
-- A new consumer or stale receipt reopens the campaign.
-
-## Repository map
-
-- [Autonomous implementation contract](GOAL.md)
-- [Current execution state](STATUS.md)
-- [Product definition](docs/PRODUCT.md)
-- [Build plan](PLAN.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Core contracts](docs/CONTRACTS.md)
-- [Requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md)
-- [Evidence ledger](docs/EVIDENCE_LEDGER.md)
-- [Access requirements](docs/ACCESS.md)
-- [Security model](docs/SECURITY_MODEL.md)
-- [Deployment runbook](docs/runbooks/DEPLOYMENT.md)
-- [Recovery runbook](docs/runbooks/RECOVERY.md)
-- [Retirement Workbench runbook](docs/runbooks/WORKBENCH.md)
-- [Compatibility matrix](docs/COMPATIBILITY.md)
-- [Independent evaluation](docs/EVALUATION.md)
-- [Maintenance policy](docs/MAINTENANCE.md)
-- [Risk register](docs/RISKS.md)
-- [Decision log](docs/DECISIONS.md)
-- [Phase index](docs/phases/README.md)
-- [Research passes](docs/research/README.md)
-- [Agent operating rules](AGENTS.md)
-
-## Working in this repository
-
-This repository contains the controlling product contracts and an executable
-Python campaign engine with live DataHub and Git/dbt boundaries, versioned
-schemas, deterministic fixtures, and stable refusal behavior. The continuous
-implementation run is governed by [GOAL.md](GOAL.md); its active phase and
-honest external boundaries live in [STATUS.md](STATUS.md).
-
-Create the pinned development environment and run the repository checks with:
+Requirements: Python 3.11–3.14, `uv`, Git, and GNU Make.
 
 ```bash
+git clone https://github.com/Arshgill01/RetirementConductor.git
+cd RetirementConductor
 uv sync --all-groups
 make check
 ```
 
-The phase 00 commands are:
+Verify the definitive public result without starting services:
 
 ```bash
-retirement-conductor validate-spec fixtures/specs/valid.yaml
-retirement-conductor fixture run fixtures/specs/valid.yaml
+uv run python scripts/run_definitive_consequential.py verify
 ```
 
-The deterministic campaign kernel can replay and evaluate the tracked blocked
-fixture:
+Run the complete disposable DataHub + dbt + Superset + PostgreSQL + Spark
+comparison by following the
+[definitive consequential runbook](docs/runbooks/DEFINITIVE_CONSEQUENTIAL.md).
+The command creates only loopback-local disposable services and tears them
+down afterward.
+
+To inspect a real local campaign in the hosted Workbench:
 
 ```bash
-retirement-conductor campaign replay fixtures/campaigns/blocked
-retirement-conductor campaign evaluate fixtures/campaigns/blocked
+retirement-conductor workbench serve \
+  --campaign "$CAMPAIGN_ID" \
+  --store .retirement-conductor/campaigns.sqlite
 ```
 
-The disposable live DataHub workflow and its no-secret configuration are
-documented in [the DataHub Core runbook](docs/runbooks/DATAHUB_CORE.md).
-The bounded repository mutation and native validation sequence is documented
-in [the Git/dbt runbook](docs/runbooks/GIT_DBT.md).
-Fresh reconciliation, stable publication, and the one-time producer gate are
-documented in
-[the reconciliation and gate runbook](docs/runbooks/RECONCILIATION_GATE.md).
-Campaign inspection, exact plan confirmation, resume, local and public report
-generation, and operator acceptance checks are documented in
-[the operator runbook](docs/runbooks/OPERATOR.md).
-The official-dataset and synthetic evidence-quality benchmark is controlled by
-[the current goal](GOAL.md) and
-[Phase 06](docs/phases/06-data-quality-benchmark.md); its executable boundary
-is documented in the
-[benchmark runbook](docs/runbooks/DATA_QUALITY_BENCHMARK.md).
-Threat boundaries, least-privilege capabilities, retention, failure handling,
-verified backup and restore, diagnostics, and recovery drills are documented
-in the [security model](docs/SECURITY_MODEL.md), [security policy](SECURITY.md),
-and [recovery runbook](docs/runbooks/RECOVERY.md).
+Then open the [Workbench](https://retirement-conductor.arshgill01.chatgpt.site/workbench)
+and pair it with the process-scoped token printed by the server.
 
-The supported one-host, single-writer wheel installation, secret-reference
-configuration, preflights, local opt-in diagnostics, upgrade, rollback,
-confirmed state removal, and package uninstall are documented in
-[the deployment runbook](docs/runbooks/DEPLOYMENT.md). Executed and unverified
-platform boundaries are separated in
-[the compatibility matrix](docs/COMPATIBILITY.md). A real prospective
-operator must follow [the independent evaluation guide](docs/EVALUATION.md);
-the built-in fixture and author-run reference cannot substitute for that
-adoption evidence. Release compatibility and evidence maintenance follow
-[the maintenance policy](docs/MAINTENANCE.md).
+## Architecture and trust boundary
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) before changing a product contract or
-phase boundary.
+| Concern | Authority |
+|---|---|
+| Cross-system inventory and fresh reconciliation | DataHub |
+| Reviewable consumer mutation | Git/dbt; bounded Superset experiment |
+| Native correctness | dbt, Superset, PostgreSQL, Spark |
+| Campaign history and recovery | Append-only SQLite event store |
+| Final decision | Versioned deterministic policy |
+| Human approval | External operator boundary |
+| Final PostgreSQL action | Separately privileged, allowlisted invocation |
+| Orchestration and explanation | Codex through the project skill and MCP |
+
+More detail: [architecture](docs/ARCHITECTURE.md) ·
+[contracts](docs/CONTRACTS.md) ·
+[security model](docs/SECURITY_MODEL.md) ·
+[requirements](docs/REQUIREMENTS_TRACEABILITY.md) ·
+[evidence ledger](docs/EVIDENCE_LEDGER.md)
+
+## Scope and limits
+
+The production-shaped supported consumer mutation is deliberately narrow: one
+Git repository containing dbt or SQL consumers, one legacy field, and one
+compatible replacement. Superset and PostgreSQL are proven through disposable
+live-local boundaries, not production credentials.
+
+The evidence is author-operated. An independent practitioner run remains
+`NOT_RUN`, so the repository does not claim adoption, production graph
+completeness, distributed atomicity, or universal warehouse safety. A consumer
+can also appear inside the final DataHub-to-PostgreSQL race; the implementation
+bounds that window but cannot eliminate it across systems without a shared
+transaction.
+
+## Repository guide
+
+- [Current truth](STATUS.md)
+- [Product definition](docs/PRODUCT.md)
+- [Decision log](docs/DECISIONS.md)
+- [Risk register](docs/RISKS.md)
+- [Agent demo](docs/runbooks/AGENT_DEMO.md)
+- [Workbench runbook](docs/runbooks/WORKBENCH.md)
+- [Definitive native run](docs/runbooks/DEFINITIVE_CONSEQUENTIAL.md)
+- [Independent evaluation protocol](docs/runbooks/INDEPENDENT_OPERATOR.md)
+- [Contributing](CONTRIBUTING.md)
+
+Licensed under [Apache 2.0](LICENSE).

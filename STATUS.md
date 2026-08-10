@@ -9,6 +9,11 @@ contract; `PLAN.md` defines proof order.
 - Execution state: complete for the credential-independent engineering goal in
   `GOAL.md`; no adoption or customer-value claim is implied
 - Active phase: none
+- Current integrated product commit: `853ef5d`. The default final surface is
+  now `producer retire`: one trusted invocation creates or safely reuses its
+  internal short-lived binding, freshly checks every required system, records
+  intent, and performs or refuses one explicitly selected action. Separate
+  lease issuance is no longer the default or headline claim.
 - Definitive consequential behavior commit: `e9d7d97`; live-local public
   evidence index:
   `sha256:d76e327750fcf647e3840118e9a01f2308e0be7239ad9767d2ebe2709410394e`.
@@ -24,20 +29,21 @@ contract; `PLAN.md` defines proof order.
 - Earlier complete full-run evidence commit: `ea021ff`
 - Current external blocker: none for the overnight engineering goal; the
   independent-operator observation remains honest follow-on adoption evidence
-- Next acceptance target: finish the public video and Devpost entry. Optional
+- Next acceptance target: prepare the deck and public video, then enter the
+  completed story in Devpost. Optional
   independent-operator evaluation for RC-018
   remains `NOT_RUN` and blocks any adoption claim, not this engineering goal.
-- Last integrated repository validation: 323 tests passed and one opt-in live
-  PostgreSQL test was skipped, with Ruff, formatting, strict mypy over 106
-  source files, 204-file/104-Markdown/185-link repository validation, 502-file
-  secret review, 120-file public-artifact review, reproducible source and
+- Last integrated repository validation: 338 tests passed and one opt-in live
+  PostgreSQL test was skipped, with Ruff, formatting, strict mypy over 110
+  source files, 204-file/111-Markdown/166-link repository validation, 522-file
+  secret review, 124-file public-artifact review, reproducible source and
   wheel builds, and `git diff --check` passed. Four clean Python installs,
-  upgrade/rollback, removal, and the installed-wheel live-local reference
-  passed. The skipped PostgreSQL case was exercised by the definitive
+  confirmed removal, and an installed-wheel 16-tool MCP handshake passed. The
+  skipped PostgreSQL case was exercised by the definitive
   installed-wheel run rather than silently claimed from the default suite. A
-  separate
-  clean Python 3.13 install of the `agent` extra completed a real MCP handshake
-  and exposed exactly 16 tools from the packaged wheel.
+  separate site lint, production build, six rendered-route tests, desktop and
+  mobile browser checks, all detail views, and real read-only loopback pairing
+  also passed without browser console or page errors.
 - Agent-path validation: behavior commit `0d70db9` produced an ephemeral Codex
   MCP trace with exactly the two declared tools, no shell calls, the retained
   live late-consumer decision `UNSAFE`, and no producer-action attempt. The

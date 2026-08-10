@@ -54,3 +54,18 @@ groups with pinned `pip-audit`, runs the repository secret scan, and reviews
 every tracked public artifact. A future finding must either be removed by an
 upgrade or recorded with an explicit exposure analysis and expiry; a passing
 Phase 07 scan currently permits no unresolved finding.
+
+## Site build dependency review
+
+On 2026-08-10, `npm audit` reported two high-severity entries that reduce to
+two denial-of-service advisories against `image-size` 2.0.2, a transitive
+dependency of the pinned `vinext` build tool. No fixed `image-size` release was
+available from npm at inspection time; npm's suggested resolution was an
+incompatible downgrade of vinext.
+
+The package is a development-only build dependency. It is not included in the
+Sites deployment archive or browser runtime, and the build processes only
+reviewed repository-owned images. The finding is therefore contained for the
+current publishing boundary, not closed. Do not build untrusted image inputs,
+and upgrade vinext or override the parser as soon as a compatible patched
+release exists.
