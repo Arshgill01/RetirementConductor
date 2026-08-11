@@ -6,7 +6,8 @@ Retirement Conductor finds every known consumer of a legacy field, moves the
 consumers it can safely change, tests them in their own systems, then performs
 — or blocks — the final database change using fresh DataHub evidence.
 
-[Open the live Workbench](https://retirement-conductor.arshgill01.chatgpt.site/workbench)
+[Watch the 2:57 demo](https://youtu.be/VZP_BY33T2E)
+· [Open the live Workbench](https://retirement-conductor.arshgill01.chatgpt.site/workbench)
 · [Inspect the definitive run](artifacts/public/definitive-consequential-run/README.md)
 · [Read the product definition](docs/PRODUCT.md)
 
